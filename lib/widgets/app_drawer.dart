@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../core/extensions/context_extensions.dart';
 import '../core/utils/hijri_date.dart';
 import '../shared/providers/app_providers.dart';
-import 'donate_modal.dart';
+import '../features/sadqa/presentation/widgets/online_donation_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -51,7 +51,7 @@ class AppDrawer extends ConsumerWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(1),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
@@ -59,14 +59,15 @@ class AppDrawer extends ConsumerWidget {
                         child: ClipOval(
                           child: Image.asset(
                             'assets/logo.png',
-                            width: 38,
-                            height: 38,
+                            width: 40,
+                            height: 40,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Icon(
-                              FlutterIslamicIcons.solidMosque,
-                              color: Color(0xFF2A531D),
-                              size: 24,
-                            ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  FlutterIslamicIcons.solidMosque,
+                                  color: Color(0xFF2A531D),
+                                  size: 24,
+                                ),
                           ),
                         ),
                       ),
@@ -101,7 +102,11 @@ class AppDrawer extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.location_on_rounded, size: 14, color: Colors.white),
+                          const Icon(
+                            Icons.location_on_rounded,
+                            size: 14,
+                            color: Colors.white,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             locationAsync.value?.city ?? 'Makkah',
@@ -203,14 +208,18 @@ class AppDrawer extends ConsumerWidget {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF23322B) : const Color(0xFFF4FAF3),
+                color: isDark
+                    ? const Color(0xFF23322B)
+                    : const Color(0xFFF4FAF3),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: const Color(0xFF2A531D).withValues(alpha: 0.2),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: isDark ? Colors.black26 : const Color(0xFF2A531D).withValues(alpha: 0.05),
+                    color: isDark
+                        ? Colors.black26
+                        : const Color(0xFF2A531D).withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -252,7 +261,7 @@ class AppDrawer extends ConsumerWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        DonateModal.show(context);
+                        OnlineDonationModal.show(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2A531D),
@@ -301,9 +310,7 @@ class _DrawerItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 0),
       child: ListTile(
         onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(

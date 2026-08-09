@@ -67,7 +67,8 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
             title: 'QURAN',
-            showBackButton: true,
+            showBackButton: false,
+            showDrawerButton: true,
             systemOverlayStyle: isDark
                 ? SystemUiOverlayStyle.light
                 : SystemUiOverlayStyle.dark,

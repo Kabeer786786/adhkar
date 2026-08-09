@@ -10,6 +10,7 @@ import '../domain/models/sadqa_record.dart';
 import 'providers/sadqa_provider.dart';
 import 'widgets/add_sadqa_record_modal.dart';
 import 'widgets/islamic_charity_info_modal.dart';
+import 'widgets/online_donation_modal.dart';
 import 'widgets/zakat_calculator_modal.dart';
 
 class SadqaScreen extends ConsumerStatefulWidget {
@@ -365,6 +366,85 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
                       ),
                     ),
                   ),
+                  const SizedBox(height: 10),
+
+                  // Online Donation Banner Button (Razorpay Integration)
+                  InkWell(
+                    onTap: () => OnlineDonationModal.show(context),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF2A531D),
+                            const Color(0xFF458133),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.payment_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Online Donation',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Support App & Sadqa via Razorpay',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.white.withValues(alpha: 0.85),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 12,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -525,7 +605,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
         ),
       ),
     ),
-  ); 
+  );
 }
 
   Widget _buildEmptyState(BuildContext context, bool isDark) {

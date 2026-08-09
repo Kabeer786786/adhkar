@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/routes/app_router.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/storage_service.dart';
+import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
 import 'shared/providers/app_providers.dart';
 
@@ -15,6 +16,9 @@ void main() async {
 
   // Initialize Local Notifications
   await NotificationService().init();
+
+  // Initialize Supabase Service
+  await SupabaseService().init();
 
   runApp(
     ProviderScope( 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import '../../../core/services/location_service.dart';
 import '../../../shared/providers/app_providers.dart';
+import '../../../shared/providers/user_profile_provider.dart';
 import '../../../shared/widgets/location_selection_modal.dart';
 import '../../../shared/widgets/m3_card.dart';
 import '../../../shared/widgets/section_header.dart';
@@ -376,7 +377,114 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
 
-          // 5. About & App Details
+          // 5. User Profile
+          const SectionHeader(
+            title: 'User Profile',
+            subtitle: 'Verified registration profile details',
+          ),
+          Builder(builder: (context) {
+            final userProfile = ref.watch(userProfileProvider);
+            return M3Card(
+              color: const Color(0xFFE8F4E5),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF2A531D),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.person_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userProfile.name.isNotEmpty ? userProfile.name : 'Registered User',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2A531D),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              userProfile.email.isNotEmpty ? userProfile.email : 'No email attached',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                            if (userProfile.phone.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                userProfile.phone,
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  color: Color(0xFF8C6D53),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: userProfile.isEmailVerified
+                              ? const Color(0xFF2A531D).withValues(alpha: 0.12)
+                              : Colors.orange.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              userProfile.isEmailVerified
+                                  ? Icons.verified_user_rounded
+                                  : Icons.warning_amber_rounded,
+                              size: 14,
+                              color: userProfile.isEmailVerified
+                                  ? const Color(0xFF2A531D)
+                                  : Colors.orange.shade800,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              userProfile.isEmailVerified ? 'Registration Confirmed' : 'Email Unverified',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.bold,
+                                color: userProfile.isEmailVerified
+                                    ? const Color(0xFF2A531D)
+                                    : Colors.orange.shade800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
+
+          // 6. About & App Details
           const SectionHeader(
             title: 'About Adhkar',
             subtitle: 'Version and application info',

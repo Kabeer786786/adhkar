@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:latlong2/latlong.dart' hide Path;
 import 'package:sensors_plus/sensors_plus.dart';
-
+import 'package:go_router/go_router.dart';
 import '../../../core/services/location_service.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../widgets/app_header_bar.dart';
@@ -117,13 +117,19 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen> {
     final userLatLng = LatLng(location.latitude, location.longitude);
     const makkahLatLng = LatLng(21.422487, 39.826206);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-      extendBodyBehindAppBar: true,
-      appBar: const AppHeaderBar(
-        title: 'QIBLA FINDER',
-        backgroundColor: Colors.transparent,
-      ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.go('/');
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFFFFFF),
+        extendBodyBehindAppBar: true,
+        appBar: const AppHeaderBar(
+          title: 'QIBLA FINDER',
+          backgroundColor: Colors.transparent,
+        ),
       body: Stack(
         children: [
           // 1. Top Half High-HD Map View (CartoDB Retina @2x crisp tile render)
@@ -384,7 +390,8 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen> {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 }
 

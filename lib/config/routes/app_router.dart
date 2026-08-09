@@ -20,14 +20,70 @@ import '../../features/books/presentation/books_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/calendar/presentation/islamic_calendar_screen.dart';
 import '../../features/about_islam/presentation/what_is_islam_screen.dart';
+import '../../features/splash/presentation/splash_screen.dart';
+import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/onboarding/presentation/profile_setup_screen.dart';
+import '../../features/auth/presentation/auth_screen.dart';
+import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../widgets/main_shell.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
+  initialLocation: '/splash',
+  redirect: (context, state) async {
+    final location = state.uri.toString();
+    final isAuthRoute = location == '/splash' ||
+        location == '/onboarding' ||
+        location == '/auth' ||
+        location.startsWith('/verify-email') ||
+        location == '/profile-setup';
+
+    final prefs = await SharedPreferences.getInstance();
+    final isRegistered = prefs.getBool('registration_completed') ?? false;
+
+    if (!isRegistered && !isAuthRoute) {
+      return '/onboarding';
+    }
+    return null;
+  },
   routes: [
+    GoRoute(
+      path: '/splash',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SplashScreen(),
+    ),
+
+    GoRoute(
+      path: '/auth',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const AuthScreen(),
+    ),
+
+    GoRoute(
+      path: '/verify-email',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final email = state.uri.queryParameters['email'];
+        return VerifyEmailScreen(email: email);
+      },
+    ),
+
+    GoRoute(
+      path: '/onboarding',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const OnboardingScreen(),
+    ),
+
+    GoRoute(
+      path: '/profile-setup',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const ProfileSetupScreen(),
+    ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return MainShell(navigationShell: navigationShell);
@@ -38,7 +94,27 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/',
-              builder: (context, state) => const HomeScreen(),
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const HomeScreen(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    final scaleAnimation = Tween<double>(begin: 0.92, end: 1.0).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOutCubic,
+                      ),
+                    );
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(
+                        scale: scaleAnimation,
+                        child: child,
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),
