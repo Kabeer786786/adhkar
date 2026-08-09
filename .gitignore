@@ -32,6 +32,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/node_modules/
 
 # Symbolication related
 app.*.symbols
@@ -43,5 +44,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-/node_modules/
