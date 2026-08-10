@@ -426,8 +426,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
             final iftar = DateFormat('hh:mm a').format(calcResult.maghrib);
             final diff = calcResult.maghrib.difference(calcResult.fajr);
             final durStr = '${diff.inHours}h ${diff.inMinutes % 60}m';
-            final hijriFormatted =
-                '${hijri.day} ${hijri.monthName}';
+            final hijriFormatted = '${hijri.day} ${hijri.monthName}';
             _openDayDetailModal(
               context,
               date: date,
@@ -450,7 +449,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
     final now = DateTime.now();
 
     final todayKey = DateFormat('yyyy-MM-dd').format(now);
-    final rawHijri = 
+    final rawHijri =
         storage.getCachedHijriDate(todayKey) ??
         HijriDateHelper.formatHijri(now);
     final hijriStr = rawHijri
@@ -536,7 +535,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                   top: 20,
                   bottom: 5,
                 ),
-                child: Column( 
+                child: Column(
                   children: [
                     // Semi-Arc Circular Gauge
                     SizedBox(
@@ -581,7 +580,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text( 
+                                      Text(
                                         hijriStr,
                                         style: const TextStyle(
                                           fontSize: 13,
@@ -821,24 +820,6 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 3,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: todayFastingInfo.primaryColor,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      todayFastingInfo.badgeText,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -886,7 +867,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                             '"I intend to keep the fast tomorrow for the month of Ramadan."',
                         badgeColor: const Color(0xFFD97724),
                         isExpanded: _isSehriExpanded,
-                        onTap: () => setState( 
+                        onTap: () => setState(
                           () => _isSehriExpanded = !_isSehriExpanded,
                         ),
                       ),

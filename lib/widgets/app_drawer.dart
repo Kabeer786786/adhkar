@@ -17,7 +17,7 @@ class AppDrawer extends ConsumerWidget {
     final isDark = context.isDarkMode;
 
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.85,
+      width: MediaQuery.of(context).size.width * 0.8,
       backgroundColor: context.colorScheme.surface,
       elevation: 16,
       child: SafeArea(

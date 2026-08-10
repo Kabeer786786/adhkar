@@ -171,7 +171,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
             // Top Summary Hero Container
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(left:20,right:20,bottom:20),
               decoration: BoxDecoration(
                 color: isDark
                     ? const Color(0xFF192520)

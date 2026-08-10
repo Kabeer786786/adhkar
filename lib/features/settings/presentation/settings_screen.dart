@@ -27,12 +27,12 @@ class SettingsScreen extends ConsumerWidget {
     final storage = ref.watch(storageServiceProvider); 
     final currentMethod = ref.watch(calculationMethodProvider);
     final currentJuristic = ref.watch(asrJuristicProvider);
-    final currentTheme = ref.watch(themeModeProvider);
+    // final currentTheme = ref.watch(themeModeProvider);
     final locationAsync = ref.watch(currentLocationProvider);
     final location = locationAsync.value ?? LocationService.defaultLocation;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, 
       appBar: const AppHeaderBar(
         title: 'SETTINGS',
         showDrawerButton: false,
@@ -237,6 +237,7 @@ class SettingsScreen extends ConsumerWidget {
                       label: Text(key),
                       selected: isSelected,
                       selectedColor: const Color(0xFF2A531D),
+                      checkmarkColor: Colors.white,
                       backgroundColor: const Color(0xFFE8F4E5),
                       labelStyle: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -334,7 +335,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
 
-          // 4. Appearance Section
+          // 4. Appearance Section (Commented out)
+          /*
           const SectionHeader(
             title: 'Appearance',
             subtitle: 'Select application theme preference',
@@ -376,6 +378,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          */
 
           // 5. User Profile
           const SectionHeader(
@@ -659,6 +662,7 @@ class _ThemeChip extends StatelessWidget {
         label: Text(label),
         selected: isSelected,
         selectedColor: const Color(0xFF2A531D),
+        checkmarkColor: Colors.white,
         backgroundColor: const Color(0xFFE8F4E5),
         labelStyle: TextStyle(
           fontWeight: FontWeight.bold,

@@ -191,7 +191,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
         ),
       ),
-      body: RefreshIndicator( 
+      body: RefreshIndicator(
         onRefresh: _onRefresh,
         color: const Color(0xFF2A531D),
         child: SingleChildScrollView(
@@ -459,7 +459,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    (locationAsync.isLoading || locationAsync.isRefreshing || nextPrayer == null)
+                                    (locationAsync.isLoading ||
+                                            locationAsync.isRefreshing ||
+                                            nextPrayer == null)
                                         ? '---'
                                         : nextPrayer.name,
                                     style: const TextStyle(
@@ -470,7 +472,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    (locationAsync.isLoading || locationAsync.isRefreshing || nextPrayer == null)
+                                    (locationAsync.isLoading ||
+                                            locationAsync.isRefreshing ||
+                                            nextPrayer == null)
                                         ? '--:--:--'
                                         : _formatDuration(
                                             nextPrayer.currentRemaining,
@@ -528,9 +532,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             locationAsync.value == null ||
                                             locationAsync.value!.city.isEmpty)
                                         ? '---'
-                                        : (locationAsync.value!.country.isNotEmpty
-                                            ? '${locationAsync.value!.city}, ${locationAsync.value!.country}'
-                                            : locationAsync.value!.city),
+                                        : (locationAsync
+                                                  .value!
+                                                  .country
+                                                  .isNotEmpty
+                                              ? '${locationAsync.value!.city}, ${locationAsync.value!.country}'
+                                              : locationAsync.value!.city),
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -585,10 +592,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       height: 45,
                     ),
                     _FeatureTile(
-                      title: 'Sci-Islam',
-                      assetPath: 'assets/images/scifi-islam.png',
-                      onTap: () => context.push('/sci-islam'),
-                      width: 45,
+                      title: 'Sadqa',
+                      assetPath: 'assets/images/sadqa.png',
+                      onTap: () => context.push('/sadqa'),
+                      width: 38,
                       height: 45,
                     ),
                     _FeatureTile(
@@ -612,26 +619,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       width: 45,
                       height: 45,
                     ),
-                    _FeatureTile(
-                      title: 'Sadqa',
-                      assetPath: 'assets/images/sadqa.png',
-                      onTap: () => context.push('/sadqa'),
-                      width: 36,
-                      height: 36,
-                    ),
+
                     _FeatureTile(
                       title: 'Books',
                       assetPath: 'assets/images/books.png',
                       onTap: () => context.push('/books'),
                       width: 48,
-                      height: 36,
+                      height: 43,
+                    ),
+                    _FeatureTile(
+                      title: 'Sci-Islam',
+                      assetPath: 'assets/images/scifi-islam.png',
+                      onTap: () => context.push('/sci-islam'),
+                      width: 45,
+                      height: 44,
                     ),
                     _FeatureTile(
                       title: 'Reminder',
                       assetPath: 'assets/images/reminder.png',
                       onTap: () => context.push('/reminder'),
                       width: 36,
-                      height: 36,
+                      height: 43,
                     ),
                   ],
                 ),

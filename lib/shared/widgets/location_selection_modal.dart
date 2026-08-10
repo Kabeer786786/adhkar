@@ -249,6 +249,7 @@ class _LocationSelectionModalState extends ConsumerState<LocationSelectionModal>
                   return ChoiceChip(
                     label: Text('${preset['city']!}, ${preset['country']!}'),
                     selected: isSelected,
+                    checkmarkColor: Colors.white,
                     onSelected: (_) => _selectPreset(preset),
                     side: BorderSide(
                       color: isSelected

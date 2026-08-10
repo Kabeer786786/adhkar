@@ -24,20 +24,22 @@ class AppColors {
   // Background & Surfaces - Fresh Soft Green Tint (Light)
   static const Color backgroundLight = Color(0xFFFFFFFF);
   static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color cardLight = Color(0xFFF3FAF2);
   static const Color surfaceVariantLight = Color(0xFFE7F6E3);
   static const Color outlineLight = Color(0xFFC8E6C9);
 
-  // Background & Surfaces - Deep Dark Mode
-  static const Color backgroundDark = Color(0xFF0F1A0E);
-  static const Color surfaceDark = Color(0xFF162514);
-  static const Color surfaceVariantDark = Color(0xFF1F351B);
-  static const Color outlineDark = Color(0xFF2E4D28);
+  // Background & Surfaces - Deep Dark Mode (#2F3330 background, #57615C surface/cards)
+  static const Color backgroundDark = Color(0xFF2F3330);
+  static const Color surfaceDark = Color(0xFF2F3330);
+  static const Color cardDark = Color(0xFF57615C);
+  static const Color surfaceVariantDark = Color(0xFF57615C);
+  static const Color outlineDark = Color(0xFF434A46);
 
   // Text Colors
   static const Color textPrimaryLight = Color(0xFF1A3512);
   static const Color textSecondaryLight = Color(0xFF4B6B42);
-  static const Color textPrimaryDark = Color(0xFFF0FDF4);
-  static const Color textSecondaryDark = Color(0xFFA7F3D0);
+  static const Color textPrimaryDark = Color(0xFFFFFFFF);
+  static const Color textSecondaryDark = Color(0xFFD1D5DB);
 
   // Status & Prayer Highlights
   static const Color fajrColor = Color(0xFF2A531D);
@@ -51,5 +53,13 @@ class AppColors {
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
-}
 
+  /// Utility to get soft transparent background for colorful badges & icons
+  static Color softAccent(
+    Color color, {
+    bool isDark = false,
+    double alpha = 0.15,
+  }) {
+    return color.withValues(alpha: isDark ? alpha * 1.3 : alpha);
+  }
+}
