@@ -31,6 +31,7 @@ class BookModel {
   final String? fileUrl; // Local path, web URL, or Drive/Adobe link
   final bool isCustom;
   final bool isAdded;
+  final String openMode; // 'in_app', 'external', 'both'
   final double readProgress;
   final int totalPages;
   final int currentPage;
@@ -47,6 +48,7 @@ class BookModel {
     this.fileUrl,
     this.isCustom = false,
     this.isAdded = true,
+    this.openMode = 'both',
     this.readProgress = 0.0,
     this.totalPages = 100,
     this.currentPage = 1,
@@ -64,6 +66,7 @@ class BookModel {
     String? fileUrl,
     bool? isCustom,
     bool? isAdded,
+    String? openMode,
     double? readProgress,
     int? totalPages,
     int? currentPage,
@@ -80,6 +83,7 @@ class BookModel {
       fileUrl: fileUrl ?? this.fileUrl,
       isCustom: isCustom ?? this.isCustom,
       isAdded: isAdded ?? this.isAdded,
+      openMode: openMode ?? this.openMode,
       readProgress: readProgress ?? this.readProgress,
       totalPages: totalPages ?? this.totalPages,
       currentPage: currentPage ?? this.currentPage,
@@ -99,6 +103,7 @@ class BookModel {
         'fileUrl': fileUrl,
         'isCustom': isCustom,
         'isAdded': isAdded,
+        'openMode': openMode,
         'readProgress': readProgress,
         'totalPages': totalPages,
         'currentPage': currentPage,
@@ -122,6 +127,7 @@ class BookModel {
       fileUrl: json['fileUrl'] as String?,
       isCustom: json['isCustom'] as bool? ?? false,
       isAdded: json['isAdded'] as bool? ?? true,
+      openMode: json['openMode'] as String? ?? 'both',
       readProgress: (json['readProgress'] as num?)?.toDouble() ?? 0.0,
       totalPages: json['totalPages'] as int? ?? 100,
       currentPage: json['currentPage'] as int? ?? 1,

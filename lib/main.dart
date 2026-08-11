@@ -23,7 +23,7 @@ void main() async {
   await SupabaseService().init();
 
   runApp(
-    ProviderScope( 
+    ProviderScope(
       overrides: [
         storageServiceProvider.overrideWithValue(storageService),
       ],
@@ -33,30 +33,15 @@ void main() async {
 }
 
 class AdhkarApp extends ConsumerWidget {
-  const AdhkarApp({super.key}); 
+  const AdhkarApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeModeStr = ref.watch(themeModeProvider);
-
-    ThemeMode themeMode;
-    switch (themeModeStr) {
-      case 'light':
-        themeMode = ThemeMode.light;
-        break;
-      case 'dark':
-        themeMode = ThemeMode.dark;
-        break;
-      default:
-        themeMode = ThemeMode.system;
-    }
-
     return MaterialApp.router(
       title: 'Adhkar - Islamic Companion',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme(context), 
-      darkTheme: AppTheme.darkTheme(context),
-      themeMode: themeMode,
+      theme: AppTheme.lightTheme(context),
+      themeMode: ThemeMode.light, // Enforce Light Theme by default
       routerConfig: appRouter,
       builder: (context, child) {
         return ShowCaseWidget(
@@ -68,9 +53,6 @@ class AdhkarApp extends ConsumerWidget {
           builder: (context) => child ?? const SizedBox.shrink(),
         );
       },
-
-
-
     );
   }
 }

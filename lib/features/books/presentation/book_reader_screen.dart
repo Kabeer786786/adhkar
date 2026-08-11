@@ -12,49 +12,70 @@ class BookReaderScreen extends ConsumerStatefulWidget {
 
   const BookReaderScreen({super.key, required this.book});
 
-  static Future<void> open(BuildContext context, BookModel book) async {
-    // 1. Check if the book has a document / PDF / file URL
-    final filePath = book.fileUrl;
-    if (filePath != null && filePath.trim().isNotEmpty) {
-      final path = filePath.trim();
+  /// Opens the book either in-app or externally based on book.openMode
+  static Future<void> open(
+    BuildContext context,
+    BookModel book, {
+    bool forceExternal = false,
+  }) async {
+    final filePath = book.fileUrl?.trim() ?? '';
 
-      // If it's a web URL (http / https)
-      if (path.startsWith('http://') || path.startsWith('https://')) {
-        final uri = Uri.parse(path);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-          return;
-        }
-      }
-      // If it's a local file on device (PDF, DOC, DOCX, TXT, etc.)
-      else if (File(path).existsSync() || isDocumentFile(path)) {
-        final result = await OpenFilex.open(path);
-        if (result.type == ResultType.done) {
-          return;
-        } else {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  result.message.isNotEmpty && result.message != 'done'
-                      ? 'Opening document: ${result.message}'
-                      : 'Opening PDF / Document viewer...',
-                ),
-              ),
-            );
-          }
-          return;
-        }
+    // If forceExternal or if book openMode is strictly 'external' -> Open via external viewer
+    if (forceExternal || book.openMode == 'external' || (book.isCustom && book.openMode != 'in_app')) {
+      if (filePath.isNotEmpty) {
+        await openExternal(context, filePath);
+        return;
       }
     }
 
-    // 2. Default: Open in new full-screen reader screen
+    // Default for 'in_app' or 'both' -> Open In-App Reader Screen
     if (context.mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => BookReaderScreen(book: book),
         ),
+      );
+    }
+  }
+
+  /// Explicitly opens the book file or URL in an external application / browser
+  static Future<void> openExternal(BuildContext context, String? path) async {
+    if (path == null || path.trim().isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No external document or link available for this book.')),
+        );
+      }
+      return;
+    }
+
+    final trimmed = path.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      final uri = Uri.parse(trimmed);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch URL: $trimmed')),
+        );
+      }
+    } else if (File(trimmed).existsSync() || isDocumentFile(trimmed)) {
+      final result = await OpenFilex.open(trimmed);
+      if (result.type != ResultType.done && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              result.message.isNotEmpty && result.message != 'done'
+                  ? 'Opening document: ${result.message}'
+                  : 'Opening document in external app...',
+            ),
+          ),
+        );
+      }
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('File not found: $trimmed')),
       );
     }
   }
@@ -88,30 +109,8 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     Color(0xFFF8FAFC), // Night text
   ];
 
-  Future<void> _openExternalResource() async {
-    final link = widget.book.fileUrl;
-    if (link != null && link.trim().isNotEmpty) {
-      final path = link.trim();
-      if (path.startsWith('http://') || path.startsWith('https://')) {
-        final uri = Uri.parse(path);
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else if (File(path).existsSync() || BookReaderScreen.isDocumentFile(path)) {
-        final result = await OpenFilex.open(path);
-        if (result.type != ResultType.done && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Document viewer result: ${result.message}')),
-          );
-        }
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No external PDF or document file attached to this book.'),
-          ),
-        );
-      }
-    }
+  void _openExternalResource() {
+    BookReaderScreen.openExternal(context, widget.book.fileUrl);
   }
 
   @override
@@ -120,6 +119,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     final chapters = book.chapters;
     final bgColor = _bgColors[_readingTheme];
     final textColor = _textColors[_readingTheme];
+    final allowExternal = book.openMode != 'in_app' && (book.fileUrl?.isNotEmpty ?? false);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -153,6 +153,16 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
         ),
         centerTitle: true,
         actions: [
+          if (allowExternal)
+            IconButton(
+              icon: Icon(
+                Icons.open_in_new_rounded,
+                size: 20,
+                color: textColor,
+              ),
+              tooltip: 'Open in External App',
+              onPressed: _openExternalResource,
+            ),
           IconButton(
             icon: Icon(
               Icons.text_decrease_rounded,
@@ -305,7 +315,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                       Text(
                         book.description.isNotEmpty
                             ? book.description
-                            : 'No chapter text uploaded for this book. Use the button below to open the external document, Adobe Acrobat, or web PDF link.',
+                            : 'Predefined Islamic library book available for digital reading.',
                         style: GoogleFonts.lexend(
                           fontSize: _fontSize,
                           height: 1.7,
@@ -318,7 +328,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
               ),
             ),
 
-            // Bottom Control Bar (PDF / Adobe Opener & Progress)
+            // Bottom Control Bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
@@ -331,26 +341,27 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
               ),
               child: Row(
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: _openExternalResource,
-                    icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
-                    label: const Text(
-                      'Open PDF / Adobe',
-                      style: TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2A531D),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  if (allowExternal)
+                    ElevatedButton.icon(
+                      onPressed: _openExternalResource,
+                      icon: const Icon(Icons.open_in_new_rounded, size: 17),
+                      label: const Text(
+                        'Open External App',
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2A531D),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
                       ),
                     ),
-                  ),
 
                   const Spacer(),
 

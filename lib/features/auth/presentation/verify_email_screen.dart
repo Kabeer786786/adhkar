@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,17 +31,31 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   void initState() {
     super.initState();
     _startResendTimer();
-    // Auto-focus OTP field after screen transition
+    _otpFocusNode.addListener(_handleFocusChange);
+
+    // Auto-focus OTP field reliably after screen transition
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _otpFocusNode.requestFocus();
-      }
+      _focusOtpField();
     });
+  }
+
+  void _handleFocusChange() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _focusOtpField() {
+    if (mounted) {
+      FocusScope.of(context).requestFocus(_otpFocusNode);
+      SystemChannels.textInput.invokeMethod('TextInput.show');
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _otpFocusNode.removeListener(_handleFocusChange);
     _otpController.dispose();
     _otpFocusNode.dispose();
     _otpScrollController.dispose();
@@ -65,16 +80,61 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   }
 
   void _onOtpChanged(String val) {
+    final clean = val.replaceAll(RegExp(r'\D'), '');
+    if (clean.length > 8) {
+      final truncated = clean.substring(0, 8);
+      _otpController.text = truncated;
+      _otpController.selection = TextSelection.fromPosition(
+        TextPosition(offset: truncated.length),
+      );
+    }
     setState(() {});
+
     // Auto scroll horizontal list to focused digit
-    if (val.length > 3 && _otpScrollController.hasClients) {
-      final targetOffset = (val.length * 52.0) - 160;
+    if (clean.length > 3 && _otpScrollController.hasClients) {
+      final targetOffset = (clean.length * 52.0) - 160;
       _otpScrollController.animateTo(
         targetOffset.clamp(0.0, _otpScrollController.position.maxScrollExtent),
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
       );
     }
+  }
+
+  Future<void> _pasteFromClipboard() async {
+    try {
+      final data = await Clipboard.getData(Clipboard.kTextPlain);
+      if (data != null && data.text != null && data.text!.isNotEmpty) {
+
+        final cleanDigits = data.text!.replaceAll(RegExp(r'\D'), '');
+        if (cleanDigits.isNotEmpty) {
+          final code =
+              cleanDigits.length > 8 ? cleanDigits.substring(0, 8) : cleanDigits;
+          _otpController.text = code;
+          _otpController.selection = TextSelection.fromPosition(
+            TextPosition(offset: code.length),
+          );
+          _onOtpChanged(code);
+          _focusOtpField();
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Pasted verification code: $code'),
+                duration: const Duration(seconds: 2),
+                backgroundColor: const Color(0xFF2A531D),
+              ),
+            );
+          }
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No numbers found in clipboard.'),
+              duration: Duration(seconds: 2), 
+            ),
+          );
+        }
+      }
+    } catch (_) {}
   }
 
   Future<void> _verifyOTP() async {
@@ -308,26 +368,59 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                   child: Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(Icons.pin_rounded, color: Color(0xFF2A531D), size: 17),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Enter 8-Digit Verification Code',
-                            style: GoogleFonts.outfit(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1F2937),
+                          Row(
+                            children: [
+                              const Icon(Icons.pin_rounded, color: Color(0xFF2A531D), size: 17),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Verification Code',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF1F2937),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Quick Clipboard Paste Button
+                          InkWell(
+                            onTap: _pasteFromClipboard,
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.content_paste_rounded,
+                                    size: 14,
+                                    color: Color(0xFF2A531D),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Paste',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF2A531D),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'Tap boxes to enter code (scrollable)',
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          color: const Color(0xFF6B7280),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Tap boxes to type code or click Paste above',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            color: const Color(0xFF6B7280),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -449,23 +542,26 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
     final currentText = _otpController.text;
 
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(_otpFocusNode);
-      },
-      child: Column(
+      onTap: _focusOtpField,
+      behavior: HitTestBehavior.opaque,
+      child: Stack(
         children: [
-          // Hidden input field capturing 8 digits
-          SizedBox(
-            height: 0,
-            width: 0,
+          // Real active text field with full dimensions overlaid so keyboard & paste work 100%
+          Positioned.fill(
             child: Opacity(
-              opacity: 0,
+              opacity: 0.01,
               child: TextFormField(
                 focusNode: _otpFocusNode,
                 controller: _otpController,
                 keyboardType: TextInputType.number,
+                autofillHints: const [AutofillHints.oneTimeCode],
+                enableInteractiveSelection: true,
                 maxLength: 8,
                 onChanged: _onOtpChanged,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(8),
+                ],
                 validator: (val) {
                   if (val == null || val.trim().length < 8) {
                     return 'Please enter all 8 digits';
@@ -476,35 +572,39 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
             ),
           ),
 
-          // Horizontally Scrollable 8-Digit Row
-          SizedBox(
-            height: 56,
-            child: SingleChildScrollView(
-              controller: _otpScrollController,
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-              child: Row(
-                children: List.generate(
-                  8,
-                  (index) => _buildSingleDigitBox(index, currentText),
+          // Horizontally Scrollable 8-Digit Row Display
+          Column(
+            children: [
+              SizedBox(
+                height: 56,
+                child: SingleChildScrollView(
+                  controller: _otpScrollController,
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                  child: Row(
+                    children: List.generate(
+                      8,
+                      (index) => _buildSingleDigitBox(index, currentText),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.swap_horiz_rounded, size: 14, color: Colors.grey.shade400),
-              const SizedBox(width: 4),
-              Text(
-                'Swipe horizontally to view all 8 digits',
-                style: GoogleFonts.outfit(
-                  fontSize: 11,
-                  color: Colors.grey.shade500,
-                  fontWeight: FontWeight.w500,
-                ),
+              const SizedBox(height: 6),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.swap_horiz_rounded, size: 14, color: Colors.grey.shade400),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Swipe horizontally to view all 8 digits',
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -528,7 +628,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
         color: hasValue ? const Color(0xFFEBF5EA) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isFocused 
+          color: isFocused
               ? const Color(0xFF2A531D)
               : (hasValue ? const Color(0xFF458133) : const Color(0xFFD1D5DB)),
           width: isFocused ? 2.2 : 1.2,

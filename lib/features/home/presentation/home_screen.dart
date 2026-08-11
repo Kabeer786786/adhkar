@@ -14,6 +14,9 @@ import '../../../shared/widgets/app_showcase.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../prayer/presentation/providers/aladhan_providers.dart';
 
+import '../../../shared/providers/user_profile_provider.dart';
+import '../../../shared/widgets/complete_profile_modal.dart';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -27,6 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _showSeconds = false;
   late ScrollController _scrollController;
   final ValueNotifier<double> _appBarOpacity = ValueNotifier<double>(0.0);
+  static bool _hasPromptedProfileInSession = false;
 
   @override
   void initState() {
@@ -37,12 +41,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _checkAndPromptCompleteProfile();
       final hasSeen = await ShowcaseService.hasSeenHomeShowcase();
       if (!hasSeen && mounted) {
         ShowcaseService.startHomeShowcase(context);
       }
     });
   }
+
+  void _checkAndPromptCompleteProfile() async {
+    if (_hasPromptedProfileInSession || !mounted) return;
+
+    final hasSeenShowcase = await ShowcaseService.hasSeenHomeShowcase();
+    final justSkipped = await UserProfileNotifier.wasJustSkippedInThisSession();
+
+    if (!mounted) return;
+    // Do not show popup if showcase tour is running / hasn't been completed yet, or if user just skipped registration in this session
+    if (!hasSeenShowcase || justSkipped) return;
+
+    final userProfile = ref.read(userProfileProvider);
+    if (!userProfile.registrationCompleted) {
+      _hasPromptedProfileInSession = true;
+      Future.delayed(const Duration(milliseconds: 600), () {
+        if (mounted) {
+          CompleteProfileModal.show(context);
+        }
+      });
+    }
+  }
+
+
 
 
   void _toggleShowSeconds() {

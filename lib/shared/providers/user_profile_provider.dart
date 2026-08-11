@@ -11,7 +11,8 @@ class UserProfileState {
   final String location;
   final bool isEmailVerified;
   final bool isLoading;
-  final bool registrationCompleted; 
+  final bool registrationCompleted;
+  final bool hasSkippedRegistration;
 
   UserProfileState({
     this.userId = '',
@@ -22,6 +23,7 @@ class UserProfileState {
     this.isEmailVerified = false,
     this.isLoading = false,
     this.registrationCompleted = false,
+    this.hasSkippedRegistration = false,
   });
 
   UserProfileState copyWith({
@@ -33,6 +35,7 @@ class UserProfileState {
     bool? isEmailVerified,
     bool? isLoading,
     bool? registrationCompleted,
+    bool? hasSkippedRegistration,
   }) {
     return UserProfileState(
       userId: userId ?? this.userId,
@@ -42,7 +45,10 @@ class UserProfileState {
       location: location ?? this.location,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       isLoading: isLoading ?? this.isLoading,
-      registrationCompleted: registrationCompleted ?? this.registrationCompleted,
+      registrationCompleted:
+          registrationCompleted ?? this.registrationCompleted,
+      hasSkippedRegistration:
+          hasSkippedRegistration ?? this.hasSkippedRegistration,
     );
   }
 }
@@ -59,8 +65,22 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
   static const String _keyLocation = 'user_location';
   static const String _keyRegistrationCompleted = 'registration_completed';
   static const String _keyEmailVerified = 'email_verified';
+  static const String _keyHasSkippedRegistration = 'has_skipped_registration';
+  static const String _keyHasSeenOnboarding = 'has_seen_onboarding';
+  static const String _keyJustSkippedRegistration = 'just_skipped_registration';
+
+  static Future<void> markAppReopened() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyJustSkippedRegistration, false);
+  }
+
+  static Future<bool> wasJustSkippedInThisSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyJustSkippedRegistration) ?? false;
+  }
 
   Future<void> _loadFromLocalStorage() async {
+
     final prefs = await SharedPreferences.getInstance();
     final localUserId = prefs.getString(_keyUserId) ?? '';
     final localName = prefs.getString(_keyName) ?? '';
@@ -69,6 +89,7 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
     final localLocation = prefs.getString(_keyLocation) ?? '';
     final isRegCompleted = prefs.getBool(_keyRegistrationCompleted) ?? false;
     final isVerified = prefs.getBool(_keyEmailVerified) ?? false;
+    final hasSkipped = prefs.getBool(_keyHasSkippedRegistration) ?? false;
 
     state = UserProfileState(
       userId: localUserId,
@@ -78,6 +99,7 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
       location: localLocation,
       isEmailVerified: isVerified,
       registrationCompleted: isRegCompleted,
+      hasSkippedRegistration: hasSkipped,
     );
   }
 
@@ -89,6 +111,7 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
     required String location,
     bool? registrationCompleted,
     bool? emailVerified,
+    bool? hasSkippedRegistration,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     if (userId != null && userId.isNotEmpty) {
@@ -104,7 +127,21 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
     if (emailVerified != null) {
       await prefs.setBool(_keyEmailVerified, emailVerified);
     }
+    if (hasSkippedRegistration != null) {
+      await prefs.setBool(_keyHasSkippedRegistration, hasSkippedRegistration);
+    }
+    await prefs.setBool(_keyHasSeenOnboarding, true);
   }
+
+  /// Mark registration as skipped to allow entering home screen freely
+  Future<void> skipRegistration() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyHasSkippedRegistration, true);
+    await prefs.setBool(_keyHasSeenOnboarding, true);
+    await prefs.setBool(_keyJustSkippedRegistration, true);
+    state = state.copyWith(hasSkippedRegistration: true);
+  }
+
 
   /// Register User with Supabase (Collects name, email, phone, location)
   Future<AuthResponse> signUpWithEmail({
@@ -133,6 +170,7 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
         location: location,
         registrationCompleted: false,
         emailVerified: false,
+        hasSkippedRegistration: false,
       );
 
       state = state.copyWith(
@@ -168,11 +206,15 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
       final uid = response.user?.id ?? state.userId;
 
       final prefs = await SharedPreferences.getInstance();
-      final name = state.name.isNotEmpty ? state.name : (prefs.getString(_keyName) ?? '');
-      final phone = state.phone.isNotEmpty ? state.phone : (prefs.getString(_keyPhone) ?? '');
-      final location = state.location.isNotEmpty ? state.location : (prefs.getString(_keyLocation) ?? '');
+      final name =
+          state.name.isNotEmpty ? state.name : (prefs.getString(_keyName) ?? '');
+      final phone = state.phone.isNotEmpty
+          ? state.phone
+          : (prefs.getString(_keyPhone) ?? '');
+      final location = state.location.isNotEmpty
+          ? state.location
+          : (prefs.getString(_keyLocation) ?? '');
 
-      // Save/update profile in Supabase profiles table after confirmation
       await SupabaseService().saveUserProfile(
         name: name,
         email: email,
@@ -215,18 +257,40 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
     await SupabaseService().resendVerificationOTP(email: email);
   }
 
-  /// Save/Update profile locally and to Supabase
+  /// Update User's Name anytime
+  Future<void> updateName(String newName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyName, newName);
+    state = state.copyWith(name: newName);
+
+    if (state.userId.isNotEmpty) {
+      await SupabaseService().saveUserProfile(
+        name: newName,
+        email: state.email,
+        phone: state.phone,
+        location: state.location,
+        userId: state.userId,
+        emailVerified: state.isEmailVerified,
+      );
+    }
+  }
+
+  /// Save/Update profile details locally and to Supabase
   Future<bool> saveProfile({
     required String name,
     required String email,
     required String phone,
     required String location,
+    bool? emailVerified,
+    bool? registrationCompleted,
   }) async {
     await _saveLocalStorage(
       name: name,
       email: email,
       phone: phone,
       location: location,
+      emailVerified: emailVerified,
+      registrationCompleted: registrationCompleted,
     );
 
     state = state.copyWith(
@@ -234,6 +298,9 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
       email: email,
       phone: phone,
       location: location,
+      isEmailVerified: emailVerified ?? state.isEmailVerified,
+      registrationCompleted:
+          registrationCompleted ?? state.registrationCompleted,
     );
 
     if (state.userId.isNotEmpty) {

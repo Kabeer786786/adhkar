@@ -21,21 +21,29 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   void _checkNextScreen() async {
+    await UserProfileNotifier.markAppReopened();
     // Read SharedPreferences directly to ensure instant local state evaluation
     final prefs = await SharedPreferences.getInstance();
-    final isRegCompletedPref = prefs.getBool('registration_completed') ?? false;
 
-    await Future.delayed(const Duration(milliseconds: 2000));
+    final isRegCompletedPref = prefs.getBool('registration_completed') ?? false;
+    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    final hasSkipped = prefs.getBool('has_skipped_registration') ?? false;
+
+    await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
 
     final userProfile = ref.read(userProfileProvider);
-    final isRegistered = isRegCompletedPref || userProfile.registrationCompleted;
+    final canAccessApp = isRegCompletedPref ||
+        userProfile.registrationCompleted ||
+        hasSeenOnboarding ||
+        hasSkipped;
 
-    if (!isRegistered) {
-      context.go('/onboarding');
-    } else {
+    if (canAccessApp) {
       context.go('/');
+    } else {
+      context.go('/onboarding');
     }
+
   }
 
   @override

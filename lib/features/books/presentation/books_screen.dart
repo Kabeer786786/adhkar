@@ -252,14 +252,9 @@ class BooksScreen extends ConsumerWidget {
     WidgetRef ref,
     BookModel book,
   ) {
-    final isPdfOrDoc = book.fileUrl != null &&
-        (book.fileUrl!.toLowerCase().endsWith('.pdf') ||
-            book.fileUrl!.toLowerCase().endsWith('.doc') ||
-            book.fileUrl!.toLowerCase().endsWith('.docx') ||
-            book.fileUrl!.toLowerCase().endsWith('.txt'));
-
     showModalBottomSheet(
       context: context,
+
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
@@ -352,74 +347,150 @@ class BooksScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
 
-              // Action Buttons Row
+              // Action Buttons Row (Read In App vs External App)
               Row(
                 children: [
                   // Remove Button
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        ref.read(userBooksProvider.notifier).removeBook(book.id);
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                Text('Removed "${book.title}" from bookshelf.'),
-                            backgroundColor: const Color(0xFF334155),
-                          ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.delete_outline_rounded,
-                        color: Colors.red,
-                      ),
-                      label: const Text(
-                        'Remove',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
+                  IconButton(
+                    onPressed: () {
+                      ref.read(userBooksProvider.notifier).removeBook(book.id);
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text('Removed "${book.title}" from bookshelf.'),
+                          backgroundColor: const Color(0xFF334155),
                         ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        side: BorderSide(color: Colors.red.shade300),
-                      ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: Colors.redAccent,
                     ),
+                    tooltip: 'Remove from Bookshelf',
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
 
-                  // Read Book / Open Document Button
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        BookReaderScreen.open(context, book);
-                      },
-                      icon: Icon(
-                        isPdfOrDoc
-                            ? Icons.picture_as_pdf_rounded
-                            : Icons.auto_stories_rounded,
-                        size: 18,
-                      ),
-                      label: Text(
-                        isPdfOrDoc ? 'Open File' : 'Read Now',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2A531D),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  // Render Reading Action Buttons based on book.openMode ('in_app', 'external', 'both')
+                  if (book.openMode == 'in_app') ...[
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          BookReaderScreen.open(context, book);
+                        },
+                        icon: const Icon(
+                          Icons.auto_stories_rounded, 
+                          size: 18,
+                        ),
+                        label: const Text(
+                          'Read In App',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2A531D),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ] else if (book.openMode == 'external') ...[
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          BookReaderScreen.openExternal(context, book.fileUrl);
+                        },
+                        icon: const Icon(
+                          Icons.open_in_new_rounded,
+                          size: 18,
+                        ),
+                        label: const Text(
+                          'Open External App',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2A531D),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    // 'both' mode: Show both External App and Read In App options
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          BookReaderScreen.openExternal(context, book.fileUrl);
+                        },
+                        icon: const Icon(
+                          Icons.open_in_new_rounded,
+                          size: 16,
+                          color: Color(0xFF2A531D),
+                        ),
+                        label: const Text(
+                          'External App',
+                          style: TextStyle(
+                            color: Color(0xFF2A531D),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.5,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: const BorderSide(color: Color(0xFF2A531D)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          BookReaderScreen.open(context, book);
+                        },
+                        icon: const Icon(
+                          Icons.auto_stories_rounded,
+                          size: 18,
+                        ),
+                        label: const Text(
+                          'Read In App',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.5,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2A531D),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
+
+
               const SizedBox(height: 12),
             ],
           ),

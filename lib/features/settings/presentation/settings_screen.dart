@@ -45,7 +45,81 @@ class SettingsScreen extends ConsumerWidget {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 36),
         children: [
-          // 1. Hero Overview Banner Card
+          // 0. Profile Account Section Card
+          Consumer(
+            builder: (context, ref, child) {
+              final userProfile = ref.watch(userProfileProvider);
+              final hasName = userProfile.name.isNotEmpty;
+              final displayName = hasName ? userProfile.name : 'Guest User';
+
+              return M3Card(
+                color: Colors.white,
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.all(16),
+                child: InkWell(
+                  onTap: () => context.push('/profile'),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF3FAF2),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.person_rounded,
+                          size: 26,
+                          color: Color(0xFF2A531D),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              displayName,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1F2937),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              userProfile.isEmailVerified
+                                  ? 'Verified Profile'
+                                  : (hasName ? 'Unverified Profile' : 'Tap to setup your profile'),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: userProfile.isEmailVerified
+                                    ? const Color(0xFF2A531D)
+                                    : const Color(0xFFD97724),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Color(0xFF94A3B8),
+                        size: 22,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+
+
           M3Card(
             color: const Color(0xFFE8F4E5),
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -338,50 +412,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
 
-          // 4. Appearance Section (Commented out)
-          /*
-          const SectionHeader(
-            title: 'Appearance',
-            subtitle: 'Select application theme preference',
-          ),
-          M3Card(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                _ThemeChip(
-                  label: 'System',
-                  icon: Icons.brightness_auto_rounded,
-                  isSelected: currentTheme == 'system',
-                  onTap: () async {
-                    await storage.setThemeMode('system');
-                    ref.read(themeModeProvider.notifier).state = 'system';
-                  },
-                ),
-                const SizedBox(width: 8),
-                _ThemeChip(
-                  label: 'Light',
-                  icon: Icons.light_mode_rounded,
-                  isSelected: currentTheme == 'light',
-                  onTap: () async {
-                    await storage.setThemeMode('light');
-                    ref.read(themeModeProvider.notifier).state = 'light';
-                  },
-                ),
-                const SizedBox(width: 8),
-                _ThemeChip(
-                  label: 'Dark',
-                  icon: Icons.dark_mode_rounded,
-                  isSelected: currentTheme == 'dark',
-                  onTap: () async {
-                    await storage.setThemeMode('dark');
-                    ref.read(themeModeProvider.notifier).state = 'dark';
-                  },
-                ),
-              ],
-            ),
-          ),
-          */
+
 
           // 5. User Profile
           const SectionHeader(
@@ -707,46 +738,4 @@ class _OptionSelectTile extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ThemeChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _ThemeChip({
-    required this.label,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ChoiceChip(
-        avatar: Icon(
-          icon,
-          size: 18,
-          color: isSelected ? Colors.white : const Color(0xFF2A531D),
-        ),
-        label: Text(label),
-        selected: isSelected,
-        selectedColor: const Color(0xFF2A531D),
-        checkmarkColor: Colors.white,
-        backgroundColor: const Color(0xFFE8F4E5),
-        labelStyle: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 13,
-          color: isSelected ? Colors.white : const Color(0xFF2A531D),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        side: BorderSide(
-          color: isSelected ? const Color(0xFF2A531D) : const Color(0xFFC8E6C9),
-        ),
-        onSelected: (_) => onTap(),
-      ),
-    );
-  }
-}
+}

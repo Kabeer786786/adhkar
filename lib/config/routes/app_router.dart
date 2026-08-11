@@ -25,7 +25,9 @@ import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/presentation/profile_setup_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/auth/presentation/verify_email_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
 import '../../widgets/main_shell.dart';
+
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,11 +46,16 @@ final appRouter = GoRouter(
 
     final prefs = await SharedPreferences.getInstance();
     final isRegistered = prefs.getBool('registration_completed') ?? false;
+    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    final hasSkipped = prefs.getBool('has_skipped_registration') ?? false;
 
-    if (!isRegistered && !isAuthRoute) {
+    final canAccessApp = isRegistered || hasSeenOnboarding || hasSkipped;
+
+    if (!canAccessApp && !isAuthRoute) {
       return '/onboarding';
     }
     return null;
+
   },
   routes: [
     GoRoute(
@@ -83,6 +90,13 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const ProfileSetupScreen(),
     ),
+
+    GoRoute(
+      path: '/profile',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const ProfileScreen(),
+    ),
+
 
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
