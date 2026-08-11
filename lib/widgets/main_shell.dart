@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../core/extensions/context_extensions.dart';
+import '../core/services/showcase_service.dart';
+import '../shared/widgets/app_showcase.dart';
 import 'app_drawer.dart';
 
 class MainShell extends StatelessWidget {
@@ -57,27 +59,58 @@ class MainShell extends StatelessWidget {
               elevation: 0,
               height: 70,
               labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              destinations: const [
-                NavigationDestination(
+              destinations: [
+                const NavigationDestination(
                   icon: Icon(FlutterIslamicIcons.mosque, size: 22),
                   selectedIcon: Icon(FlutterIslamicIcons.solidMosque, size: 22),
                   label: 'Home',
                 ),
                 NavigationDestination(
-                  icon: Icon(FlutterIslamicIcons.quran2, size: 22),
-                  selectedIcon: Icon(FlutterIslamicIcons.solidQuran2, size: 22),
+                  icon: AppShowcase(
+                    globalKey: ShowcaseService.keyQuranTab,
+                    title: 'Holy Quran',
+                    description:
+                        'Explore Surahs with audio recitations, translations, and verse bookmarking.',
+                    stepIndex: 13,
+                    totalSteps: 15,
+                    targetShapeBorder: const CircleBorder(),
+                    child: const Icon(FlutterIslamicIcons.quran2, size: 22),
+                  ),
+                  selectedIcon:
+                      const Icon(FlutterIslamicIcons.solidQuran2, size: 22),
                   label: 'Quran',
                 ),
                 NavigationDestination(
-                  icon: Icon(FlutterIslamicIcons.tasbih2, size: 22),
-                  selectedIcon: Icon(FlutterIslamicIcons.solidTasbih2, size: 22),
+                  icon: AppShowcase(
+                    globalKey: ShowcaseService.keyAdhkarTab,
+                    title: 'Daily Adhkar',
+                    description:
+                        'Access Morning, Evening, Bedtime, and Daily Remembrance Supplications.',
+                    stepIndex: 14,
+                    totalSteps: 15,
+                    targetShapeBorder: const CircleBorder(),
+                    child: const Icon(FlutterIslamicIcons.tasbih2, size: 22),
+                  ),
+                  selectedIcon:
+                      const Icon(FlutterIslamicIcons.solidTasbih2, size: 22),
                   label: 'Adhkar',
                 ),
                 NavigationDestination(
-                  icon: Icon(FlutterIslamicIcons.qibla, size: 22),
-                  selectedIcon: Icon(FlutterIslamicIcons.solidQibla, size: 22),
+                  icon: AppShowcase(
+                    globalKey: ShowcaseService.keyQiblaTab,
+                    title: 'Qibla Compass',
+                    description:
+                        'Find the exact Qibla direction anywhere in the world using interactive compass.',
+                    stepIndex: 15,
+                    totalSteps: 15,
+                    targetShapeBorder: const CircleBorder(),
+                    child: const Icon(FlutterIslamicIcons.qibla, size: 22),
+                  ),
+                  selectedIcon:
+                      const Icon(FlutterIslamicIcons.solidQibla, size: 22),
                   label: 'Qibla',
                 ),
+
               ],
             ),
           ),
@@ -86,4 +119,3 @@ class MainShell extends StatelessWidget {
     );
   }
 }
- 

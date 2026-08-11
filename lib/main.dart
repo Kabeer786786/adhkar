@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'config/routes/app_router.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/showcase_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
@@ -52,10 +54,23 @@ class AdhkarApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Adhkar - Islamic Companion',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme(context),
+      theme: AppTheme.lightTheme(context), 
       darkTheme: AppTheme.darkTheme(context),
       themeMode: themeMode,
       routerConfig: appRouter,
+      builder: (context, child) {
+        return ShowCaseWidget(
+          blurValue: 0,
+          enableAutoScroll: false,
+          onFinish: () {
+            ShowcaseService.markHomeShowcaseAsSeen();
+          },
+          builder: (context) => child ?? const SizedBox.shrink(),
+        );
+      },
+
+
+
     );
   }
 }

@@ -23,12 +23,12 @@ class NotificationService {
     const settings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
-    ); 
+    );
 
     await _notificationsPlugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (details) {
-        // Handle notification click
+        // Handle notification response/click
       },
     );
 
@@ -47,11 +47,13 @@ class NotificationService {
     String? payload,
   }) async {
     const androidDetails = AndroidNotificationDetails(
-      'adhkar_main_channel',
+      'adhkar_main_channel_v3',
       'Adhkar Reminders',
       channelDescription: 'Notifications for Prayer Times and Daily Adhkar',
       importance: Importance.max,
       priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
     );
 
     const notificationDetails = NotificationDetails(
@@ -66,21 +68,25 @@ class NotificationService {
     required int id,
     required String prayerName,
     required DateTime scheduledTime,
+    bool sound = true,
+    bool vibration = true,
   }) async {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
-    const androidDetails = AndroidNotificationDetails(
-      'adhkar_prayer_channel',
+    final androidDetails = AndroidNotificationDetails(
+      'adhkar_prayer_channel_v3',
       'Prayer Alerts',
       channelDescription: 'Adhan and Prayer Time Reminders',
       importance: Importance.max,
       priority: Priority.high,
-      sound: RawResourceAndroidNotificationSound('athan'),
+      playSound: sound,
+      enableVibration: vibration,
+      fullScreenIntent: true,
     );
 
-    const notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: DarwinNotificationDetails(sound: 'athan.aiff'),
+      iOS: const DarwinNotificationDetails(),
     );
 
     await _notificationsPlugin.zonedSchedule(
@@ -95,7 +101,48 @@ class NotificationService {
     );
   }
 
+  Future<void> scheduleCustomReminderNotification({
+    required int id,
+    required String title,
+    required DateTime scheduledTime,
+    bool sound = true,
+    bool vibration = true,
+  }) async {
+    if (scheduledTime.isBefore(DateTime.now())) return;
+
+    final androidDetails = AndroidNotificationDetails(
+      'adhkar_reminder_channel_v3',
+      'Custom Reminders',
+      channelDescription: 'Custom Alarm and Adhkar Reminders',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: sound,
+      enableVibration: vibration,
+      fullScreenIntent: true,
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: const DarwinNotificationDetails(),
+    );
+
+    await _notificationsPlugin.zonedSchedule(
+      id,
+      title,
+      'Scheduled Custom Adhkar & Alarm Alert',
+      tz.TZDateTime.from(scheduledTime, tz.local),
+      notificationDetails,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
   Future<void> cancelAll() async {
     await _notificationsPlugin.cancelAll();
+  }
+
+  Future<void> cancel(int id) async {
+    await _notificationsPlugin.cancel(id);
   }
 }
