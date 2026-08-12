@@ -144,7 +144,7 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
 
 
   /// Register User with Supabase (Collects name, email, phone, location)
-  Future<AuthResponse> signUpWithEmail({
+  Future<SignUpResultStatus> signUpWithEmail({
     required String name,
     required String email,
     required String phone,
@@ -153,7 +153,7 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
   }) async {
     state = state.copyWith(isLoading: true);
     try {
-      final response = await SupabaseService().signUpWithEmail(
+      final result = await SupabaseService().signUpWithEmail(
         name: name,
         email: email,
         password: password,
@@ -161,30 +161,31 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
         location: location,
       );
 
-      final uid = response.user?.id ?? '';
+      final isVerified = result.status == SignUpResultStatus.alreadyVerified;
+
       await _saveLocalStorage(
-        userId: uid,
+        userId: result.userId,
         name: name,
         email: email,
         phone: phone,
         location: location,
-        registrationCompleted: false,
-        emailVerified: false,
+        registrationCompleted: isVerified,
+        emailVerified: isVerified,
         hasSkippedRegistration: false,
       );
 
       state = state.copyWith(
-        userId: uid,
+        userId: result.userId,
         name: name,
         email: email,
         phone: phone,
         location: location,
-        isEmailVerified: false,
-        registrationCompleted: false,
+        isEmailVerified: isVerified,
+        registrationCompleted: isVerified,
         isLoading: false,
       );
 
-      return response;
+      return result.status;
     } catch (e) {
       state = state.copyWith(isLoading: false);
       rethrow;

@@ -1,6 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+enum SignUpResultStatus {
+  alreadyVerified,
+  requiresVerification,
+}
+
+class SignUpResult {
+  final SignUpResultStatus status;
+  final String userId;
+  final String message;
+
+  SignUpResult({
+    required this.status,
+    required this.userId,
+    required this.message,
+  });
+}
+
 class SupabaseService {
   static final SupabaseService _instance = SupabaseService._internal();
   factory SupabaseService() => _instance;
@@ -67,18 +84,91 @@ class SupabaseService {
     }
   }
 
+  /// Find user profile by email in `profiles` table
+  Future<Map<String, dynamic>?> fetchProfileByEmail(String email) async {
+    try {
+      final response = await client
+          .from('profiles')
+          .select()
+          .eq('email', email.trim().toLowerCase())
+          .maybeSingle();
+      return response;
+    } catch (e) {
+      debugPrint('Error searching profile by email: $e');
+      return null;
+    }
+  }
+
   /// Sign Up with Email (collects name, email, phone, location)
-  Future<AuthResponse> signUpWithEmail({
+  Future<SignUpResult> signUpWithEmail({
     required String name,
     required String email,
     required String phone,
     required String location,
     String? password,
   }) async {
+    final cleanEmail = email.trim().toLowerCase();
+
+    // 1. Check if profile already exists in Supabase database by email
+    final existingProfile = await fetchProfileByEmail(cleanEmail);
+
+    if (existingProfile != null) {
+      final isVerified = existingProfile['email_verified'] == true;
+      final existingUid = (existingProfile['id'] ?? existingProfile['user_id']) as String?;
+
+      if (isVerified) {
+        // EMAIL ALREADY EXISTS AND IS VERIFIED -> Bypass verification, update info if needed
+        if (existingUid != null && existingUid.isNotEmpty) {
+          await saveUserProfile(
+            name: name.isNotEmpty ? name : (existingProfile['name'] ?? ''),
+            email: cleanEmail,
+            phone: phone.isNotEmpty ? phone : (existingProfile['phone'] ?? ''),
+            location: location.isNotEmpty ? location : (existingProfile['location'] ?? ''),
+            userId: existingUid,
+            emailVerified: true,
+          );
+        }
+        return SignUpResult(
+          status: SignUpResultStatus.alreadyVerified,
+          userId: existingUid ?? '',
+          message: 'Account already verified! Welcome back.',
+        );
+      } else {
+        // EMAIL EXISTS BUT IS NOT VERIFIED -> Update record without duplicate & resend OTP
+        if (existingUid != null && existingUid.isNotEmpty) {
+          await saveUserProfile(
+            name: name,
+            email: cleanEmail,
+            phone: phone,
+            location: location,
+            userId: existingUid,
+            emailVerified: false,
+          );
+        }
+
+        try {
+          await resendVerificationOTP(email: cleanEmail);
+        } catch (_) {
+          try {
+            await client.auth.signInWithOtp(email: cleanEmail, shouldCreateUser: false);
+          } catch (e) {
+            debugPrint('Warning: Could not resend OTP: $e');
+          }
+        }
+
+        return SignUpResult(
+          status: SignUpResultStatus.requiresVerification,
+          userId: existingUid ?? '',
+          message: 'Verification code sent to $cleanEmail.',
+        );
+      }
+    }
+
+    // 2. New user registration (email does not exist in profiles table)
     try {
-      final pass = password ?? 'adhkar_pass_${email.hashCode}';
+      final pass = password ?? 'adhkar_pass_${cleanEmail.hashCode}';
       final response = await client.auth.signUp(
-        email: email,
+        email: cleanEmail,
         password: pass,
         data: {
           'name': name,
@@ -89,18 +179,36 @@ class SupabaseService {
         },
       );
 
-      if (response.user != null) {
+      final uid = response.user?.id;
+      if (uid != null) {
         await saveUserProfile(
           name: name,
-          email: email,
+          email: cleanEmail,
           phone: phone,
           location: location,
-          userId: response.user!.id,
+          userId: uid,
           emailVerified: false,
         );
       }
 
-      return response;
+      return SignUpResult(
+        status: SignUpResultStatus.requiresVerification,
+        userId: uid ?? '',
+        message: 'Registration successful. Verification code sent.',
+      );
+    } on AuthException catch (e) {
+      if (e.message.toLowerCase().contains('already registered') ||
+          e.code == 'user_already_exists') {
+        try {
+          await resendVerificationOTP(email: cleanEmail);
+        } catch (_) {}
+        return SignUpResult(
+          status: SignUpResultStatus.requiresVerification,
+          userId: '',
+          message: 'User already exists. Verification code sent to $cleanEmail.',
+        );
+      }
+      rethrow;
     } catch (e) {
       debugPrint('Error during Supabase sign up: $e');
       rethrow;

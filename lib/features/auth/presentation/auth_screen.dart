@@ -6,6 +6,7 @@ import '../../../../core/models/country_code.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../shared/providers/user_profile_provider.dart';
+import '../../../../core/services/supabase_service.dart';
 import '../../../../core/utils/error_formatter.dart';
 import 'widgets/country_code_picker_modal.dart';
 
@@ -108,15 +109,27 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         : 'Unknown Location';
 
     try {
-      await ref.read(userProfileProvider.notifier).signUpWithEmail(
-            name: name,
-            email: email,
-            phone: fullPhone,
-            location: location,
-          );
+      final resultStatus =
+          await ref.read(userProfileProvider.notifier).signUpWithEmail(
+                name: name,
+                email: email,
+                phone: fullPhone,
+                location: location,
+              );
 
       if (mounted) {
-        context.go('/verify-email?email=${Uri.encodeComponent(email)}');
+        if (resultStatus == SignUpResultStatus.alreadyVerified) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account already verified! Welcome back to Adhkar.'),
+              backgroundColor: Color(0xFF2A531D),
+              duration: Duration(seconds: 3),
+            ),
+          );
+          context.go('/');
+        } else {
+          context.go('/verify-email?email=${Uri.encodeComponent(email)}');
+        }
       }
     } catch (e) {
       if (mounted) {
