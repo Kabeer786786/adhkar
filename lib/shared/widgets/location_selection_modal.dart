@@ -29,15 +29,15 @@ class _LocationSelectionModalState extends ConsumerState<LocationSelectionModal>
   bool _isDetectingGps = false;
 
   static const List<Map<String, String>> _popularCities = [
-    {'city': 'Makkah', 'country': 'Saudi', 'lat': '21.4225', 'lng': '39.8262'},
-    {'city': 'Madinah', 'country': 'Saudi', 'lat': '24.4672', 'lng': '39.6112'},
-    {'city': 'Mysore', 'country': 'India', 'lat': '12.2958', 'lng': '76.6394'},
+    {'city': 'New Delhi', 'country': 'India', 'lat': '28.6139', 'lng': '77.2090'},
+    {'city': 'Mumbai', 'country': 'India', 'lat': '19.0760', 'lng': '72.8777'},
+    {'city': 'Makkah', 'country': 'Saudi Arabia', 'lat': '21.4225', 'lng': '39.8262'},
+    {'city': 'Madinah', 'country': 'Saudi Arabia', 'lat': '24.4672', 'lng': '39.6112'},
     {'city': 'London', 'country': 'UK', 'lat': '51.5074', 'lng': '-0.1278'},
     {'city': 'Dubai', 'country': 'UAE', 'lat': '25.2048', 'lng': '55.2708'},
     {'city': 'Karachi', 'country': 'Pakistan', 'lat': '24.8607', 'lng': '67.0011'},
-    {'city': 'New York', 'country': 'US', 'lat': '40.7128', 'lng': '-74.0060'},
+    {'city': 'Dhaka', 'country': 'Bangladesh', 'lat': '23.8103', 'lng': '90.4125'},
     {'city': 'Istanbul', 'country': 'Turkey', 'lat': '41.0082', 'lng': '28.9784'},
-    {'city': 'Jakarta', 'country': 'Indonesia', 'lat': '-6.2088', 'lng': '106.8456'},
   ];
 
   @override

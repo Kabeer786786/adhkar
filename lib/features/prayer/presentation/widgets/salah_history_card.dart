@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/services/storage_service.dart';
 import '../../../../core/utils/hijri_date_helper.dart';
 import 'salah_3d_circular_progress.dart';
 
@@ -37,26 +34,16 @@ class SalahHistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isToday = DateUtils.isSameDay(date, DateTime.now());
-    final isYesterday = DateUtils.isSameDay(
-      date,
-      DateTime.now().subtract(const Duration(days: 1)),
-    );
 
     String gregorianStr;
     if (isToday) {
       gregorianStr = 'Today, ${_formatDayMonth(date)}';
-    } else if (isYesterday) {
-      gregorianStr = 'Yesterday, ${_formatDayMonth(date)}';
-    } else {
+    }  else {
       gregorianStr = _formatFullDate(date);
     }
 
-    final dateKey = DateFormat('yyyy-MM-dd').format(date);
-    final cachedStr = Hive.isBoxOpen(StorageService.hijriCacheBoxName)
-        ? Hive.box(StorageService.hijriCacheBoxName).get(dateKey) as String?
-        : null;
     final hijriStr =
-        hijriDate ?? cachedStr ?? HijriDateHelper.formatHijri(date);
+        hijriDate ?? HijriDateHelper.formatHijri(date);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -72,7 +59,7 @@ class SalahHistoryCard extends StatelessWidget {
               color: context.isDarkMode
                   ? const Color(0xFF1A2818)
                   : const Color(0xFFF9F9F9),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16), 
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.02),
@@ -92,7 +79,7 @@ class SalahHistoryCard extends StatelessWidget {
                       gregorianStr,
                       style: context.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 15,
+                        fontSize: 13,
                         color: context.colorScheme.onSurface,
                       ),
                     ),
@@ -100,7 +87,7 @@ class SalahHistoryCard extends StatelessWidget {
                       hijriStr,
                       style: context.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
-                        fontSize: 13,
+                        fontSize: 12.5,
                         color: context.colorScheme.onSurfaceVariant.withValues(
                           alpha: 0.8,
                         ),

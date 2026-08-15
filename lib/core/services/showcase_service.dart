@@ -41,8 +41,19 @@ class ShowcaseService {
     await prefs.setBool(_keyHasSeenHomeShowcase, false);
   }
 
+  static Future<void> stopShowcase(BuildContext context) async {
+    await markHomeShowcaseAsSeen();
+    try {
+      ShowcaseView.get().startShowCase([]);
+    } catch (_) {
+      try {
+        ShowCaseWidget.of(context).startShowCase([]);
+      } catch (_) {}
+    }
+  }
+
   static void startHomeShowcase(BuildContext context) {
-    ShowCaseWidget.of(context).startShowCase([
+    ShowcaseView.get().startShowCase([
       keyNamazStartEnd,
       keyRemainingTime,
       keyHijriLocation,

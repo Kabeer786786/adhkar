@@ -3,17 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../core/extensions/context_extensions.dart';
+import '../../../core/services/hijri_service.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/services/prayer_calculation_service.dart';
 import '../../../core/services/storage_service.dart';
+import '../../../core/calendar/models/calendar_type.dart';
+import '../../../core/calendar/providers/calendar_providers.dart';
+import '../../../core/utils/hijri_date.dart';
 import '../../../core/utils/hijri_date_helper.dart';
 import '../../../shared/providers/app_providers.dart';
+import '../../../shared/widgets/hijri_disclaimer_chip.dart';
 import '../domain/prayer_models.dart';
-import 'widgets/prayer_detail_modal.dart';
+import 'widgets/prayer_detail_modal.dart'; 
 import 'widgets/salah_history_card.dart';
 import 'widgets/salah_history_detail_modal.dart';
 import 'widgets/sound_option_modal.dart';
 
+import '../../../shared/widgets/app_shimmer.dart';
 import '../../../shared/widgets/location_selection_modal.dart';
 import '../data/repositories/aladhan_repository.dart';
 import 'providers/aladhan_providers.dart';
@@ -26,9 +32,10 @@ class PrayerScreen extends ConsumerStatefulWidget {
 }
 
 class _PrayerScreenState extends ConsumerState<PrayerScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin { 
   late TabController _tabController;
   DateTime _selectedDate = DateTime.now();
+  bool _isChangingDate = false;
 
   int _historyFilterDays = 7; // Default 7 days
 
@@ -53,8 +60,15 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
+        _isChangingDate = true;
         _selectedDate = picked;
       });
+      await Future.delayed(const Duration(milliseconds: 400));
+      if (mounted) {
+        setState(() {
+          _isChangingDate = false;
+        });
+      }
     }
   }
 
@@ -144,30 +158,38 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     final dateKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
     final gregorianStr = DateFormat('EEEE, MMMM d, yyyy').format(_selectedDate);
 
-    final storage = ref.watch(storageServiceProvider);
-
-    // Hijri date display: 15-day API storage cache -> API raw data -> local fallback
-    String hijriStr;
-    if (fetchResult?.apiRawData?.date.hijri != null) {
-      final h = fetchResult!.apiRawData!.date.hijri;
-      hijriStr = '${h.day} ${h.monthEn} ${h.year} AH';
-    } else {
-      hijriStr =
-          storage.getCachedHijriDate(dateKey) ??
-          HijriDateHelper.formatHijri(_selectedDate);
-    }
-
     final isToday = DateUtils.isSameDay(_selectedDate, DateTime.now());
+    final todayHijri = ref.watch(todayHijriProvider).value;
+    final calPref = ref.watch(calendarPreferenceProvider);
+
+    String hijriStr;
+    if (isToday && todayHijri != null) {
+      hijriStr = todayHijri.formatted;
+    } else {
+      final isSubcontinent = calPref.calendarType == CalendarType.regional &&
+          (calPref.region == HijriRegion.india ||
+              calPref.region == HijriRegion.pakistan ||
+              calPref.region == HijriRegion.bangladesh);
+      final hDate = HijriDate.fromGregorian(_selectedDate, isSubcontinent: isSubcontinent);
+      hijriStr = '${hDate.day} ${hDate.monthNameEn} ${hDate.year} AH';
+    }
+    final isAladhan = todayHijri?.isAladhan ?? false;
+
     final prayerList = _buildPrayerList(prayerTimes);
 
     final locationDisplayName = location.country.isNotEmpty
-        ? '${location.city}, ${location.country}'
+        ? '${location.city}, ${location.country}' 
         : location.city;
 
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       children: [
+        if (isAladhan)
+          const HijriDisclaimerChip( 
+            isAladhan: true,
+            margin: EdgeInsets.only(bottom: 12),
+          ),
         // --- Location Header Banner ---
         Container(
           margin: const EdgeInsets.only(bottom: 12),
@@ -307,161 +329,202 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
           ),
         ),
 
-        // --- Prayer Cards List ---
-        ...prayerList.map((prayer) {
-          final isCurrent =
-              isToday &&
-              (currentPrayer?.name == prayer.key ||
-                  (currentPrayer?.name == 'Fajr' && prayer.key == 'Fajr'));
-          final timeStr = DateFormat('hh:mm a').format(prayer.time);
-
-          final storage = ref.watch(storageServiceProvider);
-
-          // Get notification config
-          final rawConfig = storage.getPrayerNotificationConfig(prayer.key);
-          final config = rawConfig != null
-              ? PrayerNotificationConfig.fromJson(rawConfig)
-              : const PrayerNotificationConfig();
-
-          // Get completed sub-prayers
-          final completedSubIds = storage.getSubPrayerRecords(
-            dateKey,
-            prayer.key,
-          );
-
-          // Check card highlight color
-          final isHighlight = isCurrent && !prayer.isZawal;
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-              child: InkWell(
-                onTap: prayer.isZawal
-                    ? null
-                    : () => _openPrayerDetail(prayer, dateKey, completedSubIds),
-                borderRadius: BorderRadius.circular(20),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  padding: const EdgeInsets.only(
-                    left: 14,
-                    right: 10,
-                    top: 14,
-                    bottom: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isHighlight
-                        ? (context.isDarkMode
-                              ? const Color(0xFF133629)
-                              : const Color(0xFFE6F4EA))
-                        : (context.isDarkMode
-                              ? const Color(0xFF1A2818)
-                              : const Color(0xFFF9F9F9)),
-                    borderRadius: BorderRadius.circular(16),
-                    border: isHighlight
-                        ? Border.all(color: const Color(0xFF10B981), width: 1.5)
-                        : null,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.02),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 4),
-                      // Weather/Sky Icon in Circular Container
-                      Icon(
-                        prayer.icon,
-                        color: isHighlight
-                            ? const Color(0xFF047857)
-                            : _getPrayerIconColor(prayer.key, context),
-                        size: 28,
-                      ),
-                      const SizedBox(width: 16),
-
-                      // Prayer Name & Subtitle
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              prayer.title,
-                              style: context.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                color: isHighlight
-                                    ? (context.isDarkMode
-                                          ? Colors.white
-                                          : const Color(0xFF064E3B))
-                                    : context.colorScheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 0),
-                            Text(
-                              prayer.subtitle,
-                              style: context.textTheme.bodySmall?.copyWith(
-                                color: isHighlight
-                                    ? (context.isDarkMode
-                                          ? const Color(0xFFA7F3D0)
-                                          : const Color(0xFF047857))
-                                    : context.colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Time Display
-                      Text(
-                        timeStr,
-                        style: context.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: isHighlight
-                              ? (context.isDarkMode
-                                    ? Colors.white
-                                    : const Color(0xFF064E3B))
-                              : context.colorScheme.onSurface,
-                        ),
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      // Rightmost Sound Icon Button
-                      if (!prayer.isZawal)
-                        IconButton(
-                          onPressed: () => _openSoundConfig(prayer.key, config),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          visualDensity: VisualDensity.compact,
-                          icon: Icon(
-                            config.isMuted
-                                ? Icons.volume_off_rounded
-                                : Icons.volume_up_rounded,
-                            size: 24,
-                            color: config.isMuted
-                                ? context.colorScheme.outline
-                                : const Color(0xFF069B69),
-                          ),
-                        )
-                      else
-                        Icon(
-                          Icons.block_rounded,
-                          size: 24,
-                          color: context.colorScheme.outline,
-                        ),
-                    ],
-                  ),
-                ),
+        // --- Date Changing Loader Banner ---
+        if (_isChangingDate)
+          Container(
+            margin: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFF2A531D).withValues(alpha: 0.25),
               ),
             ),
-          );
-        }),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Color(0xFF2A531D),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  'Updating prayer timings for selected date...',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2A531D),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        // --- Prayer Cards List with Shimmer Effect ---
+        AppShimmer( 
+          isLoading: _isChangingDate,
+          child: Column(
+            children: prayerList.map((prayer) {
+              final isCurrent =
+                  isToday &&
+                  (currentPrayer?.name == prayer.key ||
+                      (currentPrayer?.name == 'Fajr' && prayer.key == 'Fajr'));
+              final timeStr = DateFormat('hh:mm a').format(prayer.time);
+
+              final storage = ref.watch(storageServiceProvider);
+
+              // Get notification config
+              final rawConfig = storage.getPrayerNotificationConfig(prayer.key);
+              final config = rawConfig != null
+                  ? PrayerNotificationConfig.fromJson(rawConfig)
+                  : const PrayerNotificationConfig();
+
+              // Get completed sub-prayers
+              final completedSubIds = storage.getSubPrayerRecords(
+                dateKey,
+                prayer.key,
+              );
+
+              // Check card highlight color
+              final isHighlight = isCurrent && !prayer.isZawal;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                  child: InkWell(
+                    onTap: prayer.isZawal
+                        ? null
+                        : () => _openPrayerDetail(prayer, dateKey, completedSubIds),
+                    borderRadius: BorderRadius.circular(20),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      padding: const EdgeInsets.only(
+                        left: 14,
+                        right: 10,
+                        top: 14,
+                        bottom: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isHighlight
+                            ? (context.isDarkMode
+                                  ? const Color(0xFF133629)
+                                  : const Color(0xFFE6F4EA))
+                            : (context.isDarkMode
+                                  ? const Color(0xFF1A2818)
+                                  : const Color(0xFFF9F9F9)),
+                        borderRadius: BorderRadius.circular(16),
+                        border: isHighlight
+                            ? Border.all(color: const Color(0xFF10B981), width: 1.5)
+                            : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 4),
+                          // Weather/Sky Icon in Circular Container
+                          Icon(
+                            prayer.icon,
+                            color: isHighlight
+                                ? const Color(0xFF047857)
+                                : _getPrayerIconColor(prayer.key, context),
+                            size: 28,
+                          ),
+                          const SizedBox(width: 16),
+
+                          // Prayer Name & Subtitle
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  prayer.title,
+                                  style: context.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                    color: isHighlight
+                                        ? (context.isDarkMode
+                                              ? Colors.white
+                                              : const Color(0xFF064E3B))
+                                        : context.colorScheme.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 0),
+                                Text(
+                                  prayer.subtitle,
+                                  style: context.textTheme.bodySmall?.copyWith(
+                                    color: isHighlight
+                                        ? (context.isDarkMode
+                                              ? const Color(0xFFA7F3D0)
+                                              : const Color(0xFF047857))
+                                        : context.colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Time Display
+                          Text(
+                            timeStr,
+                            style: context.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: isHighlight
+                                  ? (context.isDarkMode
+                                        ? Colors.white
+                                        : const Color(0xFF064E3B))
+                                  : context.colorScheme.onSurface,
+                            ),
+                          ),
+
+                          const SizedBox(width: 8),
+
+                          // Rightmost Sound Icon Button
+                          if (!prayer.isZawal)
+                            IconButton(
+                              onPressed: () => _openSoundConfig(prayer.key, config),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(
+                                config.isMuted
+                                    ? Icons.volume_off_rounded
+                                    : Icons.volume_up_rounded,
+                                size: 24,
+                                color: config.isMuted
+                                    ? context.colorScheme.outline
+                                    : const Color(0xFF069B69),
+                              ),
+                            )
+                          else
+                            Icon(
+                              Icons.block_rounded,
+                              size: 24,
+                              color: context.colorScheme.outline,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
         const SizedBox(height: 30),
       ],
     );
@@ -717,12 +780,20 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
           final dateKey = DateFormat('yyyy-MM-dd').format(date);
           final summary = _getDailyRakatsSummary(storage, dateKey);
 
-          final aladhanAsync = ref.watch(aladhanPrayerTimesProvider(date));
-          final fetchResult = aladhanAsync.value;
-          String? hijriStr;
-          if (fetchResult?.apiRawData?.date.hijri != null) {
-            final h = fetchResult!.apiRawData!.date.hijri;
-            hijriStr = '${h.day} ${h.monthEn} ${h.year} AH';
+          final isToday = DateUtils.isSameDay(date, DateTime.now());
+          final todayHijri = ref.watch(todayHijriProvider).value;
+          final calPref = ref.watch(calendarPreferenceProvider);
+
+          String hijriStr;
+          if (isToday && todayHijri != null) {
+            hijriStr = todayHijri.formatted;
+          } else {
+            final isSubcontinent = calPref.calendarType == CalendarType.regional &&
+                (calPref.region == HijriRegion.india ||
+                    calPref.region == HijriRegion.pakistan ||
+                    calPref.region == HijriRegion.bangladesh);
+            final hDate = HijriDate.fromGregorian(date, isSubcontinent: isSubcontinent);
+            hijriStr = '${hDate.day} ${hDate.monthNameEn} ${hDate.year} AH';
           }
 
           return SalahHistoryCard(

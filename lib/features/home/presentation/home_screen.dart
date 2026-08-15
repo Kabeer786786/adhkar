@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../../../core/services/hijri_service.dart';
 import '../../../core/services/prayer_calculation_service.dart';
 import '../../../core/services/showcase_service.dart';
 import '../../../core/utils/hijri_date_helper.dart';
@@ -183,12 +184,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final nextPrayer = ref.watch(nextPrayerProvider);
     final prayerTimes = ref.watch(prayerTimesProvider);
     final locationAsync = ref.watch(currentLocationProvider);
-    final storage = ref.watch(storageServiceProvider);
     final now = DateTime.now();
-    final todayKey = DateFormat('yyyy-MM-dd').format(now);
-    final hijriStr =
-        storage.getCachedHijriDate(todayKey) ??
-        HijriDateHelper.formatHijri(now);
+    final todayHijriAsync = ref.watch(todayHijriProvider);
+    final hijriStr = todayHijriAsync.value?.formatted ?? HijriDateHelper.formatHijri(now);
 
     final screenWidth = MediaQuery.of(context).size.width;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 8;

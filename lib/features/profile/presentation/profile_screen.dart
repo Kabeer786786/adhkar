@@ -16,25 +16,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void _showEditNameDialog(String currentName) {
     final controller = TextEditingController(text: currentName);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    const primaryGreen = Color(0xFF2A531D); 
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF1B2821) : Colors.white,
+          elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           title: Row(
             children: [
-              const Icon(Icons.edit_rounded, color: Color(0xFF2A531D), size: 20),
-              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: primaryGreen.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.edit_outlined, color: primaryGreen, size: 18),
+              ),
+              const SizedBox(width: 10),
               Text(
                 'Update Name',
                 style: GoogleFonts.outfit(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : const Color(0xFF1F2937),
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : const Color(0xFF1E293B),
                 ),
               ),
             ],
@@ -43,27 +52,41 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             controller: controller,
             autofocus: true,
             textCapitalization: TextCapitalization.words,
-            style: TextStyle(
-              color: isDark ? Colors.white : const Color(0xFF1F2937),
-              fontSize: 15,
+            style: GoogleFonts.lexend(
+              color: isDark ? Colors.white : const Color(0xFF1E293B),
+              fontSize: 14,
             ),
             decoration: InputDecoration(
               hintText: 'Enter your full name',
-              hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+              hintStyle: GoogleFonts.lexend(fontSize: 13, color: Colors.grey),
               filled: true,
-              fillColor: isDark ? const Color(0xFF23322B) : const Color(0xFFF4FAF3),
+              fillColor: isDark ? const Color(0xFF23352B) : const Color(0xFFF8FAFC),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: primaryGreen, width: 1.5),
               ),
             ),
           ),
+          actionsPadding: const EdgeInsets.only(right: 16, bottom: 16, left: 16),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.lexend(
+                  color: isDark ? Colors.white60 : const Color(0xFF64748B),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -75,23 +98,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Name updated successfully!'),
-                        backgroundColor: Color(0xFF2A531D),
+                      SnackBar(
+                        content: Text(
+                          'Name updated successfully!',
+                          style: GoogleFonts.lexend(fontSize: 13),
+                        ),
+                        backgroundColor: primaryGreen,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     );
                   }
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2A531D),
+                backgroundColor: primaryGreen,
                 foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('Save Name',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(
+                'Save Name',
+                style: GoogleFonts.lexend(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                ),
+              ),
             ),
           ],
         );
@@ -105,57 +142,66 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final initial = profile.name.isNotEmpty
         ? profile.name[0].toUpperCase()
         : (profile.email.isNotEmpty ? profile.email[0].toUpperCase() : 'U');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF2B3F33) : const Color(0xFFE2E8F0);
+    final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
+    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    const primaryGreen = Color(0xFF2A531D);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4FAF3),
+      backgroundColor: bgColor,
       appBar: const AppHeaderBar(
         title: 'MY PROFILE',
         showBackButton: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Column(
             children: [
-              // 1. Profile Avatar Card
+              // 1. Profile Avatar Card Banner
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF1B3D14), Color(0xFF2A531D), Color(0xFF3F772E)],
+                    colors: [Color(0xFF1B3D14), Color(0xFF2A531D), Color(0xFF3B6B2B)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2A531D).withValues(alpha: 0.25),
-                      blurRadius: 14,
-                      offset: const Offset(0, 5),
+                      color: primaryGreen.withValues(alpha: 0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Column(
                   children: [
-                    // Glowing Circle Avatar
+                    // Circle Avatar
                     Container(
-                      width: 80,
-                      height: 80,
+                      width: 72,
+                      height: 72,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: Colors.white.withValues(alpha: 0.18),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.4),
-                          width: 2.2,
+                          color: Colors.white.withValues(alpha: 0.35),
+                          width: 2,
                         ),
                       ),
                       child: Center(
                         child: Text(
                           initial,
                           style: GoogleFonts.outfit(
-                            fontSize: 34,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
                         ),
@@ -171,8 +217,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           child: Text(
                             profile.name.isNotEmpty ? profile.name : 'Guest User',
                             style: GoogleFonts.outfit(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -181,7 +227,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         const SizedBox(width: 8),
                         InkWell(
                           onTap: () => _showEditNameDialog(profile.name),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(20),
                           child: Container(
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
@@ -189,9 +235,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
-                              Icons.edit_rounded,
+                              Icons.edit_outlined,
                               color: Colors.white,
-                              size: 16,
+                              size: 14,
                             ),
                           ),
                         ),
@@ -201,21 +247,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
                     // Email verification badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
                         color: profile.isEmailVerified
-                            ? Colors.white.withValues(alpha: 0.22)
-                            : const Color(0xFFFEF3C7).withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(12),
+                            ? Colors.white.withValues(alpha: 0.2)
+                            : const Color(0xFFFEF3C7).withValues(alpha: 0.95),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             profile.isEmailVerified
-                                ? Icons.verified_rounded
-                                : Icons.gpp_maybe_rounded,
-                            size: 14,
+                                ? Icons.verified_outlined
+                                : Icons.gpp_maybe_outlined,
+                            size: 13,
                             color: profile.isEmailVerified
                                 ? const Color(0xFFA3E635)
                                 : const Color(0xFFD97724),
@@ -225,9 +271,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             profile.isEmailVerified
                                 ? 'Verified Email'
                                 : 'Unverified Email',
-                            style: GoogleFonts.outfit(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                            style: GoogleFonts.lexend(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
                               color: profile.isEmailVerified
                                   ? Colors.white
                                   : const Color(0xFF92400E),
@@ -240,22 +286,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
 
               // 2. Profile Details Info Card
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardBg,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: cardBorder, width: 1),
                   boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    ),
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
                   ],
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,72 +313,91 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         Text(
                           'Account Details',
                           style: GoogleFonts.outfit(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1F2937),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
                           ),
                         ),
                         TextButton.icon(
                           onPressed: () => _showEditNameDialog(profile.name),
-                          icon: const Icon(Icons.edit_outlined, size: 15, color: Color(0xFF2A531D)),
+                          icon: const Icon(Icons.edit_outlined, size: 14, color: primaryGreen),
                           label: Text(
                             'Edit Name',
-                            style: GoogleFonts.outfit(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF2A531D),
+                            style: GoogleFonts.lexend(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: primaryGreen,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
                     _buildInfoTile(
-                      icon: Icons.person_rounded,
+                      icon: Icons.person_outline_rounded,
                       title: 'Full Name',
                       subtitle: profile.name.isNotEmpty ? profile.name : 'Not set',
+                      textColor: textColor,
+                      subTextColor: subTextColor,
+                      isDark: isDark,
                     ),
-                    const Divider(height: 20, color: Color(0xFFF0F4F0)),
+                    const Divider(height: 18, color: Color(0xFFF0F4F0)),
 
                     _buildInfoTile(
-                      icon: Icons.email_rounded,
+                      icon: Icons.email_outlined,
                       title: 'Email Address',
                       subtitle: profile.email.isNotEmpty ? profile.email : 'Not set',
+                      textColor: textColor,
+                      subTextColor: subTextColor,
+                      isDark: isDark,
                     ),
-                    const Divider(height: 20, color: Color(0xFFF0F4F0)),
+                    const Divider(height: 18, color: Color(0xFFF0F4F0)),
 
                     _buildInfoTile(
-                      icon: Icons.phone_rounded,
+                      icon: Icons.phone_outlined,
                       title: 'Phone Number',
                       subtitle: profile.phone.isNotEmpty ? profile.phone : 'Not set',
+                      textColor: textColor,
+                      subTextColor: subTextColor,
+                      isDark: isDark,
                     ),
-                    const Divider(height: 20, color: Color(0xFFF0F4F0)),
+                    const Divider(height: 18, color: Color(0xFFF0F4F0)),
 
                     _buildInfoTile(
-                      icon: Icons.location_on_rounded,
+                      icon: Icons.location_on_outlined,
                       title: 'Location',
                       subtitle: profile.location.isNotEmpty ? profile.location : 'Not set',
+                      textColor: textColor,
+                      subTextColor: subTextColor,
+                      isDark: isDark,
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // 3. Verification Action Banner if email unverified
               if (!profile.isEmailVerified)
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEF3C7),
+                    color: isDark
+                        ? const Color(0xFF2A2012)
+                        : const Color(0xFFFFFBEB),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.mark_email_unread_rounded,
-                          color: Color(0xFFD97724), size: 24),
+                      const Icon(
+                        Icons.mark_email_unread_outlined,
+                        color: Color(0xFFD97724),
+                        size: 22,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -340,17 +406,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             Text(
                               'Verify Your Email',
                               style: GoogleFonts.outfit(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF92400E),
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? const Color(0xFFFDE68A)
+                                    : const Color(0xFF92400E),
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Verify your email to secure your registration.',
-                              style: GoogleFonts.outfit(
-                                fontSize: 12,
-                                color: const Color(0xFF78350F),
+                              style: GoogleFonts.lexend(
+                                fontSize: 11.5,
+                                color: isDark
+                                    ? const Color(0xFFFCD34D)
+                                    : const Color(0xFF78350F),
                               ),
                             ),
                           ],
@@ -365,18 +435,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFD97724),
                           foregroundColor: Colors.white,
+                          elevation: 0,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: const Text('Verify', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          'Verify',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -388,28 +465,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required IconData icon,
     required String title,
     required String subtitle,
+    required Color textColor,
+    required Color subTextColor,
+    required bool isDark,
   }) {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(9),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3FAF2),
+            color: isDark
+                ? const Color(0xFF23352B)
+                : const Color(0xFFF0FDF4),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: const Color(0xFF2A531D), size: 18),
         ),
-        const SizedBox(width: 14),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: GoogleFonts.outfit(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF6B7280),
+                style: GoogleFonts.lexend(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: subTextColor,
                 ),
               ),
               const SizedBox(height: 2),
@@ -417,8 +499,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 subtitle,
                 style: GoogleFonts.outfit(
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1F2937),
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

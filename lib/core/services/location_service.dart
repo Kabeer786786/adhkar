@@ -51,11 +51,11 @@ class LocationService {
   static const double makkahLng = 39.8262;
 
   static const LocationData defaultLocation = LocationData(
-    latitude: 21.4225,
-    longitude: 39.8262,
-    city: 'Makkah',
-    country: 'Saudi Arabia',
-    fullAddress: 'Makkah, Saudi Arabia',
+    latitude: 28.6139,
+    longitude: 77.2090,
+    city: 'New Delhi',
+    country: 'India',
+    fullAddress: 'New Delhi, India',
   );
 
   /// Check and request location permission

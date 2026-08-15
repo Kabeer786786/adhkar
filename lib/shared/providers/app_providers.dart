@@ -5,6 +5,8 @@ import '../../core/services/prayer_calculation_service.dart';
 import '../../core/services/storage_service.dart';
 import '../../features/prayer/presentation/providers/aladhan_providers.dart';
 
+import 'package:package_info_plus/package_info_plus.dart';
+
 final storageServiceProvider = Provider<StorageService>((ref) {
   throw UnimplementedError('StorageService must be initialized in main');
 });
@@ -35,8 +37,8 @@ class UserLocationNotifier extends StateNotifier<AsyncValue<LocationData>> {
         final savedLoc = LocationData(
           latitude: (saved['lat'] as num).toDouble(),
           longitude: (saved['lng'] as num).toDouble(),
-          city: saved['city'] as String? ?? 'Makkah',
-          country: saved['country'] as String? ?? '',
+          city: saved['city'] as String? ?? 'New Delhi',
+          country: saved['country'] as String? ?? 'India',
         );
         state = AsyncValue.data(savedLoc);
         return savedLoc;
@@ -247,4 +249,8 @@ final currentPrayerProvider = Provider<NextPrayerInfo?>((ref) {
       remaining: tomorrowResult.fajr.difference(now),
     );
   }
+});
+
+final appPackageInfoProvider = FutureProvider<PackageInfo>((ref) async {
+  return await PackageInfo.fromPlatform();
 });

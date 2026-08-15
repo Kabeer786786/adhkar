@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../widgets/app_header_bar.dart';
 
+import 'package:package_info_plus/package_info_plus.dart';
+
 class AppInfoScreen extends StatelessWidget {
   const AppInfoScreen({super.key});
+
+  Future<void> _launchUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +75,12 @@ class AppInfoScreen extends StatelessWidget {
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Center(
-                      child: Icon(
-                        FlutterIslamicIcons.solidMosque,
-                        size: 40,
-                        color: Color(0xFF2A531D),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/logo.png',
+                        width: 72,
+                        height: 72,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -93,20 +103,28 @@ class AppInfoScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Version 1.0.0',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      final versionText = snapshot.hasData
+                          ? 'Version ${snapshot.data!.version}'
+                          : 'Version 1.3.0';
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          versionText,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -149,9 +167,9 @@ class AppInfoScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Features Grid
+            // Data Sources & API Credits
             const Text(
-              'KEY FEATURES AT A GLANCE',
+              'DATA SOURCES & API CREDITS',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
@@ -159,6 +177,75 @@ class AppInfoScreen extends StatelessWidget {
                 color: Color(0xFFD97724),
                 decoration: TextDecoration.underline,
                 decorationColor: Color(0xFFD97724),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF192520) : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Adhkar App integrates verified region-specific Islamic calendar data and astronomical prayer calculation services from trusted data providers:',
+                    style: GoogleFonts.lexend(
+                      fontSize: 12.5,
+                      color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ChandKiTarikh API Card
+                  _buildApiSourceCard(
+                    context: context,
+                    title: 'ChandKiTarikh API',
+                    badge: 'India, Pakistan & Bangladesh',
+                    description:
+                        'Provides regional moon-sighting based Hijri dates, monthly calendars, and Gregorian to Hijri date conversions for South Asia.',
+                    url: 'https://chandkitarikh.today/',
+                    icon: Icons.calendar_month_rounded,
+                    accentColor: const Color(0xFFD97724),
+                    isDark: isDark,
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Aladhan API Card
+                  _buildApiSourceCard(
+                    context: context,
+                    title: 'Aladhan API',
+                    badge: 'Global Prayer & Hijri Calendar',
+                    description:
+                        'Provides astronomical solar prayer times, global Hijri calendar schedules, and high-precision Qibla direction calculations worldwide.',
+                    url: 'https://aladhan.com/',
+                    icon: Icons.public_rounded,
+                    accentColor: const Color(0xFF2563EB),
+                    isDark: isDark,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Features Grid
+            const Text(
+              'KEY FEATURES AT A GLANCE',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.6,
+                color: Color(0xFF15803D),
+                decoration: TextDecoration.underline,
+                decorationColor: Color(0xFF15803D),
               ),
             ),
             const SizedBox(height: 10),
@@ -181,6 +268,8 @@ class AppInfoScreen extends StatelessWidget {
                   _buildFeatureRow('📿 Digital Tasbeeh', 'Customizable dhikr counter with vibration feedback'),
                   const Divider(height: 16),
                   _buildFeatureRow('🤲 Daily Adhkar & Duas', 'Authentic Sunnah supplications for morning and evening'),
+                  const Divider(height: 16),
+                  _buildFeatureRow('📅 Islamic Calendar', 'Dual Hijri & Gregorian monthly calendar with date converter'),
                   const Divider(height: 16),
                   _buildFeatureRow('💰 Sadaqah & Zakat', 'Zakat nisab calculator and charity transaction logger'),
                   const Divider(height: 16),
@@ -275,6 +364,108 @@ class AppInfoScreen extends StatelessWidget {
             const SizedBox(height: 24),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildApiSourceCard({
+    required BuildContext context,
+    required String title,
+    required String badge,
+    required String description,
+    required String url,
+    required IconData icon,
+    required Color accentColor,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF23322B) : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: accentColor, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : const Color(0xFF1F2937),
+                      ),
+                    ),
+                    Text(
+                      badge,
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                        color: accentColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: GoogleFonts.lexend(
+              fontSize: 12,
+              color: isDark ? Colors.white60 : const Color(0xFF4B5563),
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 10),
+          InkWell(
+            onTap: () => _launchUrl(url),
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.open_in_new_rounded, size: 14, color: accentColor),
+                  const SizedBox(width: 6),
+                  Text(
+                    url,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.bold,
+                      color: accentColor,
+                      decoration: TextDecoration.underline,
+                      decorationColor: accentColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

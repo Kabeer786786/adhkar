@@ -33,7 +33,7 @@ class SectionHeader extends StatelessWidget {
                 Text(
                   title,
                   style: context.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 if (subtitle != null) ...[

@@ -3,6 +3,7 @@ import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../core/extensions/context_extensions.dart';
+import '../core/services/hijri_service.dart';
 import '../core/utils/hijri_date.dart';
 import '../shared/providers/app_providers.dart';
 import '../features/sadqa/presentation/widgets/online_donation_modal.dart';
@@ -13,7 +14,10 @@ class AppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locationAsync = ref.watch(currentLocationProvider);
-    final hijri = HijriDate.fromGregorian(DateTime.now());
+    final todayHijri = ref.watch(todayHijriProvider).value;
+    final hijriStr =
+        todayHijri?.formatted ??
+        HijriDate.fromGregorian(DateTime.now()).formatEn();
     final isDark = context.isDarkMode;
 
     return Drawer(
@@ -97,10 +101,13 @@ class AppDrawer extends ConsumerWidget {
                   const SizedBox(height: 12),
                   const Divider(color: Colors.white24, height: 1),
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(
                             Icons.location_on_rounded,
@@ -117,8 +124,9 @@ class AppDrawer extends ConsumerWidget {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        hijri.formatEn(),
+                        hijriStr,
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
                           fontWeight: FontWeight.normal,

@@ -80,7 +80,7 @@ class StorageService {
 
   // --- Prayer Calculation Method & Juristic School ---
   String getCalculationMethod() {
-    return _settingsBox.get('calc_method', defaultValue: 'MWL') as String;
+    return _settingsBox.get('calc_method', defaultValue: 'KARACHI') as String;
   }
 
   Future<void> setCalculationMethod(dynamic method) async {
@@ -88,7 +88,7 @@ class StorageService {
   }
 
   String getAsrJuristic() {
-    return _settingsBox.get('asr_juristic', defaultValue: 'Standard') as String;
+    return _settingsBox.get('asr_juristic', defaultValue: 'Hanafi') as String;
   }
 
   Future<void> setAsrJuristic(String school) async {
