@@ -188,18 +188,72 @@ class ReminderScreen extends ConsumerWidget {
                 ],
               ],
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          ReminderLibraryModal.show(context);
-        },
-        backgroundColor: primaryGreen,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: Text(
-          'Add Reminder',
-          style: GoogleFonts.lexend(
-            fontWeight: FontWeight.w600,
-            fontSize: 13.5,
+      floatingActionButton: reminders.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                ReminderLibraryModal.show(context);
+              },
+              backgroundColor: primaryGreen,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add_rounded),
+              label: Text(
+                'Add Reminder',
+                style: GoogleFonts.lexend(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.5,
+                ),
+              ),
+            ),
+    );
+  }
+
+  void _showToast(
+    BuildContext context,
+    String message,
+    bool isActivated,
+    bool isDark,
+  ) {
+    final toastBg = isActivated
+        ? const Color(0xFF2A531D)
+        : (isDark ? const Color(0xFF1E2D24) : const Color(0xFF1E293B));
+    final borderColor = isActivated
+        ? const Color(0xFF4ADE80).withValues(alpha: 0.6)
+        : const Color(0xFF2A531D).withValues(alpha: 0.4);
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        duration: const Duration(milliseconds: 1400),
+        margin: const EdgeInsets.only(bottom: 20, left: 100, right: 100),
+        content: Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: toastBg,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: borderColor, width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.lexend(
+                color: Colors.white,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.2,
+              ),
+            ),
           ),
         ),
       ),
@@ -225,12 +279,8 @@ class ReminderScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: isDark
                     ? const Color(0xFF1E2D24)
-                    : const Color(0xFFF0FDF4),
+                    : const Color(0xFFFFFFFF),
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: primaryGreen.withValues(alpha: 0.25),
-                  width: 1.5,
-                ),
               ),
               child: const Icon(
                 Icons.notifications_active_outlined,
@@ -260,12 +310,7 @@ class ReminderScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () {
-                ReminderModal.show(
-                  context: context,
-                  onSave: (newRem) {
-                    ref.read(remindersProvider.notifier).addReminder(newRem);
-                  },
-                );
+                ReminderLibraryModal.show(context);
               },
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Add Reminder'),
@@ -361,13 +406,10 @@ class ReminderScreen extends ConsumerWidget {
                             reminder.title,
                             style: GoogleFonts.outfit(
                               fontSize: 17.5,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               color: reminder.isEnabled
                                   ? textColor
                                   : (isDark ? Colors.white38 : Colors.grey),
-                              decoration: !reminder.isEnabled
-                                  ? TextDecoration.lineThrough
-                                  : null,
                             ),
                           ),
 
@@ -402,6 +444,12 @@ class ReminderScreen extends ConsumerWidget {
                           ref
                               .read(remindersProvider.notifier)
                               .toggleEnable(reminder.id);
+                          _showToast(
+                            context,
+                            val ? 'Activated' : 'Deactivated',
+                            val,
+                            isDark,
+                          );
                         },
                       ),
                     ),
@@ -608,10 +656,22 @@ class ReminderScreen extends ConsumerWidget {
                                     ref
                                         .read(remindersProvider.notifier)
                                         .reactivateToday(reminder.id);
+                                    _showToast(
+                                      context,
+                                      'Activated',
+                                      true,
+                                      isDark,
+                                    );
                                   } else {
                                     ref
                                         .read(remindersProvider.notifier)
                                         .turnOffToday(reminder.id);
+                                    _showToast(
+                                      context,
+                                      'Disabled for Today',
+                                      false,
+                                      isDark,
+                                    );
                                   }
                                 },
                                 borderRadius: BorderRadius.circular(10),
@@ -683,7 +743,7 @@ class ReminderScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                  ], 
+                  ],
                 ),
               ],
             ),

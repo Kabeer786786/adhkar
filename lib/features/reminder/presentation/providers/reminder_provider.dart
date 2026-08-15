@@ -29,111 +29,118 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         final loaded = jsonList
             .map((item) => CustomReminder.fromJson(item as Map<String, dynamic>))
             .toList();
-        state = loaded;
+        if (loaded.isNotEmpty) {
+          state = loaded;
+        } else {
+          _loadDefaults();
+        }
       } else {
-        // Initial Default Presets
-        final now = DateTime.now();
-        final timezone = now.timeZoneName;
-
-        state = [
-          CustomReminder(
-            id: 'predefined_rem_fajr',
-            title: 'Fajr Prayer Reminder',
-            description: 'Daily prayer reminder at Fajr start time',
-            hour: 5,
-            minute: 15,
-            frequency: ReminderFrequency.daily,
-            customDays: const [1, 2, 3, 4, 5, 6, 7],
-            duration: AlarmDuration.seconds30,
-            soundEnabled: true,
-            soundType: 'Makkah Azaan',
-            vibrationEnabled: true,
-            notificationEnabled: true,
-            isEnabled: false,
-            createdAt: now,
-            updatedAt: now,
-            timezone: timezone,
-          ),
-          CustomReminder(
-            id: 'predefined_rem_dhuhr',
-            title: 'Dhuhr Prayer Reminder',
-            description: 'Daily prayer reminder at Dhuhr start time',
-            hour: 12,
-            minute: 30,
-            frequency: ReminderFrequency.daily,
-            customDays: const [1, 2, 3, 4, 5, 6, 7],
-            duration: AlarmDuration.seconds30,
-            soundEnabled: true,
-            soundType: 'Makkah Azaan',
-            vibrationEnabled: true,
-            notificationEnabled: true,
-            isEnabled: false,
-            createdAt: now,
-            updatedAt: now,
-            timezone: timezone,
-          ),
-          CustomReminder(
-            id: 'predefined_rem_asr',
-            title: 'Asr Prayer Reminder',
-            description: 'Daily prayer reminder at Asr start time',
-            hour: 15,
-            minute: 45,
-            frequency: ReminderFrequency.daily,
-            customDays: const [1, 2, 3, 4, 5, 6, 7],
-            duration: AlarmDuration.seconds30,
-            soundEnabled: true,
-            soundType: 'Makkah Azaan',
-            vibrationEnabled: true,
-            notificationEnabled: true,
-            isEnabled: false,
-            createdAt: now,
-            updatedAt: now,
-            timezone: timezone,
-          ),
-          CustomReminder(
-            id: 'predefined_rem_maghrib',
-            title: 'Maghrib Prayer Reminder',
-            description: 'Daily prayer reminder at Maghrib start time',
-            hour: 18,
-            minute: 15,
-            frequency: ReminderFrequency.daily,
-            customDays: const [1, 2, 3, 4, 5, 6, 7],
-            duration: AlarmDuration.seconds30,
-            soundEnabled: true,
-            soundType: 'Makkah Azaan',
-            vibrationEnabled: true,
-            notificationEnabled: true,
-            isEnabled: false,
-            createdAt: now,
-            updatedAt: now,
-            timezone: timezone,
-          ),
-          CustomReminder(
-            id: 'predefined_rem_isha',
-            title: 'Isha Prayer Reminder',
-            description: 'Daily prayer reminder at Isha start time',
-            hour: 19,
-            minute: 45,
-            frequency: ReminderFrequency.daily,
-            customDays: const [1, 2, 3, 4, 5, 6, 7],
-            duration: AlarmDuration.seconds30,
-            soundEnabled: true,
-            soundType: 'Makkah Azaan',
-            vibrationEnabled: true,
-            notificationEnabled: true,
-            isEnabled: false,
-            createdAt: now,
-            updatedAt: now,
-            timezone: timezone,
-          ),
-        ];
-        _saveReminders();
+        _loadDefaults();
       }
     } catch (_) {
-      state = [];
+      _loadDefaults();
     }
 
     _scheduler.rescheduleAll(state);
+  }
+
+  void _loadDefaults() {
+    final now = DateTime.now();
+    final timezone = now.timeZoneName;
+
+    state = [
+      CustomReminder(
+        id: 'predefined_rem_fajr',
+        title: 'Fajr Prayer Reminder',
+        description: 'Daily prayer reminder at Fajr start time',
+        hour: 5,
+        minute: 15,
+        frequency: ReminderFrequency.daily,
+        customDays: const [1, 2, 3, 4, 5, 6, 7],
+        duration: AlarmDuration.seconds30,
+        soundEnabled: true,
+        soundType: 'Makkah Azaan',
+        vibrationEnabled: true,
+        notificationEnabled: true,
+        isEnabled: false,
+        createdAt: now,
+        updatedAt: now,
+        timezone: timezone,
+      ),
+      CustomReminder(
+        id: 'predefined_rem_dhuhr',
+        title: 'Dhuhr Prayer Reminder',
+        description: 'Daily prayer reminder at Dhuhr start time',
+        hour: 12,
+        minute: 30,
+        frequency: ReminderFrequency.daily,
+        customDays: const [1, 2, 3, 4, 5, 6, 7],
+        duration: AlarmDuration.seconds30,
+        soundEnabled: true,
+        soundType: 'Makkah Azaan',
+        vibrationEnabled: true,
+        notificationEnabled: true,
+        isEnabled: false,
+        createdAt: now,
+        updatedAt: now,
+        timezone: timezone,
+      ),
+      CustomReminder(
+        id: 'predefined_rem_asr',
+        title: 'Asr Prayer Reminder',
+        description: 'Daily prayer reminder at Asr start time',
+        hour: 15,
+        minute: 45,
+        frequency: ReminderFrequency.daily,
+        customDays: const [1, 2, 3, 4, 5, 6, 7],
+        duration: AlarmDuration.seconds30,
+        soundEnabled: true,
+        soundType: 'Makkah Azaan',
+        vibrationEnabled: true,
+        notificationEnabled: true,
+        isEnabled: false,
+        createdAt: now,
+        updatedAt: now,
+        timezone: timezone,
+      ),
+      CustomReminder(
+        id: 'predefined_rem_maghrib',
+        title: 'Maghrib Prayer Reminder',
+        description: 'Daily prayer reminder at Maghrib start time',
+        hour: 18,
+        minute: 15,
+        frequency: ReminderFrequency.daily,
+        customDays: const [1, 2, 3, 4, 5, 6, 7],
+        duration: AlarmDuration.seconds30,
+        soundEnabled: true,
+        soundType: 'Makkah Azaan',
+        vibrationEnabled: true,
+        notificationEnabled: true,
+        isEnabled: false,
+        createdAt: now,
+        updatedAt: now,
+        timezone: timezone,
+      ),
+      CustomReminder(
+        id: 'predefined_rem_isha',
+        title: 'Isha Prayer Reminder',
+        description: 'Daily prayer reminder at Isha start time',
+        hour: 19,
+        minute: 45,
+        frequency: ReminderFrequency.daily,
+        customDays: const [1, 2, 3, 4, 5, 6, 7],
+        duration: AlarmDuration.seconds30,
+        soundEnabled: true,
+        soundType: 'Makkah Azaan',
+        vibrationEnabled: true,
+        notificationEnabled: true,
+        isEnabled: false,
+        createdAt: now,
+        updatedAt: now,
+        timezone: timezone,
+      ),
+    ];
+    _saveReminders();
   }
 
   Future<void> _saveReminders() async {

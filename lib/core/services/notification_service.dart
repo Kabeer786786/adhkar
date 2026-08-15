@@ -47,6 +47,20 @@ class NotificationService {
       await androidImplementation.requestNotificationsPermission();
       await androidImplementation.requestExactAlarmsPermission();
     }
+
+    final launchDetails =
+        await _notificationsPlugin.getNotificationAppLaunchDetails();
+    if (launchDetails != null &&
+        launchDetails.didNotificationLaunchApp &&
+        launchDetails.notificationResponse?.payload != null) {
+      final payload = launchDetails.notificationResponse!.payload;
+      if (payload != null && payload.isNotEmpty) {
+        // Small delay to ensure listeners are bound
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _notificationSelectController.add(payload);
+        });
+      }
+    }
   }
 
   Future<void> showNotification({

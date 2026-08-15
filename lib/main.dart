@@ -18,6 +18,17 @@ void main() async {
 
   // Initialize Local Notifications
   await NotificationService().init();
+  NotificationService().onNotificationSelected.listen((payload) {
+    if (payload != null && payload.isNotEmpty) {
+      if (payload.startsWith('reminder_id:')) {
+        final remId = payload.substring('reminder_id:'.length);
+        appRouter.push('/alarm?id=$remId');
+      } else if (payload.startsWith('prayer:')) {
+        final prayer = payload.substring('prayer:'.length);
+        appRouter.push('/alarm?prayer=$prayer');
+      }
+    }
+  });
 
   // Initialize Supabase Service
   await SupabaseService().init();

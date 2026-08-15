@@ -164,7 +164,12 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     );
   }
 
-  void _showToast(BuildContext context, String message, bool isActivated, bool isDark) {
+  void _showToast(
+    BuildContext context,
+    String message,
+    bool isActivated,
+    bool isDark,
+  ) {
     final toastBg = isActivated
         ? const Color(0xFF2A531D)
         : (isDark ? const Color(0xFF1E2D24) : const Color(0xFF1E293B));
@@ -179,21 +184,14 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
         elevation: 0,
         backgroundColor: Colors.transparent,
         duration: const Duration(milliseconds: 1400),
-        margin: const EdgeInsets.only(
-          bottom: 0,
-          left: 70,
-          right: 70,
-        ),
+        margin: const EdgeInsets.only(bottom: 20, left: 100, right: 100),
         content: Center(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
               color: toastBg,
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: borderColor,
-                width: 1,
-              ),
+              border: Border.all(color: borderColor, width: 1),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -207,7 +205,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               textAlign: TextAlign.center,
               style: GoogleFonts.lexend(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 11.5,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.2,
               ),
@@ -339,21 +337,23 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 ),
               ],
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          QuietHoursLibraryModal.show(context);
-        },
-        backgroundColor: primaryGreen,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: Text(
-          'Add Timing',
-          style: GoogleFonts.lexend(
-            fontWeight: FontWeight.w600,
-            fontSize: 13.5,
-          ),
-        ),
-      ),
+      floatingActionButton: schedules.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                QuietHoursLibraryModal.show(context);
+              },
+              backgroundColor: primaryGreen,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add_rounded),
+              label: Text(
+                'Add Timing',
+                style: GoogleFonts.lexend(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.5,
+                ),
+              ),
+            ),
     );
   }
 
@@ -376,12 +376,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               decoration: BoxDecoration(
                 color: isDark
                     ? const Color(0xFF1E2D24)
-                    : const Color(0xFFF0FDF4),
+                    : const Color(0xFFFFFFFF),
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: primaryGreen.withValues(alpha: 0.25),
-                  width: 1.5,
-                ),
               ),
               child: const Icon(
                 Icons.do_not_disturb_on_outlined,
@@ -400,13 +396,33 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Tap the + Add Timing button below to set automatic quiet periods for prayers or focus.',
+              'Set automatic quiet periods for prayers or focus.',
               style: GoogleFonts.lexend(
                 fontSize: 13,
                 color: subTextColor,
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                QuietHoursLibraryModal.show(context);
+              },
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text('Add Timing'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryGreen,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 0,
+              ),
             ),
           ],
         ),
@@ -465,7 +481,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 ref.read(quietHoursProvider.notifier).updateSchedule(updated);
               },
               onDelete: () {
-                ref.read(quietHoursProvider.notifier).deleteSchedule(schedule.id);
+                ref
+                    .read(quietHoursProvider.notifier)
+                    .deleteSchedule(schedule.id);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -489,7 +507,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1st ROW: Title, Subtitle, and right-side Switch 
+                // 1st ROW: Title, Subtitle, and right-side Switch
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -502,9 +520,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                             schedule.title,
                             maxLines: 1,
                             style: GoogleFonts.outfit(
-                              fontSize: 17,
+                              fontSize: 17.5,
                               height: 1.2,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               color: schedule.enabled
                                   ? textColor
                                   : (isDark ? Colors.white38 : Colors.grey),
@@ -535,12 +553,12 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                         activeTrackColor: primaryGreen,
                         onChanged: (val) {
                           ref
-                              .read(quietHoursProvider.notifier) 
+                              .read(quietHoursProvider.notifier)
                               .toggleScheduleEnabled(schedule.id, val);
                           _showToast(
                             context,
                             val ? 'Activated' : 'Deactivated',
-                            val, 
+                            val,
                             isDark,
                           );
                         },
