@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../domain/reminder_model.dart';
+import '../../services/reminder_scheduler.dart';
 
 final remindersProvider =
     StateNotifierProvider<ReminderNotifier, List<CustomReminder>>((ref) {
@@ -12,7 +14,8 @@ final remindersProvider =
 
 class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
   final StorageService _storageService;
-  static const String _storageKey = 'custom_reminders_list_v1';
+  final ReminderScheduler _scheduler = ReminderScheduler();
+  static const String _storageKey = 'custom_reminders_list_v2';
 
   ReminderNotifier(this._storageService) : super([]) {
     _loadReminders();
@@ -29,45 +32,99 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         state = loaded;
       } else {
         // Initial Default Presets
+        final now = DateTime.now();
+        final timezone = now.timeZoneName;
+
         state = [
           CustomReminder(
-            id: 'preset_morning_adhkar',
-            title: 'Morning Adhkar',
-            hour: 6,
-            minute: 0,
-            sound: true,
-            vibration: true,
-            notification: true,
-            soundType: 'Azaan',
-            selectedDays: const [1, 2, 3, 4, 5, 6, 7],
-            isEnabled: true,
-            createdAt: DateTime.now(),
+            id: 'predefined_rem_fajr',
+            title: 'Fajr Prayer Reminder',
+            description: 'Daily prayer reminder at Fajr start time',
+            hour: 5,
+            minute: 15,
+            frequency: ReminderFrequency.daily,
+            customDays: const [1, 2, 3, 4, 5, 6, 7],
+            duration: AlarmDuration.seconds30,
+            soundEnabled: true,
+            soundType: 'Makkah Azaan',
+            vibrationEnabled: true,
+            notificationEnabled: true,
+            isEnabled: false,
+            createdAt: now,
+            updatedAt: now,
+            timezone: timezone,
           ),
           CustomReminder(
-            id: 'preset_evening_adhkar',
-            title: 'Evening Adhkar',
-            hour: 17,
+            id: 'predefined_rem_dhuhr',
+            title: 'Dhuhr Prayer Reminder',
+            description: 'Daily prayer reminder at Dhuhr start time',
+            hour: 12,
             minute: 30,
-            sound: true,
-            vibration: true,
-            notification: true,
-            soundType: 'Azaan',
-            selectedDays: const [1, 2, 3, 4, 5, 6, 7],
-            isEnabled: true,
-            createdAt: DateTime.now(),
+            frequency: ReminderFrequency.daily,
+            customDays: const [1, 2, 3, 4, 5, 6, 7],
+            duration: AlarmDuration.seconds30,
+            soundEnabled: true,
+            soundType: 'Makkah Azaan',
+            vibrationEnabled: true,
+            notificationEnabled: true,
+            isEnabled: false,
+            createdAt: now,
+            updatedAt: now,
+            timezone: timezone,
           ),
           CustomReminder(
-            id: 'preset_surah_kahf',
-            title: 'Read Surah Al-Kahf',
-            hour: 9,
-            minute: 0,
-            sound: true,
-            vibration: true,
-            notification: true,
-            soundType: 'Azaan',
-            selectedDays: const [5], // Friday
-            isEnabled: true,
-            createdAt: DateTime.now(),
+            id: 'predefined_rem_asr',
+            title: 'Asr Prayer Reminder',
+            description: 'Daily prayer reminder at Asr start time',
+            hour: 15,
+            minute: 45,
+            frequency: ReminderFrequency.daily,
+            customDays: const [1, 2, 3, 4, 5, 6, 7],
+            duration: AlarmDuration.seconds30,
+            soundEnabled: true,
+            soundType: 'Makkah Azaan',
+            vibrationEnabled: true,
+            notificationEnabled: true,
+            isEnabled: false,
+            createdAt: now,
+            updatedAt: now,
+            timezone: timezone,
+          ),
+          CustomReminder(
+            id: 'predefined_rem_maghrib',
+            title: 'Maghrib Prayer Reminder',
+            description: 'Daily prayer reminder at Maghrib start time',
+            hour: 18,
+            minute: 15,
+            frequency: ReminderFrequency.daily,
+            customDays: const [1, 2, 3, 4, 5, 6, 7],
+            duration: AlarmDuration.seconds30,
+            soundEnabled: true,
+            soundType: 'Makkah Azaan',
+            vibrationEnabled: true,
+            notificationEnabled: true,
+            isEnabled: false,
+            createdAt: now,
+            updatedAt: now,
+            timezone: timezone,
+          ),
+          CustomReminder(
+            id: 'predefined_rem_isha',
+            title: 'Isha Prayer Reminder',
+            description: 'Daily prayer reminder at Isha start time',
+            hour: 19,
+            minute: 45,
+            frequency: ReminderFrequency.daily,
+            customDays: const [1, 2, 3, 4, 5, 6, 7],
+            duration: AlarmDuration.seconds30,
+            soundEnabled: true,
+            soundType: 'Makkah Azaan',
+            vibrationEnabled: true,
+            notificationEnabled: true,
+            isEnabled: false,
+            createdAt: now,
+            updatedAt: now,
+            timezone: timezone,
           ),
         ];
         _saveReminders();
@@ -75,6 +132,8 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
     } catch (_) {
       state = [];
     }
+
+    _scheduler.rescheduleAll(state);
   }
 
   Future<void> _saveReminders() async {
@@ -82,29 +141,43 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
     await _storageService.saveGenericData(_storageKey, jsonEncode(jsonList));
   }
 
-
   Future<void> addReminder(CustomReminder reminder) async {
     state = [...state, reminder];
     await _saveReminders();
+    await _scheduler.scheduleReminder(reminder);
   }
 
   Future<void> updateReminder(CustomReminder updated) async {
     state = state.map((r) => r.id == updated.id ? updated : r).toList();
     await _saveReminders();
+    await _scheduler.scheduleReminder(updated);
   }
 
   Future<void> deleteReminder(String id) async {
     state = state.where((r) => r.id != id).toList();
     await _saveReminders();
+    await _scheduler.cancelReminder(id);
   }
 
-  Future<void> toggleReminder(String id) async {
-    state = state.map((r) {
-      if (r.id == id) {
-        return r.copyWith(isEnabled: !r.isEnabled);
-      }
-      return r;
-    }).toList();
-    await _saveReminders();
+  Future<void> toggleEnable(String id) async {
+    final target = state.firstWhere((r) => r.id == id);
+    final updated = target.copyWith(
+      isEnabled: !target.isEnabled,
+      clearTurnedOffDate: target.isEnabled, // clear skip if re-enabling
+    );
+    await updateReminder(updated);
+  }
+
+  Future<void> turnOffToday(String id) async {
+    final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final target = state.firstWhere((r) => r.id == id);
+    final updated = target.copyWith(turnedOffDate: todayStr);
+    await updateReminder(updated);
+  }
+
+  Future<void> reactivateToday(String id) async {
+    final target = state.firstWhere((r) => r.id == id);
+    final updated = target.copyWith(clearTurnedOffDate: true);
+    await updateReminder(updated);
   }
 }

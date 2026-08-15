@@ -163,12 +163,12 @@ class AppDrawer extends ConsumerWidget {
                     },
                   ),
                   _DrawerItem(
-                    icon: Icons.notifications_rounded,
-                    title: 'Notifications',
+                    icon: Icons.shield_rounded,
+                    title: 'Permissions',
                     color: const Color(0xFF2563EB),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push('/notifications');
+                      context.push('/permissions');
                     },
                   ),
                   _DrawerItem(

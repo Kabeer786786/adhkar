@@ -17,7 +17,6 @@ import '../domain/prayer_models.dart';
 import 'widgets/prayer_detail_modal.dart'; 
 import 'widgets/salah_history_card.dart';
 import 'widgets/salah_history_detail_modal.dart';
-import 'widgets/sound_option_modal.dart';
 
 import '../../../shared/widgets/app_shimmer.dart';
 import '../../../shared/widgets/location_selection_modal.dart';
@@ -378,12 +377,6 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
 
               final storage = ref.watch(storageServiceProvider);
 
-              // Get notification config
-              final rawConfig = storage.getPrayerNotificationConfig(prayer.key);
-              final config = rawConfig != null
-                  ? PrayerNotificationConfig.fromJson(rawConfig)
-                  : const PrayerNotificationConfig();
-
               // Get completed sub-prayers
               final completedSubIds = storage.getSubPrayerRecords(
                 dateKey,
@@ -406,8 +399,8 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
                       padding: const EdgeInsets.only(
-                        left: 14,
-                        right: 10,
+                        left: 20,
+                        right: 24,
                         top: 14,
                         bottom: 14,
                       ),
@@ -425,9 +418,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                             : null,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 1,
+                            offset: const Offset(0, 1),
                           ),
                         ],
                       ),
@@ -491,29 +484,10 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                             ),
                           ),
 
-                          const SizedBox(width: 8),
-
-                          // Rightmost Sound Icon Button
-                          if (!prayer.isZawal)
-                            IconButton(
-                              onPressed: () => _openSoundConfig(prayer.key, config),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              visualDensity: VisualDensity.compact,
-                              icon: Icon(
-                                config.isMuted
-                                    ? Icons.volume_off_rounded
-                                    : Icons.volume_up_rounded,
-                                size: 24,
-                                color: config.isMuted
-                                    ? context.colorScheme.outline
-                                    : const Color(0xFF069B69),
-                              ),
-                            )
-                          else
+                          if (prayer.isZawal)
                             Icon(
                               Icons.block_rounded,
-                              size: 24,
+                              size: 20,
                               color: context.colorScheme.outline,
                             ),
                         ],
@@ -657,25 +631,6 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
         ],
       ),
     ];
-  }
-
-  void _openSoundConfig(
-    String prayerName,
-    PrayerNotificationConfig currentConfig,
-  ) {
-    SoundOptionModal.show(
-      context: context,
-      prayerName: prayerName,
-      initialConfig: currentConfig,
-      onSave: (newConfig) async {
-        final storage = ref.read(storageServiceProvider);
-        await storage.setPrayerNotificationConfig(
-          prayerName,
-          newConfig.toJson(),
-        );
-        setState(() {});
-      },
-    );
   }
 
   void _openPrayerDetail(

@@ -12,12 +12,15 @@ import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/settings/presentation/app_info_screen.dart';
 import '../../features/tasbeeh/presentation/tasbeeh_screen.dart';
 import '../../features/reminder/presentation/reminder_screen.dart';
+import '../../features/reminder/presentation/alarm_screen.dart';
+import '../../features/quiet_hours/presentation/quiet_hours_screen.dart';
 import '../../features/roza/presentation/roza_screen.dart';
 import '../../features/sci_islam/presentation/sci_islam_screen.dart';
 import '../../features/dua/presentation/dua_screen.dart';
 import '../../features/sadqa/presentation/sadqa_screen.dart';
 import '../../features/books/presentation/books_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
+import '../../features/permissions/presentation/permissions_screen.dart';
 import '../../features/calendar/presentation/islamic_calendar_screen.dart';
 import '../../features/about_islam/presentation/what_is_islam_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
@@ -197,6 +200,12 @@ final appRouter = GoRouter(
     ),
 
     GoRoute(
+      path: '/permissions',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const PermissionsScreen(),
+    ),
+
+    GoRoute(
       path: '/islamic-calendar',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const IslamicCalendarScreen(),
@@ -240,6 +249,29 @@ final appRouter = GoRouter(
       path: '/reminder',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const ReminderScreen(),
+    ),
+
+    GoRoute(
+      path: '/quiet-hours',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const QuietHoursScreen(),
+    ),
+
+    GoRoute(
+      path: '/alarm',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final reminderId = state.uri.queryParameters['id'];
+        final prayerName = state.uri.queryParameters['prayer'];
+        final title = state.uri.queryParameters['title'];
+        final soundType = state.uri.queryParameters['sound'];
+        return AlarmScreen(
+          reminderId: reminderId,
+          prayerName: prayerName,
+          title: title,
+          soundType: soundType,
+        );
+      },
     ),
 
     GoRoute(

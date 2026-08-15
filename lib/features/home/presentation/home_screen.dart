@@ -38,7 +38,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
+      if (mounted) {
+        final nextPrayer = ref.read(nextPrayerProvider);
+        if (nextPrayer != null && nextPrayer.currentRemaining.inSeconds <= 0) {
+          ref.invalidate(nextPrayerProvider);
+          final now = DateTime.now();
+          final dateOnly = DateTime(now.year, now.month, now.day);
+          ref.invalidate(aladhanPrayerTimesProvider(dateOnly));
+        }
+        setState(() {});
+      }
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -182,6 +191,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final nextPrayer = ref.watch(nextPrayerProvider);
+    if (nextPrayer != null && nextPrayer.currentRemaining.inSeconds <= 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.invalidate(nextPrayerProvider);
+      });
+    }
     final prayerTimes = ref.watch(prayerTimesProvider);
     final locationAsync = ref.watch(currentLocationProvider);
     final now = DateTime.now();
@@ -756,21 +770,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         assetPath: 'assets/images/scifi-islam.png',
                         onTap: () => context.push('/sci-islam'),
                         width: 45,
-                        height: 44,
+                        height: 43, 
                       ),
                     ),
                     AppShowcase(
                       globalKey: ShowcaseService.keyTileReminder,
-                      title: 'Custom Reminders',
+                      title: 'Quiet Hours',
                       description:
-                          'Set personalized notification alerts for daily Adhkar, Tahajjud, and fasting days.',
+                          'Set automatic Quiet Hours to silence phone interruptions during prayers and focus time.',
                       stepIndex: 12,
                       totalSteps: 15,
                       child: _FeatureTile(
-                        title: 'Reminder',
-                        assetPath: 'assets/images/reminder.png',
-                        onTap: () => context.push('/reminder'),
-                        width: 36,
+                        title: 'Quiet Hours',
+                        assetPath: 'assets/images/quiet_hours.png',
+                        onTap: () => context.push('/quiet-hours'),
+                        width: 42,
                         height: 43,
                       ),
                     ),

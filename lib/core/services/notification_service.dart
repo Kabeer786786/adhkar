@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -9,6 +10,12 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  final StreamController<String?> _notificationSelectController =
+      StreamController<String?>.broadcast();
+
+  Stream<String?> get onNotificationSelected =>
+      _notificationSelectController.stream;
 
   Future<void> init() async {
     tz_data.initializeTimeZones();
@@ -28,13 +35,15 @@ class NotificationService {
     await _notificationsPlugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (details) {
-        // Handle notification response/click
+        if (details.payload != null && details.payload!.isNotEmpty) {
+          _notificationSelectController.add(details.payload);
+        }
       },
     );
 
     final androidImplementation = _notificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    if (androidImplementation != null) {
+    if (androidImplementation != null) { 
       await androidImplementation.requestNotificationsPermission();
       await androidImplementation.requestExactAlarmsPermission();
     }
@@ -104,7 +113,9 @@ class NotificationService {
   Future<void> scheduleCustomReminderNotification({
     required int id,
     required String title,
+    required String body,
     required DateTime scheduledTime,
+    required String reminderId,
     bool sound = true,
     bool vibration = true,
   }) async {
@@ -112,7 +123,7 @@ class NotificationService {
 
     final androidDetails = AndroidNotificationDetails(
       'adhkar_reminder_channel_v3',
-      'Custom Reminders',
+      'Custom Reminders & Alarms',
       channelDescription: 'Custom Alarm and Adhkar Reminders',
       importance: Importance.max,
       priority: Priority.high,
@@ -126,12 +137,15 @@ class NotificationService {
       iOS: const DarwinNotificationDetails(),
     );
 
+    final payload = 'reminder_id:$reminderId';
+
     await _notificationsPlugin.zonedSchedule(
       id,
       title,
-      'Scheduled Custom Adhkar & Alarm Alert',
+      body.isNotEmpty ? body : 'It\'s time for your scheduled reminder.',
       tz.TZDateTime.from(scheduledTime, tz.local),
       notificationDetails,
+      payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,

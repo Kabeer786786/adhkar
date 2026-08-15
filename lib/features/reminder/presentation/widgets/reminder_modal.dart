@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../widgets/app_dropdown.dart';
+import 'package:intl/intl.dart';
 import '../../domain/reminder_model.dart';
 
 class ReminderModal extends StatefulWidget {
   final CustomReminder? initialReminder;
   final ValueChanged<CustomReminder> onSave;
+  final bool isEmbedded;
 
   const ReminderModal({
     super.key,
     this.initialReminder,
     required this.onSave,
+    this.isEmbedded = false,
   });
 
   static Future<void> show({
@@ -22,10 +24,8 @@ class ReminderModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => ReminderModal(
-        initialReminder: initialReminder,
-        onSave: onSave,
-      ),
+      builder: (_) =>
+          ReminderModal(initialReminder: initialReminder, onSave: onSave),
     );
   }
 
@@ -35,18 +35,25 @@ class ReminderModal extends StatefulWidget {
 
 class _ReminderModalState extends State<ReminderModal> {
   late TextEditingController _titleController;
+  late TextEditingController _descController;
   late TimeOfDay _selectedTime;
-  late bool _sound;
-  late bool _noSound;
-  late bool _vibration;
-  late bool _notification;
-  late String _soundType;
+  late DateTime _selectedDate;
+  late ReminderFrequency _frequency;
   late Set<int> _selectedDays;
+  late AlarmDuration _duration;
+  late bool _soundEnabled;
+  late String _soundType;
+  late bool _vibrationEnabled;
+  late bool _notificationEnabled;
+  String? _titleError;
 
-  final List<String> _soundTypes = [
-    'Azaan',
-    'Ringtone',
-    'Default Notification',
+  final List<String> _soundOptions = const [
+    'Makkah Azaan',
+    'Madinah Azaan',
+    'Mishary Alafasy Azaan',
+    'Takbeer',
+    'Default Ringtone',
+    'Custom Audio',
   ];
 
   final Map<int, String> _daysMap = const {
@@ -64,35 +71,66 @@ class _ReminderModalState extends State<ReminderModal> {
     super.initState();
     final rem = widget.initialReminder;
     _titleController = TextEditingController(text: rem?.title ?? '');
-    _selectedTime = TimeOfDay(
-      hour: rem?.hour ?? 8,
-      minute: rem?.minute ?? 0,
-    );
-    _sound = rem?.sound ?? true;
-    _noSound = rem?.noSound ?? false;
-    _vibration = rem?.vibration ?? true;
-    _notification = rem?.notification ?? true;
-    _soundType = rem?.soundType ?? 'Azaan';
-    _selectedDays = Set<int>.from(rem?.selectedDays ?? [1, 2, 3, 4, 5, 6, 7]);
+    _descController = TextEditingController(text: rem?.description ?? '');
+    _selectedTime = TimeOfDay(hour: rem?.hour ?? 8, minute: rem?.minute ?? 0);
+    _selectedDate = rem?.startDate ?? DateTime.now();
+    _frequency = rem?.frequency ?? ReminderFrequency.daily;
+    _selectedDays = Set<int>.from(rem?.customDays ?? [1, 2, 3, 4, 5, 6, 7]);
+    _duration = rem?.duration ?? AlarmDuration.seconds30;
+    _soundEnabled = rem?.soundEnabled ?? true;
+    _soundType = rem?.soundType ?? 'Makkah Azaan';
+    _vibrationEnabled = rem?.vibrationEnabled ?? true;
+    _notificationEnabled = rem?.notificationEnabled ?? true;
   }
 
   @override
   void dispose() {
     _titleController.dispose();
+    _descController.dispose();
     super.dispose();
   }
 
   Future<void> _pickTime() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(
+                    primary: Color(0xFF2A531D),
+                    onPrimary: Colors.white,
+                    surface: Color(0xFF1E2D24),
+                  )
+                : const ColorScheme.light(
+                    primary: Color(0xFF2A531D),
+                    onPrimary: Colors.white,
+                    onSurface: Color(0xFF2A531D),
+                  ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedTime = picked);
+    }
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 3650)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
               primary: Color(0xFF2A531D),
               onPrimary: Colors.white,
-              onSurface: Color(0xFF2A531D),
             ),
           ),
           child: child!,
@@ -100,295 +138,343 @@ class _ReminderModalState extends State<ReminderModal> {
       },
     );
     if (picked != null) {
-      setState(() {
-        _selectedTime = picked;
-      });
+      setState(() => _selectedDate = picked);
     }
   }
 
   void _save() {
-    final title = _titleController.text.trim();
-    if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a title for the reminder'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+    final titleText = _titleController.text.trim();
+    if (titleText.isEmpty) {
+      setState(() => _titleError = 'Title is required');
+      return;
+    }
+    if (titleText.length > 60) {
+      setState(() => _titleError = 'Title cannot exceed 60 characters');
       return;
     }
 
-    final reminder = CustomReminder(
-      id: widget.initialReminder?.id ??
-          DateTime.now().millisecondsSinceEpoch.toString(),
-      title: title,
+    final now = DateTime.now();
+    final rem = CustomReminder(
+      id: widget.initialReminder?.id ?? 'rem_${now.millisecondsSinceEpoch}',
+      title: titleText,
+      description: _descController.text.trim().isEmpty
+          ? null
+          : _descController.text.trim(),
       hour: _selectedTime.hour,
       minute: _selectedTime.minute,
-      sound: _sound && !_noSound,
-      noSound: _noSound,
-      vibration: _vibration,
-      notification: _notification,
+      startDate: _selectedDate,
+      frequency: _frequency,
+      customDays: _selectedDays.toList()..sort(),
+      duration: _duration,
+      soundEnabled: _soundEnabled,
       soundType: _soundType,
-      selectedDays: _selectedDays.toList(),
+      vibrationEnabled: _vibrationEnabled,
+      notificationEnabled: _notificationEnabled,
       isEnabled: widget.initialReminder?.isEnabled ?? true,
-      createdAt: widget.initialReminder?.createdAt ?? DateTime.now(),
+      turnedOffDate: widget.initialReminder?.turnedOffDate,
+      createdAt: widget.initialReminder?.createdAt ?? now,
+      updatedAt: now,
+      timezone: now.timeZoneName,
     );
 
-    widget.onSave(reminder);
-    Navigator.of(context).pop();
+    widget.onSave(rem);
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isEditing = widget.initialReminder != null;
-    final hour12 =
-        _selectedTime.hourOfPeriod == 0 ? 12 : _selectedTime.hourOfPeriod;
-    final minStr = _selectedTime.minute.toString().padLeft(2, '0');
-    final period = _selectedTime.period == DayPeriod.am ? 'AM' : 'PM';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const primaryGreen = Color(0xFF2A531D);
+    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
+    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.90,
-      ),
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Drag Handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4.5,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(3),
+    final hour12 = _selectedTime.hourOfPeriod == 0
+        ? 12
+        : _selectedTime.hourOfPeriod;
+    final minuteStr = _selectedTime.minute.toString().padLeft(2, '0');
+    final period = _selectedTime.period == DayPeriod.am ? 'AM' : 'PM';
+    final formattedTime = '$hour12:$minuteStr $period';
+
+    final formContent = SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20, top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title Input
+          Text(
+            'TITLE *',
+            style: GoogleFonts.lexend(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              color: primaryGreen,
+            ),
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: _titleController,
+            textCapitalization: TextCapitalization.sentences,
+            style: GoogleFonts.lexend(fontSize: 14, color: textColor),
+            onChanged: (_) {
+              if (_titleError != null) {
+                setState(() => _titleError = null);
+              }
+            },
+            decoration: InputDecoration(
+              hintText: 'e.g., Read Morning Adhkar, Meeting, Medicine',
+              hintStyle: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
+              errorText: _titleError,
+              filled: true,
+              fillColor: isDark
+                  ? const Color(0xFF16251C)
+                  : const Color(0xFFF8FAFC),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
                 ),
               ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+              ),
             ),
-            const SizedBox(height: 18),
+          ),
 
-            // Header
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3FAF2),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFF2A531D).withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.alarm_add_rounded,
-                    color: Color(0xFF2A531D),
-                    size: 26,
-                  ),
+          const SizedBox(height: 16),
+
+          // Description Input
+          Text(
+            'DESCRIPTION (OPTIONAL)',
+            style: GoogleFonts.lexend(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              color: subTextColor,
+            ),
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: _descController,
+            textCapitalization: TextCapitalization.sentences,
+            maxLines: 2,
+            style: GoogleFonts.lexend(fontSize: 14, color: textColor),
+            decoration: InputDecoration(
+              hintText: 'e.g., Read Ayatul Kursi and 3 Quls',
+              hintStyle: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
+              filled: true,
+              fillColor: isDark
+                  ? const Color(0xFF16251C)
+                  : const Color(0xFFF8FAFC),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 18),
+
+          // Time Picker Tile
+          InkWell(
+            onTap: _pickTime,
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF16251C)
+                    : const Color(0xFFF0FDF4),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: primaryGreen.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        isEditing ? 'Edit Custom Reminder' : 'New Custom Reminder',
-                        style: GoogleFonts.ibmPlexSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2A531D),
-                        ),
+                      const Icon(
+                        Icons.access_time_filled_rounded,
+                        color: primaryGreen,
+                        size: 22,
                       ),
+                      const SizedBox(width: 12),
                       Text(
-                        'Set alarm title, time, repeat days and alert sound',
-                        style: GoogleFonts.lexend(
-                          fontSize: 12.5,
-                          color: const Color(0xFF6B533E),
+                        'Reminder Time',
+                        style: GoogleFonts.outfit(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  Text(
+                    formattedTime,
+                    style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: primaryGreen,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-            const Divider(height: 1, color: Color(0xFFE8F4E5)),
-            const SizedBox(height: 18),
+          ),
 
-            // Title Input
-            Text(
-              'Reminder Title',
-              style: GoogleFonts.lexend(
-                fontSize: 13.5,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF2A531D),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                hintText: 'e.g. Morning Adhkar, Read Quran, Tahajjud',
-                hintStyle: GoogleFonts.lexend(
-                  fontSize: 13,
-                  color: Colors.grey.shade400,
-                ),
-                filled: true,
-                fillColor: const Color(0xFFF8FAF8),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.2),
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.2),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF2A531D),
-                    width: 1.8,
-                  ),
-                ),
-              ),
-              style: GoogleFonts.lexend(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF2A531D),
-              ),
-            ),
-            const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
-            // Time Selector Card
-            Text(
-              'Alarm Time',
-              style: GoogleFonts.lexend(
-                fontSize: 13.5,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF2A531D),
-              ),
+          // Reminder Type Header
+          Text(
+            'REMINDER TYPE',
+            style: GoogleFonts.lexend(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              color: subTextColor,
             ),
-            const SizedBox(height: 8),
-            InkWell(
-              onTap: _pickTime,
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 14,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3FAF2),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.25),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+          ),
+          const SizedBox(height: 8),
+
+          // Toggle Tabs: Repeat Days vs Particular Day
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _frequency = _selectedDays.length == 7
+                          ? ReminderFrequency.daily
+                          : ReminderFrequency.custom;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 9),
+                    decoration: BoxDecoration(
+                      color: _frequency != ReminderFrequency.once
+                          ? primaryGreen
+                          : (isDark
+                                ? const Color(0xFF16251C)
+                                : const Color(0xFFF1F5F9)),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: _frequency != ReminderFrequency.once
+                            ? primaryGreen
+                            : (isDark
+                                  ? Colors.white12
+                                  : const Color(0xFFE2E8F0)),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.access_time_filled_rounded,
-                          color: Color(0xFFD97724),
-                          size: 24,
+                        Icon(
+                          Icons.repeat_rounded,
+                          size: 15,
+                          color: _frequency != ReminderFrequency.once
+                              ? Colors.white
+                              : (isDark
+                                    ? Colors.white70
+                                    : const Color(0xFF475569)),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 6),
                         Text(
-                          '$hour12:$minStr $period',
-                          style: GoogleFonts.ibmPlexSans(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF2A531D),
+                          'Repeat Days',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: _frequency != ReminderFrequency.once
+                                ? Colors.white
+                                : (isDark
+                                      ? Colors.white70
+                                      : const Color(0xFF475569)),
                           ),
                         ),
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2A531D),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        'Change Time',
-                        style: GoogleFonts.lexend(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Repeat Days
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Repeat Days',
-                  style: GoogleFonts.lexend(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2A531D),
                   ),
                 ),
-                Row(
-                  children: [
-                    InkWell(
-                      onTap: () => setState(() => _selectedDays = {1, 2, 3, 4, 5, 6, 7}),
-                      child: Text(
-                        'All Days',
-                        style: GoogleFonts.lexend(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFFD97724),
-                        ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _frequency = ReminderFrequency.once;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 9),
+                    decoration: BoxDecoration(
+                      color: _frequency == ReminderFrequency.once
+                          ? primaryGreen
+                          : (isDark
+                                ? const Color(0xFF16251C)
+                                : const Color(0xFFF1F5F9)),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: _frequency == ReminderFrequency.once
+                            ? primaryGreen
+                            : (isDark
+                                  ? Colors.white12
+                                  : const Color(0xFFE2E8F0)),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    InkWell(
-                      onTap: () => setState(() => _selectedDays = {1, 2, 3, 4, 5}),
-                      child: Text(
-                        'Weekdays',
-                        style: GoogleFonts.lexend(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFFD97724),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 14,
+                          color: _frequency == ReminderFrequency.once
+                              ? Colors.white
+                              : (isDark
+                                    ? Colors.white70
+                                    : const Color(0xFF475569)),
                         ),
-                      ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Particular Day',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: _frequency == ReminderFrequency.once
+                                ? Colors.white
+                                : (isDark
+                                      ? Colors.white70
+                                      : const Color(0xFF475569)),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          // IF REPEAT DAYS: Show Week Circles Row
+          if (_frequency != ReminderFrequency.once) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [1, 2, 3, 4, 5, 6, 7].map((dayInt) {
@@ -398,201 +484,426 @@ class _ReminderModalState extends State<ReminderModal> {
                   onTap: () {
                     setState(() {
                       if (isSelected) {
-                        _selectedDays.remove(dayInt);
+                        if (_selectedDays.length > 1) {
+                          _selectedDays.remove(dayInt);
+                        }
                       } else {
                         _selectedDays.add(dayInt);
+                      }
+                      if (_selectedDays.length == 7) {
+                        _frequency = ReminderFrequency.daily;
+                      } else {
+                        _frequency = ReminderFrequency.custom;
                       }
                     });
                   },
                   borderRadius: BorderRadius.circular(20),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
-                    width: 38,
-                    height: 38,
+                    width: 40,
+                    height: 40,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF2A531D)
-                          : const Color(0xFFF3FAF2),
+                          ? primaryGreen
+                          : (isDark
+                                ? const Color(0xFF16251C)
+                                : const Color(0xFFF1F5F9)),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF2A531D)
-                            : const Color(0xFFE8F4E5),
-                        width: 1.2,
+                            ? primaryGreen
+                            : (isDark
+                                  ? Colors.white12
+                                  : const Color(0xFFE2E8F0)),
+                        width: 1.5,
                       ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: primaryGreen.withValues(alpha: 0.25),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Text(
                       dayName,
                       style: GoogleFonts.lexend(
-                        fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.white : const Color(0xFF4A5568),
+                        fontSize: 11,
+                        color: isSelected
+                            ? Colors.white
+                            : (isDark
+                                  ? Colors.white70
+                                  : const Color(0xFF475569)),
                       ),
                     ),
                   ),
                 );
               }).toList(),
             ),
-            const SizedBox(height: 20),
-
-            // Alert Modes Options
-            Text(
-              'Alert Modes',
-              style: GoogleFonts.lexend(
-                fontSize: 13.5,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF2A531D),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            _buildOptionTile(
-              title: 'Sound',
-              subtitle: 'Play audio alert at scheduled time',
-              icon: Icons.music_note_rounded,
-              value: _sound && !_noSound,
-              onChanged: (val) {
-                setState(() {
-                  _sound = val ?? false;
-                  if (_sound) _noSound = false;
-                });
-              },
-            ),
-            _buildOptionTile(
-              title: 'No Sound (Mute Audio)',
-              subtitle: 'Disable audio alerts for this reminder',
-              icon: Icons.volume_off_rounded,
-              value: _noSound,
-              onChanged: (val) {
-                setState(() {
-                  _noSound = val ?? false;
-                  if (_noSound) _sound = false;
-                });
-              },
-            ),
-            _buildOptionTile(
-              title: 'Vibration',
-              subtitle: 'Haptic feedback pulse on device',
-              icon: Icons.vibration_rounded,
-              value: _vibration,
-              onChanged: (val) {
-                setState(() {
-                  _vibration = val ?? false;
-                });
-              },
-            ),
-            _buildOptionTile(
-              title: 'Notification',
-              subtitle: 'Display banner alert on screen',
-              icon: Icons.notifications_active_rounded,
-              value: _notification,
-              onChanged: (val) {
-                setState(() {
-                  _notification = val ?? false;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Sound Type Selector Dropdown
-            if (_sound && !_noSound) ...[
-              Text(
-                'Sound Type',
-                style: GoogleFonts.lexend(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2A531D),
-                ),
-              ),
-              const SizedBox(height: 8),
-              AppDropdown<String>(
-                value: _soundType,
-                items: _soundTypes
-                    .map((st) => AppDropdownItem<String>(value: st, label: st))
-                    .toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _soundType = val);
-                },
-              ),
-
-              const SizedBox(height: 20),
-            ],
-
-            // Action Buttons
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2A531D),
-                  foregroundColor: Colors.white,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                InkWell(
+                  onTap: () => setState(() {
+                    _selectedDays = {1, 2, 3, 4, 5, 6, 7};
+                    _frequency = ReminderFrequency.daily;
+                  }),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      'All Days',
+                      style: GoogleFonts.lexend(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: primaryGreen,
+                      ),
+                    ),
                   ),
                 ),
-                child: Text(
-                  isEditing ? 'Update Reminder' : 'Save Reminder',
-                  style: GoogleFonts.lexend(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () => setState(() {
+                    _selectedDays = {1, 2, 3, 4, 5};
+                    _frequency = ReminderFrequency.custom;
+                  }),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      'Weekdays',
+                      style: GoogleFonts.lexend(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: primaryGreen,
+                      ),
+                    ),
                   ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () => setState(() {
+                    _selectedDays = {6, 7};
+                    _frequency = ReminderFrequency.custom;
+                  }),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      'Weekends',
+                      style: GoogleFonts.lexend(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: primaryGreen,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            // IF PARTICULAR DAY: Show Date Picker Card
+            InkWell(
+              onTap: _pickDate,
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF16251C)
+                      : const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: primaryGreen.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.event_available_rounded,
+                          color: primaryGreen,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Select Date',
+                          style: GoogleFonts.outfit(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      DateFormat('dd MMM yyyy').format(_selectedDate),
+                      style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: primaryGreen,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ],
-        ),
+
+          const SizedBox(height: 18),
+
+          // Alarm Duration Selector
+          Text(
+            'ALARM RING DURATION',
+            style: GoogleFonts.lexend(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              color: subTextColor,
+            ),
+          ),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<AlarmDuration>(
+            value: _duration,
+            dropdownColor: cardBg,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: isDark
+                  ? const Color(0xFF16251C)
+                  : const Color(0xFFF8FAFC),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+            ),
+            items: AlarmDuration.values.map((dur) {
+              return DropdownMenuItem<AlarmDuration>(
+                value: dur,
+                child: Text(
+                  dur.displayName,
+                  style: GoogleFonts.lexend(fontSize: 13, color: textColor),
+                ),
+              );
+            }).toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => _duration = val);
+            },
+          ),
+
+          const SizedBox(height: 18),
+
+          // Toggles: Sound, Vibration, Notification
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF16251C) : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+              ),
+            ),
+            child: Column(
+              children: [
+                SwitchListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  title: Text(
+                    'Sound',
+                    style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                  ),
+                  value: _soundEnabled,
+                  activeColor: primaryGreen,
+                  onChanged: (val) => setState(() => _soundEnabled = val),
+                ),
+                if (_soundEnabled) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      right: 12,
+                      bottom: 10,
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: _soundOptions.contains(_soundType)
+                          ? _soundType
+                          : _soundOptions.first,
+                      dropdownColor: cardBg,
+                      decoration: InputDecoration(
+                        labelText: 'ALARM AUDIO / AZAN',
+                        labelStyle: GoogleFonts.lexend(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: primaryGreen,
+                        ),
+                        filled: true,
+                        fillColor: isDark
+                            ? const Color(0xFF1E2D24)
+                            : const Color(0xFFF1F5F9),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? Colors.white12
+                                : const Color(0xFFCBD5E1),
+                          ),
+                        ),
+                      ),
+                      items: _soundOptions.map((opt) {
+                        return DropdownMenuItem<String>(
+                          value: opt,
+                          child: Text(
+                            opt,
+                            style: GoogleFonts.lexend(
+                              fontSize: 13,
+                              color: textColor,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() => _soundType = val);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+                const Divider(height: 1),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
+
+                  title: Text(
+                    'Vibration',
+                    style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                  ),
+                  value: _vibrationEnabled,
+                  activeColor: primaryGreen,
+                  onChanged: (val) => setState(() => _vibrationEnabled = val),
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
+
+                  title: Text(
+                    'Notification Alert',
+                    style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                  ),
+                  value: _notificationEnabled,
+                  activeColor: primaryGreen,
+                  onChanged: (val) =>
+                      setState(() => _notificationEnabled = val),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Action Button: Save Reminder
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _save,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryGreen,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                widget.initialReminder == null
+                    ? 'Create Reminder'
+                    : 'Save Changes',
+                style: GoogleFonts.lexend(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
       ),
     );
-  }
 
-  Widget _buildOptionTile({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required bool value,
-    required ValueChanged<bool?> onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAF8),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: value
-              ? const Color(0xFF2A531D).withValues(alpha: 0.3)
-              : Colors.grey.shade200,
-        ),
+    if (widget.isEmbedded) {
+      return formContent;
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: CheckboxListTile(
-        title: Text(
-          title,
-          style: GoogleFonts.lexend(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF2A531D),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
         ),
-        subtitle: Text(
-          subtitle,
-          style: GoogleFonts.lexend(
-            fontSize: 11.5,
-            color: const Color(0xFF718096),
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header Title Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.initialReminder == null
+                        ? 'Add Reminder'
+                        : 'Edit Reminder',
+                    style: GoogleFonts.outfit(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(height: 1),
+
+            Flexible(child: formContent),
+          ],
         ),
-        secondary: Icon(
-          icon,
-          color: value ? const Color(0xFF2A531D) : Colors.grey,
-          size: 20,
-        ),
-        value: value,
-        activeColor: const Color(0xFF2A531D),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-        onChanged: onChanged,
       ),
     );
   }

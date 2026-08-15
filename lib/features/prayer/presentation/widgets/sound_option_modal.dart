@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../widgets/app_dropdown.dart';
 import '../../domain/prayer_models.dart';
@@ -45,7 +46,19 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
   late String _soundType;
   late Set<int> _selectedDays;
 
-  final List<String> _soundTypes = ['Azaan', 'Music', 'Ringtone', 'Default Notification'];
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  bool _isPlayingPreview = false;
+  bool _isLoadingPreview = false;
+
+  final List<String> _soundTypes = const [
+    'Makkah Azaan',
+    'Madinah Azaan',
+    'Mishary Alafasy Azaan',
+    'Takbeer',
+    'Default Notification',
+    'Ringtone',
+  ];
+
   final Map<int, String> _daysMap = const {
     1: 'Mon',
     2: 'Tue',
@@ -63,8 +76,64 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
     _noSound = widget.initialConfig.noSound;
     _vibration = widget.initialConfig.vibration;
     _notification = widget.initialConfig.notification;
-    _soundType = widget.initialConfig.soundType;
+    _soundType = _soundTypes.contains(widget.initialConfig.soundType)
+        ? widget.initialConfig.soundType
+        : 'Makkah Azaan';
     _selectedDays = Set<int>.from(widget.initialConfig.selectedDays);
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleAudioPreview() async {
+    if (_isPlayingPreview) {
+      await _audioPlayer.stop();
+      if (mounted) setState(() => _isPlayingPreview = false);
+      return;
+    }
+
+    final url = PrayerNotificationConfig.soundAudioUrls[_soundType];
+    if (url == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Preview sound relies on system default audio ringtone.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      setState(() => _isLoadingPreview = true);
+      await _audioPlayer.setUrl(url);
+      setState(() {
+        _isLoadingPreview = false;
+        _isPlayingPreview = true;
+      });
+      await _audioPlayer.play();
+      if (mounted) {
+        setState(() => _isPlayingPreview = false);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingPreview = false;
+          _isPlayingPreview = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not play preview audio: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -186,7 +255,7 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
               },
             ),
             _buildOptionTile(
-              title: 'Notification',
+              title: 'Notification Banner',
               subtitle: 'Display banner notification on screen',
               icon: Icons.notifications_active_rounded,
               value: _notification,
@@ -225,7 +294,7 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     width: 40,
-                    height: 40, 
+                    height: 40,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected
@@ -262,7 +331,7 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                 );
               }).toList(),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -314,27 +383,59 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
             ),
 
             const SizedBox(height: 16),
-            AppDropdown<String>(
-              label: 'Sound Type',
-              value: _soundTypes.contains(_soundType) ? _soundType : 'Azaan',
-              items: _soundTypes.map((type) {
-                return AppDropdownItem<String>(
-                  value: type,
-                  label: type,
-                  icon: type == 'Azaan'
-                      ? Icons.mosque_rounded
-                      : type == 'Music'
-                          ? Icons.music_note_rounded
-                          : Icons.ring_volume_rounded,
-                );
-              }).toList(),
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _soundType = val;
-                  });
-                }
-              },
+            Row(
+              children: [
+                Expanded(
+                  child: AppDropdown<String>(
+                    label: 'Azaan / Sound Type',
+                    value: _soundTypes.contains(_soundType) ? _soundType : 'Makkah Azaan',
+                    items: _soundTypes.map((type) {
+                      return AppDropdownItem<String>(
+                        value: type,
+                        label: type,
+                        icon: type.contains('Azaan') || type.contains('Takbeer')
+                            ? Icons.mosque_rounded
+                            : Icons.ring_volume_rounded,
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          _soundType = val;
+                        });
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                // Audio Preview Button
+                Container(
+                  margin: const EdgeInsets.only(top: 14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFF2A531D).withValues(alpha: 0.3)),
+                  ),
+                  child: IconButton(
+                    tooltip: _isPlayingPreview ? 'Stop Preview' : 'Play Preview',
+                    onPressed: _isLoadingPreview ? null : _toggleAudioPreview,
+                    icon: _isLoadingPreview
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2.5),
+                          )
+                        : Icon(
+                            _isPlayingPreview
+                                ? Icons.stop_circle_rounded
+                                : Icons.play_circle_fill_rounded,
+                            color: const Color(0xFF2A531D),
+                            size: 26,
+                          ),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 24),
@@ -344,9 +445,12 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      _audioPlayer.stop();
+                      Navigator.of(context).pop();
+                    },
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -358,6 +462,7 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () {
+                      _audioPlayer.stop();
                       final updated = widget.initialConfig.copyWith(
                         sound: _sound,
                         noSound: _noSound,
@@ -370,12 +475,12 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                       Navigator.of(context).pop();
                     },
                     style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text('Save', style: TextStyle(fontSize: 14)),
+                    child: const Text('Save Settings', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

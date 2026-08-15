@@ -18,7 +18,7 @@ class AdhkarScreen extends ConsumerStatefulWidget {
   const AdhkarScreen({super.key});
 
   @override
-  ConsumerState<AdhkarScreen> createState() => _AdhkarScreenState();
+  ConsumerState<AdhkarScreen> createState() => _AdhkarScreenState(); 
 }
 
 class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {

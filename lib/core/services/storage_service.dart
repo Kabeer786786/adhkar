@@ -297,4 +297,34 @@ class StorageService {
   Future<void> saveDuaItems(List<Map<String, dynamic>> items) async {
     await _adhkarBox.put('custom_dua_items', items);
   }
+
+  // --- Quiet Hours Persistence ---
+  Map<String, dynamic>? getQuietHours() {
+    final data = _settingsBox.get('quiet_hours_config');
+    if (data != null && data is Map) {
+      return Map<String, dynamic>.from(data);
+    }
+    return null;
+  }
+
+  Future<void> saveQuietHours(Map<String, dynamic> data) async {
+    await _settingsBox.put('quiet_hours_config', data);
+  }
+
+  List<Map<String, dynamic>>? getQuietHoursList() {
+    final data = _settingsBox.get('quiet_hours_list_v2');
+    if (data != null && data is List) {
+      return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    }
+    // Backward compatibility with single quiet_hours_config
+    final single = getQuietHours();
+    if (single != null) {
+      return [single];
+    }
+    return null;
+  }
+
+  Future<void> saveQuietHoursList(List<Map<String, dynamic>> items) async {
+    await _settingsBox.put('quiet_hours_list_v2', items);
+  }
 }

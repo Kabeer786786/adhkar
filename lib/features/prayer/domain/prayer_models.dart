@@ -51,7 +51,8 @@ class PrayerNotificationConfig {
   final bool noSound;
   final bool vibration;
   final bool notification;
-  final String soundType; // e.g., 'Azaan', 'Music', 'Ringtone', 'Default'
+  final String soundType; // 'Makkah Azaan', 'Madinah Azaan', 'Mishary Alafasy Azaan', 'Takbeer', 'Default Notification', 'Ringtone'
+  final String? customAudioUrl;
   final List<int> selectedDays; // 1 = Mon ... 7 = Sun
 
   const PrayerNotificationConfig({
@@ -59,11 +60,27 @@ class PrayerNotificationConfig {
     this.noSound = false,
     this.vibration = true,
     this.notification = true,
-    this.soundType = 'Azaan',
+    this.soundType = 'Makkah Azaan',
+    this.customAudioUrl,
     this.selectedDays = const [1, 2, 3, 4, 5, 6, 7],
   });
 
   bool get isMuted => noSound || (!sound && !vibration && !notification);
+
+  static const Map<String, String> soundAudioUrls = {
+    'Makkah Azaan': 'https://www.islamcan.com/audio/adhan/azan1.mp3',
+    'Madinah Azaan': 'https://www.islamcan.com/audio/adhan/azan2.mp3',
+    'Mishary Alafasy Azaan': 'https://www.islamcan.com/audio/adhan/azan3.mp3',
+    'Takbeer': 'https://www.islamcan.com/audio/adhan/takbeer.mp3',
+    'Azaan': 'https://www.islamcan.com/audio/adhan/azan1.mp3',
+  };
+
+  String? get resolvedAudioUrl {
+    if (customAudioUrl != null && customAudioUrl!.isNotEmpty) {
+      return customAudioUrl;
+    }
+    return soundAudioUrls[soundType];
+  }
 
   PrayerNotificationConfig copyWith({
     bool? sound,
@@ -71,6 +88,7 @@ class PrayerNotificationConfig {
     bool? vibration,
     bool? notification,
     String? soundType,
+    String? customAudioUrl,
     List<int>? selectedDays,
   }) {
     return PrayerNotificationConfig(
@@ -79,6 +97,7 @@ class PrayerNotificationConfig {
       vibration: vibration ?? this.vibration,
       notification: notification ?? this.notification,
       soundType: soundType ?? this.soundType,
+      customAudioUrl: customAudioUrl ?? this.customAudioUrl,
       selectedDays: selectedDays ?? this.selectedDays,
     );
   }
@@ -90,6 +109,7 @@ class PrayerNotificationConfig {
       'vibration': vibration,
       'notification': notification,
       'soundType': soundType,
+      'customAudioUrl': customAudioUrl,
       'selectedDays': selectedDays,
     };
   }
@@ -100,7 +120,8 @@ class PrayerNotificationConfig {
       noSound: json['noSound'] as bool? ?? false,
       vibration: json['vibration'] as bool? ?? true,
       notification: json['notification'] as bool? ?? true,
-      soundType: json['soundType'] as String? ?? 'Azaan',
+      soundType: json['soundType'] as String? ?? 'Makkah Azaan',
+      customAudioUrl: json['customAudioUrl'] as String?,
       selectedDays: (json['selectedDays'] as List<dynamic>?)
               ?.map((e) => (e is num) ? e.toInt() : int.tryParse(e.toString()) ?? 1)
               .toList() ??

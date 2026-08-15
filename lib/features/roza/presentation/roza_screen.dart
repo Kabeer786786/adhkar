@@ -574,23 +574,8 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                               ),
                               child: Column(
                                 children: [
-                                  const SizedBox(height: 23),
+                                  const SizedBox(height: 28),
 
-                                  // Date & Hijri Pill inside center dome
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        hijriStr,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 3),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment:
@@ -600,8 +585,8 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                       Text(
                                         clockDigits,
                                         style: GoogleFonts.oxanium(
-                                          fontSize: 50,
-                                          height: 1.05,
+                                          fontSize: 45,
+                                          height: 1,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
                                           letterSpacing: -1,
@@ -618,6 +603,22 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                       ),
                                     ],
                                   ),
+                                  // Date & Hijri Pill inside center dome
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        hijriStr,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
+
                                   // Remaining Time in place of Location
                                   Container(
                                     padding: const EdgeInsets.symmetric(
@@ -1511,8 +1512,8 @@ class _RozaCalendarModalContentState
                             Positioned(
                               top: 4,
                               right: 6,
-                              child: Text(
-                                '$dayNum',
+                              child: Text( 
+                                '$dayNum',  
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
