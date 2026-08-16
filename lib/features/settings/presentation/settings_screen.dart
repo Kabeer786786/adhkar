@@ -21,11 +21,11 @@ class SettingsScreen extends ConsumerWidget {
     final currentJuristic = ref.watch(asrJuristicProvider);
     final locationAsync = ref.watch(currentLocationProvider);
     final location = locationAsync.value ?? LocationService.defaultLocation;
-    final isDark = Theme.of(context).brightness == Brightness.dark; 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final packageInfoAsync = ref.watch(appPackageInfoProvider);
 
     final versionStr = packageInfoAsync.when(
-      data: (info) => 'Version ${info.version} (Build ${info.buildNumber})',
+      data: (info) => 'Version ${info.version}',
       loading: () => 'Loading version...',
       error: (_, __) => 'Version 1.3.0',
     );

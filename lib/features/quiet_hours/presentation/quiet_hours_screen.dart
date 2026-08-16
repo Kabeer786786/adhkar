@@ -241,7 +241,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               padding: const EdgeInsets.only(bottom: 90, top: 12),
               children: [
                 // DND Permission Alert Card if permission missing on Android
-                if (isSupported && !_hasDndPermission)
+                if (isSupported && !_hasDndPermission) ...[
                   Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -304,6 +304,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                       ],
                     ),
                   ),
+                  const SizedBox(height: 12),
+                ],
 
                 Padding(
                   padding: const EdgeInsets.only(
