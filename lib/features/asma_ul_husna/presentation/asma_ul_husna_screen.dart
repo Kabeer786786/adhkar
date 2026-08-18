@@ -36,34 +36,37 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
   }
 
   void _onAudioStateChanged() {
+    if (!mounted) return;
     final activeIndex = _audioController.currentIndex;
     if (activeIndex >= 0) {
       _scrollToIndex(activeIndex);
     }
+    setState(() {});
   }
 
   void _scrollToIndex(int index) {
     if (!_scrollController.hasClients) return;
 
-    // Estimate target offset for smooth scrolling to middle of screen
     double targetOffset = 0;
     if (_isGridView) {
       final screenWidth = MediaQuery.of(context).size.width;
       final crossAxisCount = screenWidth > 600 ? 5 : 3;
       final rowIndex = index ~/ crossAxisCount;
-      final itemHeight = (screenWidth / crossAxisCount);
-      targetOffset = (rowIndex * itemHeight);
+      final itemWidth =
+          (screenWidth - 32 - ((crossAxisCount - 1) * 10)) / crossAxisCount;
+      final itemHeight = (itemWidth / 0.92) + 10;
+      targetOffset = (rowIndex * itemHeight) + 110.0;
     } else {
-      const itemHeight = 100.0;
-      targetOffset = (index * itemHeight);
+      const itemHeight = 86.0;
+      targetOffset = (index * itemHeight) + 110.0;
     }
 
     final maxScroll = _scrollController.position.maxScrollExtent;
     final clampedOffset = targetOffset.clamp(0.0, maxScroll);
 
     _scrollController.animateTo(
-      clampedOffset,
-      duration: const Duration(milliseconds: 600),
+      clampedOffset, 
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutCubic,
     );
   }
@@ -96,20 +99,36 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
           onPressed: () => Navigator.pop(context),
           tooltip: 'Back',
         ),
-        // Smooth transition AppBar title beside back arrow (Requirement 1 & 2)
+        // Smooth transition AppBar title: Bismillah when not scrolling, Asma Ul Husna when scrolling
         title: ValueListenableBuilder<double>(
           valueListenable: _titleOpacity,
           builder: (context, opacity, child) {
-            return Opacity(
-              opacity: opacity,
-              child: const Text(
-                'Asma Ul Husna',
-                style: TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2A531D),
+            return Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                Opacity(
+                  opacity: (1.0 - opacity).clamp(0.0, 1.0),
+                  child: Text(
+                    'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+                    style: GoogleFonts.amiri(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF2A531D),
+                    ),
+                  ),
                 ),
-              ),
+                Opacity(
+                  opacity: opacity,
+                  child: const Text(
+                    'Asma Ul Husna',
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2A531D),
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -148,6 +167,12 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
               setState(() {
                 _isGridView = !_isGridView;
               });
+              final activeIndex = _audioController.currentIndex;
+              if (activeIndex >= 0) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scrollToIndex(activeIndex);
+                });
+              }
             },
           ),
           const SizedBox(width: 8),
@@ -162,24 +187,61 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               slivers: [
-                // Header section that scrolls beneath the AppBar
+                // Header Banner Box
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      top: 4,
-                      bottom: 16,
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 12,
+                      bottom: 4,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFFDCFCE7),
+                          const Color(0xFFFEF3C7).withValues(alpha: 0.8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      // border: Border.all(
+                      //   color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                      // ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.auto_awesome_rounded,
+                              color: Color(0xFF2A531D),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '99 Names of Allah',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(
+                                  0xFF2A531D,
+                                ).withValues(alpha: 0.8),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
                           'Asma Ul Husna',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF2A531D),
+                          style: GoogleFonts.outfit(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF2A531D),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -199,11 +261,11 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                 // Grid or List Slivers
                 if (_isGridView)
                   SliverPadding(
-                    padding: const EdgeInsets.only(
+                    padding: EdgeInsets.only(
                       left: 16,
                       right: 16,
                       top: 8,
-                      bottom: 32,
+                      bottom: isPlayerActive ? 150 : 32,
                     ),
                     sliver: SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -222,11 +284,11 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.only(
+                    padding: EdgeInsets.only(
                       left: 16,
                       right: 16,
                       top: 4,
-                      bottom: 32,
+                      bottom: isPlayerActive ? 150 : 32,
                     ),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
@@ -259,55 +321,57 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
         );
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           gradient: isSelected
-              ? const RadialGradient(
-                  center: Alignment(0.1, -0.2),
-                  radius: 1.1,
+              ? const LinearGradient(
                   colors: [
                     Color(0xFFDCFCE7),
                     Color(0xFFFEF3C7),
-                    Color(0xFFF3E8FF),
                     Color(0xFFE8F4E5),
                   ],
-                  stops: [0.0, 0.45, 0.75, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 )
               : null,
           color: isSelected ? null : const Color(0xFFF3F4F6),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2A531D) : Colors.transparent,
-            width: isSelected ? 2 : 0.0,
+            color: isSelected ? const Color(0xFF16A34A) : Colors.transparent,
+            width: isSelected ? 2.5 : 0.0,
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF16A34A).withValues(alpha: 0.3),
-                    blurRadius: 14,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : const [],
+          boxShadow: const [],
         ),
         child: Stack(
           children: [
-            // Top Right Badge Number
+            // Top Right Badge Number / Playing Indicator
             Positioned(
               top: 0,
               right: 0,
-              child: Text(
-                '${item.number}',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: isSelected
-                      ? const Color(0xFF2A531D)
-                      : Colors.grey.shade500,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isSelected) ...[
+                    const Icon(
+                      Icons.graphic_eq_rounded,
+                      size: 14,
+                      color: Color(0xFF16A34A),
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+                  Text(
+                    '${item.number}',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w800,
+                      color: isSelected
+                          ? const Color(0xFF16A34A)
+                          : Colors.grey.shade500,
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -323,14 +387,16 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                       item.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.amiri(
-                        fontSize: 25,
+                        fontSize: isSelected ? 32 : 25,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A3512),
-                        height: 1.6,
+                        color: isSelected
+                            ? const Color(0xFF15803D)
+                            : const Color(0xFF1A3512),
+                        height: 1.4,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     item.transliteration,
                     maxLines: 1,
@@ -342,7 +408,7 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                           ? FontWeight.bold
                           : FontWeight.w600,
                       color: isSelected
-                          ? const Color(0xFF2A531D)
+                          ? const Color(0xFF15803D)
                           : const Color(0xFF6B533E),
                     ),
                   ),
@@ -368,16 +434,16 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
           );
         },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 350),
           curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          height: 76,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             gradient: isSelected
                 ? const LinearGradient(
                     colors: [
                       Color(0xFFDCFCE7),
                       Color(0xFFFEF3C7),
-                      Color(0xFFF3E8FF),
                       Color(0xFFE8F4E5),
                     ],
                     begin: Alignment.topLeft,
@@ -385,73 +451,70 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                   )
                 : null,
             color: isSelected ? null : const Color(0xFFF3F4F6),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: isSelected ? const Color(0xFF2A531D) : Colors.transparent,
-              width: isSelected ? 2 : 0.0,
+              color: isSelected ? const Color(0xFF16A34A) : Colors.transparent,
+              width: isSelected ? 2.5 : 0.0,
             ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: const Color(0xFF16A34A).withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 3),
-                    ),
-                  ]
-                : const [],
+            boxShadow: const [],
           ),
           child: Row(
             children: [
-              // Number Badge + Volume icon column
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF2A531D)
-                          : Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '${item.number}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected
-                            ? Colors.white
-                            : const Color(0xFF2A531D),
+              // Number Badge + Playing indicator
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xFF16A34A) : Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: isSelected
+                    ? const Icon(
+                        Icons.graphic_eq_rounded,
+                        size: 16,
+                        color: Colors.white,
+                      )
+                    : Text(
+                        '${item.number}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2A531D),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
               ),
               const SizedBox(width: 14),
 
               // Transliteration & Meaning
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       item.transliteration,
-                      style: const TextStyle(
-                        fontSize: 16.5,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15.5,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF2A531D),
+                        color: isSelected
+                            ? const Color(0xFF15803D)
+                            : const Color(0xFF2A531D),
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       item.shortMeaning,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade700,
+                        color: isSelected
+                            ? const Color(0xFF15803D).withValues(alpha: 0.85)
+                            : Colors.grey.shade700,
                       ),
                     ),
                   ],
@@ -460,13 +523,20 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
               const SizedBox(width: 12),
 
               // Arabic Name on right side
-              Text(
-                item.name,
-                textAlign: TextAlign.right,
-                style: GoogleFonts.amiri(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A3512),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  item.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.amiri(
+                    fontSize: isSelected ? 32 : 26,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected
+                        ? const Color(0xFF15803D)
+                        : const Color(0xFF1A3512),
+                  ),
                 ),
               ),
             ],
@@ -476,213 +546,241 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
     );
   }
 
-  // Sticky Bottom Player Bar
+  // Floating Bottom Player Bar (Music Player Style)
   Widget _buildBottomAudioPlayerBar() {
     final currentItem = _audioController.currentName;
     if (currentItem == null) return const SizedBox.shrink();
 
-    return Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12, top: 18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A3512),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
-          ),
-        ],
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 14,
+        right: 14,
+        bottom: MediaQuery.of(context).padding.bottom + 16,
       ),
-      child: SafeArea(
-        top: false,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1E3A1A), Color(0xFF0F230D)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: const Color(0xFF4ADE80).withValues(alpha: 0.35),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 20,
+              spreadRadius: 1,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Progress Bar / Step indicator
-            StreamBuilder<Duration>(
-              stream: _audioController.player.positionStream,
-              builder: (context, snapshot) {
-                final pos = snapshot.data ?? Duration.zero;
-                final dur =
-                    _audioController.player.duration ??
-                    const Duration(seconds: 3);
-                final progress = dur.inMilliseconds > 0
-                    ? (pos.inMilliseconds / dur.inMilliseconds).clamp(0.0, 1.0)
-                    : 0.0;
-
-                return Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: Colors.white24,
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF86EFAC),
-                        ),
-                        minHeight: 5,
+            // Top Row: Left side Name & Transliteration + Right side Media Controls
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 14, 4, 4),
+              child: Row(
+                children: [
+                  // Left side Artwork/Number Badge
+                  Container(
+                    width: 38,
+                    height: 38,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF22C55E), Color(0xFF15803D)],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${currentItem.number}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                  ],
-                );
-              },
-            ),
+                  ),
+                  const SizedBox(width: 12),
 
-            // Active Name Info & Media Controls
-            Row(
-              children: [
-                // Active Name Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 20,
-                            height: 20,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF86EFAC),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              '${currentItem.number}',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF1A3512),
-                              ),
-                            ),
+                  // Left side Text: Arabic Name & Transliteration
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          currentItem.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.amiri(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            height: 1.6,
                           ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              currentItem.transliteration,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 0),
-                      Text(
-                        currentItem.meaning,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.75),
                         ),
+                        Text(
+                          currentItem.transliteration,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFA7F3D0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
+                  // Right side Media Controls Row
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Backward 1 Name
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                        icon: const Icon(
+                          Icons.skip_previous_rounded,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                        tooltip: 'Previous Name',
+                        onPressed: _audioController.playPrevious,
+                      ),
+
+                      // Play / Pause Toggle Button
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _audioController.togglePlayPause,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            // decoration: const BoxDecoration(
+                            //   color: Color(0xFF4ADE80),
+                            // ),
+                            child: Icon(
+                              _audioController.isPlaying
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
+                              color: const Color(0xFFFFFFFF),
+                              size: 42,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // Forward 1 Name
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                        icon: const Icon(
+                          Icons.skip_next_rounded,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                        tooltip: 'Next Name',
+                        onPressed: _audioController.playNext,
+                      ),
+
+                      // Stop / Close Player
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 28,
+                          minHeight: 28,
+                        ),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                        tooltip: 'Close Player',
+                        onPressed: _audioController.stop,
                       ),
                     ],
                   ),
-                ),
-
-                const SizedBox(width: 0),
-
-                // Audio Speed Control Toggle Button
-                PopupMenuButton<double>(
-                  initialValue: _audioController.speed,
-                  tooltip: 'Playback Speed',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white12,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${_audioController.speed}x',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  onSelected: (speed) => _audioController.setSpeed(speed),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(value: 0.75, child: Text('0.75x Slow')),
-                    const PopupMenuItem(value: 1.0, child: Text('1.0x Normal')),
-                    const PopupMenuItem(value: 1.25, child: Text('1.25x Fast')),
-                    const PopupMenuItem(value: 1.5, child: Text('1.5x Rapid')),
-                  ],
-                ),
-
-                // Compact Player Controls (Prev, Play/Pause, Next, Stop)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
-                      ),
-                      icon: const Icon(
-                        Icons.skip_previous_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                      onPressed: _audioController.playPrevious,
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 36,
-                        minHeight: 36,
-                      ),
-                      icon: Icon(
-                        _audioController.isPlaying
-                            ? Icons.pause_circle_filled_rounded
-                            : Icons.play_circle_fill_rounded,
-                        color: const Color(0xFF86EFAC),
-                        size: 34,
-                      ),
-                      onPressed: _audioController.togglePlayPause,
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
-                      ),
-                      icon: const Icon(
-                        Icons.skip_next_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                      onPressed: _audioController.playNext,
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 28,
-                        minHeight: 28,
-                      ),
-                      icon: const Icon(
-                        Icons.close_rounded,
-                        color: Colors.white54,
-                        size: 18,
-                      ),
-                      onPressed: _audioController.stop,
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              // Bottom Progress Bar across all 99 names with track and head thumb
+              child: StreamBuilder<Duration>(
+                stream: _audioController.player.positionStream,
+                builder: (context, snapshot) {
+                  final pos = snapshot.data ?? Duration.zero;
+                  final dur =
+                      _audioController.player.duration ??
+                      const Duration(seconds: 3);
+                  final itemProgress = dur.inMilliseconds > 0
+                      ? (pos.inMilliseconds / dur.inMilliseconds).clamp(
+                          0.0,
+                          1.0,
+                        )
+                      : 0.0;
+                  final currentIndex = _audioController.currentIndex.clamp(
+                    0,
+                    98,
+                  );
+                  final totalItems = asmaUlHusnaList.length; // 99 items
+                  final overallProgress =
+                      ((currentIndex + itemProgress) / totalItems).clamp(
+                        0.0,
+                        1.0,
+                      );
+
+                  return SizedBox(
+                    height: 20,
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        trackHeight: 6,
+                        activeTrackColor: const Color(0xFF4ADE80),
+                        inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
+                        thumbColor: const Color(0xFF4ADE80),
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 8.0,
+                          elevation: 3,
+                        ),
+                        overlayShape: const RoundSliderOverlayShape(
+                          overlayRadius: 10,
+                        ),
+                      ),
+                      child: Slider(
+                        value: overallProgress,
+                        onChanged: (val) {
+                          final targetIndex = (val * totalItems).floor().clamp(
+                            0,
+                            totalItems - 1,
+                          );
+                          if (targetIndex != _audioController.currentIndex) {
+                            _audioController.playIndex(targetIndex);
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),

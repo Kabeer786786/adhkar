@@ -1,3 +1,5 @@
+// ignore_for_file: experimental_member_use
+
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
@@ -6,6 +8,7 @@ import '../data/asma_ul_husna_model.dart';
 
 class AsmaAudioController extends ChangeNotifier {
   final AudioPlayer _player = AudioPlayer();
+  final Map<int, LockCachingAudioSource> _audioSourceCache = {};
   StreamSubscription<PlayerState>? _playerStateSubscription;
 
   bool _isPlaying = false;
@@ -45,6 +48,14 @@ class AsmaAudioController extends ChangeNotifier {
     });
   }
 
+  LockCachingAudioSource _getAudioSource(int index) {
+    if (!_audioSourceCache.containsKey(index)) {
+      final item = asmaUlHusnaList[index];
+      _audioSourceCache[index] = LockCachingAudioSource(Uri.parse(item.audioUrl));
+    }
+    return _audioSourceCache[index]!;
+  }
+
   void _onAudioCompleted() {
     if (_currentIndex >= 0 && _currentIndex < asmaUlHusnaList.length - 1) {
       playIndex(_currentIndex + 1);
@@ -60,10 +71,15 @@ class AsmaAudioController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final name = asmaUlHusnaList[index];
-      await _player.setUrl(name.audioUrl);
+      final source = _getAudioSource(index);
+      await _player.setAudioSource(source);
       await _player.setSpeed(_speed);
       await _player.play();
+
+      // Pre-cache next name's audio for seamless instant transition!
+      if (index + 1 < asmaUlHusnaList.length) {
+        _getAudioSource(index + 1);
+      }
     } catch (e) {
       debugPrint('Error playing audio for index $index: $e');
     }

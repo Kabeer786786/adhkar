@@ -8,11 +8,7 @@ class AsmaDetailModal extends StatefulWidget {
   final AsmaUlHusna item;
   final VoidCallback? onPlayContinuous;
 
-  const AsmaDetailModal({
-    super.key,
-    required this.item,
-    this.onPlayContinuous,
-  });
+  const AsmaDetailModal({super.key, required this.item, this.onPlayContinuous});
 
   static Future<void> show(
     BuildContext context, {
@@ -23,10 +19,8 @@ class AsmaDetailModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AsmaDetailModal(
-        item: item,
-        onPlayContinuous: onPlayContinuous,
-      ),
+      builder: (context) =>
+          AsmaDetailModal(item: item, onPlayContinuous: onPlayContinuous),
     );
   }
 
@@ -45,8 +39,11 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
     _audioPlayer.playerStateStream.listen((state) {
       if (mounted) {
         setState(() {
-          _isPlaying = state.playing && state.processingState != ProcessingState.completed;
-          _isLoading = state.processingState == ProcessingState.buffering ||
+          _isPlaying =
+              state.playing &&
+              state.processingState != ProcessingState.completed;
+          _isLoading =
+              state.processingState == ProcessingState.buffering ||
               state.processingState == ProcessingState.loading;
         });
       }
@@ -82,11 +79,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 20, spreadRadius: 2),
         ],
       ),
       child: Column(
@@ -111,7 +104,10 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF2A531D).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
@@ -128,7 +124,11 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close_rounded, color: Colors.grey, size: 20),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.grey,
+                    size: 20,
+                  ),
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.grey.shade100,
                     padding: const EdgeInsets.all(8),
@@ -154,15 +154,15 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                     padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFE8F4E5),
-                          Color(0xFFF4FAF3),
-                        ],
+                        colors: [Color(0xFFE8F4E5), Color(0xFFF4FAF3)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: const Color(0xFFC8E6C9), width: 1),
+                      border: Border.all(
+                        color: const Color(0xFFC8E6C9),
+                        width: 1,
+                      ),
                     ),
                     child: Stack(
                       children: [
@@ -198,7 +198,9 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF2A531D).withValues(alpha: 0.3),
+                                    color: const Color(
+                                      0xFF2A531D,
+                                    ).withValues(alpha: 0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   ),
@@ -295,8 +297,8 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                         ),
                         const SizedBox(height: 6),
                         SelectableText(
-                          '"${widget.item.shortMeaning}"',
-                          style: GoogleFonts.lexend(
+                          '${widget.item.shortMeaning}',
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF1A3512),
