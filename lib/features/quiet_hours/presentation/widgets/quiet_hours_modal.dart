@@ -356,7 +356,7 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               decoration: BoxDecoration(
                                 color: isDark
                                     ? const Color(0xFF16251C)
-                                    : const Color(0xFFF0FDF4),
+                                    : const Color(0xFFF8FAFC),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
                                   color: primaryGreen.withValues(alpha: 0.3),
@@ -410,7 +410,7 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               decoration: BoxDecoration(
                                 color: isDark
                                     ? const Color(0xFF16251C)
-                                    : const Color(0xFFF0FDF4),
+                                    : const Color(0xFFF8FAFC),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
                                   color: const Color(0xFFDC2626).withValues(alpha: 0.3),

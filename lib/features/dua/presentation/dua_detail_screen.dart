@@ -2,15 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../widgets/app_header_bar.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/dua_item.dart';
 
 class DuaDetailScreen extends StatelessWidget {
   final DuaItem dua;
+  final VoidCallback? onDelete;
 
   const DuaDetailScreen({
     super.key,
     required this.dua,
+    this.onDelete,
   });
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+            const SizedBox(width: 8),
+            Text(dua.isCustom ? 'Delete Dua?' : 'Remove Dua?'),
+          ],
+        ),
+        content: Text(
+          dua.isCustom
+              ? 'Are you sure you want to delete "${dua.title}" permanently?'
+              : 'Are you sure you want to remove "${dua.title}"? You can re-add it anytime from the Dua Library.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(dialogCtx);
+              onDelete?.call();
+              Navigator.pop(context);
+              AppFloatingToast.showRemoved(context, message: 'Removed');
+            },
+            child: Text(dua.isCustom ? 'Delete' : 'Remove'),
+          ),
+        ],
+      ),
+    );
+  }
 
   static Color _getCategoryTextColor(String category) {
     switch (category.trim().toLowerCase()) {
@@ -37,10 +83,24 @@ class DuaDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppHeaderBar(
-        title: dua.title,
-        showBackButton: true,
-        backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppHeaderBar(
+          title: dua.title,
+          showBackButton: true,
+          backgroundColor: Colors.white,
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.redAccent,
+              ),
+              tooltip: dua.isCustom ? 'Delete Custom Dua' : 'Remove Dua',
+              onPressed: () => _confirmDelete(context),
+            ),
+            const SizedBox(width: 4),
+          ],
+        ),
       ),
       body: SizedBox.expand(
         child: Stack( 

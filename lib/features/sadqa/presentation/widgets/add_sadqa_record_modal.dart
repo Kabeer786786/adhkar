@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../shared/providers/app_providers.dart';
+import '../../../../shared/providers/user_profile_provider.dart';
 import '../../../../widgets/app_dropdown.dart';
 import '../../domain/models/sadqa_record.dart';
 
-class AddSadqaRecordModal extends StatefulWidget {
+class AddSadqaRecordModal extends ConsumerStatefulWidget {
   final SadqaRecord? initialRecord;
   final CharityType? defaultType;
   final double? defaultAmount;
@@ -19,10 +22,10 @@ class AddSadqaRecordModal extends StatefulWidget {
   });
 
   @override
-  State<AddSadqaRecordModal> createState() => _AddSadqaRecordModalState();
+  ConsumerState<AddSadqaRecordModal> createState() => _AddSadqaRecordModalState();
 }
 
-class _AddSadqaRecordModalState extends State<AddSadqaRecordModal> {
+class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
   final _formKey = GlobalKey<FormState>();
   late CharityType _type;
   late SadaqahCategory _category;
@@ -31,8 +34,6 @@ class _AddSadqaRecordModalState extends State<AddSadqaRecordModal> {
   late TextEditingController _noteController;
   late DateTime _selectedDate;
   late String _currency;
-
-  final List<String> _currencies = ['₹', '\$', '£', '€', '﷼', 'د.إ', '৳', '₨'];
 
   @override
   void initState() {
@@ -53,7 +54,18 @@ class _AddSadqaRecordModalState extends State<AddSadqaRecordModal> {
     _recipientController = TextEditingController(text: rec?.recipient ?? '');
     _noteController = TextEditingController(text: rec?.note ?? '');
     _selectedDate = rec?.date ?? DateTime.now();
-    _currency = rec?.currency ?? '₹';
+
+    final userLoc = ref.read(userProfileProvider).location.toLowerCase();
+    final gpsLoc = ref.read(currentLocationProvider).value;
+    final combinedLoc = '$userLoc ${gpsLoc?.country ?? ''} ${gpsLoc?.city ?? ''}'.toLowerCase();
+
+    if (rec != null) {
+      _currency = rec.currency;
+    } else if (combinedLoc.contains('usa') || combinedLoc.contains('united states') || combinedLoc.contains('america') || combinedLoc.contains('usd')) {
+      _currency = '\$';
+    } else {
+      _currency = '₹';
+    }
   }
 
   @override
@@ -322,50 +334,46 @@ class _AddSadqaRecordModalState extends State<AddSadqaRecordModal> {
               ),
               const SizedBox(height: 14),
 
-              // Amount & Currency Row
-              Row(
+              // Amount Section
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 100,
-                    child: AppDropdown<String>(
-                      label: 'Currency',
-                      value: _currency,
-                      items: _currencies
-                          .map((c) => AppDropdownItem(value: c, label: c))
-                          .toList(),
-                      onChanged: (val) {
-                        if (val != null) setState(() => _currency = val);
-                      },
+                  const Text(
+                    'Amount',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF8C6D53),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Amount',
-                          style: TextStyle(
-                            fontSize: 12,
+                  const SizedBox(height: 6),
+                  TextFormField(
+                    controller: _amountController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: 'e.g. 1000',
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                        child: Text(
+                          _currency,
+                          style: const TextStyle(
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF8C6D53),
+                            color: Color(0xFF2A531D),
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _amountController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'e.g. 1000',
-                            filled: true,
-                            fillColor: isDark
-                                ? const Color(0xFF23322B)
-                                : const Color(0xFFF9FAFB),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 12,
-                            ),
+                      ),
+                      filled: true,
+                      fillColor: isDark
+                          ? const Color(0xFF23322B)
+                          : const Color(0xFFF9FAFB),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -380,9 +388,6 @@ class _AddSadqaRecordModalState extends State<AddSadqaRecordModal> {
                             return null;
                           },
                         ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 14),

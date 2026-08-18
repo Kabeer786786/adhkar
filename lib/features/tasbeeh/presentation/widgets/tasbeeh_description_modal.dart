@@ -6,10 +6,7 @@ import '../../../../shared/models/tasbeeh_item.dart';
 class TasbeehDescriptionModal extends StatelessWidget {
   final TasbeehItem item;
 
-  const TasbeehDescriptionModal({
-    super.key,
-    required this.item,
-  });
+  const TasbeehDescriptionModal({super.key, required this.item});
 
   static void show(BuildContext context, TasbeehItem item) {
     showModalBottomSheet(
@@ -67,17 +64,20 @@ class TasbeehDescriptionModal extends StatelessWidget {
                   children: [
                     Text(
                       item.textEn,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
                         color: item.color,
                       ),
                     ),
                     Text(
                       item.textAr,
                       style: GoogleFonts.amiri(
-                        fontSize: 18,
+                        fontSize: 22,
+                        height: 1.7,
                         fontWeight: FontWeight.bold,
-                        color: context.isDarkMode ? Colors.white70 : const Color(0xFF1E3816),
+                        color: context.isDarkMode
+                            ? Colors.white70
+                            : const Color(0xFF1E3816),
                       ),
                     ),
                   ],
@@ -85,7 +85,7 @@ class TasbeehDescriptionModal extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
 
           const Divider(height: 1),
           const SizedBox(height: 16),
@@ -142,7 +142,10 @@ class TasbeehDescriptionModal extends StatelessWidget {
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: item.color,
                     borderRadius: BorderRadius.circular(12),
@@ -174,7 +177,10 @@ class TasbeehDescriptionModal extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Text('Got it', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              child: const Text(
+                'Got it',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
             ),
           ),
         ],

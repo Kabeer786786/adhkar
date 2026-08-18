@@ -33,26 +33,39 @@ class QuietHoursNotifier extends StateNotifier<List<QuietHours>> {
       loaded = QuietHours.defaultSchedules();
     }
 
+    _sortSchedules(loaded);
     state = loaded;
     final synced = await _quietHoursService.syncQuietHoursList(
       loaded,
       _storageService,
     );
+    _sortSchedules(synced);
     state = synced;
+  }
+
+  void _sortSchedules(List<QuietHours> list) {
+    list.sort((a, b) {
+      final timeA = a.startHour * 60 + a.startMinute;
+      final timeB = b.startHour * 60 + b.startMinute;
+      return timeA.compareTo(timeB);
+    });
   }
 
   Future<void> addSchedule(QuietHours schedule) async {
     final updatedList = [...state, schedule];
+    _sortSchedules(updatedList);
     await _saveAndSync(updatedList);
   }
 
   Future<void> updateSchedule(QuietHours schedule) async {
     final updatedList = state.map((s) => s.id == schedule.id ? schedule : s).toList();
+    _sortSchedules(updatedList);
     await _saveAndSync(updatedList);
   }
 
   Future<void> deleteSchedule(String id) async {
     final updatedList = state.where((s) => s.id != id).toList();
+    _sortSchedules(updatedList);
     await _saveAndSync(updatedList);
   }
 
@@ -63,6 +76,7 @@ class QuietHoursNotifier extends StateNotifier<List<QuietHours>> {
       }
       return s;
     }).toList();
+    _sortSchedules(updatedList);
     await _saveAndSync(updatedList);
   }
 
@@ -71,16 +85,19 @@ class QuietHoursNotifier extends StateNotifier<List<QuietHours>> {
       state,
       _storageService,
     );
+    _sortSchedules(synced);
     state = synced;
   }
 
   Future<void> _saveAndSync(List<QuietHours> list) async {
+    _sortSchedules(list);
     state = list;
     await _storageService.saveQuietHoursList(list.map((s) => s.toJson()).toList());
     final synced = await _quietHoursService.syncQuietHoursList(
       list,
       _storageService,
     );
+    _sortSchedules(synced);
     state = synced;
   }
 }

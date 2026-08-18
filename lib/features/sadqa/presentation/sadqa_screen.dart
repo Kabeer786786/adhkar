@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../widgets/app_action_popup_menu.dart';
 import '../../../widgets/app_header_bar.dart';
@@ -12,6 +13,8 @@ import 'widgets/add_sadqa_record_modal.dart';
 import 'widgets/islamic_charity_info_modal.dart';
 import 'widgets/online_donation_modal.dart';
 import 'widgets/zakat_calculator_modal.dart';
+
+import '../../../shared/widgets/feature_intro_modal.dart';
 
 class SadqaScreen extends ConsumerStatefulWidget {
   const SadqaScreen({super.key});
@@ -24,6 +27,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   CharityType? _filterType;
+  bool _isDonationBannerDismissed = false;
 
   final currencyFormatter = NumberFormat('#,##,###');
 
@@ -31,6 +35,30 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _checkDonationBannerStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FeatureIntroModal.show(context, FeatureIntroType.sadqa);
+    });
+  }
+
+  Future<void> _checkDonationBannerStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _isDonationBannerDismissed =
+            prefs.getBool('online_donation_banner_dismissed') ?? false;
+      });
+    }
+  }
+
+  Future<void> _dismissDonationBanner() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('online_donation_banner_dismissed', true);
+    if (mounted) {
+      setState(() {
+        _isDonationBannerDismissed = true;
+      });
+    }
   }
 
   @override
@@ -366,85 +394,97 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-
-                  // Online Donation Banner Button (Razorpay Integration)
-                  InkWell(
-                    onTap: () => OnlineDonationModal.show(context),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFF2A531D),
-                            const Color(0xFF458133),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.payment_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Online Donation',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Support App & Sadqa via Razorpay',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.white.withValues(alpha: 0.85),
-                                    ),
-                                  ),
+                  if (!_isDonationBannerDismissed) ...[
+                    const SizedBox(height: 10),
+                    Stack(
+                      children: [
+                        InkWell(
+                          onTap: () => OnlineDonationModal.show(context),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF2A531D),
+                                  Color(0xFF458133),
                                 ],
                               ),
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.3),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.1),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            child: const Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 12,
-                              color: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.payment_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Online Donation',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Support App & Sadqa via Razorpay',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.white.withValues(alpha: 0.85),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 28),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: _dismissDonationBanner,
+                              child: Padding(
+                                padding: const EdgeInsets.all(6),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 16,
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

@@ -71,15 +71,14 @@ class TasbeehCardTile extends StatelessWidget {
                         style: GoogleFonts.amiri(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          height: 1.3,
+                          height: 1.8,
                           color: context.isDarkMode
                               ? Colors.white
                               : const Color(0xFF1E3816),
                         ),
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
                       // English Transliteration
                       Text(
                         item.textEn,

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../shared/models/adhkar_category.dart';
 import '../../../../shared/models/dhikr_item.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 
 enum AdhkarModalView { library, details, form }
 
@@ -106,81 +107,6 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
     return _activeCategories.any((c) => c.id == categoryId);
   }
 
-  OverlayEntry? _activeToastOverlay;
-
-  void _showFloatingToast(String text, {required bool isAdded}) {
-    _activeToastOverlay?.remove();
-    _activeToastOverlay = null;
-
-    final overlay = Overlay.maybeOf(context);
-    if (overlay == null) return;
-
-    late OverlayEntry entry;
-    entry = OverlayEntry(
-      builder: (context) => Positioned(
-        bottom: 70,
-        left: 30,
-        right: 30,
-        child: Material(
-          color: Colors.transparent,
-          child: Center(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 180),
-              builder: (context, val, child) => Transform.scale(
-                scale: 0.9 + (0.1 * val),
-                child: Opacity(opacity: val, child: child),
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isAdded ? const Color(0xFF2A531D) : const Color(0xFF334155),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isAdded ? Icons.check_circle_rounded : Icons.remove_circle_outline_rounded,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      text,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    _activeToastOverlay = entry;
-    overlay.insert(entry);
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (_activeToastOverlay == entry) {
-        entry.remove();
-        _activeToastOverlay = null;
-      }
-    });
-  }
-
   void _toggleCategory(AdhkarCategory category) {
     final isSelected = _isCategorySelected(category.id);
     if (isSelected) {
@@ -188,7 +114,7 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
       setState(() {
         _activeCategories.removeWhere((c) => c.id == category.id);
       });
-      _showFloatingToast('Removed', isAdded: false);
+      AppFloatingToast.showRemoved(context, message: 'Removed');
     } else {
       final itemsForCat = widget.defaultAdhkarItems
           .where((i) => i.category == category.id)
@@ -197,7 +123,7 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
       setState(() {
         _activeCategories.add(category);
       });
-      _showFloatingToast('Added', isAdded: true);
+      AppFloatingToast.showAdded(context, message: 'Added');
     }
   }
 

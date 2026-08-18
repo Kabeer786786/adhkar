@@ -21,6 +21,14 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
     _loadReminders();
   }
 
+  void _sortReminders(List<CustomReminder> list) {
+    list.sort((a, b) {
+      final timeA = a.hour * 60 + a.minute;
+      final timeB = b.hour * 60 + b.minute;
+      return timeA.compareTo(timeB);
+    });
+  }
+
   void _loadReminders() {
     try {
       final rawData = _storageService.getGenericData(_storageKey);
@@ -30,6 +38,7 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
             .map((item) => CustomReminder.fromJson(item as Map<String, dynamic>))
             .toList();
         if (loaded.isNotEmpty) {
+          _sortReminders(loaded);
           state = loaded;
         } else {
           _loadDefaults();
@@ -48,7 +57,7 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
     final now = DateTime.now();
     final timezone = now.timeZoneName;
 
-    state = [
+    final defaults = [
       CustomReminder(
         id: 'predefined_rem_fajr',
         title: 'Fajr Prayer Reminder',
@@ -140,28 +149,37 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         timezone: timezone,
       ),
     ];
+    _sortReminders(defaults);
+    state = defaults;
     _saveReminders();
   }
 
   Future<void> _saveReminders() async {
+    _sortReminders(state);
     final jsonList = state.map((r) => r.toJson()).toList();
     await _storageService.saveGenericData(_storageKey, jsonEncode(jsonList));
   }
 
   Future<void> addReminder(CustomReminder reminder) async {
-    state = [...state, reminder];
+    final newList = [...state, reminder];
+    _sortReminders(newList);
+    state = newList;
     await _saveReminders();
     await _scheduler.scheduleReminder(reminder);
   }
 
   Future<void> updateReminder(CustomReminder updated) async {
-    state = state.map((r) => r.id == updated.id ? updated : r).toList();
+    final newList = state.map((r) => r.id == updated.id ? updated : r).toList();
+    _sortReminders(newList);
+    state = newList;
     await _saveReminders();
     await _scheduler.scheduleReminder(updated);
   }
 
   Future<void> deleteReminder(String id) async {
-    state = state.where((r) => r.id != id).toList();
+    final newList = state.where((r) => r.id != id).toList();
+    _sortReminders(newList);
+    state = newList;
     await _saveReminders();
     await _scheduler.cancelReminder(id);
   }

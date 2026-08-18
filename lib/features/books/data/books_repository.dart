@@ -190,7 +190,7 @@ class BooksRepository {
     ),
     BookModel(
       id: 'qisas_al_anbiya',
-      title: 'Stories of the Prophets',
+      title: 'Stories of the Prophets', 
       author: 'Imam Hafiz Ibn Kathir',
       category: 'Seerah',
       description:
@@ -208,6 +208,111 @@ class BooksRepository {
         ),
       ],
     ),
+    BookModel(
+      id: 'namaz_guide_book',
+      title: 'The Ultimate Namaz & Salah Guide',
+      author: 'Adhkar Islamic Library',
+      category: 'Fiqh & Worship',
+      description:
+          'A comprehensive Islamic guide detailing the virtues of Namaz (Salah), conditions of prayer, step-by-step guidance, and using the Adhkar Namaz tracker.',
+      coverUrl: '',
+      coverGradient: [const Color(0xFF0891B2), const Color(0xFF0E7490)],
+      fileUrl: '',
+      openMode: 'in_app',
+      totalPages: 25,
+      chapters: [
+        const BookChapter(
+          title: 'Chapter 1: The Status & Importance of Namaz in Islam',
+          content:
+              'Salah (Namaz) is the second pillar of Islam and the first deed a servant will be questioned about on the Day of Resurrection. The Prophet (ﷺ) said: "The key to Paradise is Salah." It connects the soul directly to Allah five times daily.',
+        ),
+        const BookChapter(
+          title: 'Chapter 2: Essential Prerequisites (Wudu & Qibla)',
+          content:
+              'Before performing Namaz, a Muslim must ensure ritual purity (Taharah) through Wudu (ablution), wear clean clothes, face the Qibla (Makkah), and make a sincere intention in the heart for the specific prayer.',
+        ),
+        const BookChapter(
+          title: 'Chapter 3: How to Perform Namaz Step-by-Step',
+          content:
+              '1. Takbir al-Ihram: Stand facing Qibla, raise hands to ears, say "Allahu Akbar".\n2. Qiyam & Recitation: Recite Surah Al-Fatiha followed by another Quranic passage.\n3. Ruku (Bowing): Bow with hands on knees, say "Subhana Rabbiyal A\'dheem" 3 times.\n4. Sujud (Prostration): Prostrate with forehead, nose, palms, knees, and toes touching the ground, say "Subhana Rabbiyal A\'la" 3 times.\n5. Tashahhud & Salam: Sit for final Tashahhud, send blessings on the Prophet (ﷺ), and end with Salam to the right and left.',
+        ),
+        const BookChapter(
+          title: 'Chapter 4: Using Adhkar App Namaz Tracker',
+          content:
+              'Adhkar App helps you stay consistent with your daily Namaz:\n- Accurate location-based prayer times & Qibla compass.\n- Tap prayer cards on the Home & Namaz screens to mark Farz, Sunnah, and Nafl prayers completed.\n- View daily, weekly, and monthly consistency streaks to build a lifelong habit of timely prayer.',
+        ),
+      ],
+    ),
+    BookModel(
+      id: 'roza_guide_book',
+      title: 'The Complete Roza & Fasting Guide',
+      author: 'Adhkar Islamic Library',
+      category: 'Fiqh & Worship',
+      description:
+          'An essential guide on Roza (Sawm): spiritual blessings of Ramadan, rules, intentions, voluntary fasts, and tracking fasts in Adhkar App.',
+      coverUrl: '',
+      coverGradient: [const Color(0xFFE11D48), const Color(0xFFBE123C)],
+      fileUrl: '',
+      openMode: 'in_app',
+      totalPages: 20,
+      chapters: [
+        const BookChapter(
+          title: 'Chapter 1: The Pillars & Virtues of Roza (Fasting)',
+          content:
+              'Roza (Sawm) during Ramadan is the fourth pillar of Islam. Allah says in Hadith Qudsi: "Fasting is for Me, and I shall reward for it." Fasting purifies the soul, cultivates Taqwa (God-consciousness), empathy for the needy, and self-discipline.',
+        ),
+        const BookChapter(
+          title: 'Chapter 2: Rules of Fasting, Niyyah & Suhoor/Iftar',
+          content:
+              '1. Niyyah (Intention): Intend in the heart before Fajr to fast for Allah.\n2. Suhoor (Pre-dawn meal): A blessed Sunnah meal eaten before Fajr.\n3. Abstinence: Refrain from eating, drinking, and marital relations from dawn to sunset.\n4. Iftar (Breaking fast): Break the fast at Maghrib, preferably with dates or water, making dua.',
+        ),
+        const BookChapter(
+          title: 'Chapter 3: Sunnah & Voluntary Fasts',
+          content:
+              'Beyond Ramadan, Islam highly recommends voluntary fasts:\n- Mondays & Thursdays.\n- The White Days (13th, 14th, 15th of each Hijri month).\n- Day of Arafah (9th Dhul Hijjah) & Day of Ashura (10th Muharram).\n- 6 days of Shawwal.',
+        ),
+        const BookChapter(
+          title: 'Chapter 4: Using Adhkar App Roza Tracker',
+          content:
+              'With Adhkar App Roza feature:\n- Log daily fasts during Ramadan and voluntary Sunnah fasts throughout the year.\n- Track Suhoor & Iftar countdown timers tuned to your precise location.\n- Manage missed fasts (Qaza tracker) to ensure you complete obligations effortlessly.',
+        ),
+      ],
+    ),
+    BookModel(
+      id: 'sadqa_zakat_guide_book',
+      title: 'The Comprehensive Sadqa & Zakat Guide',
+      author: 'Adhkar Islamic Library',
+      category: 'Fiqh & Worship',
+      description:
+          'A detailed handbook on Sadaqah & Zakat: Nisab calculation rules, spiritual blessings of charity in Islam, and managing donations in Adhkar App.',
+      coverUrl: '',
+      coverGradient: [const Color(0xFF6366F1), const Color(0xFF7C3AED)],
+      fileUrl: '',
+      openMode: 'in_app',
+      totalPages: 30,
+      chapters: [
+        const BookChapter(
+          title: 'Chapter 1: Distinction Between Sadaqah & Obligatory Zakat',
+          content:
+              'Zakat is the third pillar of Islam—an obligatory annual 2.5% purity tax on wealth exceeding the Nisab threshold held for a full lunar year.\n\nSadaqah is voluntary charity given anytime out of love for Allah. The Prophet (ﷺ) said: "Charity does not decrease wealth."',
+        ),
+        const BookChapter(
+          title: 'Chapter 2: Calculating Zakat (Nisab, Assets & Liabilities)',
+          content:
+              '1. Nisab Threshold: Equivalent to 87.48g of Gold or 612.36g of Silver.\n2. Eligible Assets: Cash, bank balances, gold, silver, investments, stocks, and trade merchandise.\n3. Deductions: Subtract short-term immediate debts/liabilities.\n4. Net Payable Zakat: 2.5% of total net zakat-eligible assets.',
+        ),
+        const BookChapter(
+          title: 'Chapter 3: Sadaqah Jariyah & Spiritual Rewards',
+          content:
+              'Sadaqah Jariyah is continuous ongoing charity whose rewards continue even after death—such as building a mosque, digging a water well, planting trees, or sharing beneficial Islamic knowledge.',
+        ),
+        const BookChapter(
+          title: 'Chapter 4: Using Adhkar App Sadaqah Log & Zakat Calculator',
+          content:
+              'Adhkar App empowers your charitable journey:\n- Instant Zakat Calculator: Calculate net Zakat by entering cash, gold, and liabilities.\n- Sadaqah Log: Record cash, food, or online donations and track monthly charity totals.\n- Online Donation: Make secure donations via Razorpay directly within the app and auto-log every transaction.',
+        ),
+      ],
+    ),
   ];
 
   /// Get user's saved books from Hive storage
@@ -215,13 +320,16 @@ class BooksRepository {
     final box = await Hive.openBox(_boxName);
     final String? rawJson = box.get('user_books_list');
     if (rawJson == null || rawJson.isEmpty) {
-      // Default initial books: Add Hisnul Muslim, Forty Hadith, Riyad as-Salihin, and Sealed Nectar
+      // Default initial books: Add Hisnul Muslim, Forty Hadith, Riyad as-Salihin, Sealed Nectar, and feature guide books
       final defaultUserBooks = [
-        prebuiltLibrary[0], // Hisnul Muslim (in_app)
-        prebuiltLibrary[1], // Forty Hadith (in_app)
-        prebuiltLibrary[2], // Riyad as-Salihin (both)
-        prebuiltLibrary[3], // Sealed Nectar (both)
-        prebuiltLibrary[4], // Kitab at-Tawheed (external)
+        prebuiltLibrary[0], // Hisnul Muslim
+        prebuiltLibrary[1], // Forty Hadith
+        prebuiltLibrary[2], // Riyad as-Salihin
+        prebuiltLibrary[3], // Sealed Nectar
+        prebuiltLibrary[4], // Kitab at-Tawheed
+        prebuiltLibrary.firstWhere((b) => b.id == 'namaz_guide_book'),
+        prebuiltLibrary.firstWhere((b) => b.id == 'roza_guide_book'),
+        prebuiltLibrary.firstWhere((b) => b.id == 'sadqa_zakat_guide_book'),
       ];
       await saveUserBooks(defaultUserBooks);
       return defaultUserBooks;
@@ -240,16 +348,26 @@ class BooksRepository {
             (p) => p.id == book.id,
             orElse: () => book,
           );
-          return book.copyWith(openMode: match.openMode);
+          return book.copyWith(
+            openMode: match.openMode,
+            chapters: match.chapters.isNotEmpty ? match.chapters : book.chapters,
+          );
         }
         return book;
       }).toList();
 
+      // Ensure guide books are present in user shelf
+      for (final guideId in ['namaz_guide_book', 'roza_guide_book', 'sadqa_zakat_guide_book']) {
+        if (!synced.any((b) => b.id == guideId)) {
+          final guideBook = prebuiltLibrary.firstWhere((b) => b.id == guideId);
+          synced.add(guideBook);
+        }
+      }
+
       return synced;
     } catch (_) {
-      return prebuiltLibrary.take(5).toList();
+      return prebuiltLibrary.take(8).toList();
     }
-
   }
 
   /// Save user's book list to Hive

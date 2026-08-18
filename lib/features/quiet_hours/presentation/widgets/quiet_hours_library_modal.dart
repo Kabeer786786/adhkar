@@ -6,6 +6,7 @@ import '../../../../core/services/location_service.dart';
 import '../../../../core/services/prayer_calculation_service.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../domain/quiet_hours_model.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../providers/quiet_hours_provider.dart';
 
 class QuietHoursLibraryModal extends ConsumerStatefulWidget {
@@ -28,7 +29,6 @@ class QuietHoursLibraryModal extends ConsumerStatefulWidget {
 class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  OverlayEntry? _activeToastOverlay;
 
   @override
   void initState() {
@@ -38,90 +38,8 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
 
   @override
   void dispose() {
-    _activeToastOverlay?.remove();
-    _activeToastOverlay = null;
     _tabController.dispose();
     super.dispose();
-  }
-
-  void _showFloatingToast(String text, {required bool isAdded}) {
-    _activeToastOverlay?.remove();
-    _activeToastOverlay = null;
-
-    final overlay = Overlay.maybeOf(context);
-    if (overlay == null) return;
-
-    late OverlayEntry entry;
-    entry = OverlayEntry(
-      builder: (context) => Positioned(
-        bottom: 70,
-        left: 40,
-        right: 40,
-        child: Material(
-          color: Colors.transparent,
-          child: Center(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 180),
-              builder: (context, val, child) => Transform.scale(
-                scale: 0.9 + (0.1 * val),
-                child: Opacity(opacity: val, child: child),
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isAdded
-                      ? const Color(0xFF2A531D)
-                      : const Color(0xFF334155),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isAdded
-                          ? Icons.check_circle_rounded
-                          : Icons.remove_circle_outline_rounded,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      text,
-                      style: GoogleFonts.lexend(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    _activeToastOverlay = entry;
-    overlay.insert(entry);
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (_activeToastOverlay == entry) {
-        entry.remove();
-        _activeToastOverlay = null;
-      }
-    });
   }
 
   String _formatTimeOfDay(TimeOfDay tod) {
@@ -416,9 +334,9 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                     ref
                                         .read(quietHoursProvider.notifier)
                                         .deleteSchedule(existing.id);
-                                    _showFloatingToast(
-                                      'Removed',
-                                      isAdded: false,
+                                    AppFloatingToast.showRemoved(
+                                      context,
+                                      message: 'Removed',
                                     );
                                   } else {
                                     final now = DateTime.now();
@@ -439,7 +357,10 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                     ref
                                         .read(quietHoursProvider.notifier)
                                         .addSchedule(schedule);
-                                    _showFloatingToast('Added', isAdded: true);
+                                    AppFloatingToast.showAdded(
+                                      context,
+                                      message: 'Added',
+                                    );
                                   }
                                 },
                               ),
@@ -459,7 +380,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                           ref
                               .read(quietHoursProvider.notifier)
                               .addSchedule(schedule);
-                          _showFloatingToast('Added', isAdded: true);
+                          AppFloatingToast.showAdded(context, message: 'Added');
                           Navigator.pop(context);
                         },
                       ),
@@ -721,7 +642,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                   decoration: BoxDecoration(
                     color: isDark
                         ? const Color(0xFF16251C)
-                        : const Color(0xFFF0FDF4),
+                        : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: primaryGreen.withValues(alpha: 0.3),
@@ -775,7 +696,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                   decoration: BoxDecoration(
                     color: isDark
                         ? const Color(0xFF16251C)
-                        : const Color(0xFFF0FDF4),
+                        : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: const Color(0xFFDC2626).withValues(alpha: 0.3),

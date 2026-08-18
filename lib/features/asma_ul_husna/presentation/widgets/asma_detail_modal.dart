@@ -74,7 +74,10 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
 
   @override
   Widget build(BuildContext context) {
+    final maxModalHeight = MediaQuery.of(context).size.height * 0.88;
+
     return Container(
+      constraints: BoxConstraints(maxHeight: maxModalHeight),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
@@ -86,242 +89,304 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
           ),
         ],
       ),
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Drag handle pill
+          const SizedBox(height: 12),
           Container(
-            width: 48,
-            height: 5,
+            width: 44,
+            height: 4.5,
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          const SizedBox(height: 20),
-
-          // Header row with badge & close button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  'Name : ${widget.item.number}',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2A531D),
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close_rounded, color: Colors.grey),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.grey.shade100,
-                ),
-              ),
-            ],
-          ),
           const SizedBox(height: 16),
 
-          // Decorative Mosque / Star background container
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFFE8F4E5),
-                  const Color(0xFFF3F7F2),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: const Color(0xFFC8E6C9), width: 1),
-            ),
-            child: Column(
+          // Header row with badge & close button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Big Arabic Name
-                Text(
-                  widget.item.name,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.amiri(
-                    fontSize: 46,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1A3512),
-                    height: 1.4,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    'NAME ${widget.item.number} OF 99',
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
+                      color: Color(0xFF2A531D),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close_rounded, color: Colors.grey, size: 20),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.grey.shade100,
+                    padding: const EdgeInsets.all(8),
+                  ),
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
 
-                // Play Icon Button for Pronunciation
-                GestureDetector(
-                  onTap: _playSingleAudio,
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
+          // Scrollable main content styled like DuaDetailScreen
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Decorative Showcase Card with Big Arabic Name + Volume Icon at Bottom Left Corner
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2A531D),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF2A531D).withValues(alpha: 0.35),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFE8F4E5),
+                          Color(0xFFF4FAF3),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFFC8E6C9), width: 1),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Centered Arabic Name
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: SelectableText(
+                              widget.item.name,
+                              textAlign: TextAlign.center,
+                              textDirection: TextDirection.rtl,
+                              style: GoogleFonts.amiri(
+                                fontSize: 42,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF1A3512),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Volume Icon at Bottom Left Corner (No "Tap to listen" text)
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          child: GestureDetector(
+                            onTap: _playSingleAudio,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2A531D),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF2A531D).withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Icon(
+                                      _isPlaying
+                                          ? Icons.pause_rounded
+                                          : Icons.volume_up_rounded,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: Colors.white,
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Transliteration Section
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAF7),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(
+                              FlutterIslamicIcons.solidAllah,
+                              size: 16,
+                              color: Color(0xFFD97724),
                             ),
-                          )
-                        : Icon(
-                            _isPlaying
-                                ? Icons.pause_rounded
-                                : Icons.volume_up_rounded,
-                            size: 28,
-                            color: Colors.white,
+                            SizedBox(width: 8),
+                            Text(
+                              'TRANSLITERATION',
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.6,
+                                color: Color(0xFF8C6D53),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        SelectableText(
+                          widget.item.transliteration,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF2A531D),
                           ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _isPlaying ? 'Playing Pronunciation' : 'Tap to Listen',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF4B6B42),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Divider(height: 1, thickness: 0.8),
+                        ),
 
-          // Transliteration & Meaning Showcase Card
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAF7),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Icon(
-                      FlutterIslamicIcons.solidAllah,
-                      size: 18,
-                      color: Color(0xFFD97724),
+                        // Short Meaning Section
+                        const Row(
+                          children: [
+                            Icon(
+                              Icons.translate_rounded,
+                              size: 15,
+                              color: Color(0xFF16A34A),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'SHORT MEANING',
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.6,
+                                color: Color(0xFF8C6D53),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        SelectableText(
+                          '"${widget.item.shortMeaning}"',
+                          style: GoogleFonts.lexend(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1A3512),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 8),
-                    Text(
-                      'TRANSLITERATION',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.8,
-                        color: Color(0xFF8C6D53),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Detailed Meaning & Description Showcase (Dua Detail Screen style)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFDF5),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFFFEF08A)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(
+                              Icons.description_outlined,
+                              size: 16,
+                              color: Color(0xFFD97724),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'DETAILED MEANING & DESCRIPTION',
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.6,
+                                color: Color(0xFFD97724),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        SelectableText(
+                          widget.item.longMeaning,
+                          style: GoogleFonts.lexend(
+                            fontSize: 14,
+                            height: 1.5,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFF4A3728),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Play continuous button
+                  if (widget.onPlayContinuous != null) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          widget.onPlayContinuous?.call();
+                        },
+                        icon: const Icon(Icons.playlist_play_rounded, size: 22),
+                        label: const Text(
+                          'Play All 99 Names from Here',
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2A531D),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 0,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 16),
                   ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  widget.item.transliteration,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF2A531D),
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Divider(height: 1, thickness: 0.8),
-                ),
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.translate_rounded,
-                      size: 16,
-                      color: Color(0xFF16A34A),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'ENGLISH MEANING',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.8,
-                        color: Color(0xFF8C6D53),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  widget.item.meaning,
-                  style: GoogleFonts.lexend(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF1A3512),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Option to play playlist from here
-          if (widget.onPlayContinuous != null)
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  widget.onPlayContinuous?.call();
-                },
-                icon: const Icon(Icons.playlist_play_rounded, size: 24),
-                label: const Text(
-                  'Play All 99 Names from Here',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2A531D),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 2,
-                ),
+                ],
               ),
             ),
+          ),
         ],
       ),
     );

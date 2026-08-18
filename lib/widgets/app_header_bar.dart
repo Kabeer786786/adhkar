@@ -63,7 +63,7 @@ class AppHeaderBar extends StatelessWidget implements PreferredSizeWidget {
             title,
             style: context.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
+              letterSpacing: 0.8,
               color: context.colorScheme.onSurface,
             ),
           ),

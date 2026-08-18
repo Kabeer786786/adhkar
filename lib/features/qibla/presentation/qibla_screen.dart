@@ -97,7 +97,7 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen> {
     );
 
     final angleDiff = (qiblaAngle - _smoothedHeading + 360.0) % 360.0;
-    final isAligned = angleDiff < 5.0 || angleDiff > 355.0;
+    final isAligned = angleDiff < 14.0 || angleDiff > 346.0;
 
     if (isAligned && !_hasVibrated) {
       _hasVibrated = true;
@@ -167,6 +167,9 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen> {
                       points: [userLatLng, makkahLatLng],
                       color: const Color(0xFF2A531D),
                       strokeWidth: 3.5,
+                      pattern: isAligned
+                          ? const StrokePattern.solid()
+                          : StrokePattern.dashed(segments: const [8, 6]),
                     ),
                   ],
                 ),
@@ -561,32 +564,62 @@ class _CompassArchPainter extends CustomPainter {
       }
     }
 
-    // 4. Draw Qibla Target Line & Sharp Orange Arrowhead Mark at the end
+    // 4. Draw Qibla Target Line & Sharp Orange Arrowhead Mark pointing to Makkah
     final qiblaRad = (qiblaAngle - smoothedHeading - 90) * (math.pi / 180.0);
     final needleColor = isAligned
         ? const Color(0xFF4CAF50)
         : const Color(0xFFD9A925);
 
-    final needlePaint = Paint()
-      ..color = needleColor
-      ..strokeWidth = 3.5
-      ..strokeCap = StrokeCap.round;
-
     final needleStart = center;
-    final needleEnd = Offset(
-      center.dx + (radius - 18) * math.cos(qiblaRad),
-      center.dy + (radius - 18) * math.sin(qiblaRad),
-    );
+    final needleEndDistance = radius - 18;
 
-    canvas.drawLine(needleStart, needleEnd, needlePaint);
+    if (isAligned) {
+      final needlePaint = Paint()
+        ..color = needleColor
+        ..strokeWidth = 4.0
+        ..strokeCap = StrokeCap.round;
 
-    // Draw Arrowhead Mark pointing outwards
-    const arrowSize = 14.0;
+      final needleEnd = Offset(
+        center.dx + needleEndDistance * math.cos(qiblaRad),
+        center.dy + needleEndDistance * math.sin(qiblaRad),
+      );
+      canvas.drawLine(needleStart, needleEnd, needlePaint);
+    } else {
+      // Draw Dotted line when user is NOT aligned with Makkah Qibla direction
+      final dashPaint = Paint()
+        ..color = needleColor
+        ..strokeWidth = 3.5
+        ..strokeCap = StrokeCap.round;
+
+      const dashWidth = 6.0;
+      const dashSpace = 5.0;
+      double distance = 10.0; // Start offset from center pivot
+
+      while (distance < needleEndDistance) {
+        final dStart = distance;
+        final dEnd = math.min(distance + dashWidth, needleEndDistance);
+
+        final p1 = Offset(
+          center.dx + dStart * math.cos(qiblaRad),
+          center.dy + dStart * math.sin(qiblaRad),
+        );
+        final p2 = Offset(
+          center.dx + dEnd * math.cos(qiblaRad),
+          center.dy + dEnd * math.sin(qiblaRad),
+        );
+
+        canvas.drawLine(p1, p2, dashPaint);
+        distance += dashWidth + dashSpace;
+      }
+    }
+
+    // Draw Arrowhead Mark pointing outwards towards Makkah
+    const arrowSize = 16.0;
     const arrowAngle = 0.45;
 
     final arrowTip = Offset(
-      center.dx + (radius - 6) * math.cos(qiblaRad),
-      center.dy + (radius - 6) * math.sin(qiblaRad),
+      center.dx + (radius - 5) * math.cos(qiblaRad),
+      center.dy + (radius - 5) * math.sin(qiblaRad),
     );
 
     final leftWing = Offset(

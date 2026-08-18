@@ -41,9 +41,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       imagePath: 'assets/images/onboarding_qibla_prayer.png',
     ),
     OnboardingSlide(
-      title: 'Quiet Hours, Daily Adhkar & Quran',
+      title: 'Quiet Hours, Daily Adhkar',
       description:
-          'Set automatic Quiet Hours to stay undisturbed during prayers, recite morning & evening Adhkar, and track dhikr.',
+          'Set automatic Quiet Hours to stay undisturbed during prayers, recite morning & evening Adhkar.',
       imagePath: 'assets/images/onboarding_quran_tasbeeh.png',
     ),
   ];

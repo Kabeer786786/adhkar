@@ -294,6 +294,48 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
     );
   }
 
+  void _confirmDeleteTasbeeh(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+            const SizedBox(width: 8),
+            Text(_item.isCustom ? 'Delete Tasbeeh?' : 'Remove Tasbeeh?'),
+          ],
+        ),
+        content: Text(
+          _item.isCustom
+              ? 'Are you sure you want to delete "${_item.textEn}" permanently?'
+              : 'Are you sure you want to remove "${_item.textEn}"? You can re-import it anytime from the Tasbeeh Library.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(dialogCtx);
+              widget.onDelete?.call();
+              Navigator.pop(context);
+            },
+            child: Text(_item.isCustom ? 'Delete' : 'Remove'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _openMarbleStyleModal() {
     MarbleStyleModal.show(
       context,
@@ -357,23 +399,20 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
           showBackButton: true,
           showDrawerButton: false,
           actions: [
-            // Marble Style Selector Icon Beside Reset Icon
             IconButton(
-              icon: const Icon(Icons.palette_outlined),
-              tooltip: 'Change Marble Bead Style',
-              onPressed: _openMarbleStyleModal,
+              icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Edit Tasbeeh',
+              onPressed: _editTasbeeh,
             ),
             IconButton(
-              icon: const Icon(Icons.refresh_rounded),
-              tooltip: 'Reset Today\'s Count',
-              onPressed: _resetCount,
-            ),
-            if (_item.isCustom)
-              IconButton(
-                icon: const Icon(Icons.edit_outlined),
-                tooltip: 'Edit Tasbeeh',
-                onPressed: _editTasbeeh,
+              icon: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.redAccent,
               ),
+              tooltip: 'Remove Tasbeeh',
+              onPressed: () => _confirmDeleteTasbeeh(context),
+            ),
+            const SizedBox(width: 4),
           ],
         ),
       ),
@@ -394,7 +433,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                 ),
                 child: Column(
                   children: [
-                    // 1. Top Main Tasbeeh Card with Info (i) Icon at Top Right Corner
+                    // 1. Top Main Tasbeeh Card with Edit/Delete Top-Right & Info (i) Icon at Bottom-Right
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -413,79 +452,87 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                             offset: const Offset(0, 4),
                           ),
                         ],
-                      ), 
+                      ),
                       child: Stack(
                         children: [
-                          // 1. Perfectly Centered Content across the card
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 22,
+                          // 1. Vertically Scrollable Centered Content capped at max height
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height * 0.35,
                             ),
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    _item.textAr,
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.amiri(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.4,
-                                      color: context.isDarkMode
-                                          ? Colors.white
-                                          : const Color(0xFF1E3816),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 14),
-
-                                  // Transliteration
-                                  Text(
-                                    _item.textEn,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: _item.color,
-                                    ),
-                                  ),
-
-                                  // Translation below Transliteration
-                                  if (_item.effectiveTranslation.isNotEmpty) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      _item.effectiveTranslation,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.lexend(
-                                        fontSize: 13.5,
-                                        height: 1.4,
-                                        fontWeight: FontWeight.w500,
-                                        fontStyle: FontStyle.italic,
-                                        color: context.colorScheme.onSurfaceVariant,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                              child: SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        _item.textAr,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.amiri(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          height: 1.9,
+                                          color: context.isDarkMode
+                                              ? Colors.white
+                                              : const Color(0xFF1E3816),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ],
+                                      const SizedBox(height: 8),
+
+                                      // Transliteration
+                                      Text(
+                                        _item.textEn,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: _item.color,
+                                        ),
+                                      ),
+
+                                      // Translation below Transliteration
+                                      if (_item
+                                          .effectiveTranslation
+                                          .isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          _item.effectiveTranslation,
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.lexend(
+                                            fontSize: 13.5,
+                                            height: 1.4,
+                                            fontWeight: FontWeight.w500,
+                                            fontStyle: FontStyle.italic,
+                                            color: context
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-
-                          // 2. Info (i) Icon Button positioned absolutely at Top Right Corner
+                          // 2. Info (i) Icon Button at Bottom Right Corner
                           Positioned(
-                            top: 10,
-                            right: 10,
+                            bottom: 6,
+                            right: 6,
                             child: IconButton(
                               icon: Container(
-                                padding: const EdgeInsets.all(6),
+                                padding: const EdgeInsets.all(5),
                                 decoration: BoxDecoration(
-                                  color: _item.color.withValues(alpha: 0.12),
+                                  color: _item.color.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.info_outline_rounded,
-                                  size: 20,
+                                  size: 17,
                                   color: _item.color,
                                 ),
                               ),
@@ -575,7 +622,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                 key: _marbleCounterKey,
                 onIncrement: _incrementCount,
                 onDecrement: _decrementCount,
-                height: 200,
+                height: 160,
                 marbleAsset: _item.marbleAsset,
                 swipeLeftToRight: _swipeLeftToRight,
               ),
@@ -615,7 +662,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                     ),
                     const SizedBox(height: 10),
 
-                    // Config Button at Top-Left Corner Just Above Progress Bar
+                    // Config Row: Swipe direction on Left, Reset & Color Icons on Right
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -625,7 +672,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
-                              vertical: 4,
+                              vertical: 5,
                             ),
                             decoration: BoxDecoration(
                               color: _item.color.withValues(alpha: 0.1),
@@ -658,9 +705,37 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                             ),
                           ),
                         ),
+
+                        // Right Corner: Marble Color Style & Reset Counter Icons
+                        Row(
+                          children: [
+                            IconButton(
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              icon: Icon(
+                                Icons.palette_outlined,
+                                size: 20,
+                                color: _item.color,
+                              ),
+                              tooltip: 'Change Marble Bead Style',
+                              onPressed: _openMarbleStyleModal,
+                            ),
+                            IconButton(
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              icon: Icon(
+                                Icons.refresh_rounded,
+                                size: 20,
+                                color: _item.color,
+                              ),
+                              tooltip: 'Reset Today\'s Count',
+                              onPressed: _resetCount,
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 3),
 
                     // Linear Progress Bar
                     ClipRRect(

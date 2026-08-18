@@ -23,6 +23,8 @@ import '../../../shared/widgets/location_selection_modal.dart';
 import '../data/repositories/aladhan_repository.dart';
 import 'providers/aladhan_providers.dart';
 
+import '../../../shared/widgets/feature_intro_modal.dart';
+
 class PrayerScreen extends ConsumerStatefulWidget {
   const PrayerScreen({super.key});
 
@@ -42,6 +44,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FeatureIntroModal.show(context, FeatureIntroType.namaz);
+    });
   }
 
   @override

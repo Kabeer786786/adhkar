@@ -261,27 +261,22 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          // Multicolor fading paint spill background for active playing item
           gradient: isSelected
               ? const RadialGradient(
                   center: Alignment(0.1, -0.2),
                   radius: 1.1,
                   colors: [
-                    Color(0xFFDCFCE7), // Soft emerald glow
-                    Color(0xFFFEF3C7), // Warm gold spill
-                    Color(0xFFF3E8FF), // Soft lavender splash
-                    Color(0xFFE8F4E5), // Light green base
+                    Color(0xFFDCFCE7),
+                    Color(0xFFFEF3C7),
+                    Color(0xFFF3E8FF),
+                    Color(0xFFE8F4E5),
                   ],
                   stops: [0.0, 0.45, 0.75, 1.0],
                 )
               : null,
-          color: isSelected
-              ? null
-              : const Color(
-                  0xFFF3F4F6,
-                ), // Light gray background without borders
+          color: isSelected ? null : const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? const Color(0xFF2A531D) : Colors.transparent,
@@ -298,16 +293,16 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                 ]
               : const [],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            // Top Badge Number
-            Align(
-              alignment: Alignment.topRight,
+            // Top Right Badge Number
+            Positioned(
+              top: 0,
+              right: 0,
               child: Text(
                 '${item.number}',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: isSelected
                       ? const Color(0xFF2A531D)
@@ -316,39 +311,44 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
               ),
             ),
 
-            const Spacer(),
-
-            // Arabic Name
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                item.name,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.amiri(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A3512),
-                  height: 1.2,
-                ),
+            // Centered Arabic Name & Transliteration
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 8),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      item.name,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.amiri(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1A3512),
+                        height: 1.6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.transliteration,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w600,
+                      color: isSelected
+                          ? const Color(0xFF2A531D)
+                          : const Color(0xFF6B533E),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
-
-            // Transliteration below Arabic name
-            Text(
-              item.transliteration,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected
-                    ? const Color(0xFF2A531D)
-                    : const Color(0xFF6B533E),
-              ),
-            ),
-            const Spacer(),
           ],
         ),
       ),
@@ -370,9 +370,8 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            // Multicolor fading paint spill background for active playing item
             gradient: isSelected
                 ? const LinearGradient(
                     colors: [
@@ -385,11 +384,7 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                     end: Alignment.bottomRight,
                   )
                 : null,
-            color: isSelected
-                ? null
-                : const Color(
-                    0xFFF3F4F6,
-                  ), // Light gray background without borders
+            color: isSelected ? null : const Color(0xFFF3F4F6),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected ? const Color(0xFF2A531D) : Colors.transparent,
@@ -408,23 +403,32 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
           ),
           child: Row(
             children: [
-              // Number Badge
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF2A531D) : Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  '${item.number}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.white : const Color(0xFF2A531D),
+              // Number Badge + Volume icon column
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFF2A531D)
+                          : Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '${item.number}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected
+                            ? Colors.white
+                            : const Color(0xFF2A531D),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(width: 14),
 
@@ -436,16 +440,16 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                     Text(
                       item.transliteration,
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 16.5,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF2A531D),
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      item.meaning,
+                      item.shortMeaning,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey.shade700,
                       ),
@@ -455,12 +459,12 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
               ),
               const SizedBox(width: 12),
 
-              // Arabic Name centered on right side
+              // Arabic Name on right side
               Text(
                 item.name,
                 textAlign: TextAlign.right,
                 style: GoogleFonts.amiri(
-                  fontSize: 30,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF1A3512),
                 ),
@@ -581,7 +585,7 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                     ],
                   ),
                 ),
- 
+
                 const SizedBox(width: 0),
 
                 // Audio Speed Control Toggle Button
@@ -623,7 +627,10 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                   children: [
                     IconButton(
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                       icon: const Icon(
                         Icons.skip_previous_rounded,
                         color: Colors.white,
@@ -633,7 +640,10 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                     ),
                     IconButton(
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
                       icon: Icon(
                         _audioController.isPlaying
                             ? Icons.pause_circle_filled_rounded
@@ -645,7 +655,10 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                     ),
                     IconButton(
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                       icon: const Icon(
                         Icons.skip_next_rounded,
                         color: Colors.white,
@@ -655,7 +668,10 @@ class _AsmaUlHusnaScreenState extends State<AsmaUlHusnaScreen> {
                     ),
                     IconButton(
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                      constraints: const BoxConstraints(
+                        minWidth: 28,
+                        minHeight: 28,
+                      ),
                       icon: const Icon(
                         Icons.close_rounded,
                         color: Colors.white54,

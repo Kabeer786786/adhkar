@@ -14,6 +14,152 @@ class BookshelfView extends StatelessWidget {
     required this.onBookLongPress,
   });
 
+  /// Public static helper to render a bookshelf book cover card anywhere in the app
+  static Widget buildBookCoverCard(BookModel book, {double width = 72, double height = 102}) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(3),
+          bottomRight: Radius.circular(3),
+          topLeft: Radius.circular(2),
+          bottomLeft: Radius.circular(2),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 8,
+            offset: const Offset(3, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(3),
+          bottomRight: Radius.circular(3),
+          topLeft: Radius.circular(2),
+          bottomLeft: Radius.circular(2),
+        ),
+        child: Stack(
+          children: [
+            // Cover Image / Gradient
+            Positioned.fill(child: _BookCardWidgetState.buildBookCoverBackground(book)),
+
+            // Realistic 3D Spine Crease
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient( 
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.35),
+                      Colors.black.withValues(alpha: 0.12),
+                      Colors.white.withValues(alpha: 0.15),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.4, 0.7, 1.0],
+                  ),
+                ),
+              ),
+            ),
+
+            // Glassy Subtle Gloss Overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.18),
+                      Colors.white.withValues(alpha: 0.02),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Title & Author Text Overlay
+            if (book.coverUrl.isEmpty)
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        child: Text(
+                          book.category.toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 6.5,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.4,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        book.title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.15,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black87,
+                              blurRadius: 4,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        book.author,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 7.5,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white70,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (books.isEmpty) {
@@ -493,162 +639,10 @@ class ThreeDBookCoverWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final computedFontSize = fontSize ?? (width * 0.11).clamp(8.0, 14.0);
-
-    return Container(
+    return BookshelfView.buildBookCoverCard(
+      book,
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(3),
-          bottomRight: Radius.circular(3),
-          topLeft: Radius.circular(2),
-          bottomLeft: Radius.circular(2),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 8,
-            offset: const Offset(2, 4),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(3),
-          bottomRight: Radius.circular(3),
-          topLeft: Radius.circular(2),
-          bottomLeft: Radius.circular(2),
-        ),
-        child: Stack(
-          children: [
-            // 1. Cover Background
-            Positioned.fill(child: _buildCoverBackground(book)),
-
-            // 2. Realistic 3D Spine Crease
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: (width * 0.09).clamp(4.0, 10.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withValues(alpha: 0.38),
-                      Colors.black.withValues(alpha: 0.12),
-                      Colors.white.withValues(alpha: 0.15),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.4, 0.7, 1.0],
-                  ),
-                ),
-              ),
-            ),
-
-            // 3. Right Edge 3D Pages Stack Look
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.white.withValues(alpha: 0.2),
-                      Colors.black.withValues(alpha: 0.2),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // 4. Gold Foil Frame & Title (Only displayed when NO custom cover image is selected)
-            if (showTitle && book.coverUrl.isEmpty)
-              Positioned.fill( 
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    (width * 0.12).clamp(5.0, 12.0),
-                    width * 0.06,
-                    width * 0.06,
-                    width * 0.06,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFFFACC15).withValues(alpha: 0.4),
-                        width: 0.8,
-                      ),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    padding: const EdgeInsets.all(3),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            book.title,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: computedFontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              height: 1.1,
-                              shadows: const [
-                                Shadow(
-                                  color: Colors.black87,
-                                  blurRadius: 3,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCoverBackground(BookModel book) {
-    final url = book.coverUrl.trim();
-    if (url.isNotEmpty) {
-      if (url.startsWith('http')) {
-        return Image.network(
-          url,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _buildGradientCover(book),
-        );
-      } else {
-        return Image.file(
-          File(url),
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _buildGradientCover(book),
-        );
-      }
-    }
-    return _buildGradientCover(book);
-  }
-
-  Widget _buildGradientCover(BookModel book) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: book.coverGradient.length >= 2
-              ? book.coverGradient
-              : [const Color(0xFF1E3816), const Color(0xFF2A531D)],
-        ),
-      ),
     );
   }
 }
@@ -697,7 +691,7 @@ class _UShelfRimPainter extends CustomPainter {
       )
       ..lineTo(w - tr, h - sideHeight)
       ..quadraticBezierTo(w, h - sideHeight, w, h - sideHeight + tr)
-      ..lineTo(w, h - r)
+      ..lineTo(w, h - r) 
       ..quadraticBezierTo(w, h, w - r, h)
       ..lineTo(r, h)
       ..quadraticBezierTo(0, h, 0, h - r)

@@ -6,6 +6,7 @@ import '../../../../core/services/location_service.dart';
 import '../../../../core/services/prayer_calculation_service.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../domain/reminder_model.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../providers/reminder_provider.dart';
 import 'reminder_modal.dart';
 
@@ -29,7 +30,6 @@ class ReminderLibraryModal extends ConsumerStatefulWidget {
 class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  OverlayEntry? _activeToastOverlay;
 
   @override
   void initState() {
@@ -39,90 +39,8 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
 
   @override
   void dispose() {
-    _activeToastOverlay?.remove();
-    _activeToastOverlay = null;
     _tabController.dispose();
     super.dispose();
-  }
-
-  void _showFloatingToast(String text, {required bool isAdded}) {
-    _activeToastOverlay?.remove();
-    _activeToastOverlay = null;
-
-    final overlay = Overlay.maybeOf(context);
-    if (overlay == null) return;
-
-    late OverlayEntry entry;
-    entry = OverlayEntry(
-      builder: (context) => Positioned(
-        bottom: 70,
-        left: 40,
-        right: 40,
-        child: Material(
-          color: Colors.transparent,
-          child: Center(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 180),
-              builder: (context, val, child) => Transform.scale(
-                scale: 0.9 + (0.1 * val),
-                child: Opacity(opacity: val, child: child),
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isAdded
-                      ? const Color(0xFF2A531D)
-                      : const Color(0xFF334155),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isAdded
-                          ? Icons.check_circle_rounded
-                          : Icons.remove_circle_outline_rounded,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      text,
-                      style: GoogleFonts.lexend(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    _activeToastOverlay = entry;
-    overlay.insert(entry);
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (_activeToastOverlay == entry) {
-        entry.remove();
-        _activeToastOverlay = null;
-      }
-    });
   }
 
   String _formatTimeOfDay(TimeOfDay tod) {
@@ -403,9 +321,9 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                                     ref
                                         .read(remindersProvider.notifier)
                                         .deleteReminder(existing.id);
-                                    _showFloatingToast(
-                                      'Removed',
-                                      isAdded: false,
+                                    AppFloatingToast.showRemoved(
+                                      context,
+                                      message: 'Removed',
                                     );
                                   } else {
                                     final now = DateTime.now();
@@ -430,7 +348,10 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                                     ref
                                         .read(remindersProvider.notifier)
                                         .addReminder(reminder);
-                                    _showFloatingToast('Added', isAdded: true);
+                                    AppFloatingToast.showAdded(
+                                      context,
+                                      message: 'Added',
+                                    );
                                   }
                                 },
                               ),
@@ -448,7 +369,7 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                       ref
                           .read(remindersProvider.notifier)
                           .addReminder(newRem);
-                      _showFloatingToast('Added', isAdded: true);
+                      AppFloatingToast.showAdded(context, message: 'Added');
                       Navigator.pop(context);
                     },
                   ),

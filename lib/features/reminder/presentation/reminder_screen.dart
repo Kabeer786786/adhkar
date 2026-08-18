@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../widgets/app_header_bar.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/reminder_model.dart';
 import 'providers/reminder_provider.dart';
 import 'widgets/reminder_library_modal.dart';
@@ -56,15 +57,7 @@ class ReminderScreen extends ConsumerWidget {
                     .read(remindersProvider.notifier)
                     .deleteReminder(reminder.id);
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Reminder deleted',
-                      style: GoogleFonts.lexend(),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                _showDeleteToast(context, 'Reminder deleted');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDC2626),
@@ -87,7 +80,9 @@ class ReminderScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reminders = ref.watch(remindersProvider);
+    final rawReminders = ref.watch(remindersProvider);
+    final reminders = List<CustomReminder>.from(rawReminders)
+      ..sort((a, b) => (a.hour * 60 + a.minute).compareTo(b.hour * 60 + b.minute));
     final isDark = Theme.of(context).brightness == Brightness.dark;
     const primaryGreen = Color(0xFF2A531D);
     final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);
@@ -258,6 +253,10 @@ class ReminderScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _showDeleteToast(BuildContext context, [String message = 'Removed']) {
+    AppFloatingToast.showRemoved(context, message: message);
   }
 
   Widget _buildEmptyState(

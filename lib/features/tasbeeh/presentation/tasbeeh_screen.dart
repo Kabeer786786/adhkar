@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/models/tasbeeh_item.dart';
 import '../../../shared/providers/app_providers.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../widgets/app_header_bar.dart';
 import 'tasbeeh_detail_screen.dart';
 import 'widgets/add_tasbeeh_modal.dart';
@@ -73,6 +74,7 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
     });
     _persistItems();
     HapticFeedback.mediumImpact();
+    AppFloatingToast.showRemoved(context, message: 'Removed');
   }
 
   void _openAddModal({TasbeehItem? existing}) {
@@ -163,7 +165,7 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
                 item: item,
                 currentCount: currentCount,
                 onTap: () => _openDetailScreen(item),
-                onLongPress: item.isCustom ? () => _openAddModal(existing: item) : null,
+                onLongPress: () => _openAddModal(existing: item), 
               );
             }),
 

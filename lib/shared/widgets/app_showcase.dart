@@ -11,6 +11,7 @@ class AppShowcase extends StatelessWidget {
   final int stepIndex;
   final int totalSteps;
   final ShapeBorder targetShapeBorder;
+  final BorderRadius? targetBorderRadius;
   final EdgeInsets targetPadding;
 
   const AppShowcase({
@@ -22,9 +23,10 @@ class AppShowcase extends StatelessWidget {
     required this.stepIndex,
     required this.totalSteps,
     this.targetShapeBorder = const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(16)),
+      borderRadius: BorderRadius.all(Radius.circular(20)),
     ),
-    this.targetPadding = const EdgeInsets.all(8),
+    this.targetBorderRadius = const BorderRadius.all(Radius.circular(20)),
+    this.targetPadding = const EdgeInsets.all(8), 
   });
 
   @override
@@ -32,6 +34,7 @@ class AppShowcase extends StatelessWidget {
     return Showcase.withWidget(
       key: globalKey,
       targetShapeBorder: targetShapeBorder,
+      targetBorderRadius: targetBorderRadius,
       targetPadding: targetPadding,
       overlayColor: const Color(0xFF0F172A),
       overlayOpacity: 0.75,

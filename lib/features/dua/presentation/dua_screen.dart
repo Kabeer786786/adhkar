@@ -460,7 +460,16 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DuaDetailScreen(dua: dua),
+                                  builder: (context) => DuaDetailScreen(
+                                    dua: dua,
+                                    onDelete: () {
+                                      setState(() {
+                                        _allDuas.removeWhere((d) => d.id == dua.id);
+                                      });
+                                      _persistDuas();
+                                      _filterDuas();
+                                    },
+                                  ),
                                 ),
                               );
                             },

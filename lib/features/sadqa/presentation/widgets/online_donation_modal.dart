@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/services/razorpay_donation_service.dart';
 import '../../../../shared/providers/user_profile_provider.dart';
 
+import '../../domain/models/sadqa_record.dart';
+import '../providers/sadqa_provider.dart';
+
 class OnlineDonationModal extends ConsumerStatefulWidget {
   const OnlineDonationModal({super.key});
 
@@ -59,64 +62,24 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
   }
 
   void _detectCurrencyFromLocation(String location) {
-    final isForeign = _isForeignLocation(location);
-    if (isForeign) {
+    final isExplicitUsd = _isExplicitUsdLocation(location);
+    if (isExplicitUsd) {
       _selectedCurrency = 'USD';
-      _selectedAmount = 5.0; // Starts from $5 for foreign countries
+      _selectedAmount = 5.0;
       _amountController.text = '5';
     } else {
-      _selectedCurrency = 'INR'; // Default INR for India & any Indian cities
+      _selectedCurrency = 'INR'; // Default INR for India & Indian users
       _selectedAmount = 100.0;
       _amountController.text = '100';
     }
   }
 
-  bool _isForeignLocation(String location) {
+  bool _isExplicitUsdLocation(String location) {
     final loc = location.trim().toLowerCase();
-    if (loc.isEmpty) return false; // Default to India (INR)
+    if (loc.isEmpty) return false;
 
-    final foreignKeywords = [
-      'usa',
-      'us',
-      'united states',
-      'america',
-      'uk',
-      'united kingdom',
-      'england',
-      'london',
-      'uae',
-      'dubai',
-      'abu dhabi',
-      'sharjah',
-      'saudi',
-      'riyadh',
-      'jeddah',
-      'qatar',
-      'doha',
-      'kuwait',
-      'oman',
-      'bahrain',
-      'canada',
-      'toronto',
-      'vancouver',
-      'australia',
-      'sydney',
-      'melbourne',
-      'germany',
-      'france',
-      'italy',
-      'spain',
-      'europe',
-      'singapore',
-      'malaysia',
-      'japan',
-      'china',
-      'foreign',
-      'dollar',
-      'usd',
-    ];
-
-    return foreignKeywords.any((keyword) => loc.contains(keyword));
+    final usdKeywords = ['usa', 'united states', 'america', 'usd'];
+    return usdKeywords.any((keyword) => loc.contains(keyword));
   }
 
   @override
@@ -193,6 +156,21 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
         setState(() {
           _isLoading = false;
         });
+
+        // Auto-log online donation payment directly into Sadaqah records
+        final currencySymbol = _selectedCurrency == 'INR' ? '₹' : '\$';
+        ref.read(sadqaRecordsProvider.notifier).addRecord(
+          SadqaRecord(
+            id: 'online_${DateTime.now().millisecondsSinceEpoch}',
+            type: CharityType.sadaqah,
+            category: SadaqahCategory.general,
+            amount: amount,
+            currency: currencySymbol,
+            date: DateTime.now(),
+            recipient: 'Online App Donation',
+            note: 'Razorpay Txn: $paymentId',
+          ),
+        );
 
         Navigator.pop(context);
 

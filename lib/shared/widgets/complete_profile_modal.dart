@@ -184,39 +184,7 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Top Header Row with Drag Handle & Close (X) Icon Button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(width: 32),
-                    Container(
-                      width: 42,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.close_rounded,
-                          size: 18,
-                          color: Color(0xFF4A5568),
-                        ),
-                      ),
-                      tooltip: 'Close Popup',
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 6),
+               const SizedBox(height: 6),
 
                 // Icon Badge & Title
                 Container(

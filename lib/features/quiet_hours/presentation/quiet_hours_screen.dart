@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../widgets/app_header_bar.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/quiet_hours_model.dart';
 import 'providers/quiet_hours_provider.dart';
 import 'widgets/quiet_hours_library_modal.dart';
@@ -135,15 +136,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                     .read(quietHoursProvider.notifier)
                     .deleteSchedule(schedule.id);
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Timing deleted',
-                      style: GoogleFonts.lexend(),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                _showDeleteToast(context, 'Timing deleted');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDC2626),
@@ -216,9 +209,16 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     );
   }
 
+  void _showDeleteToast(BuildContext context, [String message = 'Removed']) {
+    AppFloatingToast.showRemoved(context, message: message);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final schedules = ref.watch(quietHoursProvider);
+    final rawSchedules = ref.watch(quietHoursProvider);
+    final schedules = List<QuietHours>.from(rawSchedules)
+      ..sort((a, b) => (a.startHour * 60 + a.startMinute)
+          .compareTo(b.startHour * 60 + b.startMinute));
     final service = ref.watch(quietHoursServiceProvider);
     final isSupported = service.isSupported;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -486,15 +486,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 ref
                     .read(quietHoursProvider.notifier)
                     .deleteSchedule(schedule.id);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Timing deleted',
-                      style: GoogleFonts.lexend(),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                _showDeleteToast(context, 'Timing deleted');
               },
             );
           },

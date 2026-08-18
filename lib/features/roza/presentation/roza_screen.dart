@@ -14,6 +14,8 @@ import '../../../core/utils/hijri_date_helper.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../widgets/app_header_bar.dart';
 
+import '../../../shared/widgets/feature_intro_modal.dart';
+
 class RozaScreen extends ConsumerStatefulWidget {
   const RozaScreen({super.key});
 
@@ -32,6 +34,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() {});
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FeatureIntroModal.show(context, FeatureIntroType.roza);
     });
   }
 
@@ -331,28 +336,11 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                               ],
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: fastingInfo.primaryColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              fastingInfo.badgeText,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
+                         
                         ],
                       ),
                       if (fastingInfo.arabicHadith != null) ...[
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 14),
                         Align(
                           alignment: Alignment.centerRight,
                           child: Text(
@@ -360,6 +348,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                             textDirection: TextDirection.rtl,
                             style: GoogleFonts.amiri(
                               fontSize: 18,
+                              height: 2,
                               fontWeight: FontWeight.bold,
                               color: fastingInfo.primaryColor,
                             ),
@@ -1146,8 +1135,6 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                     ),
                     if (isExpanded) ...[
                       const SizedBox(height: 12),
-                      const Divider(height: 1),
-                      const SizedBox(height: 10),
                       if (occ.arabicHadith != null) ...[
                         Align(
                           alignment: Alignment.centerRight,
@@ -1156,6 +1143,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                             textDirection: TextDirection.rtl,
                             style: GoogleFonts.amiri(
                               fontSize: 17,
+                              height: 2.2,
                               fontWeight: FontWeight.bold,
                               color: occ.primaryColor,
                             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../widgets/app_header_bar.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../data/books_provider.dart';
 import '../domain/book_model.dart';
 import 'book_reader_screen.dart';
@@ -355,12 +356,9 @@ class BooksScreen extends ConsumerWidget {
                     onPressed: () {
                       ref.read(userBooksProvider.notifier).removeBook(book.id);
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                              Text('Removed "${book.title}" from bookshelf.'),
-                          backgroundColor: const Color(0xFF334155),
-                        ),
+                      AppFloatingToast.showRemoved(
+                        context,
+                        message: 'Removed "${book.title}" from bookshelf',
                       );
                     },
                     icon: const Icon(
