@@ -9,7 +9,6 @@
 <p align="center">
   <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-3.x-02569B.svg?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter"></a>
   <a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-3.x-0175C2.svg?style=for-the-badge&logo=dart&logoColor=white" alt="Dart"></a>
-  <a href="https://supabase.com"><img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E.svg?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-Open%20Source-green.svg?style=for-the-badge" alt="License"></a>
   <a href="#-contact--support"><img src="https://img.shields.io/badge/Maintainer-Shaik%20Kabeer-orange.svg?style=for-the-badge" alt="Maintainer"></a>
 </p>
@@ -47,28 +46,28 @@ Experience a calm, ad-free, and distraction-free Islamic companion on your mobil
 
 Here is a visual preview of the **Adhkar** user experience:
 
-### 🏠 Dashboard & 🕌 Prayer Timings
+### 🏠 Dashboard, 🕌 Prayer Timings & ✨ Asma Ul Husna
 <p align="center">
-  <img src="assets/images/Mockups/home.jpg" width="195" alt="Home Dashboard">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/namaz1.jpg" width="195" alt="Namaz Prayer Schedule">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/namaz2.jpg" width="195" alt="Calculation Setup">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/asmaul-husna.jpg" width="195" alt="Asma Ul Husna">
+  <img src="assets/images/Mockups/home.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Home Dashboard">
+  <img src="assets/images/Mockups/namaz1.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Namaz Prayer Schedule">
+  <img src="assets/images/Mockups/namaz2.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Calculation Setup">
+  <img src="assets/images/Mockups/asma-ul-husna.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Asma Ul Husna">
 </p>
 
 ### 📿 Daily Adhkar & 🔢 Digital Tasbeeh
 <p align="center">
-  <img src="assets/images/Mockups/adhkar1.jpg" width="195" alt="Adhkar Categories">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/adhkar2.jpg" width="195" alt="Morning Adhkar View">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/tasbeeh1.jpg" width="195" alt="Tasbeeh">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/tasbeeh2.jpg" width="195" alt="Tasbeeh Counter">
+  <img src="assets/images/Mockups/adhkar1.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Adhkar Categories">
+  <img src="assets/images/Mockups/adhkar2.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Morning Adhkar View">
+  <img src="assets/images/Mockups/tasbeeh1.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Tasbeeh Counter Presets">
+  <img src="assets/images/Mockups/tasbeeh2.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Tasbeeh Counter View">
 </p>
 
 ### 🕋 Qibla Finder, 📚 Islamic Books & 🧪 Science in Islam
 <p align="center">
-  <img src="assets/images/Mockups/qibla.jpg" width="195" alt="Qibla Compass">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/books.jpg" width="195" alt="Islamic Library">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/scifi-islam.jpg" width="195" alt="Science in Islam">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/scifi-islam2.jpg" width="195" alt="Science Topic in Islam">
+  <img src="assets/images/Mockups/qibla.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Qibla Compass">
+  <img src="assets/images/Mockups/books.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Islamic Library">
+  <img src="assets/images/Mockups/scifi-islam.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Science in Islam">
+  <img src="assets/images/Mockups/scifi-islam2.jpg" width="22%" style="min-width: 140px; max-width: 46%; margin: 3px;" alt="Quranic Scientific Miracles">
 </p>
 
 ---
@@ -115,7 +114,7 @@ adhkar/
 │   │   ├── about_islam/       # Articles and foundational information about Islamic teachings
 │   │   ├── adhkar/            # Daily Adhkar categories, details, counters, and progress trackers
 │   │   ├── asma_ul_husna/     # 99 Names of Allah with detailed modal, audio, and translations
-│   │   ├── auth/              # User authentication, login state, and Supabase cloud sync
+│   │   ├── auth/              # User authentication, login state, and local profile sync
 │   │   ├── books/             # Integrated Islamic book browser and digital PDF viewer
 │   │   ├── calendar/          # Dual Hijri & Gregorian calendar with Islamic event tracking
 │   │   ├── dua/               # Supplication collections categorized by daily activities
@@ -140,7 +139,6 @@ adhkar/
 │   └── main.dart              # Application entry point initializing Flutter dependencies
 ├── linux/                     # Platform setup files for Linux desktop builds
 ├── macos/                     # Platform setup files for macOS desktop builds
-├── supabase/                  # Supabase database configuration and backend migration scripts
 ├── test/                      # Unit, widget, and integration testing scripts
 ├── web/                       # Web platform setup and index HTML configuration
 ├── windows/                   # Platform setup files for Windows desktop builds
@@ -159,7 +157,6 @@ adhkar/
 | **Framework** | [Flutter](https://flutter.dev) (v3.x) & [Dart](https://dart.dev) | Cross-platform mobile development |
 | **State Management** | `flutter_riverpod` | Reactive state management & dependency injection |
 | **Navigation** | `go_router` | Declarative routing & deep-linking |
-| **Backend & Cloud** | `supabase_flutter` | Cloud database, authentication, and user data sync |
 | **Network & Storage** | `dio`, `hive`, `shared_preferences` | REST API communication & fast offline key-value storage |
 | **Media & Audio** | `just_audio` | Audio player for Quran recitations and Adhan alerts |
 | **Sensors & Maps** | `flutter_compass`, `flutter_map`, `geolocator` | Qibla direction, compass sensors & interactive mapping |
@@ -245,4 +242,5 @@ If you have questions, suggestions, feedback, or bug reports, feel free to get i
 <p align="center">
   ⭐ <b>If you find Adhkar helpful, please give this repository a star!</b> ⭐
 </p>
+
 
