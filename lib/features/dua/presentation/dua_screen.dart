@@ -460,16 +460,28 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DuaDetailScreen(
-                                    dua: dua,
-                                    onDelete: () {
-                                      setState(() {
-                                        _allDuas.removeWhere((d) => d.id == dua.id);
-                                      });
-                                      _persistDuas();
-                                      _filterDuas();
-                                    },
-                                  ),
+                                   builder: (context) => DuaDetailScreen(
+                                     dua: dua,
+                                     onDelete: () {
+                                       setState(() {
+                                         _allDuas.removeWhere((d) => d.id == dua.id);
+                                       });
+                                       _persistDuas();
+                                       _filterDuas();
+                                     },
+                                     onSave: (updatedDua) {
+                                       setState(() {
+                                         final idx = _allDuas.indexWhere((d) => d.id == updatedDua.id);
+                                         if (idx != -1) {
+                                           _allDuas[idx] = updatedDua;
+                                         } else {
+                                           _allDuas.add(updatedDua);
+                                         }
+                                       });
+                                       _persistDuas();
+                                       _filterDuas();
+                                     },
+                                   ),
                                 ),
                               );
                             },

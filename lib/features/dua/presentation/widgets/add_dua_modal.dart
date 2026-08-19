@@ -6,22 +6,28 @@ import '../../../../widgets/app_dropdown.dart';
 import '../../domain/dua_item.dart';
 
 class AddDuaModal extends StatefulWidget {
-  final Function(DuaItem newDua) onSave;
+  final DuaItem? initialDua;
+  final Function(DuaItem dua) onSave;
 
   const AddDuaModal({
     super.key,
+    this.initialDua,
     required this.onSave,
   });
 
   static void show(
     BuildContext context, {
-    required Function(DuaItem newDua) onSave,
+    DuaItem? initialDua,
+    required Function(DuaItem dua) onSave,
   }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AddDuaModal(onSave: onSave),
+      builder: (context) => AddDuaModal(
+        initialDua: initialDua,
+        onSave: onSave,
+      ),
     );
   }
 
@@ -48,6 +54,26 @@ class _AddDuaModalState extends State<AddDuaModal> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialDua != null) {
+      final dua = widget.initialDua!;
+      _titleController.text = dua.title;
+      _arabicController.text = dua.arabic;
+      _transliterationController.text = dua.transliteration;
+      _translationController.text = dua.translation;
+      _referenceController.text = dua.reference;
+      _benefitsController.text = dua.benefits;
+      if (_categories.contains(dua.category)) {
+        _selectedCategory = dua.category;
+      } else if (dua.category.isNotEmpty) {
+        _categories.add(dua.category);
+        _selectedCategory = dua.category;
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _arabicController.dispose();
@@ -69,8 +95,8 @@ class _AddDuaModalState extends State<AddDuaModal> {
       return;
     }
 
-    final newDua = DuaItem(
-      id: 'custom_dua_${DateTime.now().millisecondsSinceEpoch}',
+    final savedDua = DuaItem(
+      id: widget.initialDua?.id ?? 'custom_dua_${DateTime.now().millisecondsSinceEpoch}',
       title: title,
       category: _selectedCategory,
       arabic: arabic,
@@ -80,19 +106,19 @@ class _AddDuaModalState extends State<AddDuaModal> {
       translation: _translationController.text.trim().isNotEmpty
           ? _translationController.text.trim()
           : title,
-      repeatCount: 1,
+      repeatCount: widget.initialDua?.repeatCount ?? 1,
       reference: _referenceController.text.trim().isNotEmpty
           ? _referenceController.text.trim()
           : 'Personal Custom Supplication',
       benefits: _benefitsController.text.trim().isNotEmpty
           ? _benefitsController.text.trim()
           : 'Brings peace and reward.',
-      imagePath: 'assets/images/dua.png',
-      isCustom: true,
+      imagePath: widget.initialDua?.imagePath ?? 'assets/images/dua.png',
+      isCustom: widget.initialDua?.isCustom ?? true,
     );
 
     HapticFeedback.lightImpact();
-    widget.onSave(newDua);
+    widget.onSave(savedDua);
     Navigator.pop(context);
   }
 
@@ -125,6 +151,8 @@ class _AddDuaModalState extends State<AddDuaModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.initialDua != null;
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -154,7 +182,7 @@ class _AddDuaModalState extends State<AddDuaModal> {
               const SizedBox(height: 16),
 
               Text(
-                'Create Custom Dua',
+                isEditing ? 'Edit Dua' : 'Create Custom Dua',
                 style: context.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF2A531D),
@@ -259,9 +287,9 @@ class _AddDuaModalState extends State<AddDuaModal> {
                   ),
                   elevation: 2,
                 ),
-                child: const Text(
-                  'Save Custom Dua',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Text(
+                  isEditing ? 'Save Changes' : 'Save Custom Dua',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
