@@ -49,24 +49,26 @@ Here is a visual preview of the **Adhkar** user experience:
 
 ### 🏠 Dashboard & 🕌 Prayer Timings
 <p align="center">
-  <img src="assets/images/Mockups/home.jpg" width="260" alt="Home Dashboard">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/namaz1.jpg" width="260" alt="Namaz Prayer Schedule">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/namaz2.jpg" width="260" alt="Calculation Setup">
+  <img src="assets/images/Mockups/home.jpg" width="195" alt="Home Dashboard">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/namaz1.jpg" width="195" alt="Namaz Prayer Schedule">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/namaz2.jpg" width="195" alt="Calculation Setup">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/asmaul-husna.jpg" width="195" alt="Asma Ul Husna">
 </p>
 
 ### 📿 Daily Adhkar & 🔢 Digital Tasbeeh
 <p align="center">
-  <img src="assets/images/Mockups/adhkar1.jpg" width="260" alt="Adhkar Categories">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/adhkar2.jpg" width="260" alt="Morning Adhkar View">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/Mockups/tasbeeh1.jpg" width="260" alt="Tasbeeh Counter">
+  <img src="assets/images/Mockups/adhkar1.jpg" width="195" alt="Adhkar Categories">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/adhkar2.jpg" width="195" alt="Morning Adhkar View">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/tasbeeh1.jpg" width="195" alt="Tasbeeh">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/tasbeeh2.jpg" width="195" alt="Tasbeeh Counter">
 </p>
 
 ### 🕋 Qibla Finder, 📚 Islamic Books & 🧪 Science in Islam
 <p align="center">
-  <img src="assets/images/Mockups/qibla.jpg" width="240" alt="Qibla Compass">&nbsp;&nbsp;
-  <img src="assets/images/Mockups/books.jpg" width="240" alt="Islamic Library">&nbsp;&nbsp;
-  <img src="assets/images/Mockups/scifi-islam.jpg" width="240" alt="Science in Islam">&nbsp;&nbsp;
-  <img src="assets/images/Mockups/scifi-islam2.jpg" width="240" alt="Quranic Scientific Miracles">
+  <img src="assets/images/Mockups/qibla.jpg" width="195" alt="Qibla Compass">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/books.jpg" width="195" alt="Islamic Library">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/scifi-islam.jpg" width="195" alt="Science in Islam">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/Mockups/scifi-islam2.jpg" width="195" alt="Science Topic in Islam">
 </p>
 
 ---
