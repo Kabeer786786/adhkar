@@ -297,7 +297,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                         ),
                         const SizedBox(height: 6),
                         SelectableText(
-                          '${widget.item.shortMeaning}',
+                          widget.item.shortMeaning,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

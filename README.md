@@ -144,6 +144,7 @@ adhkar/
 ├── windows/                   # Platform setup files for Windows desktop builds
 ├── analysis_options.yaml      # Static Dart analyzer rules and linting standards
 ├── pubspec.yaml               # Flutter package configuration, dependencies, and asset declarations
+├── SECURITY.md                # Security policy and responsible vulnerability reporting guide
 └── README.md                  # Main repository documentation and developer setup guide
 ```
 </details>

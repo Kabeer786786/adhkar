@@ -238,9 +238,11 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final numStr = state.uri.queryParameters['num'] ?? '1';
+        final juzStr = state.uri.queryParameters['juz'];
         final name = state.uri.queryParameters['name'] ?? 'Al-Fatiha';
         return SurahDetailScreen(
           surahNumber: int.parse(numStr),
+          juzNumber: juzStr != null ? int.tryParse(juzStr) : null,
           surahName: name,
         );
       },

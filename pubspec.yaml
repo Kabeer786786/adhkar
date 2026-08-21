@@ -65,6 +65,7 @@ dependencies:
   shared_preferences: ^2.5.1
   showcaseview: ^5.1.0
   package_info_plus: ^8.3.0
+  path_provider: ^2.1.6
 
 
 dev_dependencies:
@@ -92,6 +93,7 @@ flutter:
     - assets/
     - assets/logo.png
     - assets/images/
+    - assets/data/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
