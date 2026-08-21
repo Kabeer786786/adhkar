@@ -244,4 +244,11 @@ If you have questions, suggestions, feedback, or bug reports, feel free to get i
   ⭐ <b>If you find Adhkar helpful, please give this repository a star!</b> ⭐
 </p>
 
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for full details.
+
+
 
