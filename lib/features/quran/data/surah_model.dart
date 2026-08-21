@@ -88,7 +88,7 @@ class AyahModel extends Equatable {
     final num = json['number'] as int;
     final fileName = json['audio_filename'] as String? ?? '$num.mp3';
     final remote = json['remote_url'] as String? ??
-        'https://github.com/Kabeer786786/adhkar/releases/download/v1.0.0/quran-$num.mp3';
+        'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/$num.mp3';
 
     return AyahModel(
       number: num,

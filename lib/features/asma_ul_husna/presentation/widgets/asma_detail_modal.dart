@@ -71,7 +71,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
 
   @override
   Widget build(BuildContext context) {
-    final maxModalHeight = MediaQuery.of(context).size.height * 0.88;
+    final maxModalHeight = MediaQuery.of(context).size.height * 0.8;
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxModalHeight),
@@ -138,7 +138,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
               ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
 
           // Scrollable main content styled like DuaDetailScreen
           Expanded(

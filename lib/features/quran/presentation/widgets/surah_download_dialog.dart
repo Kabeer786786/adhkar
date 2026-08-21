@@ -28,17 +28,27 @@ class SurahDownloadDialog extends ConsumerWidget {
     );
 
     if (!isDownloaded && context.mounted) {
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (ctx) => SurahDownloadDialog(
-          title: title,
-          totalVerses: items.length,
-          items: items,
-        ),
-      );
+      show(context: context, ref: ref, title: title, items: items);
     }
+  }
+
+  /// Force show download prompt dialog for Surah/Juz.
+  static void show({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String title,
+    required List<MediaDownloadItem> items,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => SurahDownloadDialog(
+        title: title,
+        totalVerses: items.length,
+        items: items,
+      ),
+    );
   }
 
   @override

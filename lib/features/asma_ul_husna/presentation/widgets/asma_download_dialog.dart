@@ -1,47 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/providers/media_download_provider.dart';
 import '../../../../core/services/media_download_service.dart';
+import '../../data/asma_ul_husna_data.dart';
 
 class AsmaDownloadDialog extends ConsumerWidget {
   final List<MediaDownloadItem> items;
 
   const AsmaDownloadDialog({super.key, required this.items});
 
-  /// Check if 99 names are downloaded on first screen load. If not, show dialog.
-  static Future<void> showIfFirstTime(BuildContext context, WidgetRef ref) async {
-    final defaultItems = List.generate(99, (index) {
-      final id = index + 1;
+  static List<MediaDownloadItem> _buildDefaultItems() {
+    return asmaUlHusnaList.map((item) {
       return MediaDownloadItem(
-        id: 'asma_$id',
-        title: 'Name #$id',
-        relativePath: 'asma_ul_husna/$id.mp3',
-        remoteUrl: 'https://github.com/Kabeer786786/adhkar/releases/download/v1.0.0/asma-ul-husna-$id.mp3',
+        id: 'asma_${item.number}',
+        title: item.transliteration.isNotEmpty ? item.transliteration : 'Name #${item.number}',
+        relativePath: item.localRelativePath,
+        remoteUrl: item.remoteUrl,
       );
-    });
+    }).toList();
+  }
 
+  /// Check if 99 names are downloaded or if prompt was already dismissed.
+  /// If not, prompt user.
+  static Future<void> showIfFirstTime(BuildContext context, WidgetRef ref) async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool alreadyPrompted = prefs.getBool('asma_download_prompt_dismissed') ?? false;
+
+    final defaultItems = _buildDefaultItems();
     final isAllDownloaded = await MediaDownloadService.instance.isBatchDownloaded(
       defaultItems.map((e) => e.relativePath).toList(),
     );
 
-    if (!isAllDownloaded && context.mounted) {
+    if (!alreadyPrompted && !isAllDownloaded && context.mounted) {
       show(context, ref, items: defaultItems);
     }
   }
 
-  /// Show download prompt when user attempts to play audio without having downloaded it.
+  /// Show download prompt dialog.
   static void show(BuildContext context, WidgetRef ref, {List<MediaDownloadItem>? items}) {
-    final downloadItems = items ??
-        List.generate(99, (index) {
-          final id = index + 1;
-          return MediaDownloadItem(
-            id: 'asma_$id',
-            title: 'Name #$id',
-            relativePath: 'asma_ul_husna/$id.mp3',
-            remoteUrl: 'https://github.com/Kabeer786786/adhkar/releases/download/v1.0.0/asma-ul-husna-$id.mp3',
-          );
-        });
+    final downloadItems = items ?? _buildDefaultItems();
 
     showModalBottomSheet(
       context: context,
@@ -49,6 +48,11 @@ class AsmaDownloadDialog extends ConsumerWidget {
       isScrollControlled: true,
       builder: (ctx) => AsmaDownloadDialog(items: downloadItems),
     );
+  }
+
+  static Future<void> _markPromptDismissed() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('asma_download_prompt_dismissed', true);
   }
 
   @override
@@ -94,7 +98,7 @@ class AsmaDownloadDialog extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Audio playback is local-first. Download all 99 Asma-ul-Husna audio recitations for seamless offline listening (~15 MB). Downloads run in the background while you continue browsing.',
+            'Download all 99 Asma-ul-Husna audio recitations for offline listening. If you skip, audio will stream online.',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
               fontSize: 14,
@@ -107,7 +111,10 @@ class AsmaDownloadDialog extends ConsumerWidget {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () async {
+                    await _markPromptDismissed();
+                    if (context.mounted) Navigator.pop(context);
+                  },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: const BorderSide(color: Colors.black26),
@@ -116,7 +123,7 @@ class AsmaDownloadDialog extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Cancel',
+                    'Stream Online',
                     style: GoogleFonts.outfit(
                       color: Colors.black87,
                       fontWeight: FontWeight.w600,
@@ -127,8 +134,9 @@ class AsmaDownloadDialog extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    await _markPromptDismissed();
+                    if (context.mounted) Navigator.pop(context);
                     ref.read(mediaDownloadProvider.notifier).startBatchDownload(
                           taskTitle: 'Downloading 99 Asma-ul-Husna Audios',
                           items: items,
@@ -142,7 +150,7 @@ class AsmaDownloadDialog extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Download in Background',
+                    'Download All',
                     style: GoogleFonts.outfit(
                       color: const Color(0xFFD4AF37),
                       fontWeight: FontWeight.bold,

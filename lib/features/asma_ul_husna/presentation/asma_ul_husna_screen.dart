@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/providers/media_download_provider.dart';
+import '../../../core/services/media_download_service.dart';
 import '../../../shared/widgets/floating_download_bar.dart';
 import '../data/asma_ul_husna_data.dart';
 import '../data/asma_ul_husna_model.dart';
@@ -20,6 +22,8 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<double> _titleOpacity = ValueNotifier<double>(0.0);
   bool _isGridView = true; // True for boxes/grid, False for list view
+  bool _isAllDownloaded = false; 
+  bool _hasCheckedDownloadStatus = false;
 
   @override
   void initState() {
@@ -30,8 +34,20 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         AsmaDownloadDialog.showIfFirstTime(context, ref);
+        _checkDownloadStatus();
       }
     });
+  }
+
+  Future<void> _checkDownloadStatus() async {
+    final paths = asmaUlHusnaList.map((e) => e.localRelativePath).toList();
+    final downloaded = await MediaDownloadService.instance.isBatchDownloaded(paths);
+    if (mounted) {
+      setState(() {
+        _isAllDownloaded = downloaded;
+        _hasCheckedDownloadStatus = true;
+      });
+    }
   }
 
   void _onScroll() {
@@ -91,6 +107,12 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(mediaDownloadProvider, (prev, next) {
+      if (next.isCompleted) {
+        _checkDownloadStatus();
+      }
+    });
+
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = screenWidth > 600 ? 5 : 3;
     final isPlayerActive = _audioController.currentIndex >= 0;
@@ -142,6 +164,16 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
               },
             ),
             actions: [
+              if (_hasCheckedDownloadStatus && !_isAllDownloaded)
+                IconButton(
+                  icon: const Icon(
+                    Icons.download_for_offline_rounded,
+                    color: Color(0xFF1A3512),
+                    size: 22,
+                  ),
+                  onPressed: () => AsmaDownloadDialog.show(context, ref),
+                  tooltip: 'Download 99 Names Audio',
+                ),
               IconButton(
                 icon: Icon(
                   _isGridView
@@ -166,7 +198,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        child: _buildHeaderCard(),
+                        child: _buildHeaderCard(), 
                       ),
                     ),
                     SliverPadding(
@@ -223,6 +255,8 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   }
 
   Widget _buildHeaderCard() {
+    final isPlayingAny = _audioController.isPlaying;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -237,44 +271,87 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
         ),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.auto_awesome_rounded,
-                color: Color(0xFF2A531D),
-                size: 20,
+              Row(
+                children: [
+                  const Icon(
+                    Icons.auto_awesome_rounded,
+                    color: Color(0xFF2A531D),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '99 Names of Allah',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF2A531D).withValues(alpha: 0.8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
+              const SizedBox(height: 6),
               Text(
-                '99 Names of Allah',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.8),
-                  letterSpacing: 0.5,
+                'Asma Ul Husna',
+                style: GoogleFonts.outfit(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF1A3512),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.only(right: 44),
+                child: Text(
+                  'Discover and memorize the 99 Beautiful Names of Almighty Allah.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: const Color(0xFF1A3512).withValues(alpha: 0.8),
+                    height: 1.35,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Asma Ul Husna',
-            style: GoogleFonts.outfit(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A3512),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Discover and memorize the 99 Beautiful Names of Almighty Allah.',
-            style: TextStyle(
-              fontSize: 13,
-              color: const Color(0xFF1A3512).withValues(alpha: 0.8),
-              height: 1.35,
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  if (_audioController.currentIndex >= 0) {
+                    _audioController.togglePlayPause(context: context, ref: ref);
+                  } else {
+                    _audioController.playIndex(0, context: context, ref: ref);
+                  }
+                },
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A3512),
+                    shape: BoxShape.circle,
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: const Color(0xFF1A3512).withValues(alpha: 0.3),
+                    //     blurRadius: 8,
+                    //     offset: const Offset(0, 3),
+                    //   ),
+                    // ],
+                  ),
+                  child: Icon(
+                    isPlayingAny ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    color: const Color(0xFFD4AF37),
+                    size: 22,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -355,12 +432,12 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                       item.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.amiri(
-                        fontSize: isSelected ? 32 : 25,
+                        fontSize: isSelected ? 32 : 26,
                         fontWeight: FontWeight.bold,
                         color: isSelected
                             ? const Color(0xFF15803D)
                             : const Color(0xFF1A3512),
-                        height: 1.4,
+                        height: 1.6,
                       ),
                     ),
                   ),
@@ -371,7 +448,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 13,
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.w600,
                       color: isSelected
@@ -430,7 +507,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF16A34A) : Colors.white,
+                  color: isSelected
+                      ? const Color(0xFF16A34A)
+                      : const Color(0xFF2A531D).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -467,13 +546,13 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                             : const Color(0xFF2A531D),
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       item.shortMeaning,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: isSelected
                             ? const Color(0xFF15803D).withValues(alpha: 0.85)
@@ -596,7 +675,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     currentItem.name,
                     style: GoogleFonts.amiri(
                       color: const Color(0xFF4ADE80),
-                      fontSize: 20,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -607,13 +686,47 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
+                ], 
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        trackHeight: 5,
+                        thumbShape:
+                            const RoundSliderThumbShape(enabledThumbRadius: 5),
+                        overlayShape:
+                            const RoundSliderOverlayShape(overlayRadius: 10),
+                        activeTrackColor: const Color(0xFF4ADE80),
+                        inactiveTrackColor: Colors.white24,
+                        thumbColor: Colors.white,
+                      ),
+                      child: Slider(
+                        value: (currentItem.number).toDouble().clamp(1.0, 99.0),
+                        min: 1.0,
+                        max: 99.0,
+                        divisions: 98,
+                        onChanged: (val) {
+                          final targetIndex = val.toInt() - 1;
+                          if (targetIndex != _audioController.currentIndex) {
+                            _audioController.playIndex(targetIndex,
+                                context: context, ref: ref);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 4),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.skip_previous_rounded,
@@ -621,6 +734,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     onPressed: () =>
                         _audioController.playPrevious(context: context, ref: ref),
                   ),
+                  const SizedBox(width: 10),
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -640,6 +754,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(width: 10),
                   IconButton(
                     icon: const Icon(Icons.skip_next_rounded,
                         color: Colors.white, size: 28),

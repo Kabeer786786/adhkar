@@ -8,7 +8,6 @@ import 'package:just_audio/just_audio.dart';
 import '../../../core/services/media_download_service.dart';
 import '../data/asma_ul_husna_data.dart';
 import '../data/asma_ul_husna_model.dart';
-import '../presentation/widgets/asma_download_dialog.dart';
 
 class AsmaAudioController extends ChangeNotifier {
   final AudioPlayer _player = AudioPlayer();
@@ -61,8 +60,8 @@ class AsmaAudioController extends ChangeNotifier {
   }
 
   /// Play audio for a specific name index.
-  /// Enforces local-first audio playback. If local audio does not exist,
-  /// prompts user to download audio via [AsmaDownloadDialog].
+  /// Checks local cache first; if missing, streams from Cloudflare R2 and
+  /// caches individually in the background.
   Future<bool> playIndex(
     int index, {
     BuildContext? context,
@@ -76,24 +75,56 @@ class AsmaAudioController extends ChangeNotifier {
 
     final bool exists = await localFile.exists() && (await localFile.length()) > 0;
 
-    if (!exists) {
-      if (context != null && ref != null && context.mounted) {
-        AsmaDownloadDialog.show(context, ref);
-      }
-      return false;
-    }
-
     _currentIndex = index;
     notifyListeners();
 
     try {
-      await _player.setAudioSource(AudioSource.file(localFile.path));
+      if (exists) {
+        await _player.setAudioSource(AudioSource.file(localFile.path));
+      } else {
+        // Stream directly from R2 URL
+        final remoteUrl = item.remoteUrl.isNotEmpty
+            ? item.remoteUrl
+            : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
+
+        await _player.setAudioSource(AudioSource.uri(Uri.parse(remoteUrl)));
+
+        // Background cache current item
+        _cacheItemInBackground(item);
+      }
+
       await _player.setSpeed(_speed);
       await _player.play();
+
+      // Preload next 1-2 items
+      _preloadNextItems(index);
       return true;
     } catch (e) {
-      debugPrint('Error playing local audio for index $index: $e');
+      debugPrint('Error playing audio for Asma-ul-Husna index $index: $e');
       return false;
+    }
+  }
+
+  void _cacheItemInBackground(AsmaUlHusna item) async {
+    try {
+      final url = item.remoteUrl.isNotEmpty
+          ? item.remoteUrl
+          : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
+
+      await MediaDownloadService.instance.downloadFile(
+        relativePath: item.localRelativePath,
+        remoteUrl: url,
+      );
+    } catch (_) {}
+  }
+
+  void _preloadNextItems(int currentIndex) {
+    for (int offset = 1; offset <= 2; offset++) {
+      final nextIndex = currentIndex + offset;
+      if (nextIndex < asmaUlHusnaList.length) {
+        final nextItem = asmaUlHusnaList[nextIndex];
+        _cacheItemInBackground(nextItem);
+      }
     }
   }
 

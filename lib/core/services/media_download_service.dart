@@ -12,9 +12,8 @@ class MediaDownloadService {
   final Dio _dio = Dio();
   CancelToken? _cancelToken;
 
-  /// Default GitHub Releases base URL for audio assets.
-  /// Example: https://github.com/Kabeer786786/adhkar/releases/download/v1.0.0/
-  String baseUrl = 'https://github.com/Kabeer786786/adhkar/releases/download/v1.0.0';
+  /// Default Cloudflare R2 base URL for audio assets.
+  String baseUrl = 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev';
 
   /// Get the root directory for storing downloaded audio assets.
   Future<Directory> get _audioDirectory async {
@@ -156,6 +155,35 @@ class MediaDownloadService {
   void cancelDownload() {
     _cancelToken?.cancel('User cancelled download');
     _cancelToken = null;
+  }
+
+  /// Cache management method to ensure local storage doesn't grow infinitely.
+  /// Cleans up old cached files if total file count exceeds [maxFilesCount].
+  Future<void> cleanCacheIfNeeded({int maxFilesCount = 1000}) async {
+    try {
+      final root = await _audioDirectory;
+      final entities = root.listSync(recursive: true);
+      final files = entities.whereType<File>().toList();
+      if (files.length > maxFilesCount) {
+        // Sort files by last modified time (oldest first)
+        files.sort((a, b) {
+          try {
+            return a.lastModifiedSync().compareTo(b.lastModifiedSync());
+          } catch (_) {
+            return 0;
+          }
+        });
+        // Delete oldest files to bring count down to 80% of maxFilesCount
+        final toDeleteCount = files.length - (maxFilesCount * 0.8).toInt();
+        for (int i = 0; i < toDeleteCount; i++) {
+          try {
+            if (await files[i].exists()) {
+              await files[i].delete();
+            }
+          } catch (_) {}
+        }
+      }
+    } catch (_) {}
   }
 }
 

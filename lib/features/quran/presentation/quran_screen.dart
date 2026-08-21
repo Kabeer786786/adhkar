@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/providers/app_providers.dart';
+import '../../../shared/widgets/floating_download_bar.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../data/juz_model.dart';
 import '../repositories/quran_repository.dart';
@@ -66,9 +67,11 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
-      child: Scaffold(
-        backgroundColor:
-            isDark ? const Color(0xFF17241E) : const Color(0xFFF9F9F9),
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor:
+                isDark ? const Color(0xFF17241E) : const Color(0xFFF9F9F9),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
@@ -517,7 +520,13 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
           ],
         ),
       ),
-    );
+      const Align(
+        alignment: Alignment.bottomCenter,
+        child: FloatingDownloadBar(),
+      ),
+    ],
+  ),
+);
   }
 
   Widget _buildPillTab(String label, int index, bool isDark) {
