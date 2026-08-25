@@ -68,7 +68,7 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         customDays: const [1, 2, 3, 4, 5, 6, 7],
         duration: AlarmDuration.seconds30,
         soundEnabled: true,
-        soundType: 'Makkah Azaan',
+        soundType: 'Madinah Azaan',
         vibrationEnabled: true,
         notificationEnabled: true,
         isEnabled: false,
@@ -86,7 +86,7 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         customDays: const [1, 2, 3, 4, 5, 6, 7],
         duration: AlarmDuration.seconds30,
         soundEnabled: true,
-        soundType: 'Makkah Azaan',
+        soundType: 'Madinah Azaan',
         vibrationEnabled: true,
         notificationEnabled: true,
         isEnabled: false,
@@ -104,7 +104,7 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         customDays: const [1, 2, 3, 4, 5, 6, 7],
         duration: AlarmDuration.seconds30,
         soundEnabled: true,
-        soundType: 'Makkah Azaan',
+        soundType: 'Madinah Azaan',
         vibrationEnabled: true,
         notificationEnabled: true,
         isEnabled: false,
@@ -122,7 +122,7 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         customDays: const [1, 2, 3, 4, 5, 6, 7],
         duration: AlarmDuration.seconds30,
         soundEnabled: true,
-        soundType: 'Makkah Azaan',
+        soundType: 'Madinah Azaan',
         vibrationEnabled: true,
         notificationEnabled: true,
         isEnabled: false,
@@ -140,7 +140,7 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
         customDays: const [1, 2, 3, 4, 5, 6, 7],
         duration: AlarmDuration.seconds30,
         soundEnabled: true,
-        soundType: 'Makkah Azaan',
+        soundType: 'Madinah Azaan',
         vibrationEnabled: true,
         notificationEnabled: true,
         isEnabled: false,
@@ -182,6 +182,17 @@ class ReminderNotifier extends StateNotifier<List<CustomReminder>> {
     state = newList;
     await _saveReminders();
     await _scheduler.cancelReminder(id);
+  }
+
+  Future<void> deleteMultipleReminders(Iterable<String> ids) async {
+    final idSet = ids.toSet();
+    final newList = state.where((r) => !idSet.contains(r.id)).toList();
+    _sortReminders(newList);
+    state = newList;
+    await _saveReminders();
+    for (final id in idSet) {
+      await _scheduler.cancelReminder(id);
+    }
   }
 
   Future<void> toggleEnable(String id) async {

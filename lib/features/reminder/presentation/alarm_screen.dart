@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
+import '../../../core/config/reminder_audio_config.dart';
 import '../../../core/services/notification_service.dart';
 import '../../prayer/domain/prayer_models.dart';
 import '../domain/reminder_model.dart';
@@ -68,12 +69,20 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   }
 
   Future<void> _initAudioAndVibration() async {
-    final effectiveSoundType = widget.soundType ?? 'Makkah Azaan';
-    final audioUrl = PrayerNotificationConfig.soundAudioUrls[effectiveSoundType] ??
-        PrayerNotificationConfig.soundAudioUrls['Makkah Azaan']!;
+    final effectiveSoundType = widget.soundType ?? ReminderAudioConfig.defaultSound;
+    final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
 
     try {
-      await _audioPlayer.setUrl(audioUrl);
+      if (assetPath != null) {
+        await _audioPlayer.setAsset(assetPath);
+      } else {
+        final fallbackUrl = PrayerNotificationConfig.soundAudioUrls[effectiveSoundType];
+        if (fallbackUrl != null) {
+          await _audioPlayer.setUrl(fallbackUrl);
+        } else {
+          await _audioPlayer.setAsset('assets/audios/madina_azaan.mp3');
+        }
+      }
       await _audioPlayer.setLoopMode(LoopMode.one);
       await _audioPlayer.setVolume(1.0); 
       await _audioPlayer.play();

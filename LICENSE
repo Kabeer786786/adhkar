@@ -19,3 +19,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+### Media Infrastructure & Resource Usage Terms
+
+The source code of this software is licensed under the MIT License above. However, the hosted Cloudflare R2 audio endpoints and CDN infrastructure provided within this project are subject to the following fair-use restrictions:
+
+1. **Streaming Restrictions**: External applications, third-party forks, or commercial projects MUST NOT hotlink or use the project's Cloudflare R2 endpoints for live audio streaming or continuous commercial distribution.
+2. **Offline Download & Self-Hosting**: One-time downloading of audio assets for personal offline caching or self-hosting on your own infrastructure is permitted.
+3. **Commercial Deployment**: Derivative or commercial applications built from this source code MUST supply and host their own audio media infrastructure.

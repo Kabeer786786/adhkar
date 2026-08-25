@@ -61,6 +61,32 @@ class NotificationService {
         });
       }
     }
+    _configureLocalTimezone();
+  }
+
+  void _configureLocalTimezone() {
+    try {
+      final now = DateTime.now();
+      final offset = now.timeZoneOffset;
+      // Default to Asia/Kolkata if +05:30 (IST) or attempt to match location by offset
+      if (offset.inMinutes == 330) {
+        tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+      } else {
+        // Try system location or fallback to Asia/Kolkata
+        try {
+          final tzName = now.timeZoneName;
+          if (tzName.isNotEmpty && tz.timeZoneDatabase.locations.containsKey(tzName)) {
+            tz.setLocalLocation(tz.getLocation(tzName));
+          } else {
+            tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+          }
+        } catch (_) {
+          tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+        }
+      }
+    } catch (_) {
+      // Fallback safeguard
+    }
   }
 
   Future<void> showNotification({
@@ -112,11 +138,21 @@ class NotificationService {
       iOS: const DarwinNotificationDetails(),
     );
 
+    final tzScheduled = tz.TZDateTime(
+      tz.local,
+      scheduledTime.year,
+      scheduledTime.month,
+      scheduledTime.day,
+      scheduledTime.hour,
+      scheduledTime.minute,
+      scheduledTime.second,
+    );
+
     await _notificationsPlugin.zonedSchedule(
       id,
       'Time for $prayerName Prayer',
       'It is time for $prayerName prayer. Come to success.',
-      tz.TZDateTime.from(scheduledTime, tz.local),
+      tzScheduled,
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -153,11 +189,21 @@ class NotificationService {
 
     final payload = 'reminder_id:$reminderId';
 
+    final tzScheduled = tz.TZDateTime(
+      tz.local,
+      scheduledTime.year,
+      scheduledTime.month,
+      scheduledTime.day,
+      scheduledTime.hour,
+      scheduledTime.minute,
+      scheduledTime.second,
+    );
+
     await _notificationsPlugin.zonedSchedule(
       id,
       title,
       body.isNotEmpty ? body : 'It\'s time for your scheduled reminder.',
-      tz.TZDateTime.from(scheduledTime, tz.local),
+      tzScheduled,
       notificationDetails,
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,

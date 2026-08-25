@@ -246,9 +246,12 @@ If you have questions, suggestions, feedback, or bug reports, feel free to get i
 
 ---
 
-## 📄 License
+## 📄 License & Resource Usage Policy
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for full details.
+This project code is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-
-
+> [!IMPORTANT]
+> **Media Infrastructure & CDN Usage Policy**:
+> - The hosted **Cloudflare R2 audio streaming URLs** provided in this repository are for personal, non-commercial use within the official app.
+> - Third-party forks or commercial apps **must not** use these Cloudflare endpoints for live audio streaming.
+> - One-time downloads for offline caching or self-hosting on your own server are allowed. Commercial builds must host their own audio media endpoints.

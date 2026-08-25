@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/config/reminder_audio_config.dart';
 import '../../domain/reminder_model.dart';
 
 class ReminderModal extends StatefulWidget {
@@ -47,14 +48,7 @@ class _ReminderModalState extends State<ReminderModal> {
   late bool _notificationEnabled;
   String? _titleError;
 
-  final List<String> _soundOptions = const [
-    'Makkah Azaan',
-    'Madinah Azaan',
-    'Mishary Alafasy Azaan',
-    'Takbeer',
-    'Default Ringtone',
-    'Custom Audio',
-  ];
+  final List<String> _soundOptions = ReminderAudioConfig.soundOptions;
 
   final Map<int, String> _daysMap = const {
     1: 'Mon',
@@ -78,7 +72,7 @@ class _ReminderModalState extends State<ReminderModal> {
     _selectedDays = Set<int>.from(rem?.customDays ?? [1, 2, 3, 4, 5, 6, 7]);
     _duration = rem?.duration ?? AlarmDuration.seconds30;
     _soundEnabled = rem?.soundEnabled ?? true;
-    _soundType = rem?.soundType ?? 'Makkah Azaan';
+    _soundType = rem?.soundType ?? ReminderAudioConfig.defaultSound;
     _vibrationEnabled = rem?.vibrationEnabled ?? true;
     _notificationEnabled = rem?.notificationEnabled ?? true;
   }
@@ -680,7 +674,7 @@ class _ReminderModalState extends State<ReminderModal> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<AlarmDuration>(
-            value: _duration,
+            initialValue: _duration,
             dropdownColor: cardBg,
             decoration: InputDecoration(
               filled: true,
@@ -733,7 +727,7 @@ class _ReminderModalState extends State<ReminderModal> {
                     style: GoogleFonts.lexend(fontSize: 15, color: textColor),
                   ),
                   value: _soundEnabled,
-                  activeColor: primaryGreen,
+                  activeTrackColor: primaryGreen,
                   onChanged: (val) => setState(() => _soundEnabled = val),
                 ),
                 if (_soundEnabled) ...[
@@ -744,7 +738,7 @@ class _ReminderModalState extends State<ReminderModal> {
                       bottom: 10,
                     ),
                     child: DropdownButtonFormField<String>(
-                      value: _soundOptions.contains(_soundType)
+                      initialValue: _soundOptions.contains(_soundType)
                           ? _soundType
                           : _soundOptions.first,
                       dropdownColor: cardBg,
@@ -794,26 +788,24 @@ class _ReminderModalState extends State<ReminderModal> {
                 ],
                 const Divider(height: 1),
                 SwitchListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
-
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   title: Text(
                     'Vibration',
                     style: GoogleFonts.lexend(fontSize: 15, color: textColor),
                   ),
                   value: _vibrationEnabled,
-                  activeColor: primaryGreen,
+                  activeTrackColor: primaryGreen,
                   onChanged: (val) => setState(() => _vibrationEnabled = val),
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
-
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   title: Text(
                     'Notification Alert',
                     style: GoogleFonts.lexend(fontSize: 15, color: textColor),
                   ),
                   value: _notificationEnabled,
-                  activeColor: primaryGreen,
+                  activeTrackColor: primaryGreen,
                   onChanged: (val) =>
                       setState(() => _notificationEnabled = val),
                 ),
