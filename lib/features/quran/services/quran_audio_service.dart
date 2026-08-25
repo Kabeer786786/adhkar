@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../../../core/services/media_download_service.dart';
 import '../data/surah_model.dart';
 
@@ -109,16 +110,33 @@ class QuranAudioController extends ChangeNotifier {
     final bool isLocal =
         await localFile.exists() && (await localFile.length()) > 0;
 
+    final mediaItem = MediaItem(
+      id: 'quran_verse_${ayah.number}',
+      album: _title.isNotEmpty ? _title : 'Noble Quran',
+      title: 'Ayah ${ayah.numberInSurah}',
+      artist: 'Quran Recitation',
+    );
+
     try {
       if (isLocal) {
-        await _player.setAudioSource(AudioSource.file(localFile.path));
+        await _player.setAudioSource(
+          AudioSource.file(
+            localFile.path,
+            tag: mediaItem,
+          ),
+        );
       } else {
         // Stream directly from Cloudflare R2
         final url = ayah.remoteUrl.isNotEmpty
             ? ayah.remoteUrl
             : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/${ayah.number}.mp3';
 
-        await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
+        await _player.setAudioSource(
+          AudioSource.uri(
+            Uri.parse(url),
+            tag: mediaItem,
+          ),
+        );
 
         // Background cache of current verse
         _cacheVerseInBackground(ayah);

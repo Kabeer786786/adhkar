@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'config/routes/app_router.dart';
 import 'core/services/notification_service.dart';
@@ -11,6 +12,13 @@ import 'shared/providers/app_providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Background Audio Service
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.sprnt.adhkar.channel.audio',
+    androidNotificationChannelName: 'Adhkar Audio Playback',
+    androidNotificationOngoing: true,
+  );
 
   // Initialize Local Hive Storage
   final storageService = StorageService();
@@ -35,9 +43,7 @@ void main() async {
 
   runApp(
     ProviderScope(
-      overrides: [
-        storageServiceProvider.overrideWithValue(storageService),
-      ],
+      overrides: [storageServiceProvider.overrideWithValue(storageService)],
       child: const AdhkarApp(),
     ),
   );

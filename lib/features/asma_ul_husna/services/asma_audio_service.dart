@@ -1,10 +1,8 @@
-// ignore_for_file: experimental_member_use
-
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../../../core/services/media_download_service.dart';
 import '../data/asma_ul_husna_data.dart';
 import '../data/asma_ul_husna_model.dart';
@@ -12,7 +10,9 @@ import '../data/asma_ul_husna_model.dart';
 class AsmaAudioController extends ChangeNotifier {
   final AudioPlayer _player = AudioPlayer();
   StreamSubscription<PlayerState>? _playerStateSubscription;
+  StreamSubscription<int?>? _currentIndexSubscription;
 
+  ConcatenatingAudioSource? _playlistSource;
   bool _isPlaying = false;
   bool _isBuffering = false;
   int _currentIndex = -1; // -1 means player closed / inactive
@@ -24,8 +24,8 @@ class AsmaAudioController extends ChangeNotifier {
   double get speed => _speed;
   AsmaUlHusna? get currentName =>
       (_currentIndex >= 0 && _currentIndex < asmaUlHusnaList.length)
-          ? asmaUlHusnaList[_currentIndex]
-          : null;
+      ? asmaUlHusnaList[_currentIndex]
+      : null;
 
   AudioPlayer get player => _player;
 
@@ -38,7 +38,8 @@ class AsmaAudioController extends ChangeNotifier {
       final playing = state.playing;
       final processingState = state.processingState;
 
-      _isBuffering = processingState == ProcessingState.buffering ||
+      _isBuffering =
+          processingState == ProcessingState.buffering ||
           processingState == ProcessingState.loading;
       _isPlaying = playing && processingState != ProcessingState.completed;
 
@@ -48,6 +49,40 @@ class AsmaAudioController extends ChangeNotifier {
 
       notifyListeners();
     });
+
+    _currentIndexSubscription = _player.currentIndexStream.listen((index) {
+      if (index != null && index >= 0 && index < asmaUlHusnaList.length) {
+        if (_currentIndex != index) {
+          _currentIndex = index;
+          notifyListeners();
+          _preloadNextItems(index);
+        }
+      }
+    });
+  }
+
+  Future<void> _ensurePlaylistInitialized() async {
+    if (_playlistSource != null) return;
+
+    final children = <AudioSource>[];
+    for (int i = 0; i < asmaUlHusnaList.length; i++) {
+      final item = asmaUlHusnaList[i];
+      final mediaItem = MediaItem(
+        id: 'asma_${item.number}',
+        album: 'Asma ul Husna (${item.number}/99)',
+        title: '${item.number}. ${item.name} - ${item.transliteration}',
+        artist: '${item.shortMeaning} (${item.number}/99)',
+      );
+
+      final remoteUrl = item.remoteUrl.isNotEmpty
+          ? item.remoteUrl
+          : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
+
+      children.add(AudioSource.uri(Uri.parse(remoteUrl), tag: mediaItem));
+    }
+
+    _playlistSource = ConcatenatingAudioSource(children: children);
+    await _player.setAudioSource(_playlistSource!, preload: false);
   }
 
   void _onAudioCompleted() {
@@ -60,43 +95,23 @@ class AsmaAudioController extends ChangeNotifier {
   }
 
   /// Play audio for a specific name index.
-  /// Checks local cache first; if missing, streams from Cloudflare R2 and
-  /// caches individually in the background.
   Future<bool> playIndex(
     int index, {
     BuildContext? context,
     WidgetRef? ref,
   }) async {
     if (index < 0 || index >= asmaUlHusnaList.length) return false;
-    final item = asmaUlHusnaList[index];
 
-    final File localFile =
-        await MediaDownloadService.instance.getLocalFile(item.localRelativePath);
-
-    final bool exists = await localFile.exists() && (await localFile.length()) > 0;
+    await _ensurePlaylistInitialized();
 
     _currentIndex = index;
     notifyListeners();
 
     try {
-      if (exists) {
-        await _player.setAudioSource(AudioSource.file(localFile.path));
-      } else {
-        // Stream directly from R2 URL
-        final remoteUrl = item.remoteUrl.isNotEmpty
-            ? item.remoteUrl
-            : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
-
-        await _player.setAudioSource(AudioSource.uri(Uri.parse(remoteUrl)));
-
-        // Background cache current item
-        _cacheItemInBackground(item);
-      }
-
+      await _player.seek(Duration.zero, index: index);
       await _player.setSpeed(_speed);
       await _player.play();
 
-      // Preload next 1-2 items
       _preloadNextItems(index);
       return true;
     } catch (e) {
@@ -141,13 +156,17 @@ class AsmaAudioController extends ChangeNotifier {
   }
 
   Future<void> playNext({BuildContext? context, WidgetRef? ref}) async {
-    if (_currentIndex < asmaUlHusnaList.length - 1) {
+    if (_player.hasNext) {
+      await _player.seekToNext();
+    } else if (_currentIndex < asmaUlHusnaList.length - 1) {
       await playIndex(_currentIndex + 1, context: context, ref: ref);
     }
   }
 
   Future<void> playPrevious({BuildContext? context, WidgetRef? ref}) async {
-    if (_currentIndex > 0) {
+    if (_player.hasPrevious) {
+      await _player.seekToPrevious();
+    } else if (_currentIndex > 0) {
       await playIndex(_currentIndex - 1, context: context, ref: ref);
     }
   }
@@ -168,6 +187,7 @@ class AsmaAudioController extends ChangeNotifier {
   @override
   void dispose() {
     _playerStateSubscription?.cancel();
+    _currentIndexSubscription?.cancel();
     _player.dispose();
     super.dispose();
   }

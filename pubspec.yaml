@@ -47,6 +47,7 @@ dependencies:
   connectivity_plus: ^6.1.3
   flutter_local_notifications: ^18.0.1
   just_audio: ^0.9.46
+  just_audio_background: ^0.0.1-beta.15
   google_fonts: ^6.2.1
   intl: ^0.20.2
   equatable: ^2.0.7

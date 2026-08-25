@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../../data/asma_ul_husna_model.dart';
 
 class AsmaDetailModal extends StatefulWidget {
@@ -61,7 +62,16 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
       if (_isPlaying) {
         await _audioPlayer.pause();
       } else {
-        await _audioPlayer.setUrl(widget.item.audioUrl);
+        final mediaItem = MediaItem(
+          id: 'asma_modal_${widget.item.number}',
+          album: 'Asma ul Husna (${widget.item.number}/99)',
+          title:
+              '${widget.item.number}. ${widget.item.name} - ${widget.item.transliteration}',
+          artist: '${widget.item.shortMeaning} (${widget.item.number}/99)',
+        );
+        await _audioPlayer.setAudioSource(
+          AudioSource.uri(Uri.parse(widget.item.audioUrl), tag: mediaItem),
+        );
         await _audioPlayer.play();
       }
     } catch (e) {
@@ -69,7 +79,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
     }
   }
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     final maxModalHeight = MediaQuery.of(context).size.height * 0.8;
 

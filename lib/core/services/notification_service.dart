@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -68,11 +69,9 @@ class NotificationService {
     try {
       final now = DateTime.now();
       final offset = now.timeZoneOffset;
-      // Default to Asia/Kolkata if +05:30 (IST) or attempt to match location by offset
       if (offset.inMinutes == 330) {
         tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
       } else {
-        // Try system location or fallback to Asia/Kolkata
         try {
           final tzName = now.timeZoneName;
           if (tzName.isNotEmpty && tz.timeZoneDatabase.locations.containsKey(tzName)) {
@@ -96,7 +95,7 @@ class NotificationService {
     String? payload,
   }) async {
     const androidDetails = AndroidNotificationDetails(
-      'adhkar_main_channel_v3',
+      'adhkar_main_channel_v4',
       'Adhkar Reminders',
       channelDescription: 'Notifications for Prayer Times and Daily Adhkar',
       importance: Importance.max,
@@ -122,14 +121,20 @@ class NotificationService {
   }) async {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
+    final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000, 500, 1000]);
+
     final androidDetails = AndroidNotificationDetails(
-      'adhkar_prayer_channel_v3',
+      'adhkar_prayer_channel_v4',
       'Prayer Alerts',
       channelDescription: 'Adhan and Prayer Time Reminders',
       importance: Importance.max,
       priority: Priority.high,
       playSound: sound,
       enableVibration: vibration,
+      vibrationPattern: vibration ? vibrationPattern : null,
+      audioAttributesUsage: AudioAttributesUsage.alarm,
+      category: AndroidNotificationCategory.alarm,
+      visibility: NotificationVisibility.public,
       fullScreenIntent: true,
     );
 
@@ -171,14 +176,20 @@ class NotificationService {
   }) async {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
+    final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000, 500, 1000]);
+
     final androidDetails = AndroidNotificationDetails(
-      'adhkar_reminder_channel_v3',
+      'adhkar_reminder_channel_v4',
       'Custom Reminders & Alarms',
       channelDescription: 'Custom Alarm and Adhkar Reminders',
       importance: Importance.max,
       priority: Priority.high,
       playSound: sound,
       enableVibration: vibration,
+      vibrationPattern: vibration ? vibrationPattern : null,
+      audioAttributesUsage: AudioAttributesUsage.alarm,
+      category: AndroidNotificationCategory.alarm,
+      visibility: NotificationVisibility.public,
       fullScreenIntent: true,
     );
 
