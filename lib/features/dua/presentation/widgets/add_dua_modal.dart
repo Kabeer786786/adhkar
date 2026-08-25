@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../shared/providers/app_providers.dart';
 import '../../../../widgets/app_dropdown.dart';
 import '../../domain/dua_item.dart';
 
-class AddDuaModal extends StatefulWidget {
+class AddDuaModal extends ConsumerStatefulWidget {
   final DuaItem? initialDua;
   final Function(DuaItem dua) onSave;
 
@@ -32,10 +34,10 @@ class AddDuaModal extends StatefulWidget {
   }
 
   @override
-  State<AddDuaModal> createState() => _AddDuaModalState();
+  ConsumerState<AddDuaModal> createState() => _AddDuaModalState();
 }
 
-class _AddDuaModalState extends State<AddDuaModal> {
+class _AddDuaModalState extends ConsumerState<AddDuaModal> {
   final _titleController = TextEditingController();
   final _arabicController = TextEditingController();
   final _transliterationController = TextEditingController();
@@ -56,6 +58,13 @@ class _AddDuaModalState extends State<AddDuaModal> {
   @override
   void initState() {
     super.initState();
+    final savedCats = ref.read(storageServiceProvider).getCustomCategories('dua');
+    for (final cat in savedCats) {
+      if (!_categories.contains(cat)) {
+        _categories.add(cat);
+      }
+    }
+
     if (widget.initialDua != null) {
       final dua = widget.initialDua!;
       _titleController.text = dua.title;
@@ -210,6 +219,7 @@ class _AddDuaModalState extends State<AddDuaModal> {
                     icon: Icons.menu_book_rounded,
                   );
                   if (newCatName != null && newCatName.isNotEmpty) {
+                    ref.read(storageServiceProvider).saveCustomCategory('dua', newCatName);
                     setState(() {
                       if (!_categories.contains(newCatName)) {
                         _categories.add(newCatName);

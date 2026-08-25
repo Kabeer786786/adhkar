@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../shared/providers/app_providers.dart';
 import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../../../widgets/app_dropdown.dart';
 import '../../data/books_provider.dart';
@@ -44,6 +45,14 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
   int? _selectedDocumentSize;
 
   String _selectedCategory = 'Hadith';
+  List<String> _categories = [
+    'Hadith',
+    'Seerah',
+    'Fiqh',
+    'Aqeedah',
+    'Tazkiyah',
+    'General',
+  ];
   String? _customCoverImagePath;
   int _selectedPresetGradientIndex = 0;
 
@@ -62,6 +71,12 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    final savedCats = ref.read(storageServiceProvider).getCustomCategories('books');
+    for (final cat in savedCats) {
+      if (!_categories.contains(cat)) {
+        _categories.add(cat);
+      }
+    }
   }
 
   @override
@@ -724,13 +739,17 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                   icon: Icons.menu_book_rounded,
                 );
                 if (newCatName != null && newCatName.isNotEmpty) {
+                  ref.read(storageServiceProvider).saveCustomCategory('books', newCatName);
                   setState(() {
+                    if (!_categories.contains(newCatName)) {
+                      _categories.add(newCatName);
+                    }
                     _selectedCategory = newCatName;
                   });
                 }
                 return newCatName;
               },
-              items: ['Hadith', 'Seerah', 'Fiqh', 'Aqeedah', 'Tazkiyah', 'General']
+              items: _categories
                   .map(
                     (cat) => AppDropdownItem<String>(
                       value: cat,

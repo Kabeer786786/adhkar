@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../shared/providers/app_providers.dart';
 import '../../../../widgets/app_dropdown.dart';
 
 import '../../domain/dua_item.dart';
@@ -8,7 +10,7 @@ import '../../../../shared/widgets/app_floating_toast.dart';
 
 enum DuaModalView { library, details, form }
 
-class DuaLibraryModal extends StatefulWidget {
+class DuaLibraryModal extends ConsumerStatefulWidget {
   final List<DuaItem> currentDuas;
   final List<DuaItem> defaultDuas;
   final Function(DuaItem dua) onAddDua;
@@ -24,7 +26,7 @@ class DuaLibraryModal extends StatefulWidget {
     required this.onCreateCustom,
   });
 
-  static void show(
+  static Future<void> show(
     BuildContext context, {
     required List<DuaItem> currentDuas,
     required List<DuaItem> defaultDuas,
@@ -32,19 +34,16 @@ class DuaLibraryModal extends StatefulWidget {
     required Function(String duaId) onRemoveDua,
     required Function(DuaItem customDua) onCreateCustom,
   }) {
-    showModalBottomSheet(
+    return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) => Container(
+      builder: (_) => Container(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.90,
-        ),
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         child: DuaLibraryModal(
           currentDuas: currentDuas,
@@ -58,10 +57,10 @@ class DuaLibraryModal extends StatefulWidget {
   }
 
   @override
-  State<DuaLibraryModal> createState() => _DuaLibraryModalState();
+  ConsumerState<DuaLibraryModal> createState() => _DuaLibraryModalState();
 }
 
-class _DuaLibraryModalState extends State<DuaLibraryModal> {
+class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
   final TextEditingController _searchController = TextEditingController();
   late List<DuaItem> _activeDuas;
 
@@ -133,6 +132,12 @@ class _DuaLibraryModalState extends State<DuaLibraryModal> {
   void initState() {
     super.initState();
     _activeDuas = List.from(widget.currentDuas);
+    final savedCats = ref.read(storageServiceProvider).getCustomCategories('dua');
+    for (final cat in savedCats) {
+      if (!_categories.contains(cat)) {
+        _categories.add(cat);
+      }
+    }
   }
 
   @override
@@ -798,6 +803,7 @@ class _DuaLibraryModalState extends State<DuaLibraryModal> {
                   icon: Icons.menu_book_rounded,
                 );
                 if (newCatName != null && newCatName.isNotEmpty) {
+                  ref.read(storageServiceProvider).saveCustomCategory('dua', newCatName);
                   setState(() {
                     if (!_categories.contains(newCatName)) {
                       _categories.add(newCatName);

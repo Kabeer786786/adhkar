@@ -302,6 +302,13 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                     icon: Icons.favorite_border_rounded,
                   );
                   if (newCatName != null && newCatName.isNotEmpty) {
+                    ref.read(storageServiceProvider).saveCustomCategory('sadqa', newCatName);
+                    setState(() {
+                      _category = SadaqahCategory.other;
+                      if (_noteController.text.isEmpty) {
+                        _noteController.text = newCatName;
+                      }
+                    });
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Added custom category: $newCatName')),

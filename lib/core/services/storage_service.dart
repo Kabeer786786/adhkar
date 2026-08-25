@@ -31,6 +31,22 @@ class StorageService {
     await _adhkarBox.put(key, value);
   }
 
+  List<String> getCustomCategories(String featureKey) {
+    final data = _adhkarBox.get('custom_categories_$featureKey');
+    if (data != null && data is List) {
+      return List<String>.from(data.map((e) => e.toString()));
+    }
+    return [];
+  }
+
+  Future<void> saveCustomCategory(String featureKey, String categoryName) async {
+    final current = getCustomCategories(featureKey);
+    if (!current.contains(categoryName)) {
+      current.add(categoryName);
+      await _adhkarBox.put('custom_categories_$featureKey', current);
+    }
+  }
+
   // --- Settings & Preferences ---
   String getThemeMode() {
     return _settingsBox.get('theme_mode', defaultValue: 'system') as String;

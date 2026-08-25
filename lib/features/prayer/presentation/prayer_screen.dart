@@ -388,6 +388,8 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                 prayer.key,
               );
 
+              final isFuture = prayer.time.isAfter(DateTime.now());
+
               // Check card highlight color
               final isHighlight = isCurrent && !prayer.isZawal;
 
@@ -399,7 +401,24 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                   child: InkWell(
                     onTap: prayer.isZawal
                         ? null
-                        : () => _openPrayerDetail(prayer, dateKey, completedSubIds),
+                        : () {
+                            if (isFuture) {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Upcoming prayer cannot be marked as completed before its time.'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            } else {
+                              _openPrayerDetail(
+                                prayer,
+                                dateKey,
+                                completedSubIds,
+                                isFuture: isFuture,
+                              );
+                            }
+                          },
                     borderRadius: BorderRadius.circular(20),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
@@ -641,8 +660,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
   void _openPrayerDetail(
     PrayerDetail prayer,
     String dateKey,
-    List<String> completedSubIds,
-  ) {
+    List<String> completedSubIds, {
+    bool isFuture = false,
+  }) {
     final subItemsWithStatus = prayer.subPrayers.map((item) {
       return item.copyWith(isCompleted: completedSubIds.contains(item.id));
     }).toList();
@@ -653,6 +673,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
       prayerSubtitle: prayer.subtitle,
       dateKey: dateKey,
       subPrayers: subItemsWithStatus,
+      isFuture: isFuture,
       onSave: (completedIds) async {
         final storage = ref.read(storageServiceProvider);
         await storage.setSubPrayerRecords(dateKey, prayer.key, completedIds);

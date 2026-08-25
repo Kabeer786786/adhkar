@@ -370,7 +370,6 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                           .read(remindersProvider.notifier)
                           .addReminder(newRem);
                       AppFloatingToast.showAdded(context, message: 'Added');
-                      Navigator.pop(context);
                     },
                   ),
                 ],

@@ -8,6 +8,7 @@ class PrayerDetailModal extends StatefulWidget {
   final String dateKey;
   final List<SubPrayerItem> subPrayers;
   final ValueChanged<List<String>> onSave;
+  final bool isFuture;
 
   const PrayerDetailModal({
     super.key,
@@ -16,6 +17,7 @@ class PrayerDetailModal extends StatefulWidget {
     required this.dateKey,
     required this.subPrayers,
     required this.onSave,
+    this.isFuture = false,
   });
 
   static Future<void> show({
@@ -25,6 +27,7 @@ class PrayerDetailModal extends StatefulWidget {
     required String dateKey,
     required List<SubPrayerItem> subPrayers,
     required ValueChanged<List<String>> onSave,
+    bool isFuture = false,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -36,6 +39,7 @@ class PrayerDetailModal extends StatefulWidget {
         dateKey: dateKey,
         subPrayers: subPrayers,
         onSave: onSave,
+        isFuture: isFuture,
       ),
     );
   }
@@ -130,6 +134,33 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
           const Divider(height: 1,color: Color(0xFFE7E7E7),),
           const SizedBox(height: 12),
 
+          if (widget.isFuture)
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.lock_clock_outlined, size: 18, color: Colors.amber),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This prayer is scheduled for the future and cannot be marked completed yet.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           // Sub-Prayers Checklist
           ...widget.subPrayers.map((item) {
             final isChecked = _completedMap[item.id] ?? false;
@@ -149,11 +180,13 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
               ),
               child: CheckboxListTile(
                 value: isChecked,
-                onChanged: (val) {
-                  setState(() {
-                    _completedMap[item.id] = val ?? false;
-                  });
-                },
+                onChanged: widget.isFuture
+                    ? null
+                    : (val) {
+                        setState(() {
+                          _completedMap[item.id] = val ?? false;
+                        });
+                      },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -201,29 +234,34 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text('Cancel',style: TextStyle(fontSize: 14)),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton(
-                  onPressed: () {
-                    final completedIds = _completedMap.entries
-                        .where((e) => e.value)
-                        .map((e) => e.key)
-                        .toList();
-                    widget.onSave(completedIds);
-                    Navigator.of(context).pop();
-                  },
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+                  child: Text(
+                    widget.isFuture ? 'Close' : 'Cancel',
+                    style: const TextStyle(fontSize: 14),
                   ),
-                  child: const Text('Save',style: TextStyle(fontSize: 14),),
                 ),
               ),
+              if (!widget.isFuture) ...[
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      final completedIds = _completedMap.entries
+                          .where((e) => e.value)
+                          .map((e) => e.key)
+                          .toList();
+                      widget.onSave(completedIds);
+                      Navigator.of(context).pop();
+                    },
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text('Save', style: TextStyle(fontSize: 14)),
+                  ),
+                ),
+              ],
             ],
           ),
         ],

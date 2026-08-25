@@ -46,8 +46,19 @@ class AppDropdown<T> extends StatelessWidget {
     final isDark = context.isDarkMode;
     final primaryColor = const Color(0xFF2A531D);
 
-    final bool hasMatchingItem = value != null && items.any((item) => item.value == value);
-    final T? effectiveValue = hasMatchingItem ? value : (items.isNotEmpty ? items.first.value : null);
+    final effectiveItemsList = List<AppDropdownItem<T>>.from(items);
+    if (value != null && T == String && value.toString().isNotEmpty && !effectiveItemsList.any((item) => item.value == value)) {
+      effectiveItemsList.add(
+        AppDropdownItem<T>(
+          value: value as T,
+          label: value.toString(),
+          icon: Icons.folder_outlined,
+        ),
+      );
+    }
+
+    final bool hasMatchingItem = value != null && effectiveItemsList.any((item) => item.value == value);
+    final T? effectiveValue = hasMatchingItem ? value : (effectiveItemsList.isNotEmpty ? effectiveItemsList.first.value : null);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +85,7 @@ class AppDropdown<T> extends StatelessWidget {
             value: effectiveValue,
             isExpanded: isExpanded,
             validator: validator,
-            padding: EdgeInsets.symmetric(vertical: 1),
+            padding: const EdgeInsets.symmetric(vertical: 1),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -133,7 +144,7 @@ class AppDropdown<T> extends StatelessWidget {
               ),
             ),
           items: [
-            ...items.map((item) {
+            ...effectiveItemsList.map((item) {
               return DropdownMenuItem<T>(
                 value: item.value,
                 child: Row(
@@ -159,35 +170,31 @@ class AppDropdown<T> extends StatelessWidget {
             if (onAddCustomCategory != null)
               DropdownMenuItem<T>(
                 value: null,
-                enabled: false,
-                child: InkWell(
-                  onTap: () async {
-                    Navigator.pop(context); // Close dropdown popup
-                    final newCategory = await onAddCustomCategory!();
-                    if (newCategory != null && newCategory.isNotEmpty) {
-                      // Handled by parent
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.add_circle_outline_rounded,
-                          size: 18,
+                onTap: () async {
+                  final newCategory = await onAddCustomCategory!();
+                  if (newCategory != null && newCategory.isNotEmpty) {
+                    // Handled by parent callback
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.add_circle_outline_rounded,
+                        size: 18,
+                        color: primaryColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        customCategoryOptionLabel!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                           color: primaryColor,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          customCategoryOptionLabel!,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
