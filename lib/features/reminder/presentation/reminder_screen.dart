@@ -609,18 +609,29 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     Color subTextColor,
     bool isDark,
   ) {
+    final tagColor = reminder.isEnabled ? primaryGreen : subTextColor;
+
     if (reminder.frequency == ReminderFrequency.once) {
       final formattedDate = DateFormat(
         'E, d MMM',
       ).format(reminder.startDate ?? DateTime.now());
 
-      return Text(
-        formattedDate,
-        style: GoogleFonts.lexend(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: reminder.isEnabled ? primaryGreen : subTextColor,
-        ),
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 6),
+
+          Icon(Icons.calendar_month_rounded, size: 15, color: tagColor),
+          const SizedBox(width: 5),
+          Text(
+            formattedDate,
+            style: GoogleFonts.outfit(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: tagColor,
+            ),
+          ),
+        ],
       );
     }
 
@@ -629,39 +640,23 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
         reminder.customDays.length == 7;
 
     if (isEveryday) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: reminder.isEnabled
-              ? (isDark ? const Color(0xFF23352B) : const Color(0xFFE8F5E9))
-              : (isDark ? Colors.white10 : const Color(0xFFE2E8F0)),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: reminder.isEnabled
-                ? (isDark ? const Color(0xFF23352B) : const Color(0xFFD3E8DA))
-                : (isDark ? Colors.white12 : const Color(0xFFCBD5E1)),
-            width: 1,
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 6),
+
+          Icon(Icons.repeat_rounded, size: 15, color: tagColor),
+          const SizedBox(width: 5),
+          Text(
+            'Every day',
+            style: GoogleFonts.outfit(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: tagColor,
+              height: 1,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.repeat_rounded,
-              size: 13,
-              color: reminder.isEnabled ? primaryGreen : subTextColor,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              'Every day',
-              style: GoogleFonts.lexend(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w500,
-                color: reminder.isEnabled ? primaryGreen : subTextColor,
-              ),
-            ),
-          ],
-        ),
+        ],
       );
     }
 
