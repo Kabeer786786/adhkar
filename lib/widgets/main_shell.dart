@@ -8,7 +8,6 @@ import '../core/services/showcase_service.dart';
 import '../features/asma_ul_husna/services/asma_audio_service.dart';
 import '../features/quran/services/quran_audio_service.dart';
 import '../shared/widgets/app_showcase.dart';
-import '../shared/widgets/global_mini_player.dart';
 import 'app_drawer.dart';
 
 class MainShell extends ConsumerStatefulWidget {
@@ -73,19 +72,15 @@ class _MainShellState extends ConsumerState<MainShell> with WidgetsBindingObserv
       child: Scaffold(
         drawer: const AppDrawer(),
         body: widget.navigationShell,
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const GlobalMiniPlayer(),
-            Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Color(0xFFE5E7EB),
-                    width: 1.0,
-                  ),
-                ),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: Color(0xFFE5E7EB),
+                width: 1.0,
               ),
+            ),
+          ),
               child: NavigationBarTheme(
                 data: NavigationBarThemeData(
                   height: 60,
@@ -159,8 +154,6 @@ class _MainShellState extends ConsumerState<MainShell> with WidgetsBindingObserv
                   ],
                 ),
               ),
-            ),
-          ],
         ),
       ),
     );

@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../../core/config/reminder_audio_config.dart';
 import '../../domain/reminder_model.dart';
 
@@ -49,6 +51,9 @@ class _ReminderModalState extends State<ReminderModal> {
   String? _titleError;
 
   final List<String> _soundOptions = ReminderAudioConfig.soundOptions;
+  AudioPlayer? _previewPlayer;
+  StreamSubscription<PlayerState>? _previewSubscription;
+  bool _isPreviewPlaying = false;
 
   final Map<int, String> _daysMap = const {
     1: 'Mon',
@@ -72,16 +77,56 @@ class _ReminderModalState extends State<ReminderModal> {
     _selectedDays = Set<int>.from(rem?.customDays ?? [1, 2, 3, 4, 5, 6, 7]);
     _duration = rem?.duration ?? AlarmDuration.seconds30;
     _soundEnabled = rem?.soundEnabled ?? true;
-    _soundType = rem?.soundType ?? ReminderAudioConfig.defaultSound;
+    _soundType = rem?.soundType ?? ReminderAudioConfig.defaultRingtone;
     _vibrationEnabled = rem?.vibrationEnabled ?? true;
     _notificationEnabled = rem?.notificationEnabled ?? true;
   }
 
   @override
   void dispose() {
+    _previewSubscription?.cancel();
+    _previewPlayer?.stop();
+    _previewPlayer?.dispose();
     _titleController.dispose();
     _descController.dispose();
     super.dispose();
+  }
+
+  Future<void> _playAudioPreview() async {
+    try {
+      _previewPlayer ??= AudioPlayer();
+      await _previewPlayer!.stop();
+      final path = ReminderAudioConfig.getAssetPath(_soundType);
+      await _previewPlayer!.setAsset(path);
+      await _previewPlayer!.play();
+      if (mounted) setState(() => _isPreviewPlaying = true);
+
+      _previewSubscription?.cancel();
+      _previewSubscription = _previewPlayer!.playerStateStream.listen((state) {
+        if (state.processingState == ProcessingState.completed) {
+          if (mounted) setState(() => _isPreviewPlaying = false);
+        }
+      });
+    } catch (e) {
+      debugPrint('[ReminderModal] Error playing preview audio: $e');
+      if (mounted) setState(() => _isPreviewPlaying = false);
+    }
+  }
+
+  Future<void> _stopAudioPreview() async {
+    try {
+      _previewSubscription?.cancel();
+      await _previewPlayer?.stop();
+    } catch (_) {}
+    if (mounted) setState(() => _isPreviewPlaying = false);
+  }
+
+  Future<void> _toggleAudioPreview() async {
+    if (_isPreviewPlaying) {
+      await _stopAudioPreview();
+    } else {
+      await _playAudioPreview();
+    }
   }
 
   Future<void> _pickTime() async {
@@ -114,18 +159,31 @@ class _ReminderModalState extends State<ReminderModal> {
   }
 
   Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    // Ensure initialDate is at or after today so Flutter showDatePicker never asserts on past dates
+    final initialDate = _selectedDate.isBefore(today) ? today : _selectedDate;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 3650)),
+      initialDate: initialDate,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: 3650)),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF2A531D),
-              onPrimary: Colors.white,
-            ),
+            colorScheme: isDark
+                ? const ColorScheme.dark(
+                    primary: Color(0xFF2A531D),
+                    onPrimary: Colors.white,
+                    surface: Color(0xFF1E2D24),
+                  )
+                : const ColorScheme.light(
+                    primary: Color(0xFF2A531D),
+                    onPrimary: Colors.white,
+                    onSurface: Color(0xFF1E293B),
+                  ),
           ),
           child: child!,
         );
@@ -134,6 +192,65 @@ class _ReminderModalState extends State<ReminderModal> {
     if (picked != null) {
       setState(() => _selectedDate = picked);
     }
+  }
+
+  void _showExpiredDateWarning() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        icon: const Icon(
+          Icons.error_outline_rounded,
+          color: Color(0xFFEF4444),
+          size: 38,
+        ),
+        title: Text(
+          'Reminder Date Expired',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.outfit(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : const Color(0xFF1E293B),
+          ),
+        ),
+        content: Text(
+          'The selected date and time has already passed. Please select a future date and time before saving this reminder.',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.lexend(
+            fontSize: 13,
+            color: isDark ? Colors.white70 : const Color(0xFF64748B),
+            height: 1.45,
+          ),
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: Text(
+                'Change Date / Time',
+                style: GoogleFonts.lexend(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.5,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _save() {
@@ -148,6 +265,23 @@ class _ReminderModalState extends State<ReminderModal> {
     }
 
     final now = DateTime.now();
+
+    // Check if one-time reminder date & time is in the past
+    if (_frequency == ReminderFrequency.once) {
+      final scheduledDateTime = DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedTime.hour,
+        _selectedTime.minute,
+      );
+
+      if (scheduledDateTime.isBefore(now)) {
+        _showExpiredDateWarning();
+        return;
+      }
+    }
+
     final rem = CustomReminder(
       id: widget.initialReminder?.id ?? 'rem_${now.millisecondsSinceEpoch}',
       title: titleText,
@@ -737,52 +871,82 @@ class _ReminderModalState extends State<ReminderModal> {
                       right: 12,
                       bottom: 10,
                     ),
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _soundOptions.contains(_soundType)
-                          ? _soundType
-                          : _soundOptions.first,
-                      dropdownColor: cardBg,
-                      decoration: InputDecoration(
-                        labelText: 'ALARM AUDIO / AZAN',
-                        labelStyle: GoogleFonts.lexend(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: primaryGreen,
-                        ),
-                        filled: true,
-                        fillColor: isDark
-                            ? const Color(0xFF1E2D24)
-                            : const Color(0xFFF1F5F9),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: isDark
-                                ? Colors.white12
-                                : const Color(0xFFCBD5E1),
-                          ),
-                        ),
-                      ),
-                      items: _soundOptions.map((opt) {
-                        return DropdownMenuItem<String>(
-                          value: opt,
-                          child: Text(
-                            opt,
-                            style: GoogleFonts.lexend(
-                              fontSize: 13,
-                              color: textColor,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            initialValue: _soundOptions.contains(_soundType)
+                                ? _soundType
+                                : _soundOptions.first,
+                            dropdownColor: cardBg,
+                            decoration: InputDecoration(
+                              labelText: 'ALARM AUDIO / SOUND',
+                              labelStyle: GoogleFonts.lexend(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: primaryGreen,
+                              ),
+                              filled: true,
+                              fillColor: isDark
+                                  ? const Color(0xFF1E2D24)
+                                  : const Color(0xFFF1F5F9),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: isDark
+                                      ? Colors.white12
+                                      : const Color(0xFFCBD5E1),
+                                ),
+                              ),
                             ),
+                            items: _soundOptions.map((opt) {
+                              return DropdownMenuItem<String>(
+                                value: opt,
+                                child: Text(
+                                  opt,
+                                  style: GoogleFonts.lexend(
+                                    fontSize: 13,
+                                    color: textColor,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                setState(() => _soundType = val);
+                                if (_isPreviewPlaying) {
+                                  _playAudioPreview();
+                                }
+                              }
+                            },
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() => _soundType = val);
-                        }
-                      },
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton.filledTonal(
+                          onPressed: _toggleAudioPreview,
+                          tooltip: _isPreviewPlaying
+                              ? 'Stop Audio'
+                              : 'Play Audio',
+                          style: IconButton.styleFrom(
+                            backgroundColor: _isPreviewPlaying
+                                ? const Color(0xFFEF4444).withValues(alpha: 0.15)
+                                : primaryGreen.withValues(alpha: 0.15),
+                          ),
+                          icon: Icon(
+                            _isPreviewPlaying
+                                ? Icons.stop_circle_rounded
+                                : Icons.play_circle_filled_rounded,
+                            color: _isPreviewPlaying
+                                ? const Color(0xFFEF4444)
+                                : primaryGreen,
+                            size: 28,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

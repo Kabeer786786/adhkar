@@ -39,6 +39,7 @@ class ReminderScheduler {
         reminderId: reminder.id,
         sound: reminder.soundEnabled,
         vibration: reminder.vibrationEnabled,
+        soundType: reminder.soundType ?? 'Default Ringtone',
       );
       debugPrint(
         '[ReminderScheduler] Scheduled ${reminder.title} (ID $notifId) for $nextTrigger',

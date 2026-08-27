@@ -223,6 +223,15 @@ class QuranAudioController extends ChangeNotifier {
     }
   }
 
+  /// Jump directly to a specific verse index in the current playlist
+  Future<void> playIndex(int index) async {
+    if (index >= 0 && index < _playlist.length) {
+      _currentIndex = index;
+      notifyListeners();
+      await _playCurrentAyah();
+    }
+  }
+
   Future<void> seek(Duration position) async {
     await _player.seek(position);
   }

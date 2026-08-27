@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../core/config/reminder_audio_config.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../../prayer/domain/prayer_models.dart';
 import '../domain/reminder_model.dart';
 import 'providers/reminder_provider.dart';
@@ -34,23 +36,29 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _glowAnimation;
   late AnimationController _rotateController;
 
   final AudioPlayer _audioPlayer = AudioPlayer();
   Timer? _autoDismissTimer;
   Timer? _vibrationTimer;
+  Timer? _clockTimer;
+  DateTime _currentTime = DateTime.now();
+  String _activeSoundName = 'Default Ringtone';
+  bool _isAudioPlaying = false;
 
   @override
   void initState() {
     super.initState();
+
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1400),
     )..repeat(reverse: true);
 
     _rotateController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 25),
+      duration: const Duration(seconds: 20),
     )..repeat();
 
     _scaleAnimation = Tween<double>(begin: 0.94, end: 1.06).animate(
@@ -60,40 +68,80 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       ),
     );
 
-    _initAudioAndVibration();
+    _glowAnimation = Tween<double>(begin: 0.35, end: 0.85).animate(
+      CurvedAnimation(
+        parent: _pulseController,
+        curve: Curves.easeInOut,
+      ),
+    );
 
-    // Auto dismiss after 5 minutes max to save battery
-    _autoDismissTimer = Timer(const Duration(minutes: 5), () {
-      if (mounted) _dismissAlarm();
+    // Live clock ticker
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() => _currentTime = DateTime.now());
+      }
     });
-  }
+
+    _initAudioAndVibration();
+  } 
 
   Future<void> _initAudioAndVibration() async {
-    final effectiveSoundType = widget.soundType ?? ReminderAudioConfig.defaultSound;
-    final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
+    final reminders = ref.read(remindersProvider);
+    final customReminder = widget.reminderId != null
+        ? reminders.where((r) => r.id == widget.reminderId).firstOrNull
+        : null;
 
-    try {
-      if (assetPath != null) {
+    final effectiveSoundType = widget.soundType ??
+        customReminder?.soundType ??
+        (widget.prayerName != null
+            ? ReminderAudioConfig.defaultSound
+            : ReminderAudioConfig.defaultRingtone);
+
+    setState(() {
+      _activeSoundName = effectiveSoundType;
+    });
+
+    final soundEnabled = customReminder?.soundEnabled ?? true;
+    final vibrationEnabled = customReminder?.vibrationEnabled ?? true;
+    final durationSeconds = customReminder?.duration.inSeconds ?? 30;
+
+    // Iteratively loop audio for user specified period of time, then auto-dismiss
+    _autoDismissTimer?.cancel();
+    _autoDismissTimer = Timer(Duration(seconds: durationSeconds), () {
+      if (mounted) _dismissAlarm();
+    });
+
+    if (soundEnabled) {
+      final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
+
+      try {
         await _audioPlayer.setAsset(assetPath);
-      } else {
-        final fallbackUrl = PrayerNotificationConfig.soundAudioUrls[effectiveSoundType];
-        if (fallbackUrl != null) {
-          await _audioPlayer.setUrl(fallbackUrl);
-        } else {
-          await _audioPlayer.setAsset('assets/audios/madina_azaan.mp3');
+        await _audioPlayer.setLoopMode(LoopMode.one);
+        await _audioPlayer.play();
+        if (mounted) setState(() => _isAudioPlaying = true);
+      } catch (e) {
+        debugPrint('[AlarmScreen] Asset error: $e. Trying fallback URL...');
+        try {
+          final fallbackUrl =
+              PrayerNotificationConfig.soundAudioUrls[effectiveSoundType];
+          if (fallbackUrl != null) {
+            await _audioPlayer.setUrl(fallbackUrl);
+            await _audioPlayer.setLoopMode(LoopMode.one);
+            await _audioPlayer.play();
+            if (mounted) setState(() => _isAudioPlaying = true);
+          }
+        } catch (err) {
+          debugPrint('[AlarmScreen] Fallback audio failed: $err');
         }
       }
-      await _audioPlayer.setLoopMode(LoopMode.one);
-      await _audioPlayer.setVolume(1.0); 
-      await _audioPlayer.play();
-    } catch (e) {
-      debugPrint('Error playing alarm audio: $e');
     }
 
-    // Trigger haptic vibration every 2 seconds
-    _vibrationTimer = Timer.periodic(const Duration(seconds: 2), (_) {
-      HapticFeedback.vibrate();
-    });
+    if (vibrationEnabled) {
+      // Continuous rhythmic haptic vibration
+      _vibrationTimer = Timer.periodic(const Duration(milliseconds: 650), (_) {
+        HapticFeedback.heavyImpact();
+      });
+    }
   }
 
   @override
@@ -102,27 +150,65 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     _rotateController.dispose();
     _autoDismissTimer?.cancel();
     _vibrationTimer?.cancel();
+    _clockTimer?.cancel();
     _audioPlayer.stop();
     _audioPlayer.dispose();
     super.dispose();
   }
 
-  void _dismissAlarm() {
+  Future<void> _dismissAlarm() async {
     _vibrationTimer?.cancel();
-    _audioPlayer.stop();
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.go('/');
+    _autoDismissTimer?.cancel();
+    _clockTimer?.cancel();
+    await _audioPlayer.stop();
+
+    final reminders = ref.read(remindersProvider);
+    final customReminder = widget.reminderId != null
+        ? reminders.where((r) => r.id == widget.reminderId).firstOrNull
+        : null;
+
+    final notifTitle = widget.prayerName != null
+        ? '${widget.prayerName} Prayer'
+        : (widget.title ?? customReminder?.title ?? 'Adhkar Reminder');
+
+    // 1. If one-time reminder, deactivate it
+    if (customReminder != null &&
+        customReminder.frequency == ReminderFrequency.once) {
+      ref.read(remindersProvider.notifier).toggleEnable(customReminder.id);
+    }
+
+    // 2. Cancel active notification and post dismissed notification
+    if (widget.reminderId != null) {
+      final notifId = widget.reminderId.hashCode.abs() % 100000000;
+      await NotificationService().cancel(notifId);
+      await NotificationService().showDismissedNotification(
+        id: notifId,
+        title: '$notifTitle - Alarm Turned Off',
+        body: 'Your scheduled reminder has been turned off and dismissed.',
+      );
+    }
+
+    if (mounted) {
+      AppFloatingToast.showAdded(
+        context,
+        message: 'Alarm turned off: $notifTitle',
+      );
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/');
+      }
     }
   }
 
   Future<void> _snoozeAlarm(int minutes) async {
     _vibrationTimer?.cancel();
+    _autoDismissTimer?.cancel();
     await _audioPlayer.stop();
 
     final snoozeTime = DateTime.now().add(Duration(minutes: minutes));
-    final snoozeId = (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
+    final snoozeId =
+        (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
 
     final alarmTitle = widget.title ?? widget.prayerName ?? 'Alarm';
 
@@ -134,20 +220,19 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       reminderId: widget.reminderId ?? 'snooze_alarm',
       sound: true,
       vibration: true,
+      soundType: _activeSoundName,
     );
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Snoozed for $minutes minutes',
-            style: GoogleFonts.lexend(),
-          ),
-          backgroundColor: const Color(0xFF2A531D),
-          behavior: SnackBarBehavior.floating,
-        ),
+      AppFloatingToast.showAdded(
+        context,
+        message: 'Snoozed for $minutes minutes',
       );
-      _dismissAlarm();
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/');
+      }
     }
   }
 
@@ -158,7 +243,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF1E2D24) : Colors.white,
             borderRadius: const BorderRadius.only(
@@ -169,11 +254,20 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Container(
+                width: 38,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.black12,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
               Text(
                 'Snooze Alarm',
                 style: GoogleFonts.outfit(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
                   color: isDark ? Colors.white : const Color(0xFF1E293B),
                 ),
               ),
@@ -184,6 +278,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                     '$mins minutes',
                     style: GoogleFonts.lexend(
                       fontSize: 15,
+                      fontWeight: FontWeight.w500,
                       color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
@@ -244,9 +339,13 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF203328) : const Color(0xFFF1F8F3),
+                  color: isDark
+                      ? const Color(0xFF203328)
+                      : const Color(0xFFF1F8F3),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF2A531D).withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -265,7 +364,8 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                       '"O Allah, Lord of this perfect call and established prayer, grant Muhammad the intercession and favor, and raise him to the praised station which You have promised him."',
                       style: GoogleFonts.lexend(
                         fontSize: 12.5,
-                        color: isDark ? Colors.white70 : const Color(0xFF475569),
+                        color:
+                            isDark ? Colors.white70 : const Color(0xFF475569),
                         height: 1.4,
                       ),
                       textAlign: TextAlign.center,
@@ -302,35 +402,51 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     );
   }
 
+  IconData _getIconForReminder(String title, bool isPrayer) {
+    if (isPrayer) return Icons.mosque_rounded;
+    final lower = title.toLowerCase();
+    if (lower.contains('quran') || lower.contains('surah')) {
+      return Icons.menu_book_rounded;
+    }
+    if (lower.contains('adhkar') ||
+        lower.contains('tasbeeh') ||
+        lower.contains('dhikr')) {
+      return FlutterIslamicIcons.tasbih;
+    }
+    if (lower.contains('medicine') || lower.contains('pill')) {
+      return Icons.medication_rounded;
+    }
+    if (lower.contains('water') || lower.contains('drink')) {
+      return Icons.water_drop_rounded;
+    }
+    if (lower.contains('namaz') || lower.contains('salah')) {
+      return Icons.mosque_rounded;
+    }
+    return Icons.alarm_on_rounded;
+  }
+
   @override
   Widget build(BuildContext context) {
     final reminders = ref.watch(remindersProvider);
     final customReminder = widget.reminderId != null
-        ? reminders.firstWhere(
-            (r) => r.id == widget.reminderId,
-            orElse: () => CustomReminder(
-              id: 'default',
-              title: widget.title ?? 'Adhkar Alarm',
-              description: 'Time for your scheduled Islamic prayer & adhkar.',
-              hour: DateTime.now().hour,
-              minute: DateTime.now().minute,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-              timezone: DateTime.now().timeZoneName,
-            ),
-          )
+        ? reminders.where((r) => r.id == widget.reminderId).firstOrNull
         : null;
 
-    final alarmTitle = widget.prayerName != null
+    final isPrayer = widget.prayerName != null;
+    final alarmTitle = isPrayer
         ? 'TIME FOR ${widget.prayerName!.toUpperCase()} PRAYER'
-        : widget.title ?? customReminder?.title ?? 'PRAYER ALARM';
+        : widget.title ?? customReminder?.title ?? 'SCHEDULED REMINDER';
 
-    final alarmSubtitle = widget.prayerName?.toLowerCase() == 'fajr'
-        ? 'الصلاة خير من النوم'
-        : 'حي على الصلاة';
+    final alarmSubtitle = isPrayer
+        ? (widget.prayerName!.toLowerCase() == 'fajr'
+            ? 'الصلاة خير من النوم'
+            : 'حي على الصلاة • Come to Success')
+        : (customReminder?.description ??
+            'Time for your scheduled reminder & adhkar.');
 
-    final now = DateTime.now();
-    final timeStr = DateFormat('hh:mm a').format(now);
+    final timeStr = DateFormat('hh:mm a').format(_currentTime);
+    final dateStr = DateFormat('EEEE, d MMMM yyyy').format(_currentTime);
+    final iconData = _getIconForReminder(alarmTitle, isPrayer);
 
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -341,168 +457,269 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF081910),
-                Color(0xFF102A1C),
-                Color(0xFF1E4627),
+                Color(0xFF06140D),
+                Color(0xFF0C2417),
+                Color(0xFF163E26),
+                Color(0xFF1F5234),
               ],
+              stops: [0.0, 0.35, 0.75, 1.0],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 children: [
-                  // Top Status Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: const Color(0xFF4ADE80).withValues(alpha: 0.4),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF4ADE80),
-                            shape: BoxShape.circle,
+                  // Top Status Badge Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFF4ADE80).withValues(alpha: 0.5),
+                            width: 1,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'PRAYER ALARM ACTIVE',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF4ADE80),
-                            letterSpacing: 1.0,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF4ADE80),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0xFF4ADE80),
+                                    blurRadius: 6,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              isPrayer
+                                  ? 'PRAYER ALARM ACTIVE'
+                                  : 'REMINDER ALARM ACTIVE',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF86EFAC),
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Sound Badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.15),
                           ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isAudioPlaying
+                                  ? Icons.volume_up_rounded
+                                  : Icons.music_note_rounded,
+                              color: const Color(0xFFFBBF24),
+                              size: 15,
+                            ),
+                            const SizedBox(width: 5),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 120),
+                              child: Text(
+                                _activeSoundName,
+                                style: GoogleFonts.lexend(
+                                  fontSize: 11,
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Spacer(flex: 1),
+
+                  // Animated Concentric Pulsing Center Avatar
+                  AnimatedBuilder(
+                    animation: _pulseController,
+                    builder: (context, child) {
+                      return ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF1E492B).withValues(alpha: 0.4),
+                            border: Border.all(
+                              color: const Color(0xFF4ADE80)
+                                  .withValues(alpha: _glowAnimation.value),
+                              width: 3.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF22C55E)
+                                    .withValues(alpha: 0.35 * _glowAnimation.value),
+                                blurRadius: 40,
+                                spreadRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Icon(
+                              iconData,
+                              size: 70,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // Digital Clock Display
+                  Text(
+                    timeStr,
+                    style: GoogleFonts.outfit(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  // Date String
+                  Text(
+                    dateStr,
+                    style: GoogleFonts.lexend(
+                      fontSize: 13.5,
+                      color: const Color(0xFF86EFAC),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Main Title Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        width: 1.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          alarmTitle,
+                          style: GoogleFonts.outfit(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.3,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          alarmSubtitle,
+                          style: GoogleFonts.lexend(
+                            fontSize: 13.5,
+                            color: Colors.white.withValues(alpha: 0.85),
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
                   ),
 
-                  const Spacer(),
+                  const Spacer(flex: 2),
 
-                  // Animated Dome & Pulsing Bell Icon
-                  ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: RotationTransition(
-                      turns: Tween(begin: -0.01, end: 0.01).animate(_pulseController),
-                      child: Container(
-                        width: 140,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF2A531D).withValues(alpha: 0.35),
-                          border: Border.all(
-                            color: const Color(0xFF4ADE80).withValues(alpha: 0.6),
-                            width: 3.5,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF22C55E).withValues(alpha: 0.4),
-                              blurRadius: 36,
-                              spreadRadius: 8,
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.mosque_rounded,
-                            size: 68,
-                            color: Colors.white,
-                          ),
+                  // Dua After Azaan Quick Button (For Prayer)
+                  if (isPrayer) ...[
+                    TextButton.icon(
+                      onPressed: _showDuaAfterAzaan,
+                      icon: const Icon(
+                        Icons.menu_book_rounded,
+                        color: Color(0xFF86EFAC),
+                        size: 18,
+                      ),
+                      label: Text(
+                        'Read Dua After Azaan',
+                        style: GoogleFonts.lexend(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF86EFAC),
                         ),
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Digital Clock Display
-                  Text(
-                    timeStr,
-                    style: GoogleFonts.oxanium(
-                      fontSize: 44,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Arabic Calligraphy Subtitle
-                  Text(
-                    alarmSubtitle,
-                    style: GoogleFonts.amiri(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF86EFAC),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Alarm Title
-                  Text(
-                    alarmTitle,
-                    style: GoogleFonts.outfit(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 8),
-                  Text(
-                    'Time to perform Salah and connect with Allah SWT.',
-                    style: GoogleFonts.lexend(
-                      fontSize: 13,
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const Spacer(),
-
-                  // Dua After Azaan Quick Button
-                  TextButton.icon(
-                    onPressed: _showDuaAfterAzaan,
-                    icon: const Icon(Icons.menu_book_rounded, color: Color(0xFF86EFAC), size: 18),
-                    label: Text(
-                      'Read Dua After Azaan',
-                      style: GoogleFonts.lexend(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF86EFAC),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 10),
+                  ],
 
                   // Action Buttons: Snooze & Dismiss
                   Row(
                     children: [
+                      // Snooze Button
                       Expanded(
+                        flex: 1,
                         child: OutlinedButton.icon(
                           onPressed: _showSnoozeOptions,
                           icon: const Icon(Icons.snooze_rounded, size: 20),
                           label: const Text('Snooze'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            side: const BorderSide(color: Colors.white54, width: 1.5),
+                            side: BorderSide(
+                              color: Colors.white.withValues(alpha: 0.4),
+                              width: 1.5,
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -514,23 +731,31 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                           ),
                         ),
                       ),
-                      const SizedBox(width: 14),
+
+                      const SizedBox(width: 12),
+
+                      // Dismiss Alarm Button
                       Expanded(
                         flex: 2,
                         child: ElevatedButton.icon(
                           onPressed: _dismissAlarm,
-                          icon: const Icon(Icons.notifications_off_rounded, size: 20),
-                          label: const Text('Dismiss Alarm'),
+                          icon: const Icon(
+                            Icons.alarm_off_rounded,
+                            size: 22,
+                            color: Color(0xFF0C2417),
+                          ),
+                          label: const Text('Turn Off & Dismiss'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF102A1C),
-                            elevation: 6,
+                            foregroundColor: const Color(0xFF0C2417),
+                            elevation: 8,
+                            shadowColor: const Color(0xFF4ADE80).withValues(alpha: 0.5),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
                             textStyle: GoogleFonts.lexend(
-                              fontSize: 16,
+                              fontSize: 15.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -539,7 +764,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                     ],
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),

@@ -8,6 +8,9 @@ class AppHeaderBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? titleWidget;
   final bool showDrawerButton;
   final bool showBackButton;
+  final bool? centerTitle;
+  final double? titleSpacing;
+  final double? leadingWidth;
   final Color? backgroundColor;
   final double? elevation;
   final Color? iconColor;
@@ -20,6 +23,9 @@ class AppHeaderBar extends StatelessWidget implements PreferredSizeWidget {
     this.titleWidget,
     this.showDrawerButton = true,
     this.showBackButton = false,
+    this.centerTitle,
+    this.titleSpacing,
+    this.leadingWidth,
     this.backgroundColor,
     this.elevation,
     this.iconColor,
@@ -33,7 +39,9 @@ class AppHeaderBar extends StatelessWidget implements PreferredSizeWidget {
   @override 
   Widget build(BuildContext context) {
     return AppBar(
-      centerTitle: true,
+      centerTitle: centerTitle ?? true,
+      titleSpacing: titleSpacing,
+      leadingWidth: leadingWidth ?? (showBackButton && centerTitle == false ? 44 : null),
       backgroundColor: backgroundColor ?? Colors.transparent,
       elevation: elevation ?? 0,
       scrolledUnderElevation: 0,

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../config/reminder_audio_config.dart';
+
 class AlarmAudioService {
   static final AlarmAudioService _instance = AlarmAudioService._internal();
   factory AlarmAudioService() => _instance;
@@ -14,30 +16,36 @@ class AlarmAudioService {
 
   bool get isPlaying => _isPlaying;
 
-  /// Starts the alarm sound and continuous vibration for a maximum of 10 seconds.
+  /// Starts the alarm sound and continuous vibration for a maximum of 30 seconds.
   Future<void> startAlarm({
     bool sound = true,
     bool vibration = true,
-    String soundType = 'Azaan',
+    String soundType = 'Madinah Azaan',
+    int maxDurationSeconds = 30,
   }) async {
     await stopAlarm(); // Stop any active alarm
 
     _isPlaying = true;
 
-    // 1. Play Audio using standard media stream (without overriding system volume)
+    // 1. Play Audio using selected asset or sound type
     if (sound) {
       try {
         _audioPlayer = AudioPlayer();
-        // Try playing Athan / Alarm audio stream or asset
+        final assetPath = ReminderAudioConfig.getAssetPath(soundType);
         try {
-          await _audioPlayer!.setAsset('assets/audio/athan.mp3');
+          await _audioPlayer!.setAsset(assetPath);
         } catch (_) {
-          // Reliable fallback audio stream if asset is not present
-          await _audioPlayer!.setUrl(
-            'https://raw.githubusercontent.com/islamic-network/athan-mp3/master/mecca.mp3',
-          );
+          // Fallback to local Madina Azaan asset or network
+          try {
+            await _audioPlayer!.setAsset('assets/audios/madina_azaan.mp3');
+          } catch (_) {
+            await _audioPlayer!.setUrl(
+              'https://raw.githubusercontent.com/islamic-network/athan-mp3/master/mecca.mp3',
+            );
+          }
         }
         await _audioPlayer!.setLoopMode(LoopMode.one);
+        await _audioPlayer!.setVolume(1.0);
         await _audioPlayer!.play();
       } catch (e) {
         // Fallback gracefully if network/audio is unavailable
@@ -54,8 +62,8 @@ class AlarmAudioService {
       });
     }
 
-    // 3. Strict 10-Second Auto-Stop Timer
-    _autoStopTimer = Timer(const Duration(seconds: 10), () {
+    // 3. Auto-Stop Timer
+    _autoStopTimer = Timer(Duration(seconds: maxDurationSeconds), () {
       stopAlarm();
     });
   }

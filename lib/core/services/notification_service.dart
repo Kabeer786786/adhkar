@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
+import '../config/reminder_audio_config.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -135,7 +136,7 @@ class NotificationService {
     final vibrationPattern = _create30SecondVibrationPattern();
 
     final androidDetails = AndroidNotificationDetails(
-      'adhkar_prayer_channel_v5',
+      'adhkar_prayer_channel_v6',
       'Prayer Alerts',
       channelDescription: 'Adhan and Prayer Time Reminders',
       importance: Importance.max,
@@ -171,6 +172,7 @@ class NotificationService {
       'It is time for $prayerName prayer. Come to success.',
       tzScheduled,
       notificationDetails,
+      payload: 'prayer:$prayerName',
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
@@ -185,30 +187,44 @@ class NotificationService {
     required String reminderId,
     bool sound = true,
     bool vibration = true,
+    String soundType = 'Default Ringtone',
   }) async {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
     final vibrationPattern = _create30SecondVibrationPattern();
 
+    String channelId = 'adhkar_reminder_silent_channel_v7';
+    String channelName = 'Silent Reminders';
+    AndroidNotificationSound? notifSound;
+    String? iosSound;
+
+    if (sound) {
+      final rawName = ReminderAudioConfig.getRawResourceName(soundType);
+      channelId = 'adhkar_reminder_${rawName}_channel_v7';
+      channelName = '$soundType Reminders';
+      notifSound = RawResourceAndroidNotificationSound(rawName);
+      iosSound = '$rawName.mp3';
+    }
+
     final androidDetails = AndroidNotificationDetails(
-      'adhkar_reminder_channel_v5',
-      'Custom Reminders & Alarms',
+      channelId,
+      channelName,
       channelDescription: 'Custom Alarm and Adhkar Reminders',
       importance: Importance.max,
       priority: Priority.high,
       playSound: sound,
-      sound: sound ? const RawResourceAndroidNotificationSound('madina_azaan') : null,
+      sound: notifSound,
       enableVibration: vibration,
       vibrationPattern: vibration ? vibrationPattern : null,
-      audioAttributesUsage: AudioAttributesUsage.alarm,
-      category: AndroidNotificationCategory.alarm,
+      audioAttributesUsage: AudioAttributesUsage.notification,
+      category: AndroidNotificationCategory.reminder,
       visibility: NotificationVisibility.public,
       fullScreenIntent: true,
     );
 
     final notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: DarwinNotificationDetails(sound: sound ? 'madina_azaan.mp3' : null),
+      iOS: DarwinNotificationDetails(sound: sound ? iosSound : null),
     );
 
     final payload = 'reminder_id:$reminderId';
@@ -234,6 +250,26 @@ class NotificationService {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+  }
+
+  Future<void> showDismissedNotification({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    const androidDetails = AndroidNotificationDetails(
+      'adhkar_status_channel_v6',
+      'Reminder Status Updates',
+      channelDescription: 'Status updates when reminders are completed or turned off',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+      playSound: false,
+    );
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(),
+    );
+    await _notificationsPlugin.show(id, title, body, notificationDetails);
   }
 
   Future<void> cancelAll() async {

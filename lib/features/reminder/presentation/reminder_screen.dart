@@ -525,7 +525,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
 
                     const SizedBox(width: 8),
 
-                    if (!_isSelectionMode)
+                    if (!_isSelectionMode) ...[
                       Transform.scale(
                         scale: 0.85,
                         child: Switch(
@@ -545,6 +545,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
                           },
                         ),
                       ),
+                    ],
                   ],
                 ),
 

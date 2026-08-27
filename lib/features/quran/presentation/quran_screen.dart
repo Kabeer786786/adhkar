@@ -180,7 +180,10 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     },
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 18,
+                      ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: isDark
@@ -200,72 +203,113 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                           BoxShadow(
                             color: const Color(
                               0xFF2A531D,
-                            ).withValues(alpha: 0.3),
+                            ).withValues(alpha: 0.2),
                             blurRadius: 14,
-                            offset: const Offset(0, 4),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      child: Stack(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: Opacity(
-                              opacity: 0.2,
-                              child: Icon(
-                                FlutterIslamicIcons.solidQuran2,
-                                size: 68,
-                                color: const Color(0xFFA3E635),
-                              ),
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          // Top Category Badge
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    FlutterIslamicIcons.quran2,
-                                    size: 18,
-                                    color: const Color(0xFFd1ffbe),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _selectedTab == 1 ? 'Last Read Juz' : 'Last Read Surah',
-                                    style: TextStyle(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.9,
-                                      ),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
+                              const Icon(
+                                FlutterIslamicIcons.quran2,
+                                size: 16,
+                                color: Color(0xFFd1ffbe),
                               ),
-                              const SizedBox(height: 12),
-                              Text(
-                                _selectedTab == 1 ? lastJuz.nameEnglish : lastSurah.nameEnglish,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
+                              const SizedBox(width: 7),
+                              Text( 
                                 _selectedTab == 1
-                                    ? 'Para ${lastJuz.number}  •  ${lastJuz.surahRange}'
-                                    : '${lastSurah.nameTranslation}  •  Ayah 1',
+                                    ? 'LAST READ JUZ'
+                                    : 'LAST READ SURAH',
                                 style: const TextStyle(
                                   color: Color(0xFFd1ffbe),
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11.5,
+                                  letterSpacing: 0.8,
                                 ),
                               ),
                             ],
                           ),
+                          const SizedBox(height: 8),
+
+                          // English Name & Arabic Name Row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _selectedTab == 1
+                                          ? lastJuz.nameEnglish
+                                          : lastSurah.nameEnglish,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 22,
+                                        letterSpacing: 0.2,
+                                      ),
+                                    ),
+                                    Text(
+                                      _selectedTab == 1
+                                          ? 'Para (Juz) : ${lastJuz.number}'
+                                          : lastSurah.nameTranslation,
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.9,
+                                        ),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ), 
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: Text(
+                                  _selectedTab == 1
+                                      ? lastJuz.nameArabic
+                                      : lastSurah.nameArabic,
+                                  textDirection: TextDirection.rtl,
+                                  style: GoogleFonts.amiri(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFFd1ffbe), 
+                                    height: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // Below Arabic & English Name: Surah Number, Meccan/Medinan, Total Ayahs
+                          if (_selectedTab == 1)
+                            Text(
+                              lastJuz.surahRange,
+                              style: const TextStyle(
+                                color: Color(0xFFd1ffbe),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )
+                          else
+                            Text(
+                              'Surah ${lastSurah.number}  •  ${lastSurah.revelationType}  •  ${lastSurah.verseCount} Total Ayahs',
+                              style: const TextStyle(
+                                color: Color(0xFFd1ffbe),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -299,11 +343,19 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                 ? Colors.white10
                                 : const Color(0xFFE2E8F0),
                           ),
-                        ),
+                        ), 
                         child: Row(
                           children: [
-                            _buildPillTab('Surahs (114)', 0, isDark),
-                            _buildPillTab('Juz (30)', 1, isDark),
+                            _buildPillTab(
+                              'Surahs (${allSurahs.length})',
+                              0,
+                              isDark,
+                            ),
+                            _buildPillTab(
+                              'Juz (30)',
+                              1,
+                              isDark,
+                            ),
                           ],
                         ),
                       ),
@@ -326,7 +378,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                             borderRadius: BorderRadius.circular(12),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: 10,
+                                vertical: 12,
                                 horizontal: 4,
                               ),
                               child: Row(
@@ -398,7 +450,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                             ),
                                             const SizedBox(width: 5),
                                             Text(
-                                              '•  ${surah.verseCount} Ayahs',
+                                              '${surah.revelationType}  •  ${surah.verseCount} Ayahs',
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.grey,
@@ -484,30 +536,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    width: 42,
-                                    height: 42,
-                                    decoration: BoxDecoration(
-                                      color: isDark
-                                          ? const Color(0xFF23322B)
-                                          : const Color(0xFFF4FAF3),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: const Color(0xFF2A531D)
-                                            .withValues(alpha: 0.2),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '${juz.number}',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF2A531D),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
