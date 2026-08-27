@@ -16,6 +16,7 @@ class QuranAudioController extends ChangeNotifier {
   List<AyahModel> _playlist = [];
   int _currentIndex = -1; // -1 means player inactive
   String _title = '';
+  int? _surahNumber;
 
   bool _isPlaying = false;
   bool _isBuffering = false;
@@ -27,6 +28,7 @@ class QuranAudioController extends ChangeNotifier {
   List<AyahModel> get playlist => _playlist;
   int get currentIndex => _currentIndex;
   String get title => _title;
+  int? get surahNumber => _surahNumber;
   bool get isPlaying => _isPlaying;
   bool get isBuffering => _isBuffering;
   double get speed => _speed;
@@ -87,12 +89,14 @@ class QuranAudioController extends ChangeNotifier {
     List<AyahModel> ayahs,
     int startIndex, {
     String title = '',
+    int? surahNumber,
   }) async {
     if (ayahs.isEmpty || startIndex < 0 || startIndex >= ayahs.length) return;
 
     _playlist = List.from(ayahs);
     _currentIndex = startIndex;
     _title = title;
+    _surahNumber = surahNumber ?? ayahs.first.surahNumber ?? 1;
     _errorMessage = null;
     notifyListeners();
 
@@ -110,11 +114,21 @@ class QuranAudioController extends ChangeNotifier {
     final bool isLocal =
         await localFile.exists() && (await localFile.length()) > 0;
 
+    final surahNum = _surahNumber ?? ayah.surahNumber ?? 1;
+    final surahTitle = _title.isNotEmpty ? _title : 'Surah $surahNum';
+
     final mediaItem = MediaItem(
-      id: 'quran_verse_${ayah.number}',
-      album: _title.isNotEmpty ? _title : 'Noble Quran',
-      title: 'Ayah ${ayah.numberInSurah}',
-      artist: 'Quran Recitation',
+      id: 'quran_${surahNum}_${ayah.numberInSurah}',
+      album: 'Surah $surahTitle (The Noble Qur\'an)',
+      title: '$surahTitle • Verse ${ayah.numberInSurah}',
+      artist: 'The Noble Qur\'an Recitation',
+      artUri: Uri.parse('asset:///assets/logo.png'),
+      extras: {
+        'type': 'quran',
+        'surahNumber': surahNum,
+        'surahName': surahTitle,
+        'route': '/quran/surah?num=$surahNum&name=${Uri.encodeComponent(surahTitle)}',
+      },
     );
 
     try {

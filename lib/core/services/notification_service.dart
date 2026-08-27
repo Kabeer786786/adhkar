@@ -88,25 +88,36 @@ class NotificationService {
     }
   }
 
+  static Int64List _create30SecondVibrationPattern() {
+    final pattern = <int>[0];
+    for (int i = 0; i < 20; i++) {
+      pattern.add(1000);
+      pattern.add(500);
+    }
+    return Int64List.fromList(pattern);
+  }
+
   Future<void> showNotification({
     required int id,
     required String title,
     required String body,
     String? payload,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
-      'adhkar_main_channel_v4',
+    final androidDetails = AndroidNotificationDetails(
+      'adhkar_main_channel_v5',
       'Adhkar Reminders',
       channelDescription: 'Notifications for Prayer Times and Daily Adhkar',
       importance: Importance.max,
       priority: Priority.high,
       playSound: true,
+      sound: const RawResourceAndroidNotificationSound('madina_azaan'),
       enableVibration: true,
+      vibrationPattern: _create30SecondVibrationPattern(),
     );
 
-    const notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: DarwinNotificationDetails(),
+      iOS: const DarwinNotificationDetails(sound: 'madina_azaan.mp3'),
     );
 
     await _notificationsPlugin.show(id, title, body, notificationDetails, payload: payload);
@@ -121,15 +132,16 @@ class NotificationService {
   }) async {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
-    final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000, 500, 1000]);
+    final vibrationPattern = _create30SecondVibrationPattern();
 
     final androidDetails = AndroidNotificationDetails(
-      'adhkar_prayer_channel_v4',
+      'adhkar_prayer_channel_v5',
       'Prayer Alerts',
       channelDescription: 'Adhan and Prayer Time Reminders',
       importance: Importance.max,
       priority: Priority.high,
       playSound: sound,
+      sound: sound ? const RawResourceAndroidNotificationSound('madina_azaan') : null,
       enableVibration: vibration,
       vibrationPattern: vibration ? vibrationPattern : null,
       audioAttributesUsage: AudioAttributesUsage.alarm,
@@ -140,7 +152,7 @@ class NotificationService {
 
     final notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: const DarwinNotificationDetails(),
+      iOS: DarwinNotificationDetails(sound: sound ? 'madina_azaan.mp3' : null),
     );
 
     final tzScheduled = tz.TZDateTime(
@@ -176,15 +188,16 @@ class NotificationService {
   }) async {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
-    final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000, 500, 1000]);
+    final vibrationPattern = _create30SecondVibrationPattern();
 
     final androidDetails = AndroidNotificationDetails(
-      'adhkar_reminder_channel_v4',
+      'adhkar_reminder_channel_v5',
       'Custom Reminders & Alarms',
       channelDescription: 'Custom Alarm and Adhkar Reminders',
       importance: Importance.max,
       priority: Priority.high,
       playSound: sound,
+      sound: sound ? const RawResourceAndroidNotificationSound('madina_azaan') : null,
       enableVibration: vibration,
       vibrationPattern: vibration ? vibrationPattern : null,
       audioAttributesUsage: AudioAttributesUsage.alarm,
@@ -195,7 +208,7 @@ class NotificationService {
 
     final notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: const DarwinNotificationDetails(),
+      iOS: DarwinNotificationDetails(sound: sound ? 'madina_azaan.mp3' : null),
     );
 
     final payload = 'reminder_id:$reminderId';

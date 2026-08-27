@@ -20,7 +20,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Bismi Allahi arrahmani arraheem",
         "translation":
-            "In the name of Allāh,1 the Entirely Merciful, the Especially Merciful.2",
+            "In the name of Allāh, the Entirely Merciful, the Especially Merciful",
         "audio_filename": "1.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1.mp3",
@@ -194,7 +194,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allatheena yu/minoona bilghaybiwayuqeemoona assalata wamimma razaqnahumyunfiqoon",
         "translation":
-            "Who believe in the unseen, establish prayer,1 and spend out of what We2 have provided for them,",
+            "Who believe in the unseen, establish prayer, and spend out of what We2 have provided for them,",
         "audio_filename": "10.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/10.mp3",
@@ -801,7 +801,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qaloo subhanaka laAAilma lana illa ma AAallamtanainnaka anta alAAaleemu alhakeem",
         "translation":
-            "They said, \"Exalted are You; we have no knowledge except what You have taught us. Indeed, it is You who is the Knowing,1 the Wise.\"2",
+            "They said, \"Exalted are You; we have no knowledge except what You have taught us. Indeed, it is You who is the Knowing, the Wise.\"2",
         "audio_filename": "39.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/39.mp3",
@@ -906,7 +906,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fatalaqqa adamu min rabbihikalimatin fataba AAalayhi innahu huwa attawwabuarraheem",
         "translation":
-            "Then Adam received from his Lord [some] words,1 and He accepted his repentance. Indeed, it is He who is the Accepting of Repentance,2 the Merciful.",
+            "Then Adam received from his Lord [some] words, and He accepted his repentance. Indeed, it is He who is the Accepting of Repentance, the Merciful.",
         "audio_filename": "44.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/44.mp3",
@@ -2796,7 +2796,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-ith yarfaAAu ibraheemualqawaAAida mina albayti wa-ismaAAeelu rabbanataqabbal minna innaka anta assameeAAu alAAaleem",
         "translation":
-            "And [mention] when Abraham was raising the foundations of the House and [with him] Ishmael, [saying], \"Our Lord, accept [this] from us. Indeed, You are the Hearing,1 the Knowing.2",
+            "And [mention] when Abraham was raising the foundations of the House and [with him] Ishmael, [saying], \"Our Lord, accept [this] from us. Indeed, You are the Hearing, the Knowing",
         "audio_filename": "134.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/134.mp3",
@@ -2838,7 +2838,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Rabbana wabAAath feehimrasoolan minhum yatloo AAalayhim ayatikawayuAAallimuhumu alkitaba walhikmatawayuzakkeehim innaka anta alAAazeezu alhakeem",
         "translation":
-            "Our Lord, and send among them a messenger from themselves who will recite to them Your verses and teach them the Book and wisdom and purify them. Indeed, You are the Exalted in Might,1 the Wise.\"",
+            "Our Lord, and send among them a messenger from themselves who will recite to them Your verses and teach them the Book and wisdom and purify them. Indeed, You are the Exalted in Might, the Wise.\"",
         "audio_filename": "136.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/136.mp3",
@@ -3111,7 +3111,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Sayaqoolu assufahao mina annasima wallahum AAan qiblatihimu allatee kanooAAalayha qul lillahi almashriqu walmaghribuyahdee man yashao ila siratinmustaqeem",
         "translation":
-            "The foolish among the people will say, \"What has turned them away from their qiblah,1 which they used to face?\"2 Say, \"To Allāh belongs the east and the west. He guides whom He wills to a straight path.\"",
+            "The foolish among the people will say, \"What has turned them away from their qiblah, which they used to face?\"2 Say, \"To Allāh belongs the east and the west. He guides whom He wills to a straight path.\"",
         "audio_filename": "149.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/149.mp3",
@@ -3445,7 +3445,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna assafa walmarwatamin shaAAa-iri Allahi faman hajja albaytaawi iAAtamara fala junaha AAalayhi an yattawwafabihima waman tatawwaAAa khayran fa-inna Allahashakirun AAaleem",
         "translation":
-            "Indeed, aṣ-Ṣafā and al-Marwah are among the symbols1 of Allāh. So whoever makes ḥajj [pilgrimage] to the House or performs ʿumrah - there is no blame upon him for walking between them.2 And whoever volunteers good - then indeed, Allāh is Appreciative3 and Knowing.",
+            "Indeed, aṣ-Ṣafā and al-Marwah are among the symbols1 of Allāh. So whoever makes ḥajj [pilgrimage] to the House or performs ʿumrah - there is no blame upon him for walking between them And whoever volunteers good - then indeed, Allāh is Appreciative3 and Knowing.",
         "audio_filename": "165.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/165.mp3",
@@ -3466,7 +3466,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna allatheena yaktumoona maanzalna mina albayyinati walhuda minbaAAdi ma bayyannahu linnasi feealkitabi ola-ika yalAAanuhumu AllahuwayalAAanuhumu allaAAinoon",
         "translation":
-            "Indeed, those who conceal what We sent down of clear proofs and guidance after We made it clear for the people in the Scripture - those are cursed by Allāh and cursed by those who curse,1",
+            "Indeed, those who conceal what We sent down of clear proofs and guidance after We made it clear for the people in the Scripture - those are cursed by Allāh and cursed by those who curse,",
         "audio_filename": "166.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/166.mp3",
@@ -3487,7 +3487,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Illa allatheena taboowaaslahoo wabayyanoo faola-ika atoobuAAalayhim waana attawwabu arraheem",
         "translation":
-            "Except for those who repent and correct themselves and make evident [what they concealed]. Those - I will accept their repentance, and I am the Accepting of Repentance,1 the Merciful.",
+            "Except for those who repent and correct themselves and make evident [what they concealed]. Those - I will accept their repentance, and I am the Accepting of Repentance, the Merciful.",
         "audio_filename": "167.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/167.mp3",
@@ -3760,7 +3760,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Innama harrama AAalaykumualmaytata waddama walahma alkhinzeeri wamaohilla bihi lighayri Allahi famani idturra ghayra baghinwala AAadin fala ithma AAalayhi inna Allahaghafoorun raheem",
         "translation":
-            "He has only forbidden to you dead animals,1 blood, the flesh of swine, and that which has been dedicated to other than Allāh. But whoever is forced [by necessity], neither desiring [it] nor transgressing [its limit], there is no sin upon him. Indeed, Allāh is Forgiving and Merciful.",
+            "He has only forbidden to you dead animals, blood, the flesh of swine, and that which has been dedicated to other than Allāh. But whoever is forced [by necessity], neither desiring [it] nor transgressing [its limit], there is no sin upon him. Indeed, Allāh is Forgiving and Merciful.",
         "audio_filename": "180.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/180.mp3",
@@ -3865,7 +3865,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha allatheena amanookutiba AAalaykumu alqisasu fee alqatla alhurrubilhurri walAAabdu bilAAabdi walonthabilontha faman AAufiya lahu min akheehi shay-on fattibaAAunbilmaAAroofi waadaon ilayhi bi-ihsaninthalika takhfeefun min rabbikum warahmatun famaniiAAtada baAAda thalika falahu AAathabunaleem",
         "translation":
-            "O you who have believed, prescribed for you is legal retribution for those murdered - the free for the free, the slave for the slave, and the female for the female.1 But whoever overlooks from his brother [i.e., the killer] anything,2 then there should be a suitable follow-up and payment to him [i.e., the deceased's heir or legal representative] with good conduct. This is an alleviation from your Lord and a mercy. But whoever transgresses after that3 will have a painful punishment.",
+            "O you who have believed, prescribed for you is legal retribution for those murdered - the free for the free, the slave for the slave, and the female for the female.1 But whoever overlooks from his brother [i.e., the killer] anything, then there should be a suitable follow-up and payment to him [i.e., the deceased's heir or legal representative] with good conduct. This is an alleviation from your Lord and a mercy. But whoever transgresses after that3 will have a painful punishment.",
         "audio_filename": "185.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/185.mp3",
@@ -4012,7 +4012,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Shahru ramadana allatheeonzila feehi alqur-anu hudan linnasiwabayyinatin mina alhuda walfurqanifaman shahida minkumu ashshahra falyasumhu waman kanamareedan aw AAala safarin faAAiddatun min ayyaminokhara yureedu Allahu bikumu alyusra wala yureedubikumu alAAusra walitukmiloo alAAiddata walitukabbiroo AllahaAAala ma hadakum walaAAallakum tashkuroon",
         "translation":
-            "The month of Ramaḍān [is that] in which was revealed the Qur’ān, a guidance for the people and clear proofs of guidance and criterion. So whoever sights [the crescent of] the month,1 let him fast it; and whoever is ill or on a journey - then an equal number of other days. Allāh intends for you ease and does not intend for you hardship and [wants] for you to complete the period and to glorify Allāh for that [to] which He has guided you; and perhaps you will be grateful.",
+            "The month of Ramaḍān [is that] in which was revealed the Qur’ān, a guidance for the people and clear proofs of guidance and criterion. So whoever sights [the crescent of] the month, let him fast it; and whoever is ill or on a journey - then an equal number of other days. Allāh intends for you ease and does not intend for you hardship and [wants] for you to complete the period and to glorify Allāh for that [to] which He has guided you; and perhaps you will be grateful.",
         "audio_filename": "192.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/192.mp3",
@@ -4054,7 +4054,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ohilla lakum laylata assiyamiarrafathu ila nisa-ikum hunna libasunlakum waantum libasun lahunna AAalima Allahuannakum kuntum takhtanoona anfusakum fatabaAAalaykum waAAafa AAankum fal-ana bashiroohunnawabtaghoo ma kataba Allahu lakum wakuloo washraboohatta yatabayyana lakumu alkhaytu al-abyadumina alkhayti al-aswadi mina alfajri thumma atimmoo assiyamaila allayli wala tubashiroohunna waantum AAakifoonafee almasajidi tilka hudoodu Allahi falataqrabooha kathalika yubayyinu Allahu ayatihilinnasi laAAallahum yattaqoon",
         "translation":
-            "It has been made permissible for you the night preceding fasting to go to your wives [for sexual relations]. They are a clothing for you and you are a clothing1 for them. Allāh knows that you used to deceive yourselves,2 so He accepted your repentance and forgave you. So now, have relations with them and seek that which Allāh has decreed for you [i.e., offspring]. And eat and drink until the white thread of dawn becomes distinct to you from the black thread [of night]. Then complete the fast until the night [i.e., sunset]. And do not have relations with them as long as you are staying for worship in the mosques. These are the limits [set by] Allāh, so do not approach them. Thus does Allāh make clear His verses [i.e., ordinances] to the people that they may become righteous.",
+            "It has been made permissible for you the night preceding fasting to go to your wives [for sexual relations]. They are a clothing for you and you are a clothing1 for them. Allāh knows that you used to deceive yourselves, so He accepted your repentance and forgave you. So now, have relations with them and seek that which Allāh has decreed for you [i.e., offspring]. And eat and drink until the white thread of dawn becomes distinct to you from the black thread [of night]. Then complete the fast until the night [i.e., sunset]. And do not have relations with them as long as you are staying for worship in the mosques. These are the limits [set by] Allāh, so do not approach them. Thus does Allāh make clear His verses [i.e., ordinances] to the people that they may become righteous.",
         "audio_filename": "194.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/194.mp3",
@@ -4199,7 +4199,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ashshahru alharamu bishshahrialharami walhurumatu qisasunfamani iAAtada AAalaykum faAAtadoo AAalayhibimithli ma iAAtada AAalaykum wattaqoo AllahawaAAlamoo anna Allaha maAAa almuttaqeen",
         "translation":
-            "[Battle in] the sacred month is for [aggression committed in] the sacred month,1 and for [all] violations is legal retribution. So whoever has assaulted you, then assault him in the same way that he has assaulted you. And fear Allāh and know that Allāh is with those who fear Him.",
+            "[Battle in] the sacred month is for [aggression committed in] the sacred month, and for [all] violations is legal retribution. So whoever has assaulted you, then assault him in the same way that he has assaulted you. And fear Allāh and know that Allāh is with those who fear Him.",
         "audio_filename": "201.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/201.mp3",
@@ -4241,7 +4241,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waatimmoo alhajja walAAumratalillahi fa-in ohsirtum fama istaysara minaalhadyi wala tahliqoo ruoosakum hattayablugha alhadyu mahillahu faman kana minkum mareedanaw bihi athan min ra/sihi fafidyatun min siyaminaw sadaqatin aw nusukin fa-itha amintum famantamattaAAa bilAAumrati ila alhajji famaistaysara mina alhadyi faman lam yajid fasiyamuthalathati ayyamin fee alhajji wasabAAatin itharajaAAtum tilka AAasharatun kamilatun thalika limanlam yakun ahluhu hadiree almasjidi alharamiwattaqoo Allaha waAAlamoo anna Allahashadeedu alAAiqab",
         "translation":
-            "And complete the ḥajj and ʿumrah for Allāh. But if you are prevented, then [offer] what can be obtained with ease of sacrificial animals. And do not shave your heads until the sacrificial animal has reached its place of slaughter. And whoever among you is ill or has an ailment of the head [making shaving necessary must offer] a ransom of fasting [three days] or charity1 or sacrifice.2 And when you are secure,3 then whoever performs ʿumrah [during the ḥajj months]4 followed by ḥajj [offers] what can be obtained with ease of sacrificial animals. And whoever cannot find [or afford such an animal] - then a fast of three days during ḥajj and of seven when you have returned [home]. Those are ten complete [days]. This is for those whose family is not in the area of al-Masjid al-Ḥarām. And fear Allāh and know that Allāh is severe in penalty.",
+            "And complete the ḥajj and ʿumrah for Allāh. But if you are prevented, then [offer] what can be obtained with ease of sacrificial animals. And do not shave your heads until the sacrificial animal has reached its place of slaughter. And whoever among you is ill or has an ailment of the head [making shaving necessary must offer] a ransom of fasting [three days] or charity1 or sacrifice And when you are secure, then whoever performs ʿumrah [during the ḥajj months]4 followed by ḥajj [offers] what can be obtained with ease of sacrificial animals. And whoever cannot find [or afford such an animal] - then a fast of three days during ḥajj and of seven when you have returned [home]. Those are ten complete [days]. This is for those whose family is not in the area of al-Masjid al-Ḥarām. And fear Allāh and know that Allāh is severe in penalty.",
         "audio_filename": "203.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/203.mp3",
@@ -4262,7 +4262,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Alhajju ashhurun maAAloomatunfaman farada feehinna alhajja fala rafathawala fusooqa wala jidala fee alhajjiwama tafAAaloo min khayrin yaAAlamhu Allahuwatazawwadoo fa-inna khayra azzadi attaqwawattaqooni ya olee al-albab",
         "translation":
-            "Ḥajj is [during] well-known months,1 so whoever has made ḥajj obligatory upon himself therein [by entering the state of iḥrām], there is [to be for him] no sexual relations and no disobedience and no disputing during ḥajj. And whatever good you do - Allāh knows it. And take provisions, but indeed, the best provision is fear of Allāh. And fear Me, O you of understanding.",
+            "Ḥajj is [during] well-known months, so whoever has made ḥajj obligatory upon himself therein [by entering the state of iḥrām], there is [to be for him] no sexual relations and no disobedience and no disputing during ḥajj. And whatever good you do - Allāh knows it. And take provisions, but indeed, the best provision is fear of Allāh. And fear Me, O you of understanding.",
         "audio_filename": "204.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/204.mp3",
@@ -4283,7 +4283,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Laysa AAalaykum junahun an tabtaghoofadlan min rabbikum fa-itha afadtum minAAarafatin fathkuroo Allaha AAindaalmashAAari alharami wathkuroohu kamahadakum wa-in kuntum min qablihi lamina addalleen",
         "translation":
-            "There is no blame upon you for seeking bounty1 from your Lord [during ḥajj]. But when you depart from ʿArafāt, remember Allāh at al-Mashʿar al-Ḥarām.2 And remember Him, as He has guided you, for indeed, you were before that among those astray.",
+            "There is no blame upon you for seeking bounty1 from your Lord [during ḥajj]. But when you depart from ʿArafāt, remember Allāh at al-Mashʿar al-Ḥarām And remember Him, as He has guided you, for indeed, you were before that among those astray.",
         "audio_filename": "205.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/205.mp3",
@@ -4787,7 +4787,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wayas-aloonaka AAani almaheediqul huwa athan faAAtaziloo annisaafee almaheedi wala taqraboohunna hattayathurna fa-itha tatahharna fa/toohunna min haythuamarakumu Allahu inna Allaha yuhibbu attawwabeenawayuhibbu almutatahhireen",
         "translation":
-            "And they ask you about menstruation. Say, \"It is harm, so keep away from wives1 during menstruation. And do not approach them until they are pure. And when they have purified themselves,2 then come to them from where Allāh has ordained for you. Indeed, Allāh loves those who are constantly repentant and loves those who purify themselves.\"",
+            "And they ask you about menstruation. Say, \"It is harm, so keep away from wives1 during menstruation. And do not approach them until they are pure. And when they have purified themselves, then come to them from where Allāh has ordained for you. Indeed, Allāh loves those who are constantly repentant and loves those who purify themselves.\"",
         "audio_filename": "229.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/229.mp3",
@@ -4912,7 +4912,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walmutallaqatuyatarabbasna bi-anfusihinna thalathata quroo-in walayahillu lahunna an yaktumna ma khalaqa Allahufee arhamihinna in kunna yu/minna billahiwalyawmi al-akhiri wabuAAoolatuhunna ahaqqubiraddihinna fee thalika in aradoo islahanwalahunna mithlu allathee AAalayhinna bilmaAAroofiwalirrijali AAalayhinna darajatun wallahuAAazeezun hakeem",
         "translation":
-            "Divorced women remain in waiting [i.e., do not remarry] for three periods,1 and it is not lawful for them to conceal what Allāh has created in their wombs if they believe in Allāh and the Last Day. And their husbands have more right to take them back in this [period] if they want reconciliation.2 And due to them [i.e., the wives] is similar to what is expected of them, according to what is reasonable.3 But the men [i.e., husbands] have a degree over them [in responsibility and authority]. And Allāh is Exalted in Might and Wise.",
+            "Divorced women remain in waiting [i.e., do not remarry] for three periods, and it is not lawful for them to conceal what Allāh has created in their wombs if they believe in Allāh and the Last Day. And their husbands have more right to take them back in this [period] if they want reconciliation And due to them [i.e., the wives] is similar to what is expected of them, according to what is reasonable But the men [i.e., husbands] have a degree over them [in responsibility and authority]. And Allāh is Exalted in Might and Wise.",
         "audio_filename": "235.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/235.mp3",
@@ -5080,7 +5080,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "La junaha AAalaykum in tallaqtumuannisaa ma lam tamassoohunna aw tafridoolahunna fareedatan wamattiAAoohunna AAalaalmoosiAAi qadaruhu waAAala almuqtiri qadaruhu mataAAanbilmaAAroofi haqqan AAala almuhsineen",
         "translation":
-            "There is no blame upon you if you divorce women you have not touched1 nor specified for them an obligation.2 But give them [a gift of] compensation - the wealthy according to his capability and the poor according to his capability - a provision according to what is acceptable, a duty upon the doers of good.",
+            "There is no blame upon you if you divorce women you have not touched1 nor specified for them an obligation But give them [a gift of] compensation - the wealthy according to his capability and the poor according to his capability - a provision according to what is acceptable, a duty upon the doers of good.",
         "audio_filename": "243.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/243.mp3",
@@ -5479,7 +5479,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allahu la ilaha illahuwa alhayyu alqayyoomu la ta/khuthuhusinatun wala nawmun lahu ma fee assamawatiwama fee al-ardi man tha allatheeyashfaAAu AAindahu illa bi-ithnihi yaAAlamu mabayna aydeehim wama khalfahum wala yuheetoonabishay-in min AAilmihi illa bima shaawasiAAa kursiyyuhu assamawati wal-ardawala yaooduhu hifthuhumawahuwa alAAaliyyu alAAatheem",
         "translation":
-            "Allāh - there is no deity except Him, the Ever-Living,1 the Self-Sustaining.2 Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them,3 and they encompass not a thing of His knowledge except for what He wills. His Kursī4 extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High,5 the Most Great.6",
+            "Allāh - there is no deity except Him, the Ever-Living, the Self-Sustaining Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī4 extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great",
         "audio_filename": "262.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/262.mp3",
@@ -5521,7 +5521,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allahu waliyyu allatheena amanooyukhrijuhum mina aththulumati ilaannoori wallatheena kafaroo awliyaohumuattaghootu yukhrijoonahum mina annoori ilaaththulumati ola-ika as-habuannari hum feeha khalidoon",
         "translation":
-            "Allāh is the Ally1 of those who believe. He brings them out from darknesses into the light. And those who disbelieve - their allies are ṭāghūt. They take them out of the light into darknesses.2 Those are the companions of the Fire; they will abide eternally therein.",
+            "Allāh is the Ally1 of those who believe. He brings them out from darknesses into the light. And those who disbelieve - their allies are ṭāghūt. They take them out of the light into darknesses Those are the companions of the Fire; they will abide eternally therein.",
         "audio_filename": "264.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/264.mp3",
@@ -6552,7 +6552,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fa-in hajjooka faqul aslamtu wajhiyalillahi wamani ittabaAAani waqul lillatheena ootooalkitaba walommiyyeena aaslamtum fa-inaslamoo faqadi ihtadaw wa-in tawallaw fa-innama AAalaykaalbalaghu wallahu baseerun bilAAibad",
         "translation":
-            "So if they argue with you, say, \"I have submitted myself to Allāh [in Islām], and [so have] those who follow me.\" And say to those who were given the Scripture and [to] the unlearned,1 \"Have you submitted yourselves?\" And if they submit [in Islām], they are rightly guided; but if they turn away - then upon you is only the [duty of] notification. And Allāh is Seeing of [His] servants.",
+            "So if they argue with you, say, \"I have submitted myself to Allāh [in Islām], and [so have] those who follow me.\" And say to those who were given the Scripture and [to] the unlearned, \"Have you submitted yourselves?\" And if they submit [in Islām], they are rightly guided; but if they turn away - then upon you is only the [duty of] notification. And Allāh is Seeing of [His] servants.",
         "audio_filename": "313.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/313.mp3",
@@ -8310,7 +8310,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waltakun minkum ommatun yadAAoona ilaalkhayri waya/muroona bilmaAAroofi wayanhawna AAanialmunkari waola-ika humu almuflihoon",
         "translation":
-            "And let there be [arising] from you a nation inviting to [all that is] good, enjoining what is right and forbidding what is wrong,1 and those will be the successful.",
+            "And let there be [arising] from you a nation inviting to [all that is] good, enjoining what is right and forbidding what is wrong, and those will be the successful.",
         "audio_filename": "397.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/397.mp3",
@@ -9561,7 +9561,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Laqad manna Allahu AAalaalmu/mineena ith baAAatha feehim rasoolan min anfusihimyatloo AAalayhim ayatihi wayuzakkeehimwayuAAallimuhumu alkitaba walhikmata wa-inkanoo min qablu lafee dalalin mubeen",
         "translation":
-            "Certainly did Allāh confer [great] favor upon the believers when He sent among them a Messenger from themselves, reciting to them His verses and purifying them and teaching them the Book [i.e., the Qur’ān] and wisdom,1 although they had been before in manifest error.",
+            "Certainly did Allāh confer [great] favor upon the believers when He sent among them a Messenger from themselves, reciting to them His verses and purifying them and teaching them the Book [i.e., the Qur’ān] and wisdom, although they had been before in manifest error.",
         "audio_filename": "457.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/457.mp3",
@@ -10346,7 +10346,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha annasuittaqoo rabbakumu allathee khalaqakum min nafsin wahidatinwakhalaqa minha zawjaha wabaththa minhumarijalan katheeran wanisaan wattaqoo Allahaallathee tasaaloona bihi wal-arhamainna Allaha kana AAalaykum raqeeb",
         "translation":
-            "O mankind, fear your Lord, who created you from one soul and created from it its mate and dispersed from both of them many men and women. And fear Allāh, through whom1 you ask one another,2 and the wombs.3 Indeed Allāh is ever,4 over you, an Observer.5",
+            "O mankind, fear your Lord, who created you from one soul and created from it its mate and dispersed from both of them many men and women. And fear Allāh, through whom1 you ask one another, and the wombs Indeed Allāh is ever, over you, an Observer",
         "audio_filename": "494.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/494.mp3",
@@ -10409,7 +10409,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waatoo annisaa saduqatihinnanihlatan fa-in tibna lakum AAan shay-in minhunafsan fakuloohu hanee-an maree-a",
         "translation":
-            "And give the women [upon marriage] their [bridal] gifts1 graciously. But if they give up willingly to you anything of it, then take it in satisfaction and ease.2",
+            "And give the women [upon marriage] their [bridal] gifts1 graciously. But if they give up willingly to you anything of it, then take it in satisfaction and ease",
         "audio_filename": "497.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/497.mp3",
@@ -10430,7 +10430,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala tu/too assufahaaamwalakumu allatee jaAAala Allahu lakum qiyamanwarzuqoohum feeha waksoohum waqooloo lahumqawlan maAAroofa",
         "translation":
-            "And do not give the weak-minded your property,1 which Allāh has made a means of sustenance for you, but provide for them with it and clothe them and speak to them words of appropriate kindness.",
+            "And do not give the weak-minded your property, which Allāh has made a means of sustenance for you, but provide for them with it and clothe them and speak to them words of appropriate kindness.",
         "audio_filename": "498.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/498.mp3",
@@ -10556,7 +10556,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Yooseekumu Allahu fee awladikumliththakari mithlu haththialonthayayni fa-in kunna nisaan fawqa ithnatayni falahunnathulutha ma taraka wa-in kanat wahidatanfalaha annisfu wali-abawayhi likulli wahidinminhuma assudusu mimma taraka in kanalahu waladun fa-in lam yakun lahu waladun wawarithahu abawahufali-ommihi aththuluthu fa-in kana lahu ikhwatunfali-ommihi assudusu min baAAdi wasiyyatin yooseebiha aw daynin abaokum waabnaokum latadroona ayyuhum aqrabu lakum nafAAan fareedatan mina Allahiinna Allaha kana AAaleeman hakeema",
         "translation":
-            "Allāh instructs you concerning your children [i.e., their portions of inheritance]: for the male, what is equal to the share of two females. But if there are [only] daughters, two or more, for them is two thirds of one's estate.1 And if there is only one, for her is half. And for one's parents, to each one of them is a sixth of his estate if he left children. But if he had no children and the parents [alone] inherit from him, then for his mother is one third. And if he had brothers [and/or sisters], for his mother is a sixth,2 after any bequest he [may have] made or debt.3 Your parents or your children - you know not which of them are nearest to you in benefit. [These shares are] an obligation [imposed] by Allāh. Indeed, Allāh is ever Knowing and Wise.",
+            "Allāh instructs you concerning your children [i.e., their portions of inheritance]: for the male, what is equal to the share of two females. But if there are [only] daughters, two or more, for them is two thirds of one's estate.1 And if there is only one, for her is half. And for one's parents, to each one of them is a sixth of his estate if he left children. But if he had no children and the parents [alone] inherit from him, then for his mother is one third. And if he had brothers [and/or sisters], for his mother is a sixth, after any bequest he [may have] made or debt Your parents or your children - you know not which of them are nearest to you in benefit. [These shares are] an obligation [imposed] by Allāh. Indeed, Allāh is ever Knowing and Wise.",
         "audio_filename": "504.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/504.mp3",
@@ -10577,7 +10577,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walakum nisfu ma taraka azwajukumin lam yakun lahunna waladun fa-in kana lahunna waladunfalakumu arrubuAAu mimma tarakna min baAAdi wasiyyatinyooseena biha aw daynin walahunna arrubuAAumimma taraktum in lam yakun lakum waladun fa-in kanalakum waladun falahunna aththumunu mimma taraktummin baAAdi wasiyyatin toosoona biha awdaynin wa-in kana rajulun yoorathu kalalatan awiimraatun walahu akhun aw okhtun falikulli wahidin minhumaassudusu fa-in kanoo akthara min thalikafahum shurakao fee aththuluthi min baAAdi wasiyyatinyoosa biha aw daynin ghayra mudarrin wasiyyatanmina Allahi wallahu AAaleemun haleem",
         "translation":
-            "And for you is half of what your wives leave if they have no child. But if they have a child, for you is one fourth of what they leave, after any bequest they [may have] made or debt. And for them [i.e., the wives] is one fourth if you leave no child. But if you leave a child, then for them is an eighth of what you leave, after any bequest you [may have] made or debt. And if a man or woman leaves neither ascendants nor descendants but has a brother or a sister, then for each one of them is a sixth. But if they are more than two, they share a third,1 after any bequest which was made or debt, as long as there is no detriment [caused].2 [This is] an ordinance from Allāh, and Allāh is Knowing and Forbearing.",
+            "And for you is half of what your wives leave if they have no child. But if they have a child, for you is one fourth of what they leave, after any bequest they [may have] made or debt. And for them [i.e., the wives] is one fourth if you leave no child. But if you leave a child, then for them is an eighth of what you leave, after any bequest you [may have] made or debt. And if a man or woman leaves neither ascendants nor descendants but has a brother or a sister, then for each one of them is a sixth. But if they are more than two, they share a third, after any bequest which was made or debt, as long as there is no detriment [caused] [This is] an ordinance from Allāh, and Allāh is Knowing and Forbearing.",
         "audio_filename": "505.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/505.mp3",
@@ -10640,7 +10640,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wallatee ya/teena alfahishatamin nisa-ikum fastashhidoo AAalayhinna arbaAAatanminkum fa-in shahidoo faamsikoohunna fee albuyooti hattayatawaffahunna almawtu aw yajAAala Allahu lahunnasabeela",
         "translation":
-            "Those who commit immorality [i.e., unlawful sexual intercourse] of your women - bring against them four [witnesses] from among you. And if they testify,1 confine them [i.e., the guilty women] to houses until death takes them or Allāh ordains for them [another] way.2",
+            "Those who commit immorality [i.e., unlawful sexual intercourse] of your women - bring against them four [witnesses] from among you. And if they testify, confine them [i.e., the guilty women] to houses until death takes them or Allāh ordains for them [another] way",
         "audio_filename": "508.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/508.mp3",
@@ -11039,7 +11039,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Arrijalu qawwamoonaAAala annisa-i bima faddalaAllahu baAAdahum AAala baAAdin wabimaanfaqoo min amwalihim fassalihatu qanitatunhafithatun lilghaybi bima hafithaAllahu wallatee takhafoonanushoozahunna faAAithoohunna wahjuroohunnafee almadajiAAi wadriboohunna fa-in ataAAnakumfala tabghoo AAalayhinna sabeelan inna Allaha kanaAAaliyyan kabeera",
         "translation":
-            "Men are in charge of women1 by [right of] what Allāh has given one over the other and what they spend [for maintenance] from their wealth. So righteous women are devoutly obedient, guarding in [the husband's] absence what Allāh would have them guard.2 But those [wives] from whom you fear arrogance3 - [first] advise them; [then if they persist], forsake them in bed; and [finally], strike them [lightly].4 But if they obey you [once more], seek no means against them. Indeed, Allāh is ever Exalted and Grand.",
+            "Men are in charge of women1 by [right of] what Allāh has given one over the other and what they spend [for maintenance] from their wealth. So righteous women are devoutly obedient, guarding in [the husband's] absence what Allāh would have them guard But those [wives] from whom you fear arrogance3 - [first] advise them; [then if they persist], forsake them in bed; and [finally], strike them [lightly] But if they obey you [once more], seek no means against them. Indeed, Allāh is ever Exalted and Grand.",
         "audio_filename": "527.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/527.mp3",
@@ -11081,7 +11081,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WaAAbudoo Allaha walatushrikoo bihi shay-an wabilwalidayni ihsananwabithee alqurba walyatama walmasakeeniwaljari thee alqurba waljarialjunubi wassahibi biljanbi wabniassabeeli wama malakat aymanukum inna Allahala yuhibbu man kana mukhtalan fakhoora",
         "translation":
-            "Worship Allāh and associate nothing with Him, and to parents do good, and to relatives, orphans, the needy, the near neighbor, the neighbor farther away, the companion at your side,1 the traveler, and those whom your right hands possess. Indeed, Allāh does not like those who are self-deluding and boastful,",
+            "Worship Allāh and associate nothing with Him, and to parents do good, and to relatives, orphans, the needy, the near neighbor, the neighbor farther away, the companion at your side, the traveler, and those whom your right hands possess. Indeed, Allāh does not like those who are self-deluding and boastful,",
         "audio_filename": "529.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/529.mp3",
@@ -11228,7 +11228,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha allatheena amanoola taqraboo assalata waantum sukarahatta taAAlamoo ma taqooloona walajunuban illa AAabiree sabeelin hattataghtasiloo wa-in kuntum marda aw AAala safarin awjaa ahadun minkum mina algha-iti aw lamastumuannisaa falam tajidoo maan fatayammamoo saAAeedantayyiban famsahoo biwujoohikum waaydeekuminna Allaha kana AAafuwwan ghafoora",
         "translation":
-            "O you who have believed, do not approach prayer while you are intoxicated until you know what you are saying1 or in a state of janābah,2 except those passing through [a place of prayer], until you have washed [your whole body]. And if you are ill or on a journey or one of you comes from the place of relieving himself or you have contacted women [i.e., had sexual intercourse] and find no water, then seek clean earth and wipe over your faces and your hands [with it]. Indeed, Allāh is ever Pardoning3 and Forgiving.",
+            "O you who have believed, do not approach prayer while you are intoxicated until you know what you are saying1 or in a state of janābah, except those passing through [a place of prayer], until you have washed [your whole body]. And if you are ill or on a journey or one of you comes from the place of relieving himself or you have contacted women [i.e., had sexual intercourse] and find no water, then seek clean earth and wipe over your faces and your hands [with it]. Indeed, Allāh is ever Pardoning3 and Forgiving.",
         "audio_filename": "536.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/536.mp3",
@@ -11291,7 +11291,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Mina allatheena hadoo yuharrifoonaalkalima AAan mawadiAAihi wayaqooloona samiAAnawaAAasayna wasmaAA ghayra musmaAAin waraAAinalayyan bi-alsinatihim wataAAnan fee addeeni walawannahum qaloo samiAAna waataAAna wasmaAAwanthurna lakana khayranlahum waaqwama walakin laAAanahumu Allahubikufrihim fala yu/minoona illa qaleela",
         "translation":
-            "Among the Jews are those who distort words from their [proper] places [i.e., usages] and say, \"We hear and disobey\" and \"Hear but be not heard\" and \"Rāʿinā,\"1 twisting their tongues and defaming the religion. And if they had said [instead], \"We hear and obey\" and \"Wait for us [to understand],\" it would have been better for them and more suitable. But Allāh has cursed them for their disbelief, so they believe not, except for a few.2",
+            "Among the Jews are those who distort words from their [proper] places [i.e., usages] and say, \"We hear and disobey\" and \"Hear but be not heard\" and \"Rāʿinā,\"1 twisting their tongues and defaming the religion. And if they had said [instead], \"We hear and obey\" and \"Wait for us [to understand],\" it would have been better for them and more suitable. But Allāh has cursed them for their disbelief, so they believe not, except for a few",
         "audio_filename": "539.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/539.mp3",
@@ -11480,7 +11480,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Faminhum man amana bihi waminhum man saddaAAanhu wakafa bijahannama saAAeera",
         "translation":
-            "And some among them believed in it,1 and some among them were averse to it. And sufficient is Hell as a blaze.",
+            "And some among them believed in it, and some among them were averse to it. And sufficient is Hell as a blaze.",
         "audio_filename": "548.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/548.mp3",
@@ -11585,7 +11585,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Alam tara ila allatheenayazAAumoona annahum amanoo bima onzila ilayka wamaonzila min qablika yureedoona an yatahakamoo ila attaghootiwaqad omiroo an yakfuroo bihi wayureedu ashshaytanuan yudillahum dalalan baAAeeda",
         "translation":
-            "Have you not seen those who claim to have believed in what was revealed to you, [O Muḥammad], and what was revealed before you? They wish to refer legislation to ṭāghūt,1 while they were commanded to reject it; and Satan wishes to lead them far astray.",
+            "Have you not seen those who claim to have believed in what was revealed to you, [O Muḥammad], and what was revealed before you? They wish to refer legislation to ṭāghūt, while they were commanded to reject it; and Satan wishes to lead them far astray.",
         "audio_filename": "553.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/553.mp3",
@@ -11955,7 +11955,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Aynama takoonoo yudrikkumu almawtuwalaw kuntum fee buroojin mushayyadatin wa-in tusibhum hasanatunyaqooloo hathihi min AAindi Allahi wa-in tusibhumsayyi-atun yaqooloo hathihi min AAindika qul kullun minAAindi Allahi famali haola-i alqawmila yakadoona yafqahoona hadeetha",
         "translation":
-            "Wherever you may be, death will overtake you, even if you should be within towers of lofty construction. But if good comes to them, they say, \"This is from Allāh\"; and if evil befalls them, they say,1 \"This is from you.\" Say, \"All [things] are from Allāh.\" So what is [the matter] with those people that they can hardly understand any statement?",
+            "Wherever you may be, death will overtake you, even if you should be within towers of lofty construction. But if good comes to them, they say, \"This is from Allāh\"; and if evil befalls them, they say, \"This is from you.\" Say, \"All [things] are from Allāh.\" So what is [the matter] with those people that they can hardly understand any statement?",
         "audio_filename": "571.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/571.mp3",
@@ -11976,7 +11976,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ma asabaka min hasanatinfamina Allahi wama asabaka min sayyi-atinfamin nafsika waarsalnaka linnasi rasoolanwakafa billahi shaheedan",
         "translation":
-            "What comes to you of good is from Allāh, but what comes to you of evil, [O man], is from yourself.1 And We have sent you, [O Muḥammad], to the people as a messenger, and sufficient is Allāh as Witness.2",
+            "What comes to you of good is from Allāh, but what comes to you of evil, [O man], is from yourself.1 And We have sent you, [O Muḥammad], to the people as a messenger, and sufficient is Allāh as Witness",
         "audio_filename": "572.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/572.mp3",
@@ -12165,7 +12165,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fama lakum fee almunafiqeenafi-atayni wallahu arkasahum bima kasabooatureedoona an tahdoo man adalla Allahu waman yudliliAllahu falan tajida lahu sabeela",
         "translation":
-            "What is [the matter] with you [that you are] two groups concerning the hypocrites,1 while Allāh has made them fall back [into error and disbelief] for what they earned.2 Do you wish to guide those whom Allāh has sent astray? And he whom Allāh sends astray - never will you find for him a way [of guidance].3",
+            "What is [the matter] with you [that you are] two groups concerning the hypocrites, while Allāh has made them fall back [into error and disbelief] for what they earned Do you wish to guide those whom Allāh has sent astray? And he whom Allāh sends astray - never will you find for him a way [of guidance]",
         "audio_filename": "581.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/581.mp3",
@@ -12249,7 +12249,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama kana limu/minin anyaqtula mu/minan illa khataan waman qatala mu/minankhataan fatahreeru raqabatin mu/minatin wadiyatunmusallamatun ila ahlihi illa an yassaddaqoofa-in kana min qawmin AAaduwwin lakum wahuwa mu/minun fatahreeruraqabatin mu/minatin wa-in kana min qawmin baynakumwabaynahum meethaqun fadiyatun musallamatun ilaahlihi watahreeru raqabatin mu/minatin faman lam yajid fasiyamushahrayni mutatabiAAayni tawbatan mina Allahi wakanaAllahu AAaleeman hakeema",
         "translation":
-            "And never is it for a believer to kill a believer except by mistake. And whoever kills a believer by mistake - then the freeing of a believing slave and a compensation payment [diyah] presented to his [i.e., the deceased's] family [is required], unless they give [up their right as] charity. But if he [i.e., the deceased] was from a people at war with you and he was a believer - then [only] the freeing of a believing slave; and if he was from a people with whom you have a treaty - then a compensation payment presented to his family and the freeing of a believing slave. And whoever does not find [one or cannot afford to buy one] - then [instead], a fast for two months consecutively,1 [seeking] acceptance of repentance from Allāh.2 And Allāh is ever Knowing and Wise.",
+            "And never is it for a believer to kill a believer except by mistake. And whoever kills a believer by mistake - then the freeing of a believing slave and a compensation payment [diyah] presented to his [i.e., the deceased's] family [is required], unless they give [up their right as] charity. But if he [i.e., the deceased] was from a people at war with you and he was a believer - then [only] the freeing of a believing slave; and if he was from a people with whom you have a treaty - then a compensation payment presented to his family and the freeing of a believing slave. And whoever does not find [one or cannot afford to buy one] - then [instead], a fast for two months consecutively, [seeking] acceptance of repentance from Allāh And Allāh is ever Knowing and Wise.",
         "audio_filename": "585.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/585.mp3",
@@ -12438,7 +12438,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-itha darabtum fee al-ardifalaysa AAalaykum junahun an taqsuroo mina assalatiin khiftum an yaftinakumu allatheena kafaroo inna alkafireenakanoo lakum AAaduwwan mubeena",
         "translation":
-            "And when you travel throughout the land, there is no blame upon you for shortening the prayer,1 [especially] if you fear that those who disbelieve may disrupt [or attack] you.2 Indeed, the disbelievers are ever to you a clear enemy.",
+            "And when you travel throughout the land, there is no blame upon you for shortening the prayer, [especially] if you fear that those who disbelieve may disrupt [or attack] you Indeed, the disbelievers are ever to you a clear enemy.",
         "audio_filename": "594.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/594.mp3",
@@ -12459,7 +12459,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-itha kunta feehim faaqamta lahumuassalata faltaqum ta-ifatun minhummaAAaka walya/khuthoo aslihatahum fa-ithasajadoo falyakoonoo min wara-ikum walta/ti ta-ifatunokhra lam yusalloo falyusalloo maAAakawalya/khuthoo hithrahum waaslihatahumwadda allatheena kafaroo law taghfuloona AAan aslihatikumwaamtiAAatikum fayameeloona AAalaykum maylatan wahidatanwala junaha AAalaykum in kana bikum athanmin matarin aw kuntum marda an tadaAAoo aslihatakumwakhuthoo hithrakum inna AllahaaAAadda lilkafireena AAathaban muheena",
         "translation":
-            "And when you [i.e., the commander of an army] are among them and lead them in prayer,1 let a group of them stand [in prayer] with you and let them carry their arms. And when they have prostrated, let them be [in position] behind you and have the other group come forward which has not [yet] prayed and let them pray with you, taking precaution and carrying their arms. Those who disbelieve wish that you would neglect your weapons and your baggage so they could come down upon you in one [single] attack. But there is no blame upon you, if you are troubled by rain or are ill, for putting down your arms, but take precaution. Indeed, Allāh has prepared for the disbelievers a humiliating punishment.",
+            "And when you [i.e., the commander of an army] are among them and lead them in prayer, let a group of them stand [in prayer] with you and let them carry their arms. And when they have prostrated, let them be [in position] behind you and have the other group come forward which has not [yet] prayed and let them pray with you, taking precaution and carrying their arms. Those who disbelieve wish that you would neglect your weapons and your baggage so they could come down upon you in one [single] attack. But there is no blame upon you, if you are troubled by rain or are ill, for putting down your arms, but take precaution. Indeed, Allāh has prepared for the disbelievers a humiliating punishment.",
         "audio_filename": "595.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/595.mp3",
@@ -13571,7 +13571,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fabima naqdihim meethaqahumwakufrihim bi-ayati Allahi waqatlihimual-anbiyaa bighayri haqqin waqawlihim quloobunaghulfun bal tabaAAa Allahu AAalayhabikufrihim fala yu/minoona illa qaleela",
         "translation":
-            "And [We cursed them]1 for their breaking of the covenant and their disbelief in the signs of Allāh and their killing of the prophets without right and their saying, \"Our hearts are wrapped\" [i.e., sealed against reception]. Rather, Allāh has sealed them because of their disbelief, so they believe not, except for a few.2",
+            "And [We cursed them]1 for their breaking of the covenant and their disbelief in the signs of Allāh and their killing of the prophets without right and their saying, \"Our hearts are wrapped\" [i.e., sealed against reception]. Rather, Allāh has sealed them because of their disbelief, so they believe not, except for a few",
         "audio_filename": "648.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/648.mp3",
@@ -13739,7 +13739,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna awhayna ilaykakama awhayna ila noohin wannabiyyeenamin baAAdihi waawhayna ila ibraheemawa-ismaAAeela wa-ishaqa wayaAAqooba wal-asbatiwaAAeesa waayyooba wayoonusa waharoona wasulaymanawaatayna dawooda zaboora",
         "translation":
-            "Indeed, We have revealed to you, [O Muḥammad], as We revealed to Noah and the prophets after him. And We revealed to Abraham, Ishmael, Isaac, Jacob, the Descendants,1 Jesus, Job, Jonah, Aaron, and Solomon, and to David We gave the book [of Psalms].",
+            "Indeed, We have revealed to you, [O Muḥammad], as We revealed to Noah and the prophets after him. And We revealed to Abraham, Ishmael, Isaac, Jacob, the Descendants, Jesus, Job, Jonah, Aaron, and Solomon, and to David We gave the book [of Psalms].",
         "audio_filename": "656.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/656.mp3",
@@ -14042,7 +14042,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha allatheena amanooawfoo bilAAuqoodi ohillat lakum baheematu al-anAAamiilla ma yutla AAalaykum ghayra muhilleeassaydi waantum hurumun inna Allahayahkumu ma yureed",
         "translation":
-            "O you who have believed, fulfill [all] contracts.1 Lawful for you are the animals of grazing livestock except for that which is recited to you [in this Qur’ān] - hunting not being permitted while you are in the state of iḥrām.2 Indeed, Allāh ordains what He intends.",
+            "O you who have believed, fulfill [all] contracts.1 Lawful for you are the animals of grazing livestock except for that which is recited to you [in this Qur’ān] - hunting not being permitted while you are in the state of iḥrām Indeed, Allāh ordains what He intends.",
         "audio_filename": "670.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/670.mp3",
@@ -14084,7 +14084,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Hurrimat AAalaykumu almaytatu waddamuwalahmu alkhinzeeri wama ohilla lighayri Allahibihi walmunkhaniqatu walmawqoothatu walmutaraddiyatuwannateehatu wama akala assabuAAuilla ma thakkaytum wama thubihaAAala annusubi waan tastaqsimoo bil-azlamithalikum fisqun alyawma ya-isa allatheena kafaroomin deenikum fala takhshawhum wakhshawni alyawmaakmaltu lakum deenakum waatmamtu AAalaykum niAAmatee waradeetulakumu al-islama deenan famani idturra fee makhmasatinghayra mutajanifin li-ithmin fa-inna Allahaghafoorun raheem",
         "translation":
-            "Prohibited to you are dead animals,1 blood, the flesh of swine, and that which has been dedicated to other than Allāh, and [those animals] killed by strangling or by a violent blow or by a head-long fall or by the goring of horns, and those from which a wild animal has eaten, except what you [are able to] slaughter [before its death], and those which are sacrificed on stone altars,2 and [prohibited is] that you seek decision through divining arrows. That is grave disobedience. This day those who disbelieve have despaired of [defeating] your religion; so fear them not, but fear Me. This day I have perfected for you your religion and completed My favor upon you and have approved for you Islām as religion. But whoever is forced by severe hunger with no inclination to sin - then indeed, Allāh is Forgiving and Merciful.",
+            "Prohibited to you are dead animals, blood, the flesh of swine, and that which has been dedicated to other than Allāh, and [those animals] killed by strangling or by a violent blow or by a head-long fall or by the goring of horns, and those from which a wild animal has eaten, except what you [are able to] slaughter [before its death], and those which are sacrificed on stone altars, and [prohibited is] that you seek decision through divining arrows. That is grave disobedience. This day those who disbelieve have despaired of [defeating] your religion; so fear them not, but fear Me. This day I have perfected for you your religion and completed My favor upon you and have approved for you Islām as religion. But whoever is forced by severe hunger with no inclination to sin - then indeed, Allāh is Forgiving and Merciful.",
         "audio_filename": "672.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/672.mp3",
@@ -14126,7 +14126,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Alyawma ohilla lakumu attayyibatuwataAAamu allatheena ootoo alkitaba hillunlakum wataAAamukum hillun lahum walmuhsanatumina almu/minati walmuhsanatu minaallatheena ootoo alkitaba min qablikum itha ataytumoohunnaojoorahunna muhsineena ghayra musafiheenawala muttakhithee akhdanin waman yakfur bil-eemanifaqad habita AAamaluhu wahuwa fee al-akhiratimina alkhasireen",
         "translation":
-            "This day [all] good foods have been made lawful, and the food of those who were given the Scripture is lawful for you and your food is lawful for them. And [lawful in marriage are] chaste women from among the believers and chaste women from among those who were given the Scripture before you, when you have given them their due compensation,1 desiring chastity, not unlawful sexual intercourse or taking [secret] lovers. And whoever denies the faith - his work has become worthless, and he, in the Hereafter, will be among the losers.",
+            "This day [all] good foods have been made lawful, and the food of those who were given the Scripture is lawful for you and your food is lawful for them. And [lawful in marriage are] chaste women from among the believers and chaste women from among those who were given the Scripture before you, when you have given them their due compensation, desiring chastity, not unlawful sexual intercourse or taking [secret] lovers. And whoever denies the faith - his work has become worthless, and he, in the Hereafter, will be among the losers.",
         "audio_filename": "674.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/674.mp3",
@@ -14147,7 +14147,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha allatheena amanooitha qumtum ila assalati faghsiloowujoohakum waaydiyakum ila almarafiqi wamsahoobiruoosikum waarjulakum ila alkaAAbayni wa-in kuntumjunuban fattahharoo wa-in kuntum marda awAAala safarin aw jaa ahadun minkum mina algha-itiaw lamastumu annisaa falam tajidoo maanfatayammamoo saAAeedan tayyiban famsahoobiwujoohikum waaydeekum minhu ma yureedu AllahuliyajAAala AAalaykum min harajin walakin yureeduliyutahhirakum waliyutimma niAAmatahu AAalaykumlaAAallakum tashkuroon",
         "translation":
-            "O you who have believed, when you rise to [perform] prayer, wash your faces and your forearms to the elbows and wipe over your heads and wash your feet to the ankles. And if you are in a state of janābah,1 then purify yourselves. But if you are ill or on a journey or one of you comes from the place of relieving himself or you have contacted women2 and do not find water, then seek clean earth and wipe over your faces and hands with it. Allāh does not intend to make difficulty for you, but He intends to purify you and complete His favor upon you that you may be grateful.",
+            "O you who have believed, when you rise to [perform] prayer, wash your faces and your forearms to the elbows and wipe over your heads and wash your feet to the ankles. And if you are in a state of janābah, then purify yourselves. But if you are ill or on a journey or one of you comes from the place of relieving himself or you have contacted women2 and do not find water, then seek clean earth and wipe over your faces and hands with it. Allāh does not intend to make difficulty for you, but He intends to purify you and complete His favor upon you that you may be grateful.",
         "audio_filename": "675.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/675.mp3",
@@ -14273,7 +14273,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaqad akhatha Allahu meethaqabanee isra-eela wabaAAathna minhumu ithnay AAasharanaqeeban waqala Allahu innee maAAakum la-inaqamtumu assalata waataytumu azzakatawaamantum birusulee waAAazzartumoohum waaqradtumuAllaha qardan hasanan laokaffiranna AAankumsayyi-atikum walaodkhilannakum jannatin tajree mintahtiha al-anharu faman kafara baAAda thalikaminkum faqad dalla sawaa assabeel",
         "translation":
-            "And Allāh had already taken a covenant from the Children of Israel, and We delegated from among them twelve leaders. And Allāh said, \"I am with you. If you establish prayer and give zakāh and believe in My messengers and support them and loan Allāh a goodly loan,1 I will surely remove from you your misdeeds and admit you to gardens beneath which rivers flow. But whoever of you disbelieves after that has certainly strayed from the soundness of the way.\"",
+            "And Allāh had already taken a covenant from the Children of Israel, and We delegated from among them twelve leaders. And Allāh said, \"I am with you. If you establish prayer and give zakāh and believe in My messengers and support them and loan Allāh a goodly loan, I will surely remove from you your misdeeds and admit you to gardens beneath which rivers flow. But whoever of you disbelieves after that has certainly strayed from the soundness of the way.\"",
         "audio_filename": "681.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/681.mp3",
@@ -14693,7 +14693,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Min ajli thalika katabna AAalabanee isra-eela annahu man qatala nafsan bighayri nafsinaw fasadin fee al-ardi fakaannama qatala annasajameeAAan waman ahyaha fakaannama ahyaannasa jameeAAan walaqad jaat-hum rusulunabilbayyinati thumma inna katheeran minhum baAAda thalikafee al-ardi lamusrifoon",
         "translation":
-            "Because of that, We decreed upon the Children of Israel that whoever kills a soul unless for a soul1 or for corruption [done] in the land2 - it is as if he had slain mankind entirely. And whoever saves one3 - it is as if he had saved mankind entirely. And Our messengers had certainly come to them with clear proofs. Then indeed many of them, [even] after that, throughout the land, were transgressors.4",
+            "Because of that, We decreed upon the Children of Israel that whoever kills a soul unless for a soul1 or for corruption [done] in the land2 - it is as if he had slain mankind entirely. And whoever saves one3 - it is as if he had saved mankind entirely. And Our messengers had certainly come to them with clear proofs. Then indeed many of them, [even] after that, throughout the land, were transgressors",
         "audio_filename": "701.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/701.mp3",
@@ -14882,7 +14882,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha arrasoolu layahzunka allatheena yusariAAoona fee alkufrimina allatheena qaloo amanna bi-afwahihimwalam tu/min quloobuhum wamina allatheena hadoosammaAAoona lilkathibi sammaAAoona liqawmin akhareenalam ya/tooka yuharrifoona alkalima min baAAdi mawadiAAihiyaqooloona in ooteetum hatha fakhuthoohu wa-in lamtu/tawhu fahtharoo waman yuridi Allahufitnatahu falan tamlika lahu mina Allahi shay-an ola-ikaallatheena lam yuridi Allahu an yutahhiraquloobahum lahum fee addunya khizyun walahum feeal-akhirati AAathabun AAatheem",
         "translation":
-            "O Messenger, let them not grieve you who hasten into disbelief of those who say, \"We believe\" with their mouths, but their hearts believe not, and from among the Jews. [They are] avid listeners to falsehood, listening to another people who have not come to you.1 They distort words beyond their [proper] places [i.e., usages], saying, \"If you are given this,2 take it; but if you are not given it, then beware.\" But he for whom Allāh intends fitnah3 - never will you possess [power to do] for him a thing against Allāh. Those are the ones for whom Allāh does not intend to purify their hearts. For them in this world is disgrace, and for them in the Hereafter is a great punishment.",
+            "O Messenger, let them not grieve you who hasten into disbelief of those who say, \"We believe\" with their mouths, but their hearts believe not, and from among the Jews. [They are] avid listeners to falsehood, listening to another people who have not come to you.1 They distort words beyond their [proper] places [i.e., usages], saying, \"If you are given this, take it; but if you are not given it, then beware.\" But he for whom Allāh intends fitnah3 - never will you possess [power to do] for him a thing against Allāh. Those are the ones for whom Allāh does not intend to purify their hearts. For them in this world is disgrace, and for them in the Hereafter is a great punishment.",
         "audio_filename": "710.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/710.mp3",
@@ -14987,7 +14987,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqaffayna AAala atharihimbiAAeesa ibni maryama musaddiqan lima baynayadayhi mina attawrati waataynahual-injeela feehi hudan wanoorun wamusaddiqan limabayna yadayhi mina attawrati wahudan wamawAAithatanlilmuttaqeen",
         "translation":
-            "And We sent, following in their footsteps,1 Jesus, the son of Mary, confirming that which came before him in the Torah; and We gave him the Gospel, in which was guidance and light and confirming that which preceded it of the Torah as guidance and instruction for the righteous.",
+            "And We sent, following in their footsteps, Jesus, the son of Mary, confirming that which came before him in the Torah; and We gave him the Gospel, in which was guidance and light and confirming that which preceded it of the Torah as guidance and instruction for the righteous.",
         "audio_filename": "715.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/715.mp3",
@@ -15029,7 +15029,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waanzalna ilayka alkitaba bilhaqqimusaddiqan lima bayna yadayhi mina alkitabiwamuhayminan AAalayhi fahkum baynahum bimaanzala Allahu wala tattabiAA ahwaahum AAammajaaka mina alhaqqi likullin jaAAalna minkumshirAAatan waminhajan walaw shaa AllahulajaAAalakum ommatan wahidatan walakin liyabluwakumfeema atakum fastabiqoo alkhayratiila Allahi marjiAAukum jameeAAan fayunabbi-okum bimakuntum feehi takhtalifoon",
         "translation":
-            "And We have revealed to you, [O Muḥammad], the Book [i.e., the Qur’ān] in truth, confirming that which preceded it of the Scripture and as a criterion over it. So judge between them by what Allāh has revealed and do not follow their inclinations away from what has come to you of the truth. To each of you We prescribed a law and a method.1 Had Allāh willed, He would have made you one nation [united in religion], but [He intended] to test you in what He has given you; so race to [all that is] good.2 To Allāh is your return all together, and He will [then] inform you concerning that over which you used to differ.",
+            "And We have revealed to you, [O Muḥammad], the Book [i.e., the Qur’ān] in truth, confirming that which preceded it of the Scripture and as a criterion over it. So judge between them by what Allāh has revealed and do not follow their inclinations away from what has come to you of the truth. To each of you We prescribed a law and a method.1 Had Allāh willed, He would have made you one nation [united in religion], but [He intended] to test you in what He has given you; so race to [all that is] good To Allāh is your return all together, and He will [then] inform you concerning that over which you used to differ.",
         "audio_filename": "717.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/717.mp3",
@@ -15134,7 +15134,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wayaqoolu allatheena amanoo ahaola-iallatheena aqsamoo billahi jahda aymanihiminnahum lamaAAakum habitat aAAmaluhum faasbahookhasireen",
         "translation":
-            "And those who believe will say,1 \"Are these the ones who swore by Allāh their strongest oaths that indeed they were with you?\" Their deeds have become worthless, and they have become losers.",
+            "And those who believe will say, \"Are these the ones who swore by Allāh their strongest oaths that indeed they were with you?\" Their deeds have become worthless, and they have become losers.",
         "audio_filename": "722.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/722.mp3",
@@ -15281,7 +15281,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul hal onabbi-okum bisharrin min thalikamathoobatan AAinda Allahi man laAAanahu Allahuwaghadiba AAalayhi wajaAAala minhumu alqiradata walkhanazeerawaAAabada attaghooti ola-ika sharrun makananwaadallu AAan sawa-i assabeel",
         "translation":
-            "Say, \"Shall I inform you of [what is] worse than that1 as penalty from Allāh? [It is that of] those whom Allāh has cursed and with whom He became angry and made of them apes and pigs and slaves of ṭāghūt.2 Those are worse in position and further astray from the sound way.\"",
+            "Say, \"Shall I inform you of [what is] worse than that1 as penalty from Allāh? [It is that of] those whom Allāh has cursed and with whom He became angry and made of them apes and pigs and slaves of ṭāghūt Those are worse in position and further astray from the sound way.\"",
         "audio_filename": "729.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/729.mp3",
@@ -15890,7 +15890,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "La yu-akhithukumu Allahubillaghwi fee aymanikum walakin yu-akhithukumbima AAaqqadtumu al-aymana fakaffaratuhu itAAamuAAasharati masakeena min awsati ma tutAAimoonaahleekum aw kiswatuhum aw tahreeru raqabatin faman lamyajid fasiyamu thalathati ayyamin thalikakaffaratu aymanikum itha halaftum wahfathooaymanakum kathalika yubayyinu Allahu lakum ayatihilaAAallakum tashkuroon",
         "translation":
-            "Allāh will not impose blame upon you for what is meaningless1 in your oaths, but He will impose blame upon you for [breaking] what you intended of oaths. So its expiation2 is the feeding of ten needy people from the average of that which you feed your [own] families or clothing them or the freeing of a slave. But whoever cannot find [or afford it] - then a fast of three days [is required]. That is the expiation for oaths when you have sworn. But guard your oaths.3 Thus does Allāh make clear to you His verses [i.e., revealed law] that you may be grateful.",
+            "Allāh will not impose blame upon you for what is meaningless1 in your oaths, but He will impose blame upon you for [breaking] what you intended of oaths. So its expiation2 is the feeding of ten needy people from the average of that which you feed your [own] families or clothing them or the freeing of a slave. But whoever cannot find [or afford it] - then a fast of three days [is required]. That is the expiation for oaths when you have sworn. But guard your oaths Thus does Allāh make clear to you His verses [i.e., revealed law] that you may be grateful.",
         "audio_filename": "758.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/758.mp3",
@@ -16016,7 +16016,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha allatheena amanoola taqtuloo assayda waantum hurumunwaman qatalahu minkum mutaAAammidan fajazaon mithlu maqatala mina annaAAami yahkumu bihi thawaAAadlin minkum hadyan baligha alkaAAbati aw kaffaratuntaAAamu masakeena aw AAadlu thalika siyamanliyathooqa wabala amrihi AAafa AllahuAAamma salafa waman AAada fayantaqimu Allahuminhu wallahu AAazeezun thoo intiqam",
         "translation":
-            "O you who have believed, do not kill game while you are in the state of iḥrām.1 And whoever of you kills it intentionally - the penalty is an equivalent from sacrificial animals to what he killed, as judged by two just men among you as an offering [to Allāh] delivered to the Kaʿbah, or an expiation: the feeding of needy people or the equivalent of that in fasting, that he may taste the consequence of his matter [i.e., deed]. Allāh has pardoned what is past; but whoever returns [to violation], then Allāh will take retribution from him. And Allāh is Exalted in Might and Owner of Retribution.2",
+            "O you who have believed, do not kill game while you are in the state of iḥrām.1 And whoever of you kills it intentionally - the penalty is an equivalent from sacrificial animals to what he killed, as judged by two just men among you as an offering [to Allāh] delivered to the Kaʿbah, or an expiation: the feeding of needy people or the equivalent of that in fasting, that he may taste the consequence of his matter [i.e., deed]. Allāh has pardoned what is past; but whoever returns [to violation], then Allāh will take retribution from him. And Allāh is Exalted in Might and Owner of Retribution",
         "audio_filename": "764.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/764.mp3",
@@ -16037,7 +16037,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ohilla lakum saydu albahriwataAAamuhu mataAAan lakum walissayyaratiwahurrima AAalaykum saydu albarri ma dumtum hurumanwattaqoo Allaha allathee ilayhi tuhsharoon",
         "translation":
-            "Lawful to you is game from the sea and its food as provision for you and the travelers,1 but forbidden to you is game from the land as long as you are in the state of iḥrām. And fear Allāh to whom you will be gathered.",
+            "Lawful to you is game from the sea and its food as provision for you and the travelers, but forbidden to you is game from the land as long as you are in the state of iḥrām. And fear Allāh to whom you will be gathered.",
         "audio_filename": "765.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/765.mp3",
@@ -16928,7 +16928,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wahuwa alqahiru fawqa AAibadihiwahuwa alhakeemu alkhabeer",
         "translation":
-            "And He is the subjugator over His servants. And He is the Wise,1 the Aware.2",
+            "And He is the subjugator over His servants. And He is the Wise, the Aware",
         "audio_filename": "807.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/807.mp3",
@@ -17075,7 +17075,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waminhum man yastamiAAu ilayka wajaAAalnaAAala quloobihim akinnatan an yafqahoohu wafee athanihimwaqran wa-in yaraw kulla ayatin la yu/minoo bihahatta itha jaooka yujadiloonakayaqoolu allatheena kafaroo in hatha illa asateerual-awwaleen",
         "translation":
-            "And among them are those who listen to you,1 but We have placed over their hearts coverings, lest they understand it, and in their ears deafness. And if they should see every sign, they will not believe in it. Even when they come to you arguing with you, those who disbelieve say, \"This is not but legends of the former peoples.\"",
+            "And among them are those who listen to you, but We have placed over their hearts coverings, lest they understand it, and in their ears deafness. And if they should see every sign, they will not believe in it. Even when they come to you arguing with you, those who disbelieve say, \"This is not but legends of the former peoples.\"",
         "audio_filename": "814.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/814.mp3",
@@ -17474,7 +17474,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falamma nasoo ma thukkiroobihi fatahna AAalayhim abwaba kulli shay-in hattaitha farihoo bima ootoo akhathnahumbaghtatan fa-itha hum mublisoon",
         "translation":
-            "So when they forgot that by which they had been reminded,1 We opened to them the doors of every [good] thing until, when they rejoiced in that which they were given, We seized them suddenly, and they were [then] in despair.",
+            "So when they forgot that by which they had been reminded, We opened to them the doors of every [good] thing until, when they rejoiced in that which they were given, We seized them suddenly, and they were [then] in despair.",
         "audio_filename": "833.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/833.mp3",
@@ -17537,7 +17537,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul araaytakum in atakum AAathabuAllahi baghtatan aw jahratan hal yuhlaku illaalqawmu aththalimoon",
         "translation":
-            "Say, \"Have you considered: if the punishment of Allāh should come to you unexpectedly or manifestly,1 will any be destroyed but the wrongdoing people?\"",
+            "Say, \"Have you considered: if the punishment of Allāh should come to you unexpectedly or manifestly, will any be destroyed but the wrongdoing people?\"",
         "audio_filename": "836.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/836.mp3",
@@ -18501,7 +18501,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waman athlamu mimmani iftaraAAala Allahi kathiban aw qala oohiyailayya walam yooha ilayhi shay-on waman qalasaonzilu mithla ma anzala Allahu walaw taraithi aththalimoona fee ghamaratialmawti walmala-ikatu basitooaydeehim akhrijoo anfusakumu alyawma tujzawna AAathabaalhooni bima kuntum taqooloona AAala Allahighayra alhaqqi wakuntum AAan ayatihitastakbiroon",
         "translation":
-            "And who is more unjust than one who invents a lie about Allāh or says, \"It has been inspired to me,\" while nothing has been inspired to him, and one who says, \"I will reveal [something] like what Allāh revealed.\" And if you could but see when the wrongdoers are in the overwhelming pangs of death while the angels extend their hands,1 [saying], \"Discharge your souls! Today you will be awarded the punishment of [extreme] humiliation for what you used to say against Allāh other than the truth and [that] you were, toward His verses, being arrogant.\"",
+            "And who is more unjust than one who invents a lie about Allāh or says, \"It has been inspired to me,\" while nothing has been inspired to him, and one who says, \"I will reveal [something] like what Allāh revealed.\" And if you could but see when the wrongdoers are in the overwhelming pangs of death while the angels extend their hands, [saying], \"Discharge your souls! Today you will be awarded the punishment of [extreme] humiliation for what you used to say against Allāh other than the truth and [that] you were, toward His verses, being arrogant.\"",
         "audio_filename": "882.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/882.mp3",
@@ -18522,7 +18522,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaqad ji/tumoona furadakama khalaqnakum awwala marratin wataraktum makhawwalnakum waraa thuhoorikum wamanara maAAakum shufaAAaakumu allatheenazaAAamtum annahum feekum shurakao laqad taqattaAAabaynakum wadalla AAankum ma kuntum tazAAumoon",
         "translation":
-            "[It will be said to them], \"And you have certainly come to Us alone [i.e., individually] as We created you the first time, and you have left whatever We bestowed upon you behind you. And We do not see with you your 'intercessors' which you claimed that they were among you associates [of Allāh]. It has [all] been severed between you,1 and lost from you is what you used to claim.\"",
+            "[It will be said to them], \"And you have certainly come to Us alone [i.e., individually] as We created you the first time, and you have left whatever We bestowed upon you behind you. And We do not see with you your 'intercessors' which you claimed that they were among you associates [of Allāh]. It has [all] been severed between you, and lost from you is what you used to claim.\"",
         "audio_filename": "883.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/883.mp3",
@@ -18711,7 +18711,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "La tudrikuhu al-absaru wahuwayudriku al-absara wahuwa allateefu alkhabeer",
         "translation":
-            "Vision perceives Him not,1 but He perceives [all] vision; and He is the Subtle,2 the Aware.3",
+            "Vision perceives Him not, but He perceives [all] vision; and He is the Subtle, the Aware",
         "audio_filename": "892.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/892.mp3",
@@ -19026,7 +19026,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fakuloo mimma thukira ismuAllahi AAalayhi in kuntum bi-ayatihimu/mineen",
         "translation":
-            "So eat of that [meat] upon which the name of Allāh has been mentioned,1 if you are believers in His verses [i.e., revealed law].",
+            "So eat of that [meat] upon which the name of Allāh has been mentioned, if you are believers in His verses [i.e., revealed law].",
         "audio_filename": "907.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/907.mp3",
@@ -19278,7 +19278,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya maAAshara aljinni wal-insialam ya/tikum rusulun minkum yaqussoona AAalaykum ayateewayunthiroonakum liqaa yawmikum hatha qalooshahidna AAala anfusina wagharrat-humu alhayatuaddunya washahidoo AAala anfusihim annahumkanoo kafireen",
         "translation":
-            "\"O company of jinn and mankind,1 did there not come to you messengers from among you, relating to you My verses and warning you of the meeting of this Day of yours?\" They will say, \"We bear witness against ourselves\"; and the worldly life had deluded them, and they will bear witness against themselves that they were disbelievers.",
+            "\"O company of jinn and mankind, did there not come to you messengers from among you, relating to you My verses and warning you of the meeting of this Day of yours?\" They will say, \"We bear witness against ourselves\"; and the worldly life had deluded them, and they will bear witness against themselves that they were disbelievers.",
         "audio_filename": "919.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/919.mp3",
@@ -19444,7 +19444,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqaloo hathihi anAAamunwaharthun hijrun la yatAAamuhailla man nashao bizaAAmihim waanAAamun hurrimatthuhooruha waanAAamun la yathkuroonaisma Allahi AAalayha iftiraan AAalayhisayajzeehim bima kanoo yaftaroon",
         "translation":
-            "And they say, \"These animals1 and crops are forbidden; no one may eat from them except whom we will,\" by their claim. And there are those [camels] whose backs are forbidden [by them]2 and those upon which the name of Allāh is not mentioned3 - [all of this] an invention of untruth about Him.4 He will punish them for what they were inventing.",
+            "And they say, \"These animals1 and crops are forbidden; no one may eat from them except whom we will,\" by their claim. And there are those [camels] whose backs are forbidden [by them]2 and those upon which the name of Allāh is not mentioned3 - [all of this] an invention of untruth about Him He will punish them for what they were inventing.",
         "audio_filename": "927.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/927.mp3",
@@ -19465,7 +19465,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqaloo ma fee butoonihathihi al-anAAami khalisatun lithukoorinawamuharramun AAala azwajina wa-inyakun maytatan fahum feehi shurakao sayajzeehim wasfahuminnahu hakeemun AAaleem",
         "translation":
-            "And they say, \"What is in the bellies of these animals1 is exclusively for our males and forbidden to our females. But if it is [born] dead, then all of them have shares therein.\" He will punish them for their description.2 Indeed, He is Wise and Knowing.",
+            "And they say, \"What is in the bellies of these animals1 is exclusively for our males and forbidden to our females. But if it is [born] dead, then all of them have shares therein.\" He will punish them for their description Indeed, He is Wise and Knowing.",
         "audio_filename": "928.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/928.mp3",
@@ -20658,7 +20658,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya banee adama khuthoozeenatakum AAinda kulli masjidin wakuloo washraboo walatusrifoo innahu la yuhibbu almusrifeen",
         "translation":
-            "O children of Adam, take your adornment [i.e., wear your clothing] at every masjid,1 and eat and drink, but be not excessive. Indeed, He likes not those who commit excess.",
+            "O children of Adam, take your adornment [i.e., wear your clothing] at every masjid, and eat and drink, but be not excessive. Indeed, He likes not those who commit excess.",
         "audio_filename": "985.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/985.mp3",
@@ -20700,7 +20700,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul innama harrama rabbiyaalfawahisha ma thahara minhawama batana wal-ithma walbaghyabighayri alhaqqi waan tushrikoo billahi malam yunazzil bihi sultanan waan taqooloo AAala Allahima la taAAlamoon",
         "translation":
-            "Say, \"My Lord has only forbidden immoralities - what is apparent of them and what is concealed - and sin,1 and oppression without right, and that you associate with Allāh that for which He has not sent down authority, and that you say about Allāh that which you do not know.\"",
+            "Say, \"My Lord has only forbidden immoralities - what is apparent of them and what is concealed - and sin, and oppression without right, and that you associate with Allāh that for which He has not sent down authority, and that you say about Allāh that which you do not know.\"",
         "audio_filename": "987.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/987.mp3",
@@ -20805,7 +20805,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qala odkhuloo fee omamin qad khalatmin qablikum mina aljinni wal-insi fee annarikullama dakhalat ommatun laAAanat okhtaha hattaitha iddarakoo feeha jameeAAan qalatokhrahum li-oolahum rabbana haola-iadalloona faatihim AAathaban diAAfanmina annari qala likullin diAAfunwalakin la taAAlamoon",
         "translation":
-            "[Allāh] will say, \"Enter among nations which had passed on before you of jinn and mankind into the Fire.\" Every time a nation enters, it will curse its sister1 until, when they have all overtaken one another therein, the last of them2 will say about the first of them,3 \"Our Lord, these had misled us, so give them a double punishment of the Fire.\" He will say, \"For each is double, but you do not know.\"",
+            "[Allāh] will say, \"Enter among nations which had passed on before you of jinn and mankind into the Fire.\" Every time a nation enters, it will curse its sister1 until, when they have all overtaken one another therein, the last of them2 will say about the first of them, \"Our Lord, these had misled us, so give them a double punishment of the Fire.\" He will say, \"For each is double, but you do not know.\"",
         "audio_filename": "992.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/992.mp3",
@@ -20910,7 +20910,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WanazaAAna ma fee sudoorihimmin ghillin tajree min tahtihimu al-anharu waqalooalhamdu lillahi allathee hadanalihatha wama kunna linahtadiya lawlaan hadana Allahu laqad jaat rusulurabbina bilhaqqi wanoodoo an tilkumualjannatu oorithtumooha bima kuntum taAAmaloon",
         "translation":
-            "And We will have removed whatever is within their breasts of resentment,1 [while] flowing beneath them are rivers. And they will say, \"Praise to Allāh, who has guided us to this; and we would never have been guided if Allāh had not guided us. Certainly the messengers of our Lord had come with the truth.\" And they will be called, \"This is Paradise, which you have been made to inherit for what you used to do.\"",
+            "And We will have removed whatever is within their breasts of resentment, [while] flowing beneath them are rivers. And they will say, \"Praise to Allāh, who has guided us to this; and we would never have been guided if Allāh had not guided us. Certainly the messengers of our Lord had come with the truth.\" And they will be called, \"This is Paradise, which you have been made to inherit for what you used to do.\"",
         "audio_filename": "997.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/997.mp3",
@@ -21477,7 +21477,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qaloo aji/tana linaAAbuda Allahawahdahu wanathara ma kana yaAAbudu abaonafa/tina bima taAAiduna in kunta mina assadiqeen",
         "translation":
-            "They said, \"Have you come to us that we should worship Allāh alone and leave what our fathers have worshipped? Then bring us what you promise us,1 if you should be of the truthful.\"",
+            "They said, \"Have you come to us that we should worship Allāh alone and leave what our fathers have worshipped? Then bring us what you promise us, if you should be of the truthful.\"",
         "audio_filename": "1024.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1024.mp3",
@@ -21498,7 +21498,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qala qad waqaAAa AAalaykum minrabbikum rijsun waghadabun atujadiloonanee fee asma-insammaytumooha antum waabaokum manazzala Allahu biha min sultanin fantathirooinnee maAAakum mina almuntathireen",
         "translation":
-            "[Hūd] said, \"Already have defilement and anger fallen upon you from your Lord. Do you dispute with me concerning [mere] names you have named them,1 you and your fathers, for which Allāh has not sent down any authority? Then wait; indeed, I am with you among those who wait.\"",
+            "[Hūd] said, \"Already have defilement and anger fallen upon you from your Lord. Do you dispute with me concerning [mere] names you have named them, you and your fathers, for which Allāh has not sent down any authority? Then wait; indeed, I am with you among those who wait.\"",
         "audio_filename": "1025.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1025.mp3",
@@ -22002,7 +22002,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Thumma baddalna makana assayyi-atialhasanata hatta AAafaw waqaloo qadmassa abaana addarraowassarrao faakhathnahum baghtatanwahum la yashAAuroon",
         "translation":
-            "Then We exchanged in place of the bad [condition], good, until they increased [and prospered] and said, \"Our fathers [also] were touched with hardship and ease.\"1 So We seized them suddenly while they did not perceive.2",
+            "Then We exchanged in place of the bad [condition], good, until they increased [and prospered] and said, \"Our fathers [also] were touched with hardship and ease.\"1 So We seized them suddenly while they did not perceive",
         "audio_filename": "1049.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1049.mp3",
@@ -22334,7 +22334,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qaloo arjih waakhahu waarsilfee almada-ini hashireen",
         "translation":
-            "They said,1 \"Postpone [the matter of] him and his brother and send among the cities gatherers",
+            "They said, \"Postpone [the matter of] him and his brother and send among the cities gatherers",
         "audio_filename": "1065.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1065.mp3",
@@ -22815,7 +22815,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falamma kashafna AAanhumu arrijzaila ajalin hum balighoohu itha humyankuthoon",
         "translation":
-            "But when We removed the punishment from them until a term which they were to reach,1 then at once they broke their word.",
+            "But when We removed the punishment from them until a term which they were to reach, then at once they broke their word.",
         "audio_filename": "1089.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1089.mp3",
@@ -22962,7 +22962,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WawaAAadna moosa thalatheenalaylatan waatmamnaha biAAashrin fatamma meeqaturabbihi arbaAAeena laylatan waqala moosa li-akheehiharoona okhlufnee fee qawmee waaslih walatattabiAA sabeela almufsideen",
         "translation":
-            "And We made an appointment with Moses for thirty nights and perfected them by [the addition of] ten; so the term of his Lord was completed as forty nights. And Moses said to his brother Aaron, \"Take my place among my people, do right [by them],1 and do not follow the way of the corrupters.\"",
+            "And We made an appointment with Moses for thirty nights and perfected them by [the addition of] ten; so the term of his Lord was completed as forty nights. And Moses said to his brother Aaron, \"Take my place among my people, do right [by them], and do not follow the way of the corrupters.\"",
         "audio_filename": "1096.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1096.mp3",
@@ -22983,7 +22983,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walamma jaa moosalimeeqatina wakallamahu rabbuhu qala rabbiarinee anthur ilayka qala lan taraneewalakini onthur ila aljabali fa-iniistaqarra makanahu fasawfa taranee falammatajalla rabbuhu liljabali jaAAalahu dakkan wakharra moosasaAAiqan falamma afaqa qala subhanakatubtu ilayka waana awwalu almu/mineen",
         "translation":
-            "And when Moses arrived at Our appointed time and his Lord spoke to him, he said, \"My Lord, show me [Yourself] that I may look at You.\" [Allāh] said, \"You will not see Me,1 but look at the mountain; if it should remain in place, then you will see Me.\" But when his Lord appeared to the mountain, He rendered it level,2 and Moses fell unconscious. And when he awoke, he said, \"Exalted are You! I have repented to You, and I am the first [among my people] of the believers.\"3",
+            "And when Moses arrived at Our appointed time and his Lord spoke to him, he said, \"My Lord, show me [Yourself] that I may look at You.\" [Allāh] said, \"You will not see Me, but look at the mountain; if it should remain in place, then you will see Me.\" But when his Lord appeared to the mountain, He rendered it level, and Moses fell unconscious. And when he awoke, he said, \"Exalted are You! I have repented to You, and I am the first [among my people] of the believers.\"3",
         "audio_filename": "1097.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1097.mp3",
@@ -23046,7 +23046,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Saasrifu AAan ayatiyaallatheena yatakabbaroona fee al-ardi bighayri alhaqqiwa-in yaraw kulla ayatin la yu/minoo bihawa-in yaraw sabeela arrushdi la yattakhithoohusabeelan wa-in yaraw sabeela alghayyi yattakhithoohusabeelan thalika bi-annahum kaththaboo bi-ayatinawakanoo AAanha ghafileen",
         "translation":
-            "I will turn away from My signs those who are arrogant upon the earth without right; and if they should see every sign, they will not believe in it. And if they see the way of consciousness,1 they will not adopt it as a way; but if they see the way of error, they will adopt it as a way. That is because they have denied Our signs and they were heedless of them.",
+            "I will turn away from My signs those who are arrogant upon the earth without right; and if they should see every sign, they will not believe in it. And if they see the way of consciousness, they will not adopt it as a way; but if they see the way of error, they will adopt it as a way. That is because they have denied Our signs and they were heedless of them.",
         "audio_filename": "1100.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1100.mp3",
@@ -23235,7 +23235,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wakhtara moosaqawmahu sabAAeena rajulan limeeqatina falammaakhathat-humu arrajfatu qala rabbi lawshi/ta ahlaktahum min qablu wa-iyyaya atuhlikunabima faAAala assufahao minna in hiyailla fitnatuka tudillu biha man tashaowatahdee man tashao anta waliyyuna faghfirlana warhamna waanta khayru alghafireen",
         "translation":
-            "And Moses chose from his people seventy men for Our appointment.1 And when the earthquake seized them,2 he said, \"My Lord, if You had willed, You could have destroyed them before and me [as well]. Would You destroy us for what the foolish among us have done? This is not but Your trial by which You send astray whom You will and guide whom You will. You are our Protector, so forgive us and have mercy upon us; and You are the best of forgivers.",
+            "And Moses chose from his people seventy men for Our appointment.1 And when the earthquake seized them, he said, \"My Lord, if You had willed, You could have destroyed them before and me [as well]. Would You destroy us for what the foolish among us have done? This is not but Your trial by which You send astray whom You will and guide whom You will. You are our Protector, so forgive us and have mercy upon us; and You are the best of forgivers.",
         "audio_filename": "1109.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1109.mp3",
@@ -23277,7 +23277,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allatheena yattabiAAoona arrasoolaannabiyya al-ommiyya allathee yajidoonahumaktooban AAindahum fee attawrati wal-injeeliya/muruhum bilmaAAroofi wayanhahum AAani almunkariwayuhillu lahumu attayyibati wayuharrimuAAalayhimu alkhaba-itha wayadaAAu AAanhum israhumwal-aghlala allatee kanat AAalayhim fallatheenaamanoo bihi waAAazzaroohu wanasaroohu wattabaAAooannoora allathee onzila maAAahu ola-ikahumu almuflihoon",
         "translation":
-            "Those who follow the Messenger, the unlettered prophet, whom they find written [i.e., described] in what they have of the Torah and the Gospel, who enjoins upon them what is right and prohibits them from what is wrong and makes lawful for them what is good and forbids them from what is evil and relieves them of their burden1 and the shackles which were upon them.2 So they who have believed in him, honored him, supported him and followed the light which was sent down with him - it is those who will be the successful.",
+            "Those who follow the Messenger, the unlettered prophet, whom they find written [i.e., described] in what they have of the Torah and the Gospel, who enjoins upon them what is right and prohibits them from what is wrong and makes lawful for them what is good and forbids them from what is evil and relieves them of their burden1 and the shackles which were upon them So they who have believed in him, honored him, supported him and followed the light which was sent down with him - it is those who will be the successful.",
         "audio_filename": "1111.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1111.mp3",
@@ -23571,7 +23571,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-ith nataqna aljabalafawqahum kaannahu thullatun wathannooannahu waqiAAun bihim khuthoo ma ataynakumbiquwwatin wathkuroo ma feehi laAAallakumtattaqoon",
         "translation":
-            "And [mention] when We raised the mountain above them as if it was a dark cloud and they were certain that it would fall upon them,1 [and Allāh said], \"Take what We have given you with determination and remember what is in it that you might fear Allāh.\"",
+            "And [mention] when We raised the mountain above them as if it was a dark cloud and they were certain that it would fall upon them, [and Allāh said], \"Take what We have given you with determination and remember what is in it that you might fear Allāh.\"",
         "audio_filename": "1125.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1125.mp3",
@@ -23654,7 +23654,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Watlu AAalayhim nabaa allatheeataynahu ayatina fansalakhaminha faatbaAAahu ashshaytanu fakanamina alghaween",
         "translation":
-            "And recite to them, [O Muḥammad], the news of him1 to whom We gave [knowledge of] Our signs, but he detached himself from them; so Satan pursued him, and he became of the deviators.2",
+            "And recite to them, [O Muḥammad], the news of him1 to whom We gave [knowledge of] Our signs, but he detached himself from them; so Satan pursued him, and he became of the deviators",
         "audio_filename": "1129.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1129.mp3",
@@ -23675,7 +23675,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaw shi/na larafaAAnahu bihawalakinnahu akhlada ila al-ardi wattabaAAahawahu famathaluhu kamathali alkalbi in tahmilAAalayhi yalhath aw tatruk-hu yalhath thalika mathalualqawmi allatheena kaththaboo bi-ayatinafaqsusi alqasasa laAAallahumyatafakkaroon",
         "translation":
-            "And if We had willed, We could have elevated him thereby,1 but he adhered [instead] to the earth2 and followed his own desire. So his example is like that of the dog: if you chase him, he pants, or if you leave him, he [still] pants. That is the example of the people who denied Our signs.3 So relate the stories that perhaps they will give thought.",
+            "And if We had willed, We could have elevated him thereby, but he adhered [instead] to the earth2 and followed his own desire. So his example is like that of the dog: if you chase him, he pants, or if you leave him, he [still] pants. That is the example of the people who denied Our signs So relate the stories that perhaps they will give thought.",
         "audio_filename": "1130.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1130.mp3",
@@ -23945,7 +23945,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Huwa allathee khalaqakum min nafsinwahidatin wajaAAala minha zawjaha liyaskunailayha falamma taghashshaha hamalathamlan khafeefan famarrat bihi falamma athqalatdaAAawa Allaha rabbahuma la-in ataytanasalihan lanakoonanna mina ashshakireen",
         "translation":
-            "It is He who created you from one soul and created from it its mate that he1 might dwell in security with her. And when he [i.e., man] covers her,2 she carries a light burden [i.e., a pregnancy] and continues therein. And when it becomes heavy, they both invoke Allāh, their Lord, \"If You should give us a good3 [child], we will surely be among the grateful.\"",
+            "It is He who created you from one soul and created from it its mate that he1 might dwell in security with her. And when he [i.e., man] covers her, she carries a light burden [i.e., a pregnancy] and continues therein. And when it becomes heavy, they both invoke Allāh, their Lord, \"If You should give us a good3 [child], we will surely be among the grateful.\"",
         "audio_filename": "1143.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1143.mp3",
@@ -24154,7 +24154,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Khuthi alAAafwa wa/mur bilAAurfiwaaAArid AAani aljahileen",
         "translation":
-            "Take what is given freely,1 enjoin what is good, and turn away from the ignorant.",
+            "Take what is given freely, enjoin what is good, and turn away from the ignorant.",
         "audio_filename": "1153.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1153.mp3",
@@ -24666,7 +24666,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falam taqtuloohum walakinna Allahaqatalahum wama ramayta ith ramayta walakinnaAllaha rama waliyubliya almu/mineena minhu balaanhasanan inna Allaha sameeAAun AAaleem",
         "translation":
-            "And you did not kill them, but it was Allāh who killed them.1 And you threw not, [O Muḥammad], when you threw, but it was Allāh who threw2 that He might test the believers with a good test.3 Indeed, Allāh is Hearing and Knowing.",
+            "And you did not kill them, but it was Allāh who killed them.1 And you threw not, [O Muḥammad], when you threw, but it was Allāh who threw2 that He might test the believers with a good test Indeed, Allāh is Hearing and Knowing.",
         "audio_filename": "1177.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1177.mp3",
@@ -25126,7 +25126,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqatiloohum hatta latakoona fitnatun wayakoona addeenu kulluhu lillahifa-ini intahaw fa-inna Allaha bima yaAAmaloona baseer",
         "translation":
-            "And fight against them until there is no fitnah1 and [until] the religion [i.e., worship], all of it, is for Allāh.2 And if they cease - then indeed, Allāh is Seeing of what they do.",
+            "And fight against them until there is no fitnah1 and [until] the religion [i.e., worship], all of it, is for Allāh And if they cease - then indeed, Allāh is Seeing of what they do.",
         "audio_filename": "1199.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1199.mp3",
@@ -25168,7 +25168,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WaAAlamoo annama ghanimtummin shay-in faanna lillahi khumusahu walirrasooliwalithee alqurba walyatama walmasakeeniwabni assabeeli in kuntum amantum billahiwama anzalna AAala AAabdina yawmaalfurqani yawma iltaqa aljamAAani wallahuAAala kulli shay-in qadeer",
         "translation":
-            "And know that anything you obtain of war booty - then indeed, for Allāh is one fifth of it and for the Messenger1 and for [his] near relatives2 and the orphans, the needy, and the [stranded] traveler,3 if you have believed in Allāh and in that which We sent down to Our Servant4 on the day of criterion [i.e., decisive encounter] - the day when the two armies met [at Badr]. And Allāh, over all things, is competent.",
+            "And know that anything you obtain of war booty - then indeed, for Allāh is one fifth of it and for the Messenger1 and for [his] near relatives2 and the orphans, the needy, and the [stranded] traveler, if you have believed in Allāh and in that which We sent down to Our Servant4 on the day of criterion [i.e., decisive encounter] - the day when the two armies met [at Badr]. And Allāh, over all things, is competent.",
         "audio_filename": "1201.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1201.mp3",
@@ -25714,7 +25714,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ma kana linabiyyin an yakoonalahu asra hatta yuthkhina fee al-arditureedoona AAarada addunya wallahuyureedu al-akhirata wallahu AAazeezun hakeem",
         "translation":
-            "It is not for a prophet to have captives [of war] until he inflicts a massacre [upon Allāh's enemies] in the land. You [i.e., some Muslims] desire the commodities of this world,1 but Allāh desires [for you] the Hereafter. And Allāh is Exalted in Might and Wise.",
+            "It is not for a prophet to have captives [of war] until he inflicts a massacre [upon Allāh's enemies] in the land. You [i.e., some Muslims] desire the commodities of this world, but Allāh desires [for you] the Hereafter. And Allāh is Exalted in Might and Wise.",
         "audio_filename": "1227.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1227.mp3",
@@ -25735,7 +25735,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Lawla kitabun mina Allahisabaqa lamassakum feema akhathtum AAathabunAAatheem",
         "translation":
-            "If not for a decree from Allāh that preceded,1 you would have been touched for what you took by a great punishment.",
+            "If not for a decree from Allāh that preceded, you would have been touched for what you took by a great punishment.",
         "audio_filename": "1228.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1228.mp3",
@@ -25954,7 +25954,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waathanun mina Allahiwarasoolihi ila annasi yawma alhajjial-akbari anna Allaha baree-on mina almushrikeenawarasooluhu fa-in tubtum fahuwa khayrun lakum wa-in tawallaytumfaAAlamoo annakum ghayru muAAjizee Allahiwabashshiri allatheena kafaroo biAAathabin aleem",
         "translation":
-            "And [it is] an announcement from Allāh and His Messenger to the people on the day of the greater pilgrimage1 that Allāh is disassociated from the disbelievers, and [so is] His Messenger. So if you repent, that is best for you; but if you turn away - then know that you will not cause failure to Allāh.2 And give tidings to those who disbelieve of a painful punishment.",
+            "And [it is] an announcement from Allāh and His Messenger to the people on the day of the greater pilgrimage1 that Allāh is disassociated from the disbelievers, and [so is] His Messenger. So if you repent, that is best for you; but if you turn away - then know that you will not cause failure to Allāh And give tidings to those who disbelieve of a painful punishment.",
         "audio_filename": "1238.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1238.mp3",
@@ -26038,7 +26038,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Kayfa yakoonu lilmushrikeena AAahdun AAindaAllahi waAAinda rasoolihi illa allatheena AAahadtumAAinda almasjidi alharami fama istaqamoolakum fastaqeemoo lahum inna Allaha yuhibbualmuttaqeen",
         "translation":
-            "How can there be for the polytheists a treaty in the sight of Allāh and with His Messenger, except for those with whom you made a treaty at al-Masjid al-Ḥarām? So as long as they are upright toward you,1 be upright toward them. Indeed, Allāh loves the righteous [who fear Him].",
+            "How can there be for the polytheists a treaty in the sight of Allāh and with His Messenger, except for those with whom you made a treaty at al-Masjid al-Ḥarām? So as long as they are upright toward you, be upright toward them. Indeed, Allāh loves the righteous [who fear Him].",
         "audio_filename": "1242.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1242.mp3",
@@ -26542,7 +26542,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ittakhathoo ahbarahumwaruhbanahum arbaban min dooni Allahi walmaseehaibna maryama wama omiroo illa liyaAAbudoo ilahanwahidan la ilaha illa huwa subhanahuAAamma yushrikoon",
         "translation":
-            "They have taken their scholars and monks as lords besides Allāh,1 and [also] the Messiah, the son of Mary.2 And they were not commanded except to worship one God; there is no deity except Him. Exalted is He above whatever they associate with Him.",
+            "They have taken their scholars and monks as lords besides Allāh, and [also] the Messiah, the son of Mary And they were not commanded except to worship one God; there is no deity except Him. Exalted is He above whatever they associate with Him.",
         "audio_filename": "1266.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1266.mp3",
@@ -26647,7 +26647,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna AAiddata ashshuhoori AAinda Allahiithna AAashara shahran fee kitabi Allahiyawma khalaqa assamawati wal-ardaminha arbaAAatun hurumun thalika addeenualqayyimu fala tathlimoo feehinna anfusakumwaqatiloo almushrikeena kaffatan kama yuqatiloonakumkaffatan waAAlamoo anna Allaha maAAaalmuttaqeen",
         "translation":
-            "Indeed, the number of months with Allāh is twelve [lunar] months in the register of Allāh [from] the day He created the heavens and the earth; of these, four are sacred.1 That is the correct religion [i.e., way], so do not wrong yourselves during them.2 And fight against the disbelievers collectively as they fight against you collectively. And know that Allāh is with the righteous [who fear Him].",
+            "Indeed, the number of months with Allāh is twelve [lunar] months in the register of Allāh [from] the day He created the heavens and the earth; of these, four are sacred.1 That is the correct religion [i.e., way], so do not wrong yourselves during them And fight against the disbelievers collectively as they fight against you collectively. And know that Allāh is with the righteous [who fear Him].",
         "audio_filename": "1271.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1271.mp3",
@@ -26731,7 +26731,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Illa tansuroohu faqad nasarahuAllahu ith akhrajahu allatheena kafaroo thaniyaithnayni ith huma fee alghari ithyaqoolu lisahibihi la tahzan inna AllahamaAAana faanzala Allahu sakeenatahu AAalayhiwaayyadahu bijunoodin lam tarawha wajaAAala kalimata allatheenakafaroo assufla wakalimatu Allahi hiyaalAAulya wallahu AAazeezun hakeem",
         "translation":
-            "If you do not aid him [i.e., the Prophet (ﷺ)] - Allāh has already aided him when those who disbelieved had driven him out [of Makkah] as one of two,1 when they were in the cave and he [i.e., Muḥammad (ﷺ)] said to his companion, \"Do not grieve; indeed Allāh is with us.\" And Allāh sent down His tranquility upon him and supported him with soldiers [i.e., angels] you did not see and made the word2 of those who disbelieved the lowest,3 while the word of Allāh4 - that is the highest. And Allāh is Exalted in Might and Wise.",
+            "If you do not aid him [i.e., the Prophet (ﷺ)] - Allāh has already aided him when those who disbelieved had driven him out [of Makkah] as one of two, when they were in the cave and he [i.e., Muḥammad (ﷺ)] said to his companion, \"Do not grieve; indeed Allāh is with us.\" And Allāh sent down His tranquility upon him and supported him with soldiers [i.e., angels] you did not see and made the word2 of those who disbelieved the lowest, while the word of Allāh4 - that is the highest. And Allāh is Exalted in Might and Wise.",
         "audio_filename": "1275.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1275.mp3",
@@ -26752,7 +26752,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Infiroo khifafan wathiqalanwajahidoo bi-amwalikum waanfusikum fee sabeeli Allahithalikum khayrun lakum in kuntum taAAlamoon",
         "translation":
-            "Go forth, whether light or heavy,1 and strive with your wealth and your lives in the cause of Allāh. That is better for you, if you only knew.",
+            "Go forth, whether light or heavy, and strive with your wealth and your lives in the cause of Allāh. That is better for you, if you only knew.",
         "audio_filename": "1276.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1276.mp3",
@@ -26773,7 +26773,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Law kana AAaradan qareebanwasafaran qasidan lattabaAAooka walakinbaAAudat AAalayhimu ashshuqqatu wasayahlifoona billahilawi istataAAna lakharajna maAAakumyuhlikoona anfusahum wallahu yaAAlamu innahum lakathiboon",
         "translation":
-            "Had it been a near [i.e., easy] gain and a moderate trip, they [i.e., the hypocrites] would have followed you, but distant to them was the journey. And they will swear by Allāh,1 \"If we were able, we would have gone forth with you,\" destroying themselves [through false oaths], and Allāh knows that indeed they are liars.",
+            "Had it been a near [i.e., easy] gain and a moderate trip, they [i.e., the hypocrites] would have followed you, but distant to them was the journey. And they will swear by Allāh, \"If we were able, we would have gone forth with you,\" destroying themselves [through false oaths], and Allāh knows that indeed they are liars.",
         "audio_filename": "1277.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1277.mp3",
@@ -27193,7 +27193,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Yahlifoona billahilakum liyurdookum wallahu warasooluhu ahaqquan yurdoohu in kanoo mu/mineen",
         "translation":
-            "They swear by Allāh to you [Muslims] to satisfy you. But Allāh and His Messenger are more worthy for them to satisfy,1 if they were to be believers.",
+            "They swear by Allāh to you [Muslims] to satisfy you. But Allāh and His Messenger are more worthy for them to satisfy, if they were to be believers.",
         "audio_filename": "1297.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1297.mp3",
@@ -27445,7 +27445,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Yahlifoona billahi maqaloo walaqad qaloo kalimata alkufri wakafaroobaAAda islamihim wahammoo bima lam yanaloowama naqamoo illa an aghnahumu Allahuwarasooluhu min fadlihi fa-in yatooboo yaku khayran lahumwa-in yatawallaw yuAAaththibhumu Allahu AAathabanaleeman fee addunya wal-akhiratiwama lahum fee al-ardi min waliyyin wala naseer",
         "translation":
-            "They swear by Allāh that they did not say [anything against the Prophet (ﷺ)] while they had said the word of disbelief and disbelieved after their [pretense of] Islām and planned that which they were not to attain.1 And they were not resentful except [for the fact] that Allāh and His Messenger had enriched them of His bounty.2 So if they repent, it is better for them; but if they turn away, Allāh will punish them with a painful punishment in this world and the Hereafter. And there will not be for them on earth any protector or helper.",
+            "They swear by Allāh that they did not say [anything against the Prophet (ﷺ)] while they had said the word of disbelief and disbelieved after their [pretense of] Islām and planned that which they were not to attain.1 And they were not resentful except [for the fact] that Allāh and His Messenger had enriched them of His bounty So if they repent, it is better for them; but if they turn away, Allāh will punish them with a painful punishment in this world and the Hereafter. And there will not be for them on earth any protector or helper.",
         "audio_filename": "1309.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1309.mp3",
@@ -27865,7 +27865,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "YaAAtathiroona ilaykum itharajaAAtum ilayhim qul la taAAtathiroo lan nu/minalakum qad nabbaana Allahu min akhbarikumwasayara Allahu AAamalakum warasooluhu thummaturaddoona ila AAalimi alghaybi washshahadatifayunabbi-okum bima kuntum taAAmaloon",
         "translation":
-            "They will make excuses to you when you have returned to them. Say, \"Make no excuse - never will we believe you. Allāh has already informed us of your news [i.e., affair]. And Allāh will observe your deeds, and [so will] His Messenger; then you will be taken back to the Knower of the unseen and the witnessed,1 and He will inform you of what you used to do.\"",
+            "They will make excuses to you when you have returned to them. Say, \"Make no excuse - never will we believe you. Allāh has already informed us of your news [i.e., affair]. And Allāh will observe your deeds, and [so will] His Messenger; then you will be taken back to the Knower of the unseen and the witnessed, and He will inform you of what you used to do.\"",
         "audio_filename": "1329.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1329.mp3",
@@ -28075,7 +28075,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Alam yaAAlamoo anna Allaha huwayaqbalu attawbata AAan AAibadihi waya/khuthuassadaqati waanna Allaha huwa attawwabuarraheem",
         "translation":
-            "Do they not know that it is Allāh who accepts repentance from His servants and receives charities and that it is Allāh who is the Accepting of Repentance,1 the Merciful?",
+            "Do they not know that it is Allāh who accepts repentance from His servants and receives charities and that it is Allāh who is the Accepting of Repentance, the Merciful?",
         "audio_filename": "1339.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1339.mp3",
@@ -28369,7 +28369,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WaAAala aththalathatiallatheena khullifoo hatta itha daqatAAalayhimu al-ardu bima rahubat wadaqatAAalayhim anfusuhum wathannoo an la maljaamina Allahi illa ilayhi thumma tabaAAalayhim liyatooboo inna Allaha huwa attawwabuarraheem",
         "translation":
-            "And [He also forgave] the three who were left alone [i.e., boycotted, regretting their error] to the point that the earth closed in on them in spite of its vastness1 and their souls confined [i.e., anguished] them and they were certain that there is no refuge from Allāh except in Him. Then He turned to them so they could repent. Indeed, Allāh is the Accepting of Repentance,2 the Merciful.",
+            "And [He also forgave] the three who were left alone [i.e., boycotted, regretting their error] to the point that the earth closed in on them in spite of its vastness1 and their souls confined [i.e., anguished] them and they were certain that there is no refuge from Allāh except in Him. Then He turned to them so they could repent. Indeed, Allāh is the Accepting of Repentance, the Merciful.",
         "audio_filename": "1353.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1353.mp3",
@@ -28671,7 +28671,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna rabbakumu Allahu allatheekhalaqa assamawati wal-ardafee sittati ayyamin thumma istawa AAalaalAAarshi yudabbiru al-amra ma min shafeeAAin illamin baAAdi ithnihi thalikumu Allahu rabbukumfaAAbudoohu afala tathakkaroon",
         "translation":
-            "Indeed, your Lord is Allāh, who created the heavens and the earth in six days and then established Himself above the Throne,1 arranging the matter [of His creation]. There is no intercessor except after His permission. That is Allāh, your Lord, so worship Him. Then will you not remember?",
+            "Indeed, your Lord is Allāh, who created the heavens and the earth in six days and then established Himself above the Throne, arranging the matter [of His creation]. There is no intercessor except after His permission. That is Allāh, your Lord, so worship Him. Then will you not remember?",
         "audio_filename": "1367.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1367.mp3",
@@ -28837,7 +28837,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaw yuAAajjilu Allahu linnasiashsharra istiAAjalahum bilkhayri laqudiyailayhim ajaluhum fanatharu allatheena layarjoona liqaana fee tughyanihimyaAAmahoon",
         "translation":
-            "And if Allāh was to hasten for the people the evil [they invoke]1 as He hastens for them the good, their term would have been ended for them.2 But We leave the ones who do not expect the meeting with Us, in their transgression, wandering blindly.",
+            "And if Allāh was to hasten for the people the evil [they invoke]1 as He hastens for them the good, their term would have been ended for them But We leave the ones who do not expect the meeting with Us, in their transgression, wandering blindly.",
         "audio_filename": "1375.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1375.mp3",
@@ -29110,7 +29110,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Innama mathalu alhayatiaddunya kama-in anzalnahu mina assama-ifakhtalata bihi nabatu al-ardi mimmaya/kulu annasu wal-anAAamu hattaitha akhathati al-ardu zukhrufaha wazzayyanatwathanna ahluha annahum qadiroonaAAalayha ataha amruna laylan aw naharanfajaAAalnaha haseedan kaan lam taghnabil-amsi kathalika nufassilu al-ayatiliqawmin yatafakkaroon",
         "translation":
-            "The example of [this] worldly life is but like rain which We have sent down from the sky that the plants of the earth absorb - [those] from which men and livestock eat - until, when the earth has taken on its adornment and is beautified and its people suppose that they have capability over it, there comes to it Our command by night or by day, and We make it as a harvest,1 as if it had not flourished yesterday. Thus do We explain in detail the signs for a people who give thought.",
+            "The example of [this] worldly life is but like rain which We have sent down from the sky that the plants of the earth absorb - [those] from which men and livestock eat - until, when the earth has taken on its adornment and is beautified and its people suppose that they have capability over it, there comes to it Our command by night or by day, and We make it as a harvest, as if it had not flourished yesterday. Thus do We explain in detail the signs for a people who give thought.",
         "audio_filename": "1388.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1388.mp3",
@@ -29194,7 +29194,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wayawma nahshuruhum jameeAAan thummanaqoolu lillatheena ashrakoo makanakum antumwashurakaokum fazayyalna baynahum waqalashurakaohum ma kuntum iyyanataAAbudoon",
         "translation":
-            "And [mention, O Muḥammad], the Day We will gather them all together - then We will say to those who associated others with Allāh, \"[Remain in] your place, you and your 'partners.'\"1 Then We will separate them,2 and their \"partners\" will say, \"You did not used to worship us,3",
+            "And [mention, O Muḥammad], the Day We will gather them all together - then We will say to those who associated others with Allāh, \"[Remain in] your place, you and your 'partners.'\"1 Then We will separate them, and their \"partners\" will say, \"You did not used to worship us,",
         "audio_filename": "1392.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1392.mp3",
@@ -29383,7 +29383,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama kana hatha alqur-anuan yuftara min dooni Allahi walakin tasdeeqaallathee bayna yadayhi watafseela alkitabi larayba feehi min rabbi alAAalameen",
         "translation":
-            "And it was not [possible] for this Qur’ān to be produced by other than Allāh, but [it is] a confirmation of what was before it and a detailed explanation of the [former] Scripture, about which there is no doubt,1 from the Lord of the worlds.",
+            "And it was not [possible] for this Qur’ān to be produced by other than Allāh, but [it is] a confirmation of what was before it and a detailed explanation of the [former] Scripture, about which there is no doubt, from the Lord of the worlds.",
         "audio_filename": "1401.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1401.mp3",
@@ -29593,7 +29593,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walikulli ommatin rasoolun fa-itha jaarasooluhum qudiya baynahum bilqisti wahum layuthlamoon",
         "translation":
-            "And for every nation is a messenger. So when their messenger comes,1 it will be judged between them in justice, and they will not be wronged.",
+            "And for every nation is a messenger. So when their messenger comes, it will be judged between them in justice, and they will not be wronged.",
         "audio_filename": "1411.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1411.mp3",
@@ -29675,7 +29675,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Athumma itha ma waqaAAa amantumbihi al-ana waqad kuntum bihi tastaAAjiloon",
         "translation":
-            "Then is it that when it has [actually] occurred you will believe in it? Now?1 And you were [once] for it impatient.2",
+            "Then is it that when it has [actually] occurred you will believe in it? Now?1 And you were [once] for it impatient",
         "audio_filename": "1415.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1415.mp3",
@@ -31060,7 +31060,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala-in akhkharna AAanhumu alAAathabaila ommatin maAAdoodatin layaqoolunna ma yahbisuhuala yawma ya/teehim laysa masroofan AAanhum wahaqabihim ma kanoo bihi yastahzi-oon",
         "translation":
-            "And if We hold back from them the punishment for a limited time, they will surely say,1 \"What detains it?\" Unquestionably, on the Day it comes to them, it will not be averted from them, and they will be enveloped by what they used to ridicule.",
+            "And if We hold back from them the punishment for a limited time, they will surely say, \"What detains it?\" Unquestionably, on the Day it comes to them, it will not be averted from them, and they will be enveloped by what they used to ridicule.",
         "audio_filename": "1481.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1481.mp3",
@@ -31144,7 +31144,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "FalaAAallaka tarikun baAAda mayooha ilayka wada-iqun bihi sadruka anyaqooloo lawla onzila AAalayhi kanzun aw jaamaAAahu malakun innama anta natheerun wallahuAAala kulli shay-in wakeel",
         "translation":
-            "Then would you possibly leave [out] some of what is revealed to you,1 or is your breast constrained by it because they say, \"Why has there not been sent down to him a treasure or come with him an angel?\" But you are only a warner. And Allāh is Disposer of all things.",
+            "Then would you possibly leave [out] some of what is revealed to you, or is your breast constrained by it because they say, \"Why has there not been sent down to him a treasure or come with him an angel?\" But you are only a warner. And Allāh is Disposer of all things.",
         "audio_filename": "1485.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1485.mp3",
@@ -31186,7 +31186,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fa-illam yastajeeboo lakum faAAlamooannama onzila biAAilmi Allahi waan la ilahailla huwa fahal antum muslimoon",
         "translation":
-            "And if they do not respond to you - then know that it [i.e., the Qur’ān] was revealed with the knowledge of Allāh1 and that there is no deity except Him. Then,2 would you [not] be Muslims?",
+            "And if they do not respond to you - then know that it [i.e., the Qur’ān] was revealed with the knowledge of Allāh1 and that there is no deity except Him. Then, would you [not] be Muslims?",
         "audio_filename": "1487.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1487.mp3",
@@ -31207,7 +31207,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Man kana yureedu alhayataaddunya wazeenataha nuwaffi ilayhim aAAmalahumfeeha wahum feeha la yubkhasoon",
         "translation":
-            "Whoever desires the life of this world and its adornments - We fully repay them for their deeds therein,1 and they therein will not be deprived.",
+            "Whoever desires the life of this world and its adornments - We fully repay them for their deeds therein, and they therein will not be deprived.",
         "audio_filename": "1488.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1488.mp3",
@@ -31228,7 +31228,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ola-ika allatheena laysa lahumfee al-akhirati illa annaru wahabitama sanaAAoo feeha wabatilun makanoo yaAAmaloon",
         "translation":
-            "Those are the ones for whom there is not in the Hereafter but the Fire. And lost is what they did therein,1 and worthless is what they used to do.",
+            "Those are the ones for whom there is not in the Hereafter but the Fire. And lost is what they did therein, and worthless is what they used to do.",
         "audio_filename": "1489.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1489.mp3",
@@ -31249,7 +31249,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Afaman kana AAala bayyinatinmin rabbihi wayatloohu shahidun minhu wamin qablihi kitabumoosa imaman warahmatan ola-ikayu/minoona bihi waman yakfur bihi mina al-ahzabi fannarumawAAiduhu fala taku fee miryatin minhu innahu alhaqqumin rabbika walakinna akthara annasi layu/minoon",
         "translation":
-            "So is one who [stands] upon a clear evidence from his Lord [like the aforementioned]? And a witness1 from Him follows it,2 and before it was the Scripture of Moses to lead and as mercy. Those [believers in the former revelations] believe in it [i.e., the Qur’ān]. But whoever disbelieves in it from the [various] factions - the Fire is his promised destination. So be not in doubt about it. Indeed, it is the truth from your Lord, but most of the people do not believe.",
+            "So is one who [stands] upon a clear evidence from his Lord [like the aforementioned]? And a witness1 from Him follows it, and before it was the Scripture of Moses to lead and as mercy. Those [believers in the former revelations] believe in it [i.e., the Qur’ān]. But whoever disbelieves in it from the [various] factions - the Fire is his promised destination. So be not in doubt about it. Indeed, it is the truth from your Lord, but most of the people do not believe.",
         "audio_filename": "1490.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1490.mp3",
@@ -31730,7 +31730,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Hatta itha jaaamruna wafara attannooru qulna ihmilfeeha min kullin zawjayni ithnayni waahlaka illaman sabaqa AAalayhi alqawlu waman amana wama amanamaAAahu illa qaleel",
         "translation":
-            "[So it was], until when Our command came and the oven overflowed,1 We said, \"Load upon it [i.e., the ship] of each [creature] two mates and your family, except those about whom the word [i.e., decree] has preceded, and [include] whoever has believed.\" But none had believed with him, except a few.",
+            "[So it was], until when Our command came and the oven overflowed, We said, \"Load upon it [i.e., the ship] of each [creature] two mates and your family, except those about whom the word [i.e., decree] has preceded, and [include] whoever has believed.\" But none had believed with him, except a few.",
         "audio_filename": "1513.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1513.mp3",
@@ -32735,7 +32735,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qala ya qawmi araaytum inkuntu AAala bayyinatin min rabbee warazaqanee minhu rizqanhasanan wama oreedu an okhalifakum ilama anhakum AAanhu in oreedu illa al-islahama istataAAtu wama tawfeeqee illa billahiAAalayhi tawakkaltu wa-ilayhi oneeb",
         "translation":
-            "He said, \"O my people, have you considered: if I am upon clear evidence from my Lord and He has provided me with a good provision from Him...?1 And I do not intend to differ from you in that which I have forbidden you; I only intend reform as much as I am able. And my success is not but through Allāh. Upon Him I have relied, and to Him I return.2",
+            "He said, \"O my people, have you considered: if I am upon clear evidence from my Lord and He has provided me with a good provision from Him...?1 And I do not intend to differ from you in that which I have forbidden you; I only intend reform as much as I am able. And my success is not but through Allāh. Upon Him I have relied, and to Him I return",
         "audio_filename": "1561.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1561.mp3",
@@ -33553,7 +33553,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ith qala yoosufu li-abeehi yaabati innee raaytu ahada AAashara kawkaban washshamsawalqamara raaytuhum lee sajideen",
         "translation":
-            "[Of these stories mention] when Joseph said to his father,1 \"O my father, indeed I have seen [in a dream] eleven stars and the sun and the moon; I saw them prostrating to me.\"",
+            "[Of these stories mention] when Joseph said to his father, \"O my father, indeed I have seen [in a dream] eleven stars and the sun and the moon; I saw them prostrating to me.\"",
         "audio_filename": "1600.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1600.mp3",
@@ -34200,7 +34200,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Thumma bada lahum min baAAdi maraawoo al-ayati layasjununnahu hatta heen",
         "translation":
-            "Then it appeared to them after they had seen the signs1 that he [i.e., al-ʿAzeez] should surely imprison him for a time.2",
+            "Then it appeared to them after they had seen the signs1 that he [i.e., al-ʿAzeez] should surely imprison him for a time",
         "audio_filename": "1631.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1631.mp3",
@@ -34284,7 +34284,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya sahibayi assijniaarbabun mutafarriqoona khayrun ami Allahu alwahidualqahhar",
         "translation":
-            "O [my] two companions of prison, are separate lords better or Allāh, the One,1 the Prevailing?2",
+            "O [my] two companions of prison, are separate lords better or Allāh, the One, the Prevailing?2",
         "audio_filename": "1635.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1635.mp3",
@@ -34305,7 +34305,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ma taAAbudoona min doonihi illaasmaan sammaytumooha antum waabaokumma anzala Allahu biha min sultaninini alhukmu illa lillahi amara allataAAbudoo illa iyyahu thalika addeenualqayyimu walakinna akthara annasi layaAAlamoon",
         "translation":
-            "You worship not besides Him except [mere] names you have named them,1 you and your fathers, for which Allāh has sent down no evidence. Legislation is not but for Allāh. He has commanded that you worship not except Him. That is the correct religion, but most of the people do not know.",
+            "You worship not besides Him except [mere] names you have named them, you and your fathers, for which Allāh has sent down no evidence. Legislation is not but for Allāh. He has commanded that you worship not except Him. That is the correct religion, but most of the people do not know.",
         "audio_filename": "1636.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1636.mp3",
@@ -35097,7 +35097,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qaloo ya ayyuhaalAAazeezu inna lahu aban shaykhan kabeeran fakhuth ahadanamakanahu inna naraka mina almuhsineen",
         "translation":
-            "They said, \"O ʿAzeez,1 indeed he has a father [who is] an old man, so take one of us in place of him. Indeed, we see you as a doer of good.\"",
+            "They said, \"O ʿAzeez, indeed he has a father [who is] an old man, so take one of us in place of him. Indeed, we see you as a doer of good.\"",
         "audio_filename": "1674.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1674.mp3",
@@ -35139,7 +35139,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falamma istay-asoo minhu khalasoonajiyyan qala kabeeruhum alam taAAlamoo anna abakumqad akhatha AAalaykum mawthiqan mina Allahi waminqablu ma farrattum fee yoosufa falan abrahaal-arda hatta ya/thana lee abee aw yahkumaAllahu lee wahuwa khayru alhakimeen",
         "translation":
-            "So when they had despaired of him, they secluded themselves in private consultation. The eldest of them said, \"Do you not know that your father has taken upon you an oath by Allāh and [that] before you failed in [your duty to] Joseph? So I will never leave [this] land until my father permits me or Allāh decides for me,1 and He is the best of judges.",
+            "So when they had despaired of him, they secluded themselves in private consultation. The eldest of them said, \"Do you not know that your father has taken upon you an oath by Allāh and [that] before you failed in [your duty to] Joseph? So I will never leave [this] land until my father permits me or Allāh decides for me, and He is the best of judges.",
         "audio_filename": "1676.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1676.mp3",
@@ -35223,7 +35223,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Watawalla AAanhum waqala yaasafa AAala yoosufa wabyaddat AAaynahumina alhuzni fahuwa katheem",
         "translation":
-            "And he turned away from them and said, \"Oh, my sorrow over Joseph,\" and his eyes became white1 from grief, for he was [of that] a suppressor.2",
+            "And he turned away from them and said, \"Oh, my sorrow over Joseph,\" and his eyes became white1 from grief, for he was [of that] a suppressor",
         "audio_filename": "1680.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1680.mp3",
@@ -35433,7 +35433,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walamma fasalati alAAeeru qalaaboohum innee laajidu reeha yoosufa lawla antufannidoon",
         "translation":
-            "And when the caravan departed [from Egypt], their father said,1 \"Indeed, I find the smell of Joseph [and would say that he was alive] if you did not think me weakened in mind.\"",
+            "And when the caravan departed [from Egypt], their father said, \"Indeed, I find the smell of Joseph [and would say that he was alive] if you did not think me weakened in mind.\"",
         "audio_filename": "1690.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1690.mp3",
@@ -35879,7 +35879,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wafee al-ardi qitaAAun mutajawiratunwajannatun min aAAnabin wazarAAun wanakheelun sinwanunwaghayru sinwanin yusqa bima-in wahidinwanufaddilu baAAdaha AAala baAAdinfee alokuli inna fee thalika laayatinliqawmin yaAAqiloon",
         "translation":
-            "And within the land are neighboring plots and gardens of grapevines and crops and palm trees, [growing] several from a root or otherwise,1 watered with one water; but We make some of them exceed others in [quality of] fruit. Indeed in that are signs for a people who reason.",
+            "And within the land are neighboring plots and gardens of grapevines and crops and palm trees, [growing] several from a root or otherwise, watered with one water; but We make some of them exceed others in [quality of] fruit. Indeed in that are signs for a people who reason.",
         "audio_filename": "1711.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1711.mp3",
@@ -35900,7 +35900,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-in taAAjab faAAajabun qawluhum a-ithakunna turaban a-inna lafee khalqin jadeedinola-ika allatheena kafaroo birabbihim waola-ikaal-aghlalu fee aAAnaqihim waola-ika as-habuannari hum feeha khalidoon",
         "translation":
-            "And if you are astonished,1 [O Muḥammad] - then astonishing is their saying, \"When we are dust, will we indeed be [brought] into a new creation?\" Those are the ones who have disbelieved in their Lord, and those will have shackles2 upon their necks, and those are the companions of the Fire; they will abide therein eternally.",
+            "And if you are astonished, [O Muḥammad] - then astonishing is their saying, \"When we are dust, will we indeed be [brought] into a new creation?\" Those are the ones who have disbelieved in their Lord, and those will have shackles2 upon their necks, and those are the companions of the Fire; they will abide therein eternally.",
         "audio_filename": "1712.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1712.mp3",
@@ -35921,7 +35921,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WayastaAAjiloonaka bissayyi-atiqabla alhasanati waqad khalat min qablihimu almathulatuwa-inna rabbaka lathoo maghfiratin linnasiAAala thulmihim wa-inna rabbaka lashadeedualAAiqab",
         "translation":
-            "They impatiently urge you to bring about evil before good,1 while there has already occurred before them similar punishments [to what they demand]. And indeed, your Lord is the possessor of forgiveness for the people despite their wrongdoing, and indeed, your Lord is severe in penalty.",
+            "They impatiently urge you to bring about evil before good, while there has already occurred before them similar punishments [to what they demand]. And indeed, your Lord is the possessor of forgiveness for the people despite their wrongdoing, and indeed, your Lord is severe in penalty.",
         "audio_filename": "1713.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1713.mp3",
@@ -35963,7 +35963,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allahu yaAAlamu ma tahmilukullu ontha wama tagheedu al-arhamuwama tazdadu wakullu shay-in AAindahu bimiqdar",
         "translation":
-            "Allāh knows what every female carries1 and what the wombs lose [prematurely] or exceed.2 And everything with Him is by due measure.",
+            "Allāh knows what every female carries1 and what the wombs lose [prematurely] or exceed And everything with Him is by due measure.",
         "audio_filename": "1715.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1715.mp3",
@@ -36024,7 +36024,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Lahu muAAaqqibatun min bayni yadayhiwamin khalfihi yahfathoonahu min amri Allahiinna Allaha la yughayyiru ma biqawmin hattayughayyiroo ma bi-anfusihim wa-itha aradaAllahu biqawmin soo-an fala maradda lahu wamalahum min doonihi min wal",
         "translation":
-            "For him [i.e., each one] are successive [angels]1 before and behind him who protect him by the decree of Allāh.2 Indeed, Allāh will not change the condition of a people until they change what is in themselves. And when Allāh intends for a people ill,3 there is no repelling it. And there is not for them besides Him any patron.",
+            "For him [i.e., each one] are successive [angels]1 before and behind him who protect him by the decree of Allāh Indeed, Allāh will not change the condition of a people until they change what is in themselves. And when Allāh intends for a people ill, there is no repelling it. And there is not for them besides Him any patron.",
         "audio_filename": "1718.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1718.mp3",
@@ -36444,7 +36444,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaw anna qur-anan suyyirat bihialjibalu aw quttiAAat bihi al-ardu awkullima bihi almawta bal lillahi al-amru jameeAAanafalam yay-asi allatheena amanoo an law yashaoAllahu lahada annasa jameeAAan walayazalu allatheena kafaroo tuseebuhum bimasanaAAoo qariAAatun aw tahullu qareeban mindarihim hatta ya/tiya waAAdu Allahiinna Allaha la yukhlifu almeeAAad",
         "translation":
-            "And if there was any Qur’ān [i.e., recitation] by which the mountains would be removed or the earth would be broken apart or the dead would be made to speak,1 [it would be this Qur’ān], but to Allāh belongs the affair entirely. Then have those who believed not accepted that had Allāh willed, He would have guided the people, all of them? And those who disbelieve do not cease to be struck, for what they have done, by calamity - or it will descend near their home - until there comes the promise of Allāh. Indeed, Allāh does not fail in [His] promise.",
+            "And if there was any Qur’ān [i.e., recitation] by which the mountains would be removed or the earth would be broken apart or the dead would be made to speak, [it would be this Qur’ān], but to Allāh belongs the affair entirely. Then have those who believed not accepted that had Allāh willed, He would have guided the people, all of them? And those who disbelieve do not cease to be struck, for what they have done, by calamity - or it will descend near their home - until there comes the promise of Allāh. Indeed, Allāh does not fail in [His] promise.",
         "audio_filename": "1738.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1738.mp3",
@@ -37037,7 +37037,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Min wara-ihi jahannamu wayusqamin ma-in sadeed",
         "translation":
-            "Before him1 is Hell, and he will be given a drink of purulent water.2",
+            "Before him1 is Hell, and he will be given a drink of purulent water",
         "audio_filename": "1766.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1766.mp3",
@@ -37264,7 +37264,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Yuthabbitu Allahu allatheena amanoobilqawli aththabiti fee alhayatiaddunya wafee al-akhirati wayudilluAllahu aththalimeenawayafAAalu Allahu ma yasha/",
         "translation":
-            "Allāh keeps firm those who believe, with the firm word,1 in worldly life and in the Hereafter.2 And Allāh sends astray the wrongdoers. And Allāh does what He wills.",
+            "Allāh keeps firm those who believe, with the firm word, in worldly life and in the Hereafter And Allāh sends astray the wrongdoers. And Allāh does what He wills.",
         "audio_filename": "1777.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1777.mp3",
@@ -37409,7 +37409,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waatakum min kulli masaaltumoohu wa-in taAAuddoo niAAmata Allahi la tuhsoohainna al-insana lathaloomun kaffar",
         "translation":
-            "And He gave you from all you asked of Him.1 And if you should count the favor [i.e., blessings] of Allāh, you could not enumerate them. Indeed, mankind is [generally] most unjust and ungrateful.2",
+            "And He gave you from all you asked of Him.1 And if you should count the favor [i.e., blessings] of Allāh, you could not enumerate them. Indeed, mankind is [generally] most unjust and ungrateful",
         "audio_filename": "1784.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1784.mp3",
@@ -37598,7 +37598,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "MuhtiAAeena muqniAAee ruoosihim layartaddu ilayhim tarfuhum waaf-idatuhum hawa/",
         "translation":
-            "Racing ahead, their heads raised up, their glance does not come back to them,1 and their hearts are void.",
+            "Racing ahead, their heads raised up, their glance does not come back to them, and their hearts are void.",
         "audio_filename": "1793.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1793.mp3",
@@ -38388,7 +38388,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fa-itha sawwaytuhu wanafakhtu feehimin roohee faqaAAoo lahu sajideen",
         "translation":
-            "And when I have proportioned him and breathed into him of My [created] soul,1 then fall down to him in prostration.\"",
+            "And when I have proportioned him and breathed into him of My [created] soul, then fall down to him in prostration.\"",
         "audio_filename": "1831.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1831.mp3",
@@ -38485,7 +38485,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Qala fakhruj minhafa-innaka rajeem",
         "translation":
-            "[Allāh] said, \"Then depart from it,1 for indeed, you are expelled.",
+            "[Allāh] said, \"Then depart from it, for indeed, you are expelled.",
         "audio_filename": "1836.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1836.mp3",
@@ -38730,7 +38730,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WanazaAAna ma fee sudoorihimmin ghillin ikhwanan AAala sururin mutaqabileen",
         "translation":
-            "And We will remove whatever is in their breasts of resentment,1 [so they will be] brothers, on thrones facing each other.",
+            "And We will remove whatever is in their breasts of resentment, [so they will be] brothers, on thrones facing each other.",
         "audio_filename": "1849.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1849.mp3",
@@ -39621,7 +39621,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "FasdaAA bima tu/maruwaaAArid AAani almushrikeen",
         "translation":
-            "Then declare what you are commanded1 and turn away from the polytheists.2",
+            "Then declare what you are commanded1 and turn away from the polytheists",
         "audio_filename": "1896.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1896.mp3",
@@ -39748,7 +39748,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ata amru Allahi falatastaAAjiloohu subhanahu wataAAala AAammayushrikoon",
         "translation":
-            "The command of Allāh is coming,1 so be not impatient for it. Exalted is He and high above what they associate with Him.",
+            "The command of Allāh is coming, so be not impatient for it. Exalted is He and high above what they associate with Him.",
         "audio_filename": "1902.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1902.mp3",
@@ -40161,7 +40161,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Amwatun ghayru ahya-inwama yashAAuroona ayyana yubAAathoon",
         "translation":
-            "They are [in fact] dead,1 not alive, and they do not perceive when they will be resurrected.",
+            "They are [in fact] dead, not alive, and they do not perceive when they will be resurrected.",
         "audio_filename": "1922.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1922.mp3",
@@ -40266,7 +40266,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qad makara allatheena min qablihimfaata Allahu bunyanahum mina alqawaAAidifakharra AAalayhimu assaqfu min fawqihim waatahumualAAathabu min haythu la yashAAuroon",
         "translation":
-            "Those before them had already plotted, but Allāh came at [i.e., uprooted] their building from the foundations, so the roof fell upon them from above them,1 and the punishment came to them from where they did not perceive.",
+            "Those before them had already plotted, but Allāh came at [i.e., uprooted] their building from the foundations, so the roof fell upon them from above them, and the punishment came to them from where they did not perceive.",
         "audio_filename": "1927.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1927.mp3",
@@ -40308,7 +40308,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allatheena tatawaffahumu almala-ikatuthalimee anfusihim faalqawoo assalamama kunna naAAmalu min soo-in bala inna AllahaAAaleemun bima kuntum taAAmaloon",
         "translation":
-            "The ones whom the angels take in death [while] wronging themselves,1 and [who] then offer submission, [saying], \"We were not doing any evil.\" But, yes! Indeed, Allāh is Knowing of what you used to do.",
+            "The ones whom the angels take in death [while] wronging themselves, and [who] then offer submission, [saying], \"We were not doing any evil.\" But, yes! Indeed, Allāh is Knowing of what you used to do.",
         "audio_filename": "1929.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1929.mp3",
@@ -40497,7 +40497,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "In tahris AAala hudahumfa-inna Allaha la yahdee man yudillu wamalahum min nasireen",
         "translation":
-            "[Even] if you should strive for their guidance, [O Muḥammad], indeed, Allāh does not guide those He sends astray,1 and they will have no helpers.",
+            "[Even] if you should strive for their guidance, [O Muḥammad], indeed, Allāh does not guide those He sends astray, and they will have no helpers.",
         "audio_filename": "1938.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1938.mp3",
@@ -40704,7 +40704,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Aw ya/khuthahum AAalatakhawwufin fa-inna rabbakum laraoofun raheem",
         "translation":
-            "Or that He would not seize them gradually [in a state of dread]?1 But indeed, your Lord is Kind and Merciful.2",
+            "Or that He would not seize them gradually [in a state of dread]?1 But indeed, your Lord is Kind and Merciful",
         "audio_filename": "1948.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1948.mp3",
@@ -41690,7 +41690,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala tattakhithoo aymanakumdakhalan baynakum fatazilla qadamun baAAda thubootiha watathooqooassoo-a bima sadadtum AAan sabeeli Allahiwalakum AAathabun AAatheem",
         "translation":
-            "And do not take your oaths as [means of] deceit between you, lest a foot slip after it was [once] firm, and you would taste evil [in this world] for what [people] you diverted from the way of Allāh,1 and you would have [in the Hereafter] a great punishment.",
+            "And do not take your oaths as [means of] deceit between you, lest a foot slip after it was [once] firm, and you would taste evil [in this world] for what [people] you diverted from the way of Allāh, and you would have [in the Hereafter] a great punishment.",
         "audio_filename": "1995.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/1995.mp3",
@@ -41879,7 +41879,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaqad naAAlamu annahum yaqooloona innamayuAAallimuhu basharun lisanu allathee yulhidoonailayhi aAAjamiyyun wahatha lisanun AAarabiyyunmubeen",
         "translation":
-            "And We certainly know that they say, \"It is only a human being who teaches him [i.e., the Prophet (ﷺ)].\" The tongue of the one they refer to is foreign,1 and this [recitation, i.e., Qur’ān] is [in] a clear Arabic language.",
+            "And We certainly know that they say, \"It is only a human being who teaches him [i.e., the Prophet (ﷺ)].\" The tongue of the one they refer to is foreign, and this [recitation, i.e., Qur’ān] is [in] a clear Arabic language.",
         "audio_filename": "2004.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2004.mp3",
@@ -42128,7 +42128,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Innama harrama AAalaykumualmaytata waddama walahma alkhinzeeri wamaohilla lighayri Allahi bihi famani idturra ghayra baghinwala AAadin fa-inna Allaha ghafoorun raheem",
         "translation":
-            "He has only forbidden to you dead animals,1 blood, the flesh of swine, and that which has been dedicated to other than Allāh. But whoever is forced [by necessity], neither desiring [it] nor transgressing [its limit] - then indeed, Allāh is Forgiving and Merciful.",
+            "He has only forbidden to you dead animals, blood, the flesh of swine, and that which has been dedicated to other than Allāh. But whoever is forced [by necessity], neither desiring [it] nor transgressing [its limit] - then indeed, Allāh is Forgiving and Merciful.",
         "audio_filename": "2016.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2016.mp3",
@@ -42231,7 +42231,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna ibraheema kana ommatan qanitanlillahi haneefan walam yaku mina almushrikeen",
         "translation":
-            "Indeed, Abraham was a [comprehensive] leader,1 devoutly obedient to Allāh, inclining toward truth, and he was not of those who associate others with Allāh.",
+            "Indeed, Abraham was a [comprehensive] leader, devoutly obedient to Allāh, inclining toward truth, and he was not of those who associate others with Allāh.",
         "audio_filename": "2021.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2021.mp3",
@@ -42429,7 +42429,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Subhana allathee asrabiAAabdihi laylan mina almasjidi alharami ilaalmasjidi al-aqsa allathee barakna hawlahulinuriyahu min ayatina innahu huwa assameeAAualbaseer",
         "translation":
-            "Exalted1 is He who took His Servant [i.e., Prophet Muḥammad (ﷺ)] by night from al-Masjid al-Ḥarām to al-Masjid al-Aqṣā,2 whose surroundings We have blessed, to show him of Our signs. Indeed, He is the Hearing,3 the Seeing.4",
+            "Exalted1 is He who took His Servant [i.e., Prophet Muḥammad (ﷺ)] by night from al-Masjid al-Ḥarām to al-Masjid al-Aqṣā, whose surroundings We have blessed, to show him of Our signs. Indeed, He is the Hearing, the Seeing",
         "audio_filename": "2030.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2030.mp3",
@@ -42450,7 +42450,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waatayna moosa alkitabawajaAAalnahu hudan libanee isra-eela allatattakhithoo min doonee wakeela",
         "translation":
-            "And We gave Moses the Scripture and made it a guidance for the Children of Israel that you not take other than Me as Disposer of affairs,1",
+            "And We gave Moses the Scripture and made it a guidance for the Children of Israel that you not take other than Me as Disposer of affairs,",
         "audio_filename": "2031.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2031.mp3",
@@ -42513,7 +42513,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fa-itha jaa waAAdu oolahumabaAAathna AAalaykum AAibadan lana oleeba/sin shadeedin fajasoo khilala addiyariwakana waAAdan mafAAoola",
         "translation":
-            "So when the [time of] promise came for the first of them,1 We sent against you servants of Ours - those of great military might, and they probed [even] into the homes,2 and it was a promise fulfilled.",
+            "So when the [time of] promise came for the first of them, We sent against you servants of Ours - those of great military might, and they probed [even] into the homes, and it was a promise fulfilled.",
         "audio_filename": "2034.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2034.mp3",
@@ -42681,7 +42681,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wakulla insanin alzamnahu ta-irahufee AAunuqihi wanukhriju lahu yawma alqiyamati kitabanyalqahu manshoora",
         "translation":
-            "And [for] every person We have imposed his fate upon his neck,1 and We will produce for him on the Day of Resurrection a record which he will encounter spread open.",
+            "And [for] every person We have imposed his fate upon his neck, and We will produce for him on the Day of Resurrection a record which he will encounter spread open.",
         "audio_filename": "2042.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2042.mp3",
@@ -42996,7 +42996,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-imma tuAAridanna AAanhumuibtighaa rahmatin min rabbika tarjooha faqullahum qawlan maysoora",
         "translation":
-            "And if you [must] turn away from them [i.e., the needy] awaiting mercy from your Lord which you expect,1 then speak to them a gentle word.",
+            "And if you [must] turn away from them [i.e., the needy] awaiting mercy from your Lord which you expect, then speak to them a gentle word.",
         "audio_filename": "2057.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2057.mp3",
@@ -43101,7 +43101,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala taqtuloo annafsa allateeharrama Allahu illa bilhaqqiwaman qutila mathlooman faqad jaAAalnaliwaliyyihi sultanan fala yusrif fee alqatli innahukana mansoora",
         "translation":
-            "And do not kill the soul [i.e., person] which Allāh has forbidden, except by right.1 And whoever is killed unjustly - We have given his heir authority,2 but let him not exceed limits in [the matter of] taking life. Indeed, he has been supported [by the law].",
+            "And do not kill the soul [i.e., person] which Allāh has forbidden, except by right.1 And whoever is killed unjustly - We have given his heir authority, but let him not exceed limits in [the matter of] taking life. Indeed, he has been supported [by the law].",
         "audio_filename": "2062.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2062.mp3",
@@ -43122,7 +43122,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala taqraboo mala alyateemiilla billatee hiya ahsanu hattayablugha ashuddahu waawfoo bilAAahdi inna alAAahda kanamas-oola",
         "translation":
-            "And do not approach the property of an orphan, except in the way that is best,1 until he reaches maturity. And fulfill [every] commitment. Indeed, the commitment is ever [that about which one will be] questioned.",
+            "And do not approach the property of an orphan, except in the way that is best, until he reaches maturity. And fulfill [every] commitment. Indeed, the commitment is ever [that about which one will be] questioned.",
         "audio_filename": "2063.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2063.mp3",
@@ -43852,7 +43852,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Am amintum an yuAAeedakum feehi taratanokhra fayursila AAalaykum qasifan mina arreehifayughriqakum bima kafartum thumma la tajidoo lakumAAalayna bihi tabeeAAa",
         "translation":
-            "Or do you feel secure that He will not send you back into it [i.e., the sea] another time and send upon you a hurricane of wind and drown you for what you denied?1 Then you would not find for yourselves against Us an avenger.2",
+            "Or do you feel secure that He will not send you back into it [i.e., the sea] another time and send upon you a hurricane of wind and drown you for what you denied?1 Then you would not find for yourselves against Us an avenger",
         "audio_filename": "2098.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2098.mp3",
@@ -44041,7 +44041,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Aqimi assalatalidulooki ashshamsi ila ghasaqi allayli waqur-anaalfajri inna qur-ana alfajri kana mashhooda",
         "translation":
-            "Establish prayer at the decline of the sun [from its meridian] until the darkness of the night1 and [also] the Qur’ān [i.e., recitation] of dawn.2 Indeed, the recitation of dawn is ever witnessed.",
+            "Establish prayer at the decline of the sun [from its meridian] until the darkness of the night1 and [also] the Qur’ān [i.e., recitation] of dawn Indeed, the recitation of dawn is ever witnessed.",
         "audio_filename": "2107.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2107.mp3",
@@ -44062,7 +44062,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wamina allayli fatahajjad bihi nafilatanlaka AAasa an yabAAathaka rabbuka maqaman mahmooda",
         "translation":
-            "And from [part of] the night, pray1 with it [i.e., recitation of the Qur’ān] as additional [worship] for you; it is expected that2 your Lord will resurrect you to a praised station.3",
+            "And from [part of] the night, pray1 with it [i.e., recitation of the Qur’ān] as additional [worship] for you; it is expected that2 your Lord will resurrect you to a praised station",
         "audio_filename": "2108.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2108.mp3",
@@ -44398,7 +44398,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul law kana fee al-ardi mala-ikatunyamshoona mutma-inneena lanazzalna AAalayhim mina assama-imalakan rasoola",
         "translation":
-            "Say, \"If there were upon the earth angels walking securely,1 We would have sent down to them from the heaven an angel [as a] messenger.\"",
+            "Say, \"If there were upon the earth angels walking securely, We would have sent down to them from the heaven an angel [as a] messenger.\"",
         "audio_filename": "2124.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2124.mp3",
@@ -44545,7 +44545,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qala laqad AAalimta ma anzalahaola-i illa rabbu assamawatiwal-ardi basa-ira wa-innee laathunnukaya firAAawnu mathboora",
         "translation":
-            "[Moses] said, \"You have already known that none has sent down these [signs] except the Lord of the heavens and the earth as evidence, and indeed I think,1 O Pharaoh, that you are destroyed.\"",
+            "[Moses] said, \"You have already known that none has sent down these [signs] except the Lord of the heavens and the earth as evidence, and indeed I think, O Pharaoh, that you are destroyed.\"",
         "audio_filename": "2131.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2131.mp3",
@@ -44842,7 +44842,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ma lahum bihi min AAilmin walali-aba-ihim kaburat kalimatan takhruju min afwahihimin yaqooloona illa kathiba",
         "translation":
-            "They have no knowledge of it,1 nor had their fathers. Grave is the word that comes out of their mouths; they speak not except a lie.",
+            "They have no knowledge of it, nor had their fathers. Grave is the word that comes out of their mouths; they speak not except a lie.",
         "audio_filename": "2145.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2145.mp3",
@@ -45134,7 +45134,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wakathalika baAAathnahumliyatasaaloo baynahum qala qa-ilun minhumkam labithtum qaloo labithna yawman aw baAAdayawmin qaloo rabbukum aAAlamu bima labithtum fabAAathooahadakum biwariqikum hathihi ila almadeenatifalyanthur ayyuha azka taAAamanfalya/tikum birizqin minhu walyatalattaf walayushAAiranna bikum ahada",
         "translation":
-            "And similarly,1 We awakened them that they might question one another. Said a speaker from among them, \"How long have you remained [here]?\" They said, \"We have remained a day or part of a day.\" They said, \"Your Lord is most knowing of how long you remained. So send one of you with this silver coin of yours to the city and let him look to which is the best of food and bring you provision from it and let him be cautious. And let no one be aware of you.",
+            "And similarly, We awakened them that they might question one another. Said a speaker from among them, \"How long have you remained [here]?\" They said, \"We have remained a day or part of a day.\" They said, \"Your Lord is most knowing of how long you remained. So send one of you with this silver coin of yours to the city and let him look to which is the best of food and bring you provision from it and let him be cautious. And let no one be aware of you.",
         "audio_filename": "2159.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2159.mp3",
@@ -45721,7 +45721,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wayawma nusayyiru aljibala wataraal-arda barizatan wahasharnahum falamnughadir minhum ahada",
         "translation":
-            "And [warn of] the Day when We will remove the mountains and you will see the earth exposed,1 and We will gather them and not leave behind from them anyone.",
+            "And [warn of] the Day when We will remove the mountains and you will see the earth exposed, and We will gather them and not leave behind from them anyone.",
         "audio_filename": "2187.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2187.mp3",
@@ -46530,7 +46530,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Hatta itha balaghamaghriba ashshamsi wajadaha taghrubu fee AAaynin hami-atinwawajada AAindaha qawman qulna ya thaalqarnayni imma an tuAAaththiba wa-imma antattakhitha feehim husna",
         "translation":
-            "Until, when he reached the setting of the sun [i.e., the west], he found it [as if] setting in a body of dark water,1 and he found near it a people. We [i.e., Allāh] said, \"O Dhul-Qarnayn, either you punish [them] or else adopt among them [a way of] goodness.\"",
+            "Until, when he reached the setting of the sun [i.e., the west], he found it [as if] setting in a body of dark water, and he found near it a people. We [i.e., Allāh] said, \"O Dhul-Qarnayn, either you punish [them] or else adopt among them [a way of] goodness.\"",
         "audio_filename": "2226.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2226.mp3",
@@ -46551,7 +46551,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qala amma man thalamafasawfa nuAAaththibuhu thumma yuraddu ila rabbihifayuAAaththibuhu AAathaban nukra",
         "translation":
-            "He said, \"As for one who wrongs,1 we will punish him. Then he will be returned to his Lord, and He will punish him with a terrible punishment [i.e., Hellfire].",
+            "He said, \"As for one who wrongs, we will punish him. Then he will be returned to his Lord, and He will punish him with a terrible punishment [i.e., Hellfire].",
         "audio_filename": "2227.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2227.mp3",
@@ -46834,7 +46834,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allatheena kanat aAAyunuhumfee ghita-in AAan thikree wakanoo layastateeAAoona samAAa",
         "translation":
-            "Those whose eyes had been within a cover [removed] from My remembrance,1 and they were not able to hear.2",
+            "Those whose eyes had been within a cover [removed] from My remembrance, and they were not able to hear",
         "audio_filename": "2241.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2241.mp3",
@@ -47166,7 +47166,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya zakariyya innanubashshiruka bighulamin ismuhu yahya lamnajAAal lahu min qablu samiyya",
         "translation":
-            "[He was told],1 \"O Zechariah, indeed We give you good tidings of a boy whose name will be John. We have not assigned to any before [this] name.\"",
+            "[He was told], \"O Zechariah, indeed We give you good tidings of a boy whose name will be John. We have not assigned to any before [this] name.\"",
         "audio_filename": "2257.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2257.mp3",
@@ -48352,7 +48352,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama natanazzalu illa bi-amrirabbika lahu ma bayna aydeena wama khalfanawama bayna thalika wama kana rabbukanasiyya",
         "translation":
-            "[Gabriel said],1 \"And we [angels] descend not except by the order of your Lord. To Him belongs that before us and that behind us and what is in between. And never is your Lord forgetful -",
+            "[Gabriel said], \"And we [angels] descend not except by the order of your Lord. To Him belongs that before us and that behind us and what is in between. And never is your Lord forgetful -",
         "audio_filename": "2314.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2314.mp3",
@@ -48685,7 +48685,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Wanarithuhu ma yaqoolu waya/teenafarda",
         "translation":
-            "And We will inherit him [in] what he mentions,1 and he will come to Us alone.",
+            "And We will inherit him [in] what he mentions, and he will come to Us alone.",
         "audio_filename": "2330.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2330.mp3",
@@ -49797,7 +49797,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ith tamshee okhtuka fataqoolu haladullukum AAala man yakfuluhu farajaAAnaka ilaommika kay taqarra AAaynuha wala tahzanawaqatalta nafsan fanajjaynaka mina alghammi wafatannakafutoonan falabithta sineena fee ahli madyana thumma ji/ta AAalaqadarin ya moosa",
         "translation":
-            "[And We favored you] when your sister went and said, 'Shall I direct you to someone who will be responsible for him?' So We restored you to your mother that she might be content and not grieve. And you killed someone,1 but We saved you from retaliation and tried you with a [severe] trial. And you remained [some] years among the people of Madyan. Then you came [here] at the decreed time, O Moses.",
+            "[And We favored you] when your sister went and said, 'Shall I direct you to someone who will be responsible for him?' So We restored you to your mother that she might be content and not grieve. And you killed someone, but We saved you from retaliation and tried you with a [severe] trial. And you remained [some] years among the people of Madyan. Then you came [here] at the decreed time, O Moses.",
         "audio_filename": "2388.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2388.mp3",
@@ -50569,7 +50569,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "FaatbaAAahum firAAawnu bijunoodihifaghashiyahum mina alyammi ma ghashiyahum",
         "translation":
-            "So Pharaoh pursued them with his soldiers, and there covered them from the sea that which covered them,1",
+            "So Pharaoh pursued them with his soldiers, and there covered them from the sea that which covered them,",
         "audio_filename": "2426.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2426.mp3",
@@ -50934,7 +50934,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qala basurtu bima lamyabsuroo bihi faqabadtu qabdatan min athariarrasooli fanabathtuha wakathalikasawwalat lee nafsee",
         "translation":
-            "He said, \"I saw what they did not see, so I took a handful [of dust] from the track of the messenger1 and threw it,2 and thus did my soul entice me.\"",
+            "He said, \"I saw what they did not see, so I took a handful [of dust] from the track of the messenger1 and threw it, and thus did my soul entice me.\"",
         "audio_filename": "2444.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2444.mp3",
@@ -51038,7 +51038,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Khalideena feehi wasaa lahumyawma alqiyamati himla",
         "translation":
-            "[Abiding] eternally therein,1 and evil it is for them on the Day of Resurrection as a load -",
+            "[Abiding] eternally therein, and evil it is for them on the Day of Resurrection as a load -",
         "audio_filename": "2449.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2449.mp3",
@@ -51218,7 +51218,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "YaAAlamu ma bayna aydeehim wamakhalfahum wala yuheetoona bihi AAilma",
         "translation":
-            "He [i.e., Allāh] knows what is [presently] before them and what will be after them,1 but they do not encompass it [i.e., what He knows] in knowledge.",
+            "He [i.e., Allāh] knows what is [presently] before them and what will be after them, but they do not encompass it [i.e., what He knows] in knowledge.",
         "audio_filename": "2458.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2458.mp3",
@@ -51239,7 +51239,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WaAAanati alwujoohu lilhayyialqayyoomi waqad khaba man hamala thulma",
         "translation":
-            "And [all] faces will be humbled before the Ever-Living, the Self-Sustaining.1 And he will have failed who carries injustice.2",
+            "And [all] faces will be humbled before the Ever-Living, the Self-Sustaining.1 And he will have failed who carries injustice",
         "audio_filename": "2459.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2459.mp3",
@@ -51302,7 +51302,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "FataAAala Allahualmaliku alhaqqu wala taAAjal bilqur-animin qabli an yuqda ilayka wahyuhu waqul rabbizidnee AAilma",
         "translation":
-            "So high [above all] is Allāh, the Sovereign,1 the Truth.2 And, [O Muḥammad], do not hasten with [recitation of] the Qur’ān before its revelation is completed to you, and say, \"My Lord, increase me in knowledge.\"",
+            "So high [above all] is Allāh, the Sovereign, the Truth And, [O Muḥammad], do not hasten with [recitation of] the Qur’ān before its revelation is completed to you, and say, \"My Lord, increase me in knowledge.\"",
         "audio_filename": "2462.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2462.mp3",
@@ -51609,7 +51609,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walawla kalimatun sabaqat minrabbika lakana lizaman waajalun musamma",
         "translation":
-            "And if not for a word1 that preceded from your Lord, it [i.e., punishment] would have been an obligation [due immediately],2 and [if not for] a specified term [decreed].",
+            "And if not for a word1 that preceded from your Lord, it [i.e., punishment] would have been an obligation [due immediately], and [if not for] a specified term [decreed].",
         "audio_filename": "2477.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2477.mp3",
@@ -51714,7 +51714,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaw anna ahlaknahum biAAathabinmin qablihi laqaloo rabbana lawla arsaltailayna rasoolan fanattabiAAa ayatika minqabli an nathilla wanakhza",
         "translation":
-            "And if We had destroyed them with a punishment before him,1 they would have said, \"Our Lord, why did You not send to us a messenger so we could have followed Your verses [i.e., teachings] before we were humiliated and disgraced?\"",
+            "And if We had destroyed them with a punishment before him, they would have said, \"Our Lord, why did You not send to us a messenger so we could have followed Your verses [i.e., teachings] before we were humiliated and disgraced?\"",
         "audio_filename": "2482.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2482.mp3",
@@ -51870,7 +51870,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ma amanat qablahum min qaryatinahlaknaha afahum yu/minoon",
         "translation":
-            "Not a [single] city which We destroyed believed before them,1 so will they believe?",
+            "Not a [single] city which We destroyed believed before them, so will they believe?",
         "audio_filename": "2489.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2489.mp3",
@@ -51912,7 +51912,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama jaAAalnahum jasadan laya/kuloona attaAAama wama kanookhalideen",
         "translation":
-            "And We did not make them [i.e., the prophets] forms not eating food,1 nor were they immortal [on earth].",
+            "And We did not make them [i.e., the prophets] forms not eating food, nor were they immortal [on earth].",
         "audio_filename": "2491.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2491.mp3",
@@ -52098,7 +52098,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Law aradna an nattakhithalahwan lattakhathnahu min ladunna inkunna faAAileen",
         "translation":
-            "Had We intended to take a diversion,1 We could have taken it from [what is] with Us - if [indeed] We were to do so.",
+            "Had We intended to take a diversion, We could have taken it from [what is] with Us - if [indeed] We were to do so.",
         "audio_filename": "2500.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2500.mp3",
@@ -52119,7 +52119,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Bal naqthifu bilhaqqiAAala albatili fayadmaghuhu fa-itha huwa zahiqunwalakumu alwaylu mimma tasifoon",
         "translation":
-            "Rather, We dash the truth upon falsehood, and it destroys it,1 and thereupon it departs. And for you is destruction from that which you describe.2",
+            "Rather, We dash the truth upon falsehood, and it destroys it, and thereupon it departs. And for you is destruction from that which you describe",
         "audio_filename": "2501.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2501.mp3",
@@ -52320,7 +52320,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "YaAAlamu ma bayna aydeehim wamakhalfahum wala yashfaAAoona illa limani irtadawahum min khashyatihi mushfiqoon",
         "translation":
-            "He knows what is [presently] before them and what will be after them,1 and they cannot intercede except on behalf of one whom He approves. And they, from fear of Him, are apprehensive.",
+            "He knows what is [presently] before them and what will be after them, and they cannot intercede except on behalf of one whom He approves. And they, from fear of Him, are apprehensive.",
         "audio_filename": "2511.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2511.mp3",
@@ -52404,7 +52404,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WajaAAalna assamaasaqfan mahfoothan wahum AAan ayatihamuAAridoon",
         "translation":
-            "And We made the sky a protected ceiling, but they, from its signs,1 are turning away.",
+            "And We made the sky a protected ceiling, but they, from its signs, are turning away.",
         "audio_filename": "2515.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2515.mp3",
@@ -52717,7 +52717,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WanadaAAu almawazeena alqistaliyawmi alqiyamati fala tuthlamunafsun shay-an wa-in kana mithqala habbatinmin khardalin atayna biha wakafa binahasibeen",
         "translation":
-            "And We place the scales of justice for the Day of Resurrection, so no soul will be treated unjustly at all. And if there is [even] the weight of a mustard seed,1 We will bring it forth. And sufficient are We as accountant.",
+            "And We place the scales of justice for the Day of Resurrection, so no soul will be treated unjustly at all. And if there is [even] the weight of a mustard seed, We will bring it forth. And sufficient are We as accountant.",
         "audio_filename": "2530.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2530.mp3",
@@ -52759,7 +52759,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Allatheena yakhshawna rabbahum bilghaybiwahum mina assaAAati mushfiqoon",
         "translation":
-            "Who fear their Lord unseen,1 while they are of the Hour apprehensive.",
+            "Who fear their Lord unseen, while they are of the Hour apprehensive.",
         "audio_filename": "2532.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2532.mp3",
@@ -52801,7 +52801,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaqad atayna ibraheemarushdahu min qablu wakunna bihi AAalimeen",
         "translation":
-            "And We had certainly given Abraham his sound judgement before,1 and We were of him well-Knowing",
+            "And We had certainly given Abraham his sound judgement before, and We were of him well-Knowing",
         "audio_filename": "2534.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2534.mp3",
@@ -53091,7 +53091,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Thumma nukisoo AAala ruoosihim laqadAAalimta ma haola-i yantiqoon",
         "translation":
-            "Then they reversed themselves,1 [saying], \"You have already known that these do not speak!\"",
+            "Then they reversed themselves, [saying], \"You have already known that these do not speak!\"",
         "audio_filename": "2548.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2548.mp3",
@@ -53361,7 +53361,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wadawooda wasulaymana ithyahkumani fee alharthi ith nafashatfeehi ghanamu alqawmi wakunna lihukmihim shahideen",
         "translation":
-            "And [mention] David and Solomon, when they judged concerning the field - when the sheep of a people overran it [at night],1 and We were witness to their judgement.",
+            "And [mention] David and Solomon, when they judged concerning the field - when the sheep of a people overran it [at night], and We were witness to their judgement.",
         "audio_filename": "2561.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2561.mp3",
@@ -53549,7 +53549,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Watha annooni ith thahabamughadiban fathanna an lan naqdira AAalayhifanada fee aththulumatian la ilaha illa anta subhanaka inneekuntu mina aththalimeen",
         "translation":
-            "And [mention] the man of the fish [i.e., Jonah], when he went off in anger1 and thought that We would not decree [anything] upon him.2 And he called out within the darknesses,3 \"There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.\"",
+            "And [mention] the man of the fish [i.e., Jonah], when he went off in anger1 and thought that We would not decree [anything] upon him And he called out within the darknesses, \"There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.\"",
         "audio_filename": "2570.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2570.mp3",
@@ -53654,7 +53654,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna hathihi ommatukum ommatan wahidatanwaana rabbukum faoAAbudoon",
         "translation":
-            "Indeed this, your religion, is one religion,1 and I am your Lord, so worship Me.",
+            "Indeed this, your religion, is one religion, and I am your Lord, so worship Me.",
         "audio_filename": "2575.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2575.mp3",
@@ -53675,7 +53675,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WataqattaAAoo amrahum baynahum kullunilayna rajiAAoon",
         "translation":
-            "And [yet] they divided their affair [i.e., that of their religion] among themselves,1 [but] all to Us will return.",
+            "And [yet] they divided their affair [i.e., that of their religion] among themselves, [but] all to Us will return.",
         "audio_filename": "2576.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2576.mp3",
@@ -53696,7 +53696,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Faman yaAAmal mina assalihatiwahuwa mu/minun fala kufrana lisaAAyihi wa-innalahu katiboon",
         "translation":
-            "So whoever does righteous deeds while he is a believer - no denial will there be for his effort,1 and indeed We [i.e., Our angels], of it, are recorders.",
+            "So whoever does righteous deeds while he is a believer - no denial will there be for his effort, and indeed We [i.e., Our angels], of it, are recorders.",
         "audio_filename": "2577.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2577.mp3",
@@ -53883,7 +53883,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "La yahzunuhumu alfazaAAual-akbaru watatalaqqahumu almala-ikatu hathayawmukumu allathee kuntum tooAAadoon",
         "translation":
-            "They will not be grieved by the greatest terror,1 and the angels will meet them, [saying], \"This is your Day which you have been promised\" -",
+            "They will not be grieved by the greatest terror, and the angels will meet them, [saying], \"This is your Day which you have been promised\" -",
         "audio_filename": "2586.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2586.mp3",
@@ -54181,7 +54181,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha annasuin kuntum fee raybin mina albaAAthi fa-inna khalaqnakummin turabin thumma min nutfatin thumma minAAalaqatin thumma min mudghatin mukhallaqatin waghayrimukhallaqatin linubayyina lakum wanuqirru fee al-arhami manashao ila ajalin musamman thumma nukhrijukum tiflanthumma litablughoo ashuddakum waminkum man yutawaffawaminkum man yuraddu ila arthali alAAumuri likaylayaAAlama min baAAdi AAilmin shay-an watara al-ardahamidatan fa-itha anzalna AAalayhaalmaa ihtazzat warabat waanbatat min kulli zawjin baheej",
         "translation":
-            "O people, if you should be in doubt about the Resurrection, then [consider that] indeed, We created you from dust, then from a sperm-drop, then from a clinging clot, and then from a lump of flesh, formed and unformed1 - that We may show you.2 And We settle in the wombs whom We will for a specified term, then We bring you out as a child, and then [We develop you] that you may reach your [time of] maturity. And among you is he who is taken in [early] death, and among you is he who is returned to the most decrepit [old] age so that he knows, after [once having] knowledge, nothing. And you see the earth barren, but when We send down upon it rain, it quivers and swells and grows [something] of every beautiful kind.",
+            "O people, if you should be in doubt about the Resurrection, then [consider that] indeed, We created you from dust, then from a sperm-drop, then from a clinging clot, and then from a lump of flesh, formed and unformed1 - that We may show you And We settle in the wombs whom We will for a specified term, then We bring you out as a child, and then [We develop you] that you may reach your [time of] maturity. And among you is he who is taken in [early] death, and among you is he who is returned to the most decrepit [old] age so that he knows, after [once having] knowledge, nothing. And you see the earth barren, but when We send down upon it rain, it quivers and swells and grows [something] of every beautiful kind.",
         "audio_filename": "2600.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2600.mp3",
@@ -54391,7 +54391,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Man kana yathunnu anlan yansurahu Allahu fee addunya wal-akhiratifalyamdud bisababin ila assama-i thummaliyaqtaAA falyanthur hal yuthhibannakayduhu ma yagheeth",
         "translation":
-            "Whoever should think that Allāh will not support him [i.e., Prophet Muḥammad (ﷺ)] in this world and the Hereafter - let him extend a rope to the ceiling, then cut off [his breath],1 and let him see: will his effort remove that which enrages [him]?",
+            "Whoever should think that Allāh will not support him [i.e., Prophet Muḥammad (ﷺ)] in this world and the Hereafter - let him extend a rope to the ceiling, then cut off [his breath], and let him see: will his effort remove that which enrages [him]?",
         "audio_filename": "2610.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2610.mp3",
@@ -54763,7 +54763,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Lakum feeha manafiAAu ilaajalin musamman thumma mahilluha ila albaytialAAateeq",
         "translation":
-            "For you therein [i.e., the animals marked for sacrifice] are benefits for a specified term;1 then their place of sacrifice is at the ancient House.2",
+            "For you therein [i.e., the animals marked for sacrifice] are benefits for a specified term;1 then their place of sacrifice is at the ancient House",
         "audio_filename": "2628.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2628.mp3",
@@ -54889,7 +54889,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Othina lillatheena yuqataloonabi-annahum thulimoo wa-inna Allaha AAalanasrihim laqadeer",
         "translation":
-            "Permission [to fight] has been given to those who are being fought,1 because they were wronged. And indeed, Allāh is competent to give them victory.",
+            "Permission [to fight] has been given to those who are being fought, because they were wronged. And indeed, Allāh is competent to give them victory.",
         "audio_filename": "2634.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2634.mp3",
@@ -55011,7 +55011,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fakaayyin min qaryatin ahlaknahawahiya thalimatun fahiya khawiyatunAAala AAurooshiha wabi/rin muAAattalatinwaqasrin masheed",
         "translation":
-            "And how many a city did We destroy while it was committing wrong - so it is [now] fallen into ruin1 - and [how many] an abandoned well and [how many] a lofty palace.2",
+            "And how many a city did We destroy while it was committing wrong - so it is [now] fallen into ruin1 - and [how many] an abandoned well and [how many] a lofty palace",
         "audio_filename": "2640.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2640.mp3",
@@ -55388,7 +55388,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Alam tara anna Allaha anzala mina assama-imaan fatusbihu al-ardu mukhdarrataninna Allaha lateefun khabeer",
         "translation":
-            "Do you not see that Allāh has sent down rain from the sky and the earth becomes green? Indeed, Allāh is Subtle1 and Aware.2",
+            "Do you not see that Allāh has sent down rain from the sky and the earth becomes green? Indeed, Allāh is Subtle1 and Aware",
         "audio_filename": "2658.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2658.mp3",
@@ -55818,7 +55818,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Illa AAala azwajihim awma malakat aymanuhum fa-innahum ghayru maloomeen",
         "translation":
-            "Except from their wives or those their right hands possess,1 for indeed, they will not be blamed -",
+            "Except from their wives or those their right hands possess, for indeed, they will not be blamed -",
         "audio_filename": "2679.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2679.mp3",
@@ -56231,7 +56231,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Faawhayna ilayhi ani isnaAAialfulka bi-aAAyunina wawahyina fa-ithajaa amruna wafara attannooru faslukfeeha min kullin zawjayni ithnayni waahlaka illaman sabaqa AAalayhi alqawlu minhum wala tukhatibneefee allatheena thalamoo innahum mughraqoon",
         "translation":
-            "So We inspired to him, \"Construct the ship under Our observation and Our inspiration, and when Our command comes and the oven overflows,1 put into it [i.e., the ship] from each [creature] two mates and your family, except him for whom the decree [of destruction] has proceeded. And do not address Me concerning those who have wronged; indeed, they are to be drowned.",
+            "So We inspired to him, \"Construct the ship under Our observation and Our inspiration, and when Our command comes and the oven overflows, put into it [i.e., the ship] from each [creature] two mates and your family, except him for whom the decree [of destruction] has proceeded. And do not address Me concerning those who have wronged; indeed, they are to be drowned.",
         "audio_filename": "2700.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2700.mp3",
@@ -56512,7 +56512,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Faakhathat-humu assayhatubilhaqqi fajaAAalnahum ghuthaanfabuAAdan lilqawmi aththalimeen",
         "translation":
-            "So the shriek1 seized them in truth,2 and We made them as [plant] stubble. Then away with the wrongdoing people.",
+            "So the shriek1 seized them in truth, and We made them as [plant] stubble. Then away with the wrongdoing people.",
         "audio_filename": "2714.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2714.mp3",
@@ -56731,7 +56731,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-inna hathihi ommatukum ommatan wahidatanwaana rabbukum fattaqoon",
         "translation":
-            "And indeed this, your religion, is one religion,1 and I am your Lord, so fear Me.\"",
+            "And indeed this, your religion, is one religion, and I am your Lord, so fear Me.\"",
         "audio_filename": "2725.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2725.mp3",
@@ -56752,7 +56752,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "FataqattaAAoo amrahum baynahumzuburan kullu hizbin bima ladayhim farihoon",
         "translation":
-            "But they [i.e., the people] divided their religion among them into portions [i.e., sects] - each faction, in what it has,1 rejoicing.",
+            "But they [i.e., the people] divided their religion among them into portions [i.e., sects] - each faction, in what it has, rejoicing.",
         "audio_filename": "2726.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2726.mp3",
@@ -56967,7 +56967,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Hatta itha akhathnamutrafeehim bilAAathabi itha hum yaj-aroon",
         "translation":
-            "Until when We seize their affluent ones with punishment,1 at once they are crying [to Allāh] for help.",
+            "Until when We seize their affluent ones with punishment, at once they are crying [to Allāh] for help.",
         "audio_filename": "2737.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2737.mp3",
@@ -57026,7 +57026,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Mustakbireena bihi samiran tahjuroon",
         "translation":
-            "In arrogance regarding it,1 conversing by night, speaking evil.",
+            "In arrogance regarding it, conversing by night, speaking evil.",
         "audio_filename": "2740.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2740.mp3",
@@ -57108,7 +57108,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walawi ittabaAAa alhaqqu ahwaahumlafasadati assamawatu wal-arduwaman feehinna bal ataynahum bithikrihim fahum AAanthikrihim muAAridoon",
         "translation":
-            "But if the Truth [i.e., Allāh] had followed their inclinations, the heavens and the earth and whoever is in them would have been ruined. Rather, We have brought them their message,1 but they, from their message, are turning away.",
+            "But if the Truth [i.e., Allāh] had followed their inclinations, the heavens and the earth and whoever is in them would have been ruined. Rather, We have brought them their message, but they, from their message, are turning away.",
         "audio_filename": "2744.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2744.mp3",
@@ -57311,7 +57311,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 139,
         "sajda": false,
         "transliteration": "Bal qaloo mithla ma qalaal-awwaloon",
-        "translation": "Rather,1 they say like what the former peoples said.",
+        "translation": "Rather, they say like what the former peoples said.",
         "audio_filename": "2754.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2754.mp3",
@@ -58020,7 +58020,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "FataAAala Allahualmaliku alhaqqu la ilaha illa huwarabbu alAAarshi alkareem",
         "translation":
-            "So exalted is Allāh, the Sovereign,1 the Truth;2 there is no deity except Him, Lord of the Noble Throne.",
+            "So exalted is Allāh, the Sovereign, the Truth;2 there is no deity except Him, Lord of the Noble Throne.",
         "audio_filename": "2789.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2789.mp3",
@@ -58111,7 +58111,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Azzaniyatu wazzaneefajlidoo kulla wahidin minhuma mi-atajaldatin wala ta/khuthkum bihima ra/fatunfee deeni Allahi in kuntum tu/minoona billahiwalyawmi al-akhiri walyashhad AAathabahumata-ifatun mina almu/mineen",
         "translation":
-            "The [unmarried] woman or [unmarried] man found guilty of sexual intercourse1 - lash each one of them with a hundred lashes,2 and do not be taken by pity for them in the religion [i.e., law] of Allāh,3 if you should believe in Allāh and the Last Day. And let a group of the believers witness their punishment.",
+            "The [unmarried] woman or [unmarried] man found guilty of sexual intercourse1 - lash each one of them with a hundred lashes, and do not be taken by pity for them in the religion [i.e., law] of Allāh, if you should believe in Allāh and the Last Day. And let a group of the believers witness their punishment.",
         "audio_filename": "2793.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2793.mp3",
@@ -58699,7 +58699,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul lilmu/mineena yaghuddoo min absarihumwayahfathoo furoojahum thalika azkalahum inna Allaha khabeerun bima yasnaAAoon",
         "translation":
-            "Tell the believing men to reduce [some] of their vision1 and guard their private parts.2 That is purer for them. Indeed, Allāh is [fully] Aware of what they do.",
+            "Tell the believing men to reduce [some] of their vision1 and guard their private parts That is purer for them. Indeed, Allāh is [fully] Aware of what they do.",
         "audio_filename": "2821.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2821.mp3",
@@ -58720,7 +58720,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqul lilmu/minati yaghdudnamin absarihinna wayahfathnafuroojahunna wala yubdeena zeenatahunna illa mathahara minha walyadribnabikhumurihinna AAala juyoobihinna wala yubdeenazeenatahunna illa libuAAoolatihinna aw aba-ihinnaaw aba-i buAAoolatihinna aw abna-ihinna awabna-i buAAoolatihinna aw ikhwanihinna aw baneeikhwanihinna aw banee akhawatihinna aw nisa-ihinnaaw ma malakat aymanuhunna awi attabiAAeenaghayri olee al-irbati mina arrijali awi attifliallatheena lam yathharoo AAala AAawratiannisa-i wala yadribnabi-arjulihinna liyuAAlama ma yukhfeena min zeenatihinnawatooboo ila Allahi jameeAAan ayyuhaalmu/minoona laAAallakum tuflihoon",
         "translation":
-            "And tell the believing women to reduce [some] of their vision1 and guard their private parts and not expose their adornment2 except that which [necessarily] appears thereof3 and to wrap [a portion of] their headcovers over their chests and not expose their adornment [i.e., beauty] except to their husbands, their fathers, their husbands' fathers, their sons, their husbands' sons, their brothers, their brothers' sons, their sisters' sons, their women, that which their right hands possess [i.e., slaves], or those male attendants having no physical desire,4 or children who are not yet aware of the private aspects of women. And let them not stamp their feet to make known what they conceal of their adornment. And turn to Allāh in repentance, all of you, O believers, that you might succeed.",
+            "And tell the believing women to reduce [some] of their vision1 and guard their private parts and not expose their adornment2 except that which [necessarily] appears thereof3 and to wrap [a portion of] their headcovers over their chests and not expose their adornment [i.e., beauty] except to their husbands, their fathers, their husbands' fathers, their sons, their husbands' sons, their brothers, their brothers' sons, their sisters' sons, their women, that which their right hands possess [i.e., slaves], or those male attendants having no physical desire, or children who are not yet aware of the private aspects of women. And let them not stamp their feet to make known what they conceal of their adornment. And turn to Allāh in repentance, all of you, O believers, that you might succeed.",
         "audio_filename": "2822.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2822.mp3",
@@ -59391,7 +59391,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "La tajAAaloo duAAaa arrasoolibaynakum kaduAAa-i baAAdikum baAAdan qadyaAAlamu Allahu allatheena yatasallaloona minkumliwathan falyahthari allatheena yukhalifoonaAAan amrihi an tuseebahum fitnatun aw yuseebahumAAathabun aleem",
         "translation":
-            "Do not make [your] calling of the Messenger among yourselves as the call of one of you to another. Already Allāh knows those of you who slip away, concealed by others. So let those beware who dissent from his [i.e., the Prophet's] order,1 lest fitnah2 strike them or a painful punishment.",
+            "Do not make [your] calling of the Messenger among yourselves as the call of one of you to another. Already Allāh knows those of you who slip away, concealed by others. So let those beware who dissent from his [i.e., the Prophet's] order, lest fitnah2 strike them or a painful punishment.",
         "audio_filename": "2854.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2854.mp3",
@@ -59820,7 +59820,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Faqad kaththabookum bimataqooloona fama tastateeAAoona sarfan walanasran waman yathlim minkum nuthiqhuAAathaban kabeera",
         "translation":
-            "So they will deny you, [disbelievers], in what you say,1 and you cannot avert [punishment] or [find] help. And whoever commits injustice2 among you - We will make him taste a great punishment.",
+            "So they will deny you, [disbelievers], in what you say, and you cannot avert [punishment] or [find] help. And whoever commits injustice2 among you - We will make him taste a great punishment.",
         "audio_filename": "2874.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2874.mp3",
@@ -59946,7 +59946,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wayawma tashaqqaqu assamao bilghamamiwanuzzila almala-ikatu tanzeela",
         "translation":
-            "And [mention] the Day when the heaven will split open with [emerging] clouds,1 and the angels will be sent down in successive descent.",
+            "And [mention] the Day when the heaven will split open with [emerging] clouds, and the angels will be sent down in successive descent.",
         "audio_filename": "2880.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2880.mp3",
@@ -60196,7 +60196,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqawma noohin lamma kaththabooarrusula aghraqnahum wajaAAalnahum linnasiayatan waaAAtadna liththalimeenaAAathaban aleema",
         "translation":
-            "And the people of Noah - when they denied the messengers,1 We drowned them, and We made them for mankind a sign. And We have prepared for the wrongdoers a painful punishment.",
+            "And the people of Noah - when they denied the messengers, We drowned them, and We made them for mankind a sign. And We have prepared for the wrongdoers a painful punishment.",
         "audio_filename": "2892.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2892.mp3",
@@ -60404,7 +60404,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wahuwa allathee jaAAala lakumuallayla libasan wannawma subatan wajaAAalaannahara nushoora",
         "translation":
-            "And it is He who has made the night for you as clothing1 and sleep [a means for] rest and has made the day a resurrection.2",
+            "And it is He who has made the night for you as clothing1 and sleep [a means for] rest and has made the day a resurrection",
         "audio_filename": "2902.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2902.mp3",
@@ -60467,7 +60467,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaqad sarrafnahu baynahumliyaththakkaroo faaba aktharu annasiilla kufoora",
         "translation":
-            "And We have certainly distributed it among them that they might be reminded,1 but most of the people refuse except disbelief.",
+            "And We have certainly distributed it among them that they might be reminded, but most of the people refuse except disbelief.",
         "audio_filename": "2905.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2905.mp3",
@@ -60737,7 +60737,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WaAAibadu arrahmaniallatheena yamshoona AAala al-ardi hawnanwa-itha khatabahumu aljahiloona qaloosalama",
         "translation":
-            "And the servants of the Most Merciful are those who walk upon the earth easily,1 and when the ignorant address them [harshly], they say [words of] peace,2",
+            "And the servants of the Most Merciful are those who walk upon the earth easily, and when the ignorant address them [harshly], they say [words of] peace,",
         "audio_filename": "2918.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2918.mp3",
@@ -61023,7 +61023,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul ma yaAAbao bikum rabbee lawladuAAaokum faqad kaththabtum fasawfa yakoonu lizama",
         "translation":
-            "Say, \"What would my Lord care for you if not for your supplication?\"1 For you [disbelievers] have denied, so it [i.e., your denial] is going to be adherent.2",
+            "Say, \"What would my Lord care for you if not for your supplication?\"1 For you [disbelievers] have denied, so it [i.e., your denial] is going to be adherent",
         "audio_filename": "2932.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2932.mp3",
@@ -61409,7 +61409,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WafaAAalta faAAlataka allatee faAAaltawaanta mina alkafireen",
         "translation":
-            "And [then] you did your deed which you did,1 and you were of the ungrateful.\"",
+            "And [then] you did your deed which you did, and you were of the ungrateful.\"",
         "audio_filename": "2951.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2951.mp3",
@@ -61568,7 +61568,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qala inna rasoolakumu allatheeorsila ilaykum lamajnoon",
         "translation":
-            "[Pharaoh] said,1 \"Indeed, your 'messenger' who has been sent to you is mad.\"",
+            "[Pharaoh] said, \"Indeed, your 'messenger' who has been sent to you is mad.\"",
         "audio_filename": "2959.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/2959.mp3",
@@ -62511,7 +62511,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Fa-innahum AAaduwwun lee illa rabbaalAAalameen",
         "translation":
-            "Indeed, they are enemies to me, except the Lord of the worlds,1",
+            "Indeed, they are enemies to me, except the Lord of the worlds,",
         "audio_filename": "3009.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3009.mp3",
@@ -63454,7 +63454,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Atabnoona bikulli reeAAin ayatantaAAbathoon",
         "translation":
-            "Do you construct on every elevation a sign,1 amusing yourselves,",
+            "Do you construct on every elevation a sign, amusing yourselves,",
         "audio_filename": "3060.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3060.mp3",
@@ -64783,7 +64783,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Faqaraahu AAalayhim ma kanoobihi mu/mineen",
         "translation":
-            "And he had recited it to them [perfectly],1 they would [still] not have been believers in it.",
+            "And he had recited it to them [perfectly], they would [still] not have been believers in it.",
         "audio_filename": "3131.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3131.mp3",
@@ -65223,7 +65223,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Yulqoona assamAAa waaktharuhum kathiboon",
         "translation":
-            "They pass on what is heard,1 and most of them are liars.",
+            "They pass on what is heard, and most of them are liars.",
         "audio_filename": "3155.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3155.mp3",
@@ -66320,7 +66320,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qaloo taqasamoo billahilanubayyitannahu waahlahu thumma lanaqoolanna liwaliyyihi mashahidna mahlika ahlihi wa-inna lasadiqoon",
         "translation":
-            "They said, \"Take a mutual oath by Allāh that we will kill him by night, he and his family. Then we will say to his executor,1 'We did not witness the destruction of his family, and indeed, we are truthful.'\"",
+            "They said, \"Take a mutual oath by Allāh that we will kill him by night, he and his family. Then we will say to his executor, 'We did not witness the destruction of his family, and indeed, we are truthful.'\"",
         "audio_filename": "3208.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3208.mp3",
@@ -66862,7 +66862,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama min gha-ibatin fee assama-iwal-ardi illa fee kitabin mubeen",
         "translation":
-            "And there is nothing concealed1 within the heaven and the earth except that it is in a clear Register.2",
+            "And there is nothing concealed1 within the heaven and the earth except that it is in a clear Register",
         "audio_filename": "3234.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3234.mp3",
@@ -67006,7 +67006,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-itha waqaAAa alqawlu AAalayhimakhrajna lahum dabbatan mina al-arditukallimuhum anna annasa kanoo bi-ayatinala yooqinoon",
         "translation":
-            "And when the word [i.e., decree] befalls them,1 We will bring forth for them a creature from the earth speaking to them, [saying] that the people were, of Our verses, not certain [in faith].",
+            "And when the word [i.e., decree] befalls them, We will bring forth for them a creature from the earth speaking to them, [saying] that the people were, of Our verses, not certain [in faith].",
         "audio_filename": "3241.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3241.mp3",
@@ -67132,7 +67132,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Watara aljibala tahsabuhajamidatan wahiya tamurru marra assahabi sunAAaAllahi allathee atqana kulla shay-in innahukhabeerun bima tafAAaloon",
         "translation":
-            "And you see the mountains, thinking them motionless,1 while they will pass as the passing of clouds. [It is] the work of Allāh, who perfected all things. Indeed, He is Aware of that which you do.",
+            "And you see the mountains, thinking them motionless, while they will pass as the passing of clouds. [It is] the work of Allāh, who perfected all things. Indeed, He is Aware of that which you do.",
         "audio_filename": "3247.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3247.mp3",
@@ -67195,7 +67195,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Innama omirtu an aAAbuda rabba hathihialbaldati allathee harramaha walahu kullushay-in waomirtu an akoona mina almuslimeen",
         "translation":
-            "[Say, O Muḥammad], \"I have only been commanded to worship the Lord of this city,1 who made it sacred and to whom [belongs] all things. And I am commanded to be of the Muslims [i.e., those who submit to Allāh].",
+            "[Say, O Muḥammad], \"I have only been commanded to worship the Lord of this city, who made it sacred and to whom [belongs] all things. And I am commanded to be of the Muslims [i.e., those who submit to Allāh].",
         "audio_filename": "3250.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3250.mp3",
@@ -67490,7 +67490,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waharramna AAalayhi almaradiAAamin qablu faqalat hal adullukum AAala ahli baytinyakfuloonahu lakum wahum lahu nasihoon",
         "translation":
-            "And We had prevented from him [all] wet nurses before,1 so she said, \"Shall I direct you to a household that will be responsible for him for you while they are to him [for his upbringing] sincere?\"",
+            "And We had prevented from him [all] wet nurses before, so she said, \"Shall I direct you to a household that will be responsible for him for you while they are to him [for his upbringing] sincere?\"",
         "audio_filename": "3264.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3264.mp3",
@@ -67868,7 +67868,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falamma ataha noodiyamin shati-i alwadi al-aymani fee albuqAAati almubarakatimina ashshajarati an ya moosa innee anaAllahu rabbu alAAalameen",
         "translation":
-            "But when he came to it, he was called from the right side of the valley in a blessed spot - from the tree,1 \"O Moses, indeed I am Allāh, Lord of the worlds.\"",
+            "But when he came to it, he was called from the right side of the valley in a blessed spot - from the tree, \"O Moses, indeed I am Allāh, Lord of the worlds.\"",
         "audio_filename": "3282.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3282.mp3",
@@ -68183,7 +68183,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walakinna ansha-naquroonan fatatawala AAalayhimu alAAumuru wama kuntathawiyan fee ahli madyana tatloo AAalayhim ayatinawalakinna kunna mursileen",
         "translation":
-            "But We produced [many] generations [after Moses], and prolonged was their duration.1 And you were not a resident among the people of Madyan, reciting to them Our verses, but We were senders [of this message].2",
+            "But We produced [many] generations [after Moses], and prolonged was their duration.1 And you were not a resident among the people of Madyan, reciting to them Our verses, but We were senders [of this message]",
         "audio_filename": "3297.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3297.mp3",
@@ -68246,7 +68246,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falamma jaahumu alhaqqumin AAindina qaloo lawla ootiya mithla maootiya moosa awa lam yakfuroo bima ootiya moosamin qablu qaloo sihrani tathaharawaqaloo inna bikullin kafiroon",
         "translation":
-            "But when the truth came to them from Us, they said, \"Why was he not given like that which was given to Moses?\" Did they not disbelieve in that which was given to Moses before? They said, \"[They are but] two works of magic supporting each other,1 and indeed we are, in both, disbelievers.\"",
+            "But when the truth came to them from Us, they said, \"Why was he not given like that which was given to Moses?\" Did they not disbelieve in that which was given to Moses before? They said, \"[They are but] two works of magic supporting each other, and indeed we are, in both, disbelievers.\"",
         "audio_filename": "3300.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3300.mp3",
@@ -69258,7 +69258,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wawassayna al-insana biwalidayhihusnan wa-in jahadaka litushrika bee malaysa laka bihi AAilmun fala tutiAAhumailayya marjiAAukum faonabbi-okum bima kuntum taAAmaloon",
         "translation":
-            "And We have enjoined upon man goodness to parents. But if they endeavor to make you associate with Me that of which you have no knowledge,1 do not obey them. To Me is your return, and I will inform you about what you used to do.",
+            "And We have enjoined upon man goodness to parents. But if they endeavor to make you associate with Me that of which you have no knowledge, do not obey them. To Me is your return, and I will inform you about what you used to do.",
         "audio_filename": "3348.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3348.mp3",
@@ -69363,7 +69363,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walayahmilunna athqalahumwaathqalan maAAa athqalihim walayus-alunna yawmaalqiyamati AAamma kanoo yaftaroon",
         "translation":
-            "But they will surely carry their [own] burdens and [other] burdens along with their burdens,1 and they will surely be questioned on the Day of Resurrection about what they used to invent.",
+            "But they will surely carry their [own] burdens and [other] burdens along with their burdens, and they will surely be questioned on the Day of Resurrection about what they used to invent.",
         "audio_filename": "3353.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3353.mp3",
@@ -69739,7 +69739,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walamma jaat rusulunaibraheema bilbushra qaloo innamuhlikoo ahli hathihi alqaryati inna ahlaha kanoothalimeen",
         "translation":
-            "And when Our messengers [i.e., angels] came to Abraham with the good tidings,1 they said, \"Indeed, we will destroy the people of that [i.e., Lot's] city. Indeed, its people have been wrongdoers.\"",
+            "And when Our messengers [i.e., angels] came to Abraham with the good tidings, they said, \"Indeed, we will destroy the people of that [i.e., Lot's] city. Indeed, its people have been wrongdoers.\"",
         "audio_filename": "3371.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3371.mp3",
@@ -71159,7 +71159,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Faaqim wajhaka liddeeni haneefanfitrata Allahi allatee fatara annasaAAalayha la tabdeela likhalqi Allahi thalikaaddeenu alqayyimu walakinna akthara annasila yaAAlamoon",
         "translation":
-            "So direct your face [i.e., self] toward the religion, inclining to truth. [Adhere to] the fiṭrah1 of Allāh upon which He has created [all] people. No change should there be in the creation of Allāh.2 That is the correct religion, but most of the people do not know.",
+            "So direct your face [i.e., self] toward the religion, inclining to truth. [Adhere to] the fiṭrah1 of Allāh upon which He has created [all] people. No change should there be in the creation of Allāh That is the correct religion, but most of the people do not know.",
         "audio_filename": "3439.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3439.mp3",
@@ -71348,7 +71348,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama ataytum min ribanliyarbuwa fee amwali annasi falayarboo AAinda Allahi wama ataytum min zakatintureedoona wajha Allahi faola-ika humu almudAAifoon",
         "translation":
-            "And whatever you give for interest [i.e., advantage] to increase within the wealth of people1 will not increase with Allāh. But what you give in zakāh,2 desiring the face [i.e., approval] of Allāh - those are the multipliers.3",
+            "And whatever you give for interest [i.e., advantage] to increase within the wealth of people1 will not increase with Allāh. But what you give in zakāh, desiring the face [i.e., approval] of Allāh - those are the multipliers",
         "audio_filename": "3448.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3448.mp3",
@@ -72101,7 +72101,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-in jahadaka AAala antushrika bee ma laysa laka bihi AAilmun fala tutiAAhumawasahibhuma fee addunya maAAroofanwattabiAA sabeela man anaba ilayya thumma ilayyamarjiAAukum faonabbi-okum bima kuntum taAAmaloon",
         "translation":
-            "But if they endeavor to make you associate with Me that of which you have no knowledge,1 do not obey them but accompany them in [this] world with appropriate kindness and follow the way of those who turn back to Me [in repentance]. Then to Me will be your return, and I will inform you about what you used to do.",
+            "But if they endeavor to make you associate with Me that of which you have no knowledge, do not obey them but accompany them in [this] world with appropriate kindness and follow the way of those who turn back to Me [in repentance]. Then to Me will be your return, and I will inform you about what you used to do.",
         "audio_filename": "3484.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3484.mp3",
@@ -73089,7 +73089,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Wayaqooloona mata hatha alfathuin kuntum sadiqeen",
         "translation":
-            "And they say, \"When will be this conquest,1 if you should be truthful?\"",
+            "And they say, \"When will be this conquest, if you should be truthful?\"",
         "audio_filename": "3531.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3531.mp3",
@@ -73262,7 +73262,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Annabiyyu awla bilmu/mineenamin anfusihim waazwajuhu ommahatuhum waoloo al-arhamibaAAduhum awla bibaAAdin fee kitabiAllahi mina almu/mineena walmuhajireena illaan tafAAaloo ila awliya-ikum maAAroofan kanathalika fee alkitabi mastoora",
         "translation":
-            "The Prophet is more worthy of the believers than themselves,1 and his wives are [in the position of] their mothers. And those of [blood] relationship are more entitled [to inheritance] in the decree of Allāh than the [other] believers and the emigrants, except that you may do to your close associates a kindness [through bequest]. That was in the Book2 inscribed.",
+            "The Prophet is more worthy of the believers than themselves, and his wives are [in the position of] their mothers. And those of [blood] relationship are more entitled [to inheritance] in the decree of Allāh than the [other] believers and the emigrants, except that you may do to your close associates a kindness [through bequest]. That was in the Book2 inscribed.",
         "audio_filename": "3539.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3539.mp3",
@@ -73409,7 +73409,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-ith qalat ta-ifatunminhum ya ahla yathriba la muqama lakum farjiAAoowayasta/thinu fareequn minhumu annabiyyayaqooloona inna buyootana AAawratun wama hiyabiAAawratin in yureedoona illa firara",
         "translation":
-            "And when a faction of them said, \"O people of Yathrib,1 there is no stability for you [here], so return [home].\" And a party of them asked permission of the Prophet, saying, \"Indeed, our houses are exposed [i.e., unprotected],\" while they were not exposed. They did not intend except to flee.",
+            "And when a faction of them said, \"O people of Yathrib, there is no stability for you [here], so return [home].\" And a party of them asked permission of the Prophet, saying, \"Indeed, our houses are exposed [i.e., unprotected],\" while they were not exposed. They did not intend except to flee.",
         "audio_filename": "3546.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3546.mp3",
@@ -73514,7 +73514,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qad yaAAlamu Allahu almuAAawwiqeenaminkum walqa-ileena li-ikhwanihim halummailayna wala ya/toona alba/sa illa qaleela",
         "translation":
-            "Already Allāh knows the hinderers1 among you and those [hypocrites] who say to their brothers, \"Come to us,\"2 and do not go to battle, except for a few,3",
+            "Already Allāh knows the hinderers1 among you and those [hypocrites] who say to their brothers, \"Come to us,\"2 and do not go to battle, except for a few,",
         "audio_filename": "3551.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3551.mp3",
@@ -73808,7 +73808,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya nisaa annabiyyilastunna kaahadin mina annisa-i iniittaqaytunna fala takhdaAAna bilqawli fayatmaAAaallathee fee qalbihi maradun waqulna qawlanmaAAroofa",
         "translation":
-            "O wives of the Prophet, you are not like anyone among women. If you fear Allāh, then do not be soft in speech [to men],1 lest he in whose heart is disease should covet, but speak with appropriate speech.",
+            "O wives of the Prophet, you are not like anyone among women. If you fear Allāh, then do not be soft in speech [to men], lest he in whose heart is disease should covet, but speak with appropriate speech.",
         "audio_filename": "3565.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3565.mp3",
@@ -73913,7 +73913,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-ith taqoolu lillatheeanAAama Allahu AAalayhi waanAAamta AAalayhi amsik AAalaykazawjaka wattaqi Allaha watukhfee fee nafsika maAllahu mubdeehi watakhsha annasa wallahuahaqqu an takhshahu falamma qadazaydun minha wataran zawwajnakahalikay la yakoona AAala almu/mineena harajunfee azwaji adAAiya-ihim itha qadawminhunna wataran wakana amru Allahi mafAAoola",
         "translation":
-            "And [remember, O Muḥammad], when you said to the one on whom Allāh bestowed favor and you bestowed favor,1 \"Keep your wife and fear Allāh,\" while you concealed within yourself that which Allāh is to disclose.2 And you feared the people,3 while Allāh has more right that you fear Him.4 So when Zayd had no longer any need for her, We married her to you in order that there not be upon the believers any discomfort [i.e., guilt] concerning the wives of their claimed [i.e., adopted] sons when they no longer have need of them. And ever is the command [i.e., decree] of Allāh accomplished.",
+            "And [remember, O Muḥammad], when you said to the one on whom Allāh bestowed favor and you bestowed favor, \"Keep your wife and fear Allāh,\" while you concealed within yourself that which Allāh is to disclose And you feared the people, while Allāh has more right that you fear Him So when Zayd had no longer any need for her, We married her to you in order that there not be upon the believers any discomfort [i.e., guilt] concerning the wives of their claimed [i.e., adopted] sons when they no longer have need of them. And ever is the command [i.e., decree] of Allāh accomplished.",
         "audio_filename": "3570.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3570.mp3",
@@ -74035,7 +74035,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Huwa allathee yusalleeAAalaykum wamala-ikatuhu liyukhrijakum mina aththulumatiila annoori wakana bilmu/mineena raheema",
         "translation":
-            "It is He who confers blessing upon you,1 and His angels [ask Him to do so] that He may bring you out from darknesses into the light. And ever is He, to the believers, Merciful.",
+            "It is He who confers blessing upon you, and His angels [ask Him to do so] that He may bring you out from darknesses into the light. And ever is He, to the believers, Merciful.",
         "audio_filename": "3576.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3576.mp3",
@@ -74369,7 +74369,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha annabiyyuqul li-azwajika wabanatika wanisa-ialmu/mineena yudneena AAalayhinna min jalabeebihinna thalikaadna an yuAArafna fala yu/thayna wakanaAllahu ghafooran raheema",
         "translation":
-            "O Prophet, tell your wives and your daughters and the women of the believers to bring down over themselves [part] of their outer garments.1 That is more suitable that they will be known2 and not be abused. And ever is Allāh Forgiving and Merciful.3",
+            "O Prophet, tell your wives and your daughters and the women of the believers to bring down over themselves [part] of their outer garments.1 That is more suitable that they will be known2 and not be abused. And ever is Allāh Forgiving and Merciful",
         "audio_filename": "3592.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3592.mp3",
@@ -74536,7 +74536,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqaloo rabbana inna ataAAnasadatana wakubaraana faadalloonaassabeela",
         "translation":
-            "And they will say, \"Our Lord, indeed we obeyed our masters and our dignitaries,1 and they led us astray from the [right] way.",
+            "And they will say, \"Our Lord, indeed we obeyed our masters and our dignitaries, and they led us astray from the [right] way.",
         "audio_filename": "3600.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3600.mp3",
@@ -74641,7 +74641,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna AAaradna al-amanataAAala assamawati wal-ardiwaljibali faabayna an yahmilnahawaashfaqna minha wahamalaha al-insanuinnahu kana thalooman jahoola",
         "translation":
-            "Indeed, We offered the Trust1 to the heavens and the earth and the mountains, and they declined to bear it and feared it; but man [undertook to] bear it. Indeed, he was unjust and ignorant.2",
+            "Indeed, We offered the Trust1 to the heavens and the earth and the mountains, and they declined to bear it and feared it; but man [undertook to] bear it. Indeed, he was unjust and ignorant",
         "audio_filename": "3605.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3605.mp3",
@@ -74944,7 +74944,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "YaAAmaloona lahu ma yashao minmahareeba watamatheela wajifanin kaljawabiwaqudoorin rasiyatin iAAmaloo ala dawoodashukran waqaleelun min AAibadiya ashshakoor",
         "translation":
-            "They made for him what he willed of elevated chambers,1 statues,2 bowls like reservoirs, and stationary kettles. [We said], \"Work, O family of David, in gratitude.\" And few of My servants are grateful.",
+            "They made for him what he willed of elevated chambers, statues, bowls like reservoirs, and stationary kettles. [We said], \"Work, O family of David, in gratitude.\" And few of My servants are grateful.",
         "audio_filename": "3619.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3619.mp3",
@@ -74965,7 +74965,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falamma qadaynaAAalayhi almawta ma dallahum AAala mawtihi illadabbatu al-ardi ta/kulu minsaatahu falammakharra tabayyanati aljinnu an law kanoo yaAAlamoonaalghayba ma labithoo fee alAAathabi almuheen",
         "translation":
-            "And when We decreed for him [i.e., Solomon] death, nothing indicated to them [i.e., the jinn] his death except a creature of the earth eating his staff.1 But when he fell, it became clear to the jinn that if they had known the unseen, they would not have remained in humiliating punishment.2",
+            "And when We decreed for him [i.e., Solomon] death, nothing indicated to them [i.e., the jinn] his death except a creature of the earth eating his staff.1 But when he fell, it became clear to the jinn that if they had known the unseen, they would not have remained in humiliating punishment",
         "audio_filename": "3620.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3620.mp3",
@@ -75007,7 +75007,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "FaaAAradoo faarsalna AAalayhimsayla alAAarimi wabaddalnahum bijannatayhim jannatayni thawatayokulin khamtin waathlin washay-in min sidrin qaleel",
         "translation":
-            "But they turned away [refusing], so We sent upon them the flood of the dam,1 and We replaced their two [fields of] gardens with gardens of bitter fruit, tamarisks and something of sparse lote trees.",
+            "But they turned away [refusing], so We sent upon them the flood of the dam, and We replaced their two [fields of] gardens with gardens of bitter fruit, tamarisks and something of sparse lote trees.",
         "audio_filename": "3622.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3622.mp3",
@@ -75049,7 +75049,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "WajaAAalna baynahum wabayna alquraallatee barakna feeha quran thahiratanwaqaddarna feeha assayra seeroo feehalayaliya waayyaman amineen",
         "translation":
-            "And We placed between them and the cities which We had blessed1 [many] visible cities. And We determined between them the [distances of] journey,2 [saying], \"Travel between them by night or by day in safety.\"",
+            "And We placed between them and the cities which We had blessed1 [many] visible cities. And We determined between them the [distances of] journey, [saying], \"Travel between them by night or by day in safety.\"",
         "audio_filename": "3624.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3624.mp3",
@@ -75091,7 +75091,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaqad saddaqa AAalayhim ibleesu thannahufattabaAAoohu illa fareeqan mina almu/mineen",
         "translation":
-            "And Iblees had already confirmed through them1 his assumption,2 so they followed him, except for a party of believers.",
+            "And Iblees had already confirmed through them1 his assumption, so they followed him, except for a party of believers.",
         "audio_filename": "3626.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3626.mp3",
@@ -75154,7 +75154,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala tanfaAAu ashshafaAAatuAAindahu illa liman athina lahu hattaitha fuzziAAa AAan quloobihim qaloo matha qalarabbukum qaloo alhaqqa wahuwa alAAaliyyu alkabeer",
         "translation":
-            "And intercession does not benefit with Him except for one whom He permits. [And those wait] until, when terror is removed from their hearts,1 they will say [to one another], \"What has your Lord said?\" They will say, \"The truth.\" And He is the Most High, the Grand.",
+            "And intercession does not benefit with Him except for one whom He permits. [And those wait] until, when terror is removed from their hearts, they will say [to one another], \"What has your Lord said?\" They will say, \"The truth.\" And He is the Most High, the Grand.",
         "audio_filename": "3629.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3629.mp3",
@@ -75779,7 +75779,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqad kafaroo bihi min qablu wayaqthifoonabilghaybi min makanin baAAeed",
         "translation":
-            "And they had already disbelieved in it before and would assault1 the unseen from a place far away.2",
+            "And they had already disbelieved in it before and would assault1 the unseen from a place far away",
         "audio_filename": "3659.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3659.mp3",
@@ -75800,7 +75800,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waheela baynahum wabayna mayashtahoona kama fuAAila bi-ashyaAAihim min qabluinnahum kanoo fee shakkin mureeb",
         "translation":
-            "And prevention will be placed between them and what they desire,1 as was done with their kind before. Indeed, they were in disquieting doubt [i.e., denial].",
+            "And prevention will be placed between them and what they desire, as was done with their kind before. Indeed, they were in disquieting doubt [i.e., denial].",
         "audio_filename": "3660.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3660.mp3",
@@ -76019,7 +76019,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Man kana yureedu alAAizzata falillahialAAizzatu jameeAAan ilayhi yasAAadu alkalimu attayyibuwalAAamalu assalihu yarfaAAuhu wallatheenayamkuroona assayyi-ati lahum AAathabunshadeedun wamakru ola-ika huwa yaboor",
         "translation":
-            "Whoever desires honor [through power] - then to Allāh belongs all honor.1 To Him ascends good speech, and righteous work raises it.2 But they who plot evil deeds will have a severe punishment, and the plotting of those - it will perish.",
+            "Whoever desires honor [through power] - then to Allāh belongs all honor.1 To Him ascends good speech, and righteous work raises it But they who plot evil deeds will have a severe punishment, and the plotting of those - it will perish.",
         "audio_filename": "3670.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3670.mp3",
@@ -76233,7 +76233,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 175,
         "sajda": false,
         "transliteration": "Wala aththilluwala alharoor",
-        "translation": "Nor are the shade and the heat,1",
+        "translation": "Nor are the shade and the heat,",
         "audio_filename": "3681.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3681.mp3",
@@ -76689,7 +76689,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Istikbaran fee al-ardi wamakraassayyi-i wala yaheequ almakru assayyi-oilla bi-ahlihi fahal yanthuroona illasunnata al-awwaleena falan tajida lisunnati Allahitabdeelan walan tajida lisunnati Allahi tahweela",
         "translation":
-            "[Due to] arrogance in the land and plotting of evil; but the evil plot does not encompass except its own people. Then do they await except the way [i.e., fate] of the former peoples? But you will never find in the way [i.e., established method] of Allāh any change, and you will never find in the way of Allāh1 any alteration.2",
+            "[Due to] arrogance in the land and plotting of evil; but the evil plot does not encompass except its own people. Then do they await except the way [i.e., fate] of the former peoples? But you will never find in the way [i.e., established method] of Allāh any change, and you will never find in the way of Allāh1 any alteration",
         "audio_filename": "3703.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3703.mp3",
@@ -77320,7 +77320,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "In kanat illa sayhatanwahidatan fa-itha hum khamidoon",
         "translation":
-            "It was not but one shout,1 and immediately they were extinguished.",
+            "It was not but one shout, and immediately they were extinguished.",
         "audio_filename": "3734.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3734.mp3",
@@ -77443,7 +77443,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Liya/kuloo min thamarihi wamaAAamilat-hu aydeehim afala yashkuroon",
         "translation":
-            "That they may eat of His fruit.1 And their hands have not produced it,2 so will they not be grateful?",
+            "That they may eat of His fruit.1 And their hands have not produced it, so will they not be grateful?",
         "audio_filename": "3740.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3740.mp3",
@@ -78485,7 +78485,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 178,
         "sajda": false,
         "transliteration": "Fattaliyati thikra",
-        "translation": "And those who recite the message,1",
+        "translation": "And those who recite the message,",
         "audio_filename": "3791.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3791.mp3",
@@ -78580,7 +78580,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "La yassammaAAoona ila almala-ial-aAAla wayuqthafoona min kulli janib",
         "translation":
-            "[So] they may not listen to the exalted assembly [of angels] and are pelted from every side,1",
+            "[So] they may not listen to the exalted assembly [of angels] and are pelted from every side,",
         "audio_filename": "3796.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3796.mp3",
@@ -78845,7 +78845,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ohshuroo allatheena thalamoowaazwajahum wama kanoo yaAAbudoon",
         "translation":
-            "[The angels will be ordered], \"Gather those who committed wrong, their kinds,1 and what they used to worship",
+            "[The angels will be ordered], \"Gather those who committed wrong, their kinds, and what they used to worship",
         "audio_filename": "3810.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3810.mp3",
@@ -79327,7 +79327,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "WaAAindahum qasiratu attarfiAAeen",
         "translation":
-            "And with them will be women limiting [their] glances,1 with large, [beautiful] eyes,",
+            "And with them will be women limiting [their] glances, with large, [beautiful] eyes,",
         "audio_filename": "3836.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3836.mp3",
@@ -79440,7 +79440,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 179,
         "sajda": false,
         "transliteration": "Qala hal antum muttaliAAoon",
-        "translation": "He will say,1 \"Would you [care to] look?\"",
+        "translation": "He will say, \"Would you [care to] look?\"",
         "audio_filename": "3842.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3842.mp3",
@@ -80308,7 +80308,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falamma balagha maAAahu assaAAyaqala ya bunayya innee ara fee almanamiannee athbahuka fanthur mathatara qala ya abati ifAAal ma tu/marusatajidunee in shaa Allahu mina assabireen",
         "translation":
-            "And when he reached with him [the age of] exertion,1 he said, \"O my son, indeed I have seen in a dream that I [must] sacrifice you, so see what you think.\" He said, \"O my father, do as you are commanded. You will find me, if Allāh wills, of the steadfast.\"",
+            "And when he reached with him [the age of] exertion, he said, \"O my son, indeed I have seen in a dream that I [must] sacrifice you, so see what you think.\" He said, \"O my father, do as you are commanded. You will find me, if Allāh wills, of the steadfast.\"",
         "audio_filename": "3890.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3890.mp3",
@@ -80400,7 +80400,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 180,
         "sajda": false,
         "transliteration": "Wafadaynahu bithibhinAAatheem",
-        "translation": "And We ransomed him with a great sacrifice,1",
+        "translation": "And We ransomed him with a great sacrifice,",
         "audio_filename": "3895.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3895.mp3",
@@ -81423,7 +81423,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Wama minna illa lahumaqamun maAAloom",
         "translation":
-            "[The angels say],1 \"There is not among us any except that he has a known position.2",
+            "[The angels say], \"There is not among us any except that he has a known position",
         "audio_filename": "3952.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3952.mp3",
@@ -81476,7 +81476,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Wa-in kanoo layaqooloon",
         "translation":
-            "And indeed, they [i.e., the disbelievers] used to say,1",
+            "And indeed, they [i.e., the disbelievers] used to say,",
         "audio_filename": "3955.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3955.mp3",
@@ -81530,7 +81530,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Fakafaroo bihi fasawfa yaAAlamoon",
         "translation":
-            "But they disbelieved in it,1 so they are going to know.",
+            "But they disbelieved in it, so they are going to know.",
         "audio_filename": "3958.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3958.mp3",
@@ -81772,7 +81772,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 181,
         "sajda": false,
         "transliteration": "Sad walqur-ani theeaththikr",
-        "translation": "Ṣād.1 By the Qur’ān containing reminder...2",
+        "translation": "Ṣād.1 By the Qur’ān containing reminder..",
         "audio_filename": "3971.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3971.mp3",
@@ -81997,7 +81997,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Kaththabat qablahum qawmu noohinwaAAadun wafirAAawnu thoo al-awtad",
         "translation":
-            "The people of Noah denied before them, and [the tribe of] ʿAad and Pharaoh, the owner of stakes,1",
+            "The people of Noah denied before them, and [the tribe of] ʿAad and Pharaoh, the owner of stakes,",
         "audio_filename": "3982.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/3982.mp3",
@@ -82453,7 +82453,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walaqad fatanna sulaymanawaalqayna AAala kursiyyihi jasadan thumma anab",
         "translation":
-            "And We certainly tried Solomon and placed on his throne a body;1 then he returned.2",
+            "And We certainly tried Solomon and placed on his throne a body;1 then he returned",
         "audio_filename": "4004.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4004.mp3",
@@ -83065,7 +83065,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul innama ana munthirunwama min ilahin illa Allahu alwahidualqahhar",
         "translation":
-            "Say, [O Muḥammad], \"I am only a warner, and there is not any deity except Allāh, the One, the Prevailing,1",
+            "Say, [O Muḥammad], \"I am only a warner, and there is not any deity except Allāh, the One, the Prevailing,",
         "audio_filename": "4035.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4035.mp3",
@@ -83086,7 +83086,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Rabbu assamawati wal-ardiwama baynahuma alAAazeezu alghaffar",
         "translation":
-            "Lord of the heavens and the earth and whatever is between them, the Exalted in Might,1 the Perpetual Forgiver.\"2",
+            "Lord of the heavens and the earth and whatever is between them, the Exalted in Might, the Perpetual Forgiver.\"2",
         "audio_filename": "4036.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4036.mp3",
@@ -83203,7 +83203,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fa-itha sawwaytuhu wanafakhtu feehimin roohee faqaAAoo lahu sajideen",
         "translation":
-            "So when I have proportioned him and breathed into him of My [created] soul,1 then fall down to him in prostration.\"",
+            "So when I have proportioned him and breathed into him of My [created] soul, then fall down to him in prostration.\"",
         "audio_filename": "4042.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4042.mp3",
@@ -83637,7 +83637,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Khalaqakum min nafsin wahidatin thummajaAAala minha zawjaha waanzala lakum mina al-anAAamithamaniyata azwajin yakhluqukum fee butooniommahatikum khalqan min baAAdi khalqin fee thulumatinthalathin thalikumu Allahu rabbukum lahualmulku la ilaha illa huwa faanna tusrafoon",
         "translation":
-            "He created you from one soul. Then He made from it its mate, and He produced for you from the grazing livestock eight mates.1 He creates you in the wombs of your mothers, creation after creation, within three darknesses.2 That is Allāh, your Lord; to Him belongs dominion. There is no deity except Him, so how are you averted?",
+            "He created you from one soul. Then He made from it its mate, and He produced for you from the grazing livestock eight mates.1 He creates you in the wombs of your mothers, creation after creation, within three darknesses That is Allāh, your Lord; to Him belongs dominion. There is no deity except Him, so how are you averted?",
         "audio_filename": "4064.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4064.mp3",
@@ -83679,7 +83679,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-itha massa al-insana durrundaAAa rabbahu muneeban ilayhi thumma ithakhawwalahu niAAmatan minhu nasiya ma kana yadAAooilayhi min qablu wajaAAala lillahi andadan liyudillaAAan sabeelihi qul tamattaAA bikufrika qaleelan innaka min as-habiannar",
         "translation":
-            "And when adversity touches man, he calls upon his Lord, turning to Him [alone]; then when He bestows on him a favor from Himself, he forgets Him whom he called upon before,1 and he attributes to Allāh equals to mislead [people] from His way. Say, \"Enjoy your disbelief for a little; indeed, you are of the companions of the Fire.\"",
+            "And when adversity touches man, he calls upon his Lord, turning to Him [alone]; then when He bestows on him a favor from Himself, he forgets Him whom he called upon before, and he attributes to Allāh equals to mislead [people] from His way. Say, \"Enjoy your disbelief for a little; indeed, you are of the companions of the Fire.\"",
         "audio_filename": "4066.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4066.mp3",
@@ -83721,7 +83721,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul ya AAibadi allatheenaamanoo ittaqoo rabbakum lillatheena ahsanoofee hathihi addunya hasanatun waarduAllahi wasiAAatun innama yuwaffa assabiroonaajrahum bighayri hisab",
         "translation":
-            "Say,1 \"O My servants who have believed, fear your Lord. For those who do good in this world is good, and the earth of Allāh is spacious. Indeed, the patient will be given their reward without account [i.e., limit].\"",
+            "Say, \"O My servants who have believed, fear your Lord. For those who do good in this world is good, and the earth of Allāh is spacious. Indeed, the patient will be given their reward without account [i.e., limit].\"",
         "audio_filename": "4068.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4068.mp3",
@@ -83864,7 +83864,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wallatheena ijtanaboo attaghootaan yaAAbudooha waanaboo ila Allahilahumu albushra fabashshir AAibad",
         "translation":
-            "But those who have avoided ṭāghūt,1 lest they worship it, and turned back to Allāh - for them are good tidings. So give good tidings to My servants",
+            "But those who have avoided ṭāghūt, lest they worship it, and turned back to Allāh - for them are good tidings. So give good tidings to My servants",
         "audio_filename": "4075.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4075.mp3",
@@ -83927,7 +83927,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Lakini allatheena ittaqawrabbahum lahum ghurafun min fawqiha ghurafun mabniyyatuntajree min tahtiha al-anharu waAAda Allahila yukhlifu Allahu almeeAAad",
         "translation":
-            "But those who have feared their Lord - for them are chambers,1 above them chambers built high, beneath which rivers flow. [This is] the promise of Allāh. Allāh does not fail in [His] promise.",
+            "But those who have feared their Lord - for them are chambers, above them chambers built high, beneath which rivers flow. [This is] the promise of Allāh. Allāh does not fail in [His] promise.",
         "audio_filename": "4078.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4078.mp3",
@@ -84095,7 +84095,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qur-anan AAarabiyyan ghayra theeAAiwajin laAAallahum yattaqoon",
         "translation":
-            "[It is] an Arabic Qur’ān, without any deviance1 that they might become righteous.2",
+            "[It is] an Arabic Qur’ān, without any deviance1 that they might become righteous",
         "audio_filename": "4086.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4086.mp3",
@@ -84680,7 +84680,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "An taqoola nafsun ya hasrataAAala ma farrattu fee janbi Allahiwa-in kuntu lamina assakhireen",
         "translation":
-            "Lest a soul should say,1 \"Oh, [how great is] my regret over what I neglected in regard to Allāh and that I was among the mockers.\"",
+            "Lest a soul should say, \"Oh, [how great is] my regret over what I neglected in regard to Allāh and that I was among the mockers.\"",
         "audio_filename": "4114.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4114.mp3",
@@ -84909,7 +84909,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama qadaroo Allaha haqqaqadrihi wal-ardu jameeAAan qabdatuhu yawmaalqiyamati wassamawatu matwiyyatunbiyameenihi subhanahu wataAAala AAammayushrikoon",
         "translation":
-            "They have not appraised Allāh with true appraisal,1 while the earth entirely will be [within] His grip2 on the Day of Resurrection, and the heavens will be folded in His right hand.3 Exalted is He and high above what they associate with Him.",
+            "They have not appraised Allāh with true appraisal, while the earth entirely will be [within] His grip2 on the Day of Resurrection, and the heavens will be folded in His right hand Exalted is He and high above what they associate with Him.",
         "audio_filename": "4125.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4125.mp3",
@@ -87083,7 +87083,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Thumma istawa ila assama-iwahiya dukhanun faqala laha walil-ardii/tiya tawAAan aw karhan qalata ataynata-iAAeen",
         "translation":
-            "Then He directed Himself1 to the heaven while it was smoke and said to it and to the earth, \"Come [into being],2 willingly or by compulsion.\" They said, \"We have come willingly.\"",
+            "Then He directed Himself1 to the heaven while it was smoke and said to it and to the earth, \"Come [into being], willingly or by compulsion.\" They said, \"We have come willingly.\"",
         "audio_filename": "4229.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4229.mp3",
@@ -87146,7 +87146,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ith jaat-humu arrusulumin bayni aydeehim wamin khalfihim alla taAAbudoo illaAllaha qaloo law shaa rabbunalaanzala mala-ikatan fa-inna bima orsiltumbihi kafiroon",
         "translation":
-            "[That occurred] when the messengers had come to them before them and after them, [saying], \"Worship not except Allāh.\" They said, \"If our Lord had willed,1 He would have sent down the angels, so indeed we, in that with which you have been sent, are disbelievers.\"",
+            "[That occurred] when the messengers had come to them before them and after them, [saying], \"Worship not except Allāh.\" They said, \"If our Lord had willed, He would have sent down the angels, so indeed we, in that with which you have been sent, are disbelievers.\"",
         "audio_filename": "4232.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4232.mp3",
@@ -87312,7 +87312,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama kuntum tastatiroona an yashhadaAAalaykum samAAukum wala absarukum walajuloodukum walakin thanantum anna Allahala yaAAlamu katheeran mimma taAAmaloon",
         "translation":
-            "And you were not covering [i.e., protecting] yourselves,1 lest your hearing testify against you or your sight or your skins, but you assumed that Allāh does not know much of what you do.",
+            "And you were not covering [i.e., protecting] yourselves, lest your hearing testify against you or your sight or your skins, but you assumed that Allāh does not know much of what you do.",
         "audio_filename": "4240.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4240.mp3",
@@ -87709,7 +87709,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna allatheena kafaroo biththikrilamma jaahum wa-innahu lakitabun AAazeez",
         "translation":
-            "Indeed, those who disbelieve in the message [i.e., the Qur’ān]1 after it has come to them...2 And indeed, it is a mighty3 Book.",
+            "Indeed, those who disbelieve in the message [i.e., the Qur’ān]1 after it has come to them.. And indeed, it is a mighty3 Book.",
         "audio_filename": "4259.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4259.mp3",
@@ -87898,7 +87898,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala-in athaqnahu rahmatanminna min baAAdi darraa massat-hulayaqoolanna hatha lee wama athunnu assaAAataqa-imatan wala-in rujiAAtu ila rabbee inna leeAAindahu lalhusna falanunabbi-anna allatheenakafaroo bima AAamiloo walanutheeqannahum min AAathabinghaleeth",
         "translation":
-            "And if We let him taste mercy from Us after an adversity which has touched him, he will surely say, \"This is [due] to me,1 and I do not think the Hour will occur; and [even] if I should be returned to my Lord, indeed, for me there will be with Him the best.\" But We will surely inform those who disbelieved about what they did, and We will surely make them taste a massive punishment.",
+            "And if We let him taste mercy from Us after an adversity which has touched him, he will surely say, \"This is [due] to me, and I do not think the Hour will occur; and [even] if I should be returned to my Lord, indeed, for me there will be with Him the best.\" But We will surely inform those who disbelieved about what they did, and We will surely make them taste a massive punishment.",
         "audio_filename": "4268.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4268.mp3",
@@ -88088,7 +88088,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Takadu assamawatuyatafattarna min fawqihinna walmala-ikatuyusabbihoona bihamdi rabbihim wayastaghfiroonaliman fee al-ardi ala inna Allaha huwaalghafooru arraheem",
         "translation":
-            "The heavens almost break from above them,1 and the angels exalt [Allāh] with praise of their Lord and ask forgiveness for those on earth. Unquestionably, it is Allāh who is the Forgiving, the Merciful.",
+            "The heavens almost break from above them, and the angels exalt [Allāh] with praise of their Lord and ask forgiveness for those on earth. Unquestionably, it is Allāh who is the Forgiving, the Merciful.",
         "audio_filename": "4277.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4277.mp3",
@@ -88214,7 +88214,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fatiru assamawatiwal-ardi jaAAala lakum min anfusikum azwajanwamina al-anAAami azwajan yathraokum feehilaysa kamithlihi shay-on wahuwa assameeAAu albaseer",
         "translation":
-            "[He is] Creator of the heavens and the earth. He has made for you from yourselves, mates, and among the cattle, mates; He multiplies you thereby. There is nothing like unto Him,1 and He is the Hearing, the Seeing.2",
+            "[He is] Creator of the heavens and the earth. He has made for you from yourselves, mates, and among the cattle, mates; He multiplies you thereby. There is nothing like unto Him, and He is the Hearing, the Seeing",
         "audio_filename": "4283.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4283.mp3",
@@ -88298,7 +88298,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Falithalika fadAAu wastaqimkama omirta wala tattabiAA ahwaahum waqul amantubima anzala Allahu min kitabin waomirtuli-aAAdila baynakum Allahu rabbuna warabbukum lanaaAAmaluna walakum aAAmalukum la hujjatabaynana wabaynakumu Allahu yajmaAAu baynanawa-ilayhi almaseer",
         "translation":
-            "So to that [religion of Allāh] invite, [O Muḥammad],1 and remain on a right course as you are commanded and do not follow their inclinations but say, \"I have believed in what Allāh has revealed of scripture [i.e., the Qur’ān], and I have been commanded to do justice among you. Allāh is our Lord and your Lord. For us are our deeds, and for you your deeds.2 There is no [need for] argument between us and you.3 Allāh will bring us together, and to Him is the [final] destination.\"",
+            "So to that [religion of Allāh] invite, [O Muḥammad], and remain on a right course as you are commanded and do not follow their inclinations but say, \"I have believed in what Allāh has revealed of scripture [i.e., the Qur’ān], and I have been commanded to do justice among you. Allāh is our Lord and your Lord. For us are our deeds, and for you your deeds There is no [need for] argument between us and you Allāh will bring us together, and to Him is the [final] destination.\"",
         "audio_filename": "4287.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4287.mp3",
@@ -88361,7 +88361,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "YastaAAjilu biha allatheena layu/minoona biha wallatheena amanoomushfiqoona minha wayaAAlamoona annaha alhaqquala inna allatheena yumaroona fee assaAAatilafee dalalin baAAeed",
         "translation":
-            "Those who do not believe in it are impatient for it,1 but those who believe are fearful of it and know that it is the truth. Unquestionably, those who dispute concerning the Hour are in extreme error.",
+            "Those who do not believe in it are impatient for it, but those who believe are fearful of it and know that it is the truth. Unquestionably, those who dispute concerning the Hour are in extreme error.",
         "audio_filename": "4290.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4290.mp3",
@@ -88424,7 +88424,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Am lahum shurakao sharaAAoo lahummina addeeni ma lam ya/than bihi Allahuwalawla kalimatu alfasli laqudiya baynahumwa-inna aththalimeena lahum AAathabunaleem",
         "translation":
-            "Or have they partners [i.e., other deities] who have ordained for them a religion to which Allāh has not consented? But if not for the decisive word,1 it would have been concluded between them. And indeed, the wrongdoers will have a painful punishment.",
+            "Or have they partners [i.e., other deities] who have ordained for them a religion to which Allāh has not consented? But if not for the decisive word, it would have been concluded between them. And indeed, the wrongdoers will have a painful punishment.",
         "audio_filename": "4293.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4293.mp3",
@@ -89174,7 +89174,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-innahu fee ommi alkitabi ladaynalaAAaliyyun hakeem",
         "translation":
-            "And indeed it is, in the Mother of the Book1 with Us, exalted and full of wisdom.2",
+            "And indeed it is, in the Mother of the Book1 with Us, exalted and full of wisdom",
         "audio_filename": "4329.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4329.mp3",
@@ -89691,7 +89691,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Bal mattaAAtu haola-i waabaahumhatta jaahumu alhaqqu warasoolunmubeen",
         "translation":
-            "However, I gave enjoyment to these [people of Makkah] and their fathers1 until there came to them the truth and a clear Messenger.2",
+            "However, I gave enjoyment to these [people of Makkah] and their fathers1 until there came to them the truth and a clear Messenger",
         "audio_filename": "4354.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4354.mp3",
@@ -89775,7 +89775,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walawla an yakoona annasuommatan wahidatan lajaAAalna liman yakfuru birrahmanilibuyootihim suqufan min fiddatin wamaAAarijaAAalayha yathharoon",
         "translation":
-            "And if it were not that the people would become one community [of disbelievers],1 We would have made for those who disbelieve in the Most Merciful - for their houses - ceilings and stairways of silver upon which to mount.",
+            "And if it were not that the people would become one community [of disbelievers], We would have made for those who disbelieve in the Most Merciful - for their houses - ceilings and stairways of silver upon which to mount.",
         "audio_filename": "4358.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4358.mp3",
@@ -90272,7 +90272,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Walamma duriba ibnu maryamamathalan itha qawmuka minhu yasiddoon",
         "translation":
-            "And when the son of Mary was presented as an example,1 immediately your people laughed aloud.",
+            "And when the son of Mary was presented as an example, immediately your people laughed aloud.",
         "audio_filename": "4382.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4382.mp3",
@@ -90539,7 +90539,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 198,
         "sajda": false,
         "transliteration": "Odkhuloo aljannata antum waazwajukumtuhbaroon",
-        "translation": "Enter Paradise, you and your kinds,1 delighted.\"",
+        "translation": "Enter Paradise, you and your kinds, delighted.\"",
         "audio_filename": "4395.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4395.mp3",
@@ -90678,7 +90678,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wanadaw ya maliku liyaqdiAAalayna rabbuka qala innakum makithoon",
         "translation":
-            "And they will call, \"O Mālik,1 let your Lord put an end to us!\" He will say, \"Indeed, you will remain.\"",
+            "And they will call, \"O Mālik, let your Lord put an end to us!\" He will say, \"Indeed, you will remain.\"",
         "audio_filename": "4402.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4402.mp3",
@@ -90865,7 +90865,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wala yamliku allatheenayadAAoona min doonihi ashshafaAAata illaman shahida bilhaqqi wahum yaAAlamoon",
         "translation":
-            "And those they invoke1 besides Him do not possess [power of] intercession; but only those who testify to the truth [can benefit], and they know.2",
+            "And those they invoke1 besides Him do not possess [power of] intercession; but only those who testify to the truth [can benefit], and they know",
         "audio_filename": "4411.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4411.mp3",
@@ -90906,7 +90906,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Waqeelihi ya rabbi inna haola-iqawmun la yu/minoon",
         "translation":
-            "And [Allāh acknowledges] his saying,1 \"O my Lord, indeed these are a people who do not believe.\"",
+            "And [Allāh acknowledges] his saying, \"O my Lord, indeed these are a people who do not believe.\"",
         "audio_filename": "4413.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4413.mp3",
@@ -92558,7 +92558,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waqaloo ma hiya illa hayatunaaddunya namootu wanahya wamayuhlikuna illa addahru wama lahum bithalikamin AAilmin in hum illa yathunnoon",
         "translation":
-            "And they say, \"There is not but our worldly life; we die and live,1 and nothing destroys us except time.\" And they have of that no knowledge; they are only assuming.",
+            "And they say, \"There is not but our worldly life; we die and live, and nothing destroys us except time.\" And they have of that no knowledge; they are only assuming.",
         "audio_filename": "4497.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4497.mp3",
@@ -93023,7 +93023,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Qul ma kuntu bidAAan mina arrusuliwama adree ma yufAAalu bee wala bikum inattabiAAu illa ma yooha ilayya wamaana illa natheerun mubeen",
         "translation":
-            "Say, \"I am not something original among the messengers,1 nor do I know what will be done with me or with you. I only follow that which is revealed to me, and I am not but a clear warner.\"",
+            "Say, \"I am not something original among the messengers, nor do I know what will be done with me or with you. I only follow that which is revealed to me, and I am not but a clear warner.\"",
         "audio_filename": "4519.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4519.mp3",
@@ -93275,7 +93275,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wathkur akha AAadinith anthara qawmahu bil-ahqafiwaqad khalati annuthuru min bayni yadayhi waminkhalfihi alla taAAbudoo illa Allaha inneeakhafu AAalaykum AAathaba yawmin AAatheem",
         "translation":
-            "And mention, [O Muḥammad], the brother of ʿAad,1 when he warned his people in [the region of] al-Aḥqāf - and warners had already passed on before him and after him - [saying], \"Do not worship except Allāh. Indeed, I fear for you the punishment of a terrible day.\"2",
+            "And mention, [O Muḥammad], the brother of ʿAad, when he warned his people in [the region of] al-Aḥqāf - and warners had already passed on before him and after him - [saying], \"Do not worship except Allāh. Indeed, I fear for you the punishment of a terrible day.\"2",
         "audio_filename": "4531.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4531.mp3",
@@ -93662,7 +93662,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fa-itha laqeetumu allatheenakafaroo fadarba arriqabi hattaitha athkhantumoohum fashuddoo alwathaqa fa-immamannan baAAdu wa-imma fidaan hatta tadaAAaalharbu awzaraha thalika walaw yashaoAllahu lantasara minhum walakinliyabluwa baAAdakum bibaAAdin wallatheenaqutiloo fee sabeeli Allahi falan yudillaaAAmalahum",
         "translation":
-            "So when you meet those who disbelieve [in battle], strike [their] necks until, when you have inflicted slaughter upon them, then secure [their] bonds,1 and either [confer] favor2 afterwards or ransom [them] until the war lays down its burdens.3 That [is the command]. And if Allāh had willed, He could have taken vengeance upon them [Himself], but [He ordered armed struggle] to test some of you by means of others. And those who are killed in the cause of Allāh - never will He waste their deeds.",
+            "So when you meet those who disbelieve [in battle], strike [their] necks until, when you have inflicted slaughter upon them, then secure [their] bonds, and either [confer] favor2 afterwards or ransom [them] until the war lays down its burdens That [is the command]. And if Allāh had willed, He could have taken vengeance upon them [Himself], but [He ordered armed struggle] to test some of you by means of others. And those who are killed in the cause of Allāh - never will He waste their deeds.",
         "audio_filename": "4549.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4549.mp3",
@@ -93783,7 +93783,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Afalam yaseeroo fee al-ardi fayanthurookayfa kana AAaqibatu allatheena min qablihimdammara Allahu AAalayhim walilkafireena amthaluha",
         "translation":
-            "Have they not traveled through the land and seen how was the end of those before them? Allāh destroyed [everything] over them,1 and for the disbelievers is something comparable.",
+            "Have they not traveled through the land and seen how was the end of those before them? Allāh destroyed [everything] over them, and for the disbelievers is something comparable.",
         "audio_filename": "4555.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4555.mp3",
@@ -93888,7 +93888,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Mathalu aljannati allatee wuAAidaalmuttaqoona feeha anharun min ma-in ghayri asininwaanharun min labanin lam yataghayyar taAAmuhuwaanharun min khamrin laththatin lishsharibeenawaanharun min AAasalin musaffan walahum feehamin kulli aththamarati wamaghfiratun min rabbihimkaman huwa khalidun fee annari wasuqoo maanhameeman faqattaAAa amAAaahum",
         "translation":
-            "Is the description of Paradise, which the righteous are promised, wherein are rivers of water unaltered,1 rivers of milk the taste of which never changes, rivers of wine delicious to those who drink, and rivers of purified honey, in which they will have from all [kinds of] fruits and forgiveness from their Lord... [Are its inhabitants] like those who abide eternally in the Fire and are given to drink scalding water that will sever their intestines?",
+            "Is the description of Paradise, which the righteous are promised, wherein are rivers of water unaltered, rivers of milk the taste of which never changes, rivers of wine delicious to those who drink, and rivers of purified honey, in which they will have from all [kinds of] fruits and forgiveness from their Lord... [Are its inhabitants] like those who abide eternally in the Fire and are given to drink scalding water that will sever their intestines?",
         "audio_filename": "4560.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4560.mp3",
@@ -93909,7 +93909,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waminhum man yastamiAAu ilayka hattaitha kharajoo min AAindika qaloo lillatheenaootoo alAAilma matha qala anifan ola-ikaallatheena tabaAAa Allahu AAalaquloobihim wattabaAAoo ahwaahum",
         "translation":
-            "And among them, [O Muḥammad], are those who listen to you, until when they depart from you, they say to those who were given knowledge,1 \"What has he said just now?\" Those are the ones of whom Allāh has sealed over their hearts and who have followed their [own] desires.",
+            "And among them, [O Muḥammad], are those who listen to you, until when they depart from you, they say to those who were given knowledge, \"What has he said just now?\" Those are the ones of whom Allāh has sealed over their hearts and who have followed their [own] desires.",
         "audio_filename": "4561.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4561.mp3",
@@ -94034,7 +94034,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Fahal AAasaytum in tawallaytum an tufsidoofee al-ardi watuqattiAAoo arhamakum",
         "translation":
-            "So would you perhaps, if you turned away,1 cause corruption on earth and sever your [ties of] relationship?",
+            "So would you perhaps, if you turned away, cause corruption on earth and sever your [ties of] relationship?",
         "audio_filename": "4567.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4567.mp3",
@@ -94118,7 +94118,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Thalika bi-annahum qaloo lillatheenakarihoo ma nazzala Allahu sanuteeAAukum feebaAAdi al-amri wallahu yaAAlamu israrahum",
         "translation":
-            "That is because they said to those who disliked what Allāh sent down,1 \"We will obey you in part of the matter.\" And Allāh knows what they conceal.",
+            "That is because they said to those who disliked what Allāh sent down, \"We will obey you in part of the matter.\" And Allāh knows what they conceal.",
         "audio_filename": "4571.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4571.mp3",
@@ -94581,7 +94581,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna allatheena yubayiAAoonakainnama yubayiAAoona Allaha yadu Allahifawqa aydeehim faman nakatha fa-innama yankuthu AAalanafsihi waman awfa bima AAahada AAalayhu Allahafasayu/teehi ajran AAatheema",
         "translation":
-            "Indeed, those who pledge allegiance to you, [O Muḥammad] - they are actually pledging allegiance to Allāh. The hand1 of Allāh is over their hands.2 So he who breaks his word only breaks it to the detriment of himself. And he who fulfills that which he has promised Allāh - He will give him a great reward.",
+            "Indeed, those who pledge allegiance to you, [O Muḥammad] - they are actually pledging allegiance to Allāh. The hand1 of Allāh is over their hands So he who breaks his word only breaks it to the detriment of himself. And he who fulfills that which he has promised Allāh - He will give him a great reward.",
         "audio_filename": "4593.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4593.mp3",
@@ -94686,7 +94686,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Sayaqoolu almukhallafoona itha intalaqtumila maghanima lita/khuthooha tharoonanattabiAAkum yureedoona an yubaddiloo kalama Allahiqul lan tattabiAAoona kathalikum qala Allahumin qablu fasayaqooloona bal tahsudoonana bal kanoola yafqahoona illa qaleela",
         "translation":
-            "Those who remained1 behind will say when you set out toward the war booty to take it, \"Let us follow you.\" They wish to change the words of Allāh. Say, \"Never will you follow us. Thus did Allāh say before.\" So they will say, \"Rather, you envy us.\" But [in fact] they were not understanding except a little.2",
+            "Those who remained1 behind will say when you set out toward the war booty to take it, \"Let us follow you.\" They wish to change the words of Allāh. Say, \"Never will you follow us. Thus did Allāh say before.\" So they will say, \"Rather, you envy us.\" But [in fact] they were not understanding except a little",
         "audio_filename": "4598.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4598.mp3",
@@ -94938,7 +94938,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Laqad sadaqa Allahu rasoolahuarru/ya bilhaqqi latadkhulunnaalmasjida alharama in shaa Allahu amineenamuhalliqeena ruoosakum wamuqassireena latakhafoona faAAalima ma lam taAAlamoo fajaAAala mindooni thalika fathan qareeba",
         "translation":
-            "Certainly has Allāh showed to His Messenger the vision [i.e., dream] in truth. You will surely enter al-Masjid al-Ḥarām, if Allāh wills, in safety, with your heads shaved and [hair] shortened,1 not fearing [anyone]. He knew what you did not know and has arranged before that a conquest near [at hand].",
+            "Certainly has Allāh showed to His Messenger the vision [i.e., dream] in truth. You will surely enter al-Masjid al-Ḥarām, if Allāh wills, in safety, with your heads shaved and [hair] shortened, not fearing [anyone]. He knew what you did not know and has arranged before that a conquest near [at hand].",
         "audio_filename": "4610.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4610.mp3",
@@ -95395,7 +95395,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 207,
         "sajda": false,
         "transliteration": "Qaf walqur-ani almajeed",
-        "translation": "Qāf.1 By the honored Qur’ān...2",
+        "translation": "Qāf.1 By the honored Qur’ān..",
         "audio_filename": "4631.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4631.mp3",
@@ -95619,7 +95619,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Kaththabat qablahum qawmu noohinwaas-habu arrassi wathamood",
         "translation":
-            "The people of Noah denied before them,1 and the companions of the well2 and Thamūd",
+            "The people of Noah denied before them, and the companions of the well2 and Thamūd",
         "audio_filename": "4642.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4642.mp3",
@@ -95721,7 +95721,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ith yatalaqqa almutalaqqiyaniAAani alyameeni waAAani ashshimali qaAAeed",
         "translation":
-            "When the two receivers [i.e., recording angels] receive,1 seated on the right and on the left.",
+            "When the two receivers [i.e., recording angels] receive, seated on the right and on the left.",
         "audio_filename": "4647.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4647.mp3",
@@ -95821,7 +95821,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Laqad kunta fee ghaflatin min hathafakashafna AAanka ghitaaka fabasarukaalyawma hadeed",
         "translation":
-            "[It will be said], \"You were certainly in unmindfulness of this, and We have removed from you your cover,1 so your sight, this Day, is sharp.\"",
+            "[It will be said], \"You were certainly in unmindfulness of this, and We have removed from you your cover, so your sight, this Day, is sharp.\"",
         "audio_filename": "4652.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4652.mp3",
@@ -96413,7 +96413,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 208,
         "sajda": false,
         "transliteration": "Wassama-i thati alhubuk",
-        "translation": "By the heaven containing pathways,1",
+        "translation": "By the heaven containing pathways,",
         "audio_filename": "4682.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4682.mp3",
@@ -96597,7 +96597,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 208,
         "sajda": false,
         "transliteration": "Kanoo qaleelan mina allayli mayahjaAAoon",
-        "translation": "They used to sleep but little of the night,1",
+        "translation": "They used to sleep but little of the night,",
         "audio_filename": "4692.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4692.mp3",
@@ -97185,7 +97185,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Wassamaa banaynahabi-aydin wa-inna lamoosiAAoon",
         "translation":
-            "And the heaven We constructed with strength,1 and indeed, We are [its] expander.",
+            "And the heaven We constructed with strength, and indeed, We are [its] expander.",
         "audio_filename": "4722.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4722.mp3",
@@ -97404,7 +97404,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Inna Allaha huwa arrazzaquthoo alquwwati almateen",
         "translation":
-            "Indeed, it is Allāh who is the [continual] Provider,1 the firm possessor of strength.",
+            "Indeed, it is Allāh who is the [continual] Provider, the firm possessor of strength.",
         "audio_filename": "4733.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4733.mp3",
@@ -97557,7 +97557,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 209,
         "sajda": false,
         "transliteration": "Walbahri almasjoor",
-        "translation": "And [by] the sea set on fire,1",
+        "translation": "And [by] the sea set on fire,",
         "audio_filename": "4741.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4741.mp3",
@@ -97834,7 +97834,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wallatheena amanoo wattabaAAat-humthurriyyatuhum bi-eemanin alhaqnabihim thurriyyatahum wama alatnahum minAAamalihim min shay-in kullu imri-in bima kasaba raheen",
         "translation":
-            "And those who believed and whose descendants followed them in faith - We will join with them their descendants, and We will not deprive them of anything of their deeds.1 Every person, for what he earned, is retained.2",
+            "And those who believed and whose descendants followed them in faith - We will join with them their descendants, and We will not deprive them of anything of their deeds.1 Every person, for what he earned, is retained",
         "audio_filename": "4756.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4756.mp3",
@@ -98293,7 +98293,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-in yaraw kisfan mina assama-isaqitan yaqooloo sahabun markoom",
         "translation":
-            "And if they were to see a fragment from the sky falling,1 they would say, \"[It is merely] clouds heaped up.\"",
+            "And if they were to see a fragment from the sky falling, they would say, \"[It is merely] clouds heaped up.\"",
         "audio_filename": "4779.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4779.mp3",
@@ -100087,7 +100087,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wanabbi/hum anna almaa qismatunbaynahum kullu shirbin muhtadar",
         "translation":
-            "And inform them that the water is shared between them,1 each [day of] drink attended [by turn].",
+            "And inform them that the water is shared between them, each [day of] drink attended [by turn].",
         "audio_filename": "4874.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4874.mp3",
@@ -100106,7 +100106,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Fanadaw sahibahum fataAAatafaAAaqar",
         "translation":
-            "But they called their companion,1 and he dared2 and hamstrung [her].",
+            "But they called their companion, and he dared2 and hamstrung [her].",
         "audio_filename": "4875.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4875.mp3",
@@ -100529,7 +100529,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Walaqad ahlakna ashyaAAakumfahal min muddakir",
         "translation":
-            "And We have already destroyed your kinds,1 so is there any who will remember?",
+            "And We have already destroyed your kinds, so is there any who will remember?",
         "audio_filename": "4897.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4897.mp3",
@@ -100946,7 +100946,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 213,
         "sajda": false,
         "transliteration": "Maraja albahrayni yaltaqiyan",
-        "translation": "He released the two seas,1 meeting [one another];",
+        "translation": "He released the two seas, meeting [one another];",
         "audio_filename": "4920.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4920.mp3",
@@ -101242,7 +101242,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Yursalu AAalaykuma shuwathunmin narin wanuhasun fala tantasiran",
         "translation":
-            "There will be sent upon you a flame of fire and smoke,1 and you will not defend yourselves.",
+            "There will be sent upon you a flame of fire and smoke, and you will not defend yourselves.",
         "audio_filename": "4936.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4936.mp3",
@@ -101628,7 +101628,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Feehinna qasiratu attarfilam yatmithhunna insun qablahum wala jan",
         "translation":
-            "In them are women limiting [their] glances,1 untouched2 before them by man or jinnī -",
+            "In them are women limiting [their] glances, untouched2 before them by man or jinnī -",
         "audio_filename": "4957.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/4957.mp3",
@@ -102825,7 +102825,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 214,
         "sajda": false,
         "transliteration": "Wakanoo yusirroona AAalaalhinthi alAAatheem",
-        "translation": "And they used to persist in the great violation,1",
+        "translation": "And they used to persist in the great violation,",
         "audio_filename": "5025.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5025.mp3",
@@ -103174,7 +103174,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Law nashao lajaAAalnahu hutamanfathaltum tafakkahoon",
         "translation":
-            "If We willed, We could make it [dry] debris, and you would remain in wonder,1",
+            "If We willed, We could make it [dry] debris, and you would remain in wonder,",
         "audio_filename": "5044.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5044.mp3",
@@ -103321,7 +103321,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Nahnu jaAAalnaha tathkiratanwamataAAan lilmuqween",
         "translation":
-            "We have made it a reminder1 and provision for the travelers,2",
+            "We have made it a reminder1 and provision for the travelers,",
         "audio_filename": "5052.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5052.mp3",
@@ -103357,7 +103357,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 215,
         "sajda": false,
         "transliteration": "Fala oqsimu bimawaqiAAi annujoom",
-        "translation": "Then I swear by the setting of the stars,1",
+        "translation": "Then I swear by the setting of the stars,",
         "audio_filename": "5054.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5054.mp3",
@@ -103570,7 +103570,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 215,
         "sajda": false,
         "transliteration": "TarjiAAoonaha in kuntum sadiqeen",
-        "translation": "Bring it back,1 if you should be truthful?",
+        "translation": "Bring it back, if you should be truthful?",
         "audio_filename": "5066.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5066.mp3",
@@ -103759,7 +103759,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Sabbaha lillahi ma fee assamawatiwal-ardi wahuwa alAAazeezu alhakeem",
         "translation":
-            "Whatever is in the heavens and earth exalts Allāh,1 and He is the Exalted in Might, the Wise.",
+            "Whatever is in the heavens and earth exalts Allāh, and He is the Exalted in Might, the Wise.",
         "audio_filename": "5076.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5076.mp3",
@@ -103801,7 +103801,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Huwa al-awwalu wal-akhiru waththahiruwalbatinu wahuwa bikulli shay-in AAaleem",
         "translation":
-            "He is the First1 and the Last,2 the Ascendant3 and the Intimate,4 and He is, of all things, Knowing.",
+            "He is the First1 and the Last, the Ascendant3 and the Intimate, and He is, of all things, Knowing.",
         "audio_filename": "5078.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5078.mp3",
@@ -103885,7 +103885,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Aminoo billahiwarasoolihi waanfiqoo mimma jaAAalakum mustakhlafeenafeehi fallatheena amanoo minkum waanfaqoolahum ajrun kabeer",
         "translation":
-            "Believe in Allāh and His Messenger and spend out of that in which He has made you successive inheritors. For those who have believed among you and spent,1 there will be a great reward.",
+            "Believe in Allāh and His Messenger and spend out of that in which He has made you successive inheritors. For those who have believed among you and spent, there will be a great reward.",
         "audio_filename": "5082.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5082.mp3",
@@ -104503,7 +104503,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Alam tara anna Allaha yaAAlamu mafee assamawati wama fee al-ardima yakoonu min najwa thalathatin illahuwa rabiAAuhum wala khamsatin illa huwa sadisuhumwala adna min thalika wala aktharailla huwa maAAahum ayna ma kanoo thummayunabbi-ohum bima AAamiloo yawma alqiyamati innaAllaha bikulli shay-in AAaleem",
         "translation":
-            "Have you not considered that Allāh knows what is in the heavens and what is on the earth? There are not three in a private conversation but that He is the fourth of them,1 nor are there five but that He is the sixth of them - and no less than that and no more except that He is with them [in knowledge] wherever they are. Then He will inform them of what they did, on the Day of Resurrection. Indeed Allāh is, of all things, Knowing.",
+            "Have you not considered that Allāh knows what is in the heavens and what is on the earth? There are not three in a private conversation but that He is the fourth of them, nor are there five but that He is the sixth of them - and no less than that and no more except that He is with them [in knowledge] wherever they are. Then He will inform them of what they did, on the Day of Resurrection. Indeed Allāh is, of all things, Knowing.",
         "audio_filename": "5111.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5111.mp3",
@@ -104566,7 +104566,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Innama annajwa mina ashshaytaniliyahzuna allatheena amanoo walaysa bidarrihimshay-an illa bi-ithni Allahi waAAalaAllahi falyatawakkali almu/minoon",
         "translation":
-            "Private conversation is only from Satan that he may grieve those who have believed,1 but he will not harm them at all except by permission of Allāh. And upon Allāh let the believers rely.",
+            "Private conversation is only from Satan that he may grieve those who have believed, but he will not harm them at all except by permission of Allāh. And upon Allāh let the believers rely.",
         "audio_filename": "5114.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5114.mp3",
@@ -104848,7 +104848,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Sabbaha lillahi ma fee assamawatiwama fee al-ardi wahuwa alAAazeezu alhakeem",
         "translation":
-            "Whatever is in the heavens and whatever is on the earth exalts Allāh,1 and He is the Exalted in Might, the Wise.",
+            "Whatever is in the heavens and whatever is on the earth exalts Allāh, and He is the Exalted in Might, the Wise.",
         "audio_filename": "5127.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5127.mp3",
@@ -104869,7 +104869,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Huwa allathee akhraja allatheenakafaroo min ahli alkitabi min diyarihim li-awwalialhashri ma thanantum an yakhrujoo wathannooannahum maniAAatuhum husoonuhum mina Allahifaatahumu Allahu min haythu lam yahtasiboowaqathafa fee quloobihimu arruAAba yukhriboonabuyootahum bi-aydeehim waaydee almu/mineena faAAtabiroo yaolee al-absar",
         "translation":
-            "It is He who expelled the ones who disbelieved among the People of the Scripture1 from their homes at the first gathering.2 You did not think they would leave, and they thought that their fortresses would protect them from Allāh; but [the decree of] Allāh came upon them from where they had not expected, and He cast terror into their hearts [so] they destroyed their houses by their [own] hands and the hands of the believers. So take warning, O people of vision.",
+            "It is He who expelled the ones who disbelieved among the People of the Scripture1 from their homes at the first gathering You did not think they would leave, and they thought that their fortresses would protect them from Allāh; but [the decree of] Allāh came upon them from where they had not expected, and He cast terror into their hearts [so] they destroyed their houses by their [own] hands and the hands of the believers. So take warning, O people of vision.",
         "audio_filename": "5128.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5128.mp3",
@@ -104953,7 +104953,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wama afaa Allahu AAalarasoolihi minhum fama awjaftum AAalayhi min khaylin walarikabin walakinna Allaha yusalliturusulahu AAala man yashao wallahuAAala kulli shay-in qadeer",
         "translation":
-            "And what Allāh restored [of property] to His Messenger from them - you did not spur for it [in an expedition] any horses or camels,1 but Allāh gives His messengers power over whom He wills, and Allāh is over all things competent.",
+            "And what Allāh restored [of property] to His Messenger from them - you did not spur for it [in an expedition] any horses or camels, but Allāh gives His messengers power over whom He wills, and Allāh is over all things competent.",
         "audio_filename": "5132.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5132.mp3",
@@ -105310,7 +105310,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Huwa Allahu allathee lailaha illa huwa almaliku alquddoosu assalamualmu/minu almuhayminu alAAazeezu aljabbaru almutakabbirusubhana Allahi AAamma yushrikoon",
         "translation":
-            "He is Allāh, other than whom there is no deity, the Sovereign,1 the Pure,2 the Perfection,3 the Grantor of Security,4 the Overseer,5 the Exalted in Might,6 the Compeller,7 the Superior.8 Exalted is Allāh above whatever they associate with Him.",
+            "He is Allāh, other than whom there is no deity, the Sovereign, the Pure, the Perfection, the Grantor of Security, the Overseer, the Exalted in Might, the Compeller, the Superior.8 Exalted is Allāh above whatever they associate with Him.",
         "audio_filename": "5149.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5149.mp3",
@@ -105331,7 +105331,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Huwa Allahu alkhaliqu albari-oalmusawwiru lahu al-asmao alhusnayusabbihu lahu ma fee assamawatiwal-ardi wahuwa alAAazeezu alhakeem",
         "translation":
-            "He is Allāh, the Creator,1 the Producer,2 the Fashioner;3 to Him belong the best names.4 Whatever is in the heavens and earth is exalting Him. And He is the Exalted in Might, the Wise.5",
+            "He is Allāh, the Creator, the Producer, the Fashioner;3 to Him belong the best names Whatever is in the heavens and earth is exalting Him. And He is the Exalted in Might, the Wise",
         "audio_filename": "5150.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5150.mp3",
@@ -105361,7 +105361,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha allatheena amanoola tattakhithoo AAaduwwee waAAaduwwakum awliyaatulqoona ilayhim bilmawaddati waqad kafaroo bima jaakummina alhaqqi yukhrijoona arrasoola wa-iyyakuman tu/minoo billahi rabbikum in kuntum kharajtumjihadan fee sabeelee wabtighaa mardateetusirroona ilayhim bilmawaddati waana aAAlamu bimaakhfaytum wama aAAlantum waman yafAAalhu minkum faqad dallasawaa assabeel",
         "translation":
-            "O you who have believed, do not take My enemies and your enemies as allies,1 extending to them affection while they have disbelieved in what came to you of the truth, having driven out the Prophet and yourselves [only] because you believe in Allāh, your Lord. If you have come out for jihād [i.e., fighting or striving] in My cause and seeking means to My approval, [take them not as friends]. You confide to them affection [i.e., instruction], but I am most knowing of what you have concealed and what you have declared. And whoever does it among you has certainly strayed from the soundness of the way.",
+            "O you who have believed, do not take My enemies and your enemies as allies, extending to them affection while they have disbelieved in what came to you of the truth, having driven out the Prophet and yourselves [only] because you believe in Allāh, your Lord. If you have come out for jihād [i.e., fighting or striving] in My cause and seeking means to My approval, [take them not as friends]. You confide to them affection [i.e., instruction], but I am most knowing of what you have concealed and what you have declared. And whoever does it among you has certainly strayed from the soundness of the way.",
         "audio_filename": "5151.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5151.mp3",
@@ -105487,7 +105487,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "AAasa Allahu an yajAAalabaynakum wabayna allatheena AAadaytum minhummawaddatan wallahu qadeerun wallahughafoorun raheem",
         "translation":
-            "Perhaps Allāh will put, between you and those to whom you have been enemies among them, affection. And Allāh is competent,1 and Allāh is Forgiving and Merciful.",
+            "Perhaps Allāh will put, between you and those to whom you have been enemies among them, affection. And Allāh is competent, and Allāh is Forgiving and Merciful.",
         "audio_filename": "5157.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5157.mp3",
@@ -105550,7 +105550,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha allatheena amanooitha jaakumu almu/minatu muhajiratinfamtahinoohunna Allahu aAAlamu bi-eemanihinnafa-in AAalimtumoohunna mu/minatin falatarjiAAoohunna ila alkuffari la hunna hillunlahum wala hum yahilloona lahunna waatoohumma anfaqoo wala junaha AAalaykum an tankihoohunnaitha ataytumoohunna ojoorahunna walatumsikoo biAAisami alkawafiri was-aloo maanfaqtum walyas-aloo ma anfaqoo thalikum hukmuAllahi yahkumu baynakum wallahuAAaleemun hakeem",
         "translation":
-            "O you who have believed, when the believing women come to you as emigrants, examine [i.e., test] them. Allāh is most knowing as to their faith. And if you know them to be believers, then do not return them to the disbelievers; they are not lawful [wives] for them, nor are they lawful [husbands] for them. But give them [i.e., the disbelievers] what they have spent.1 And there is no blame upon you if you marry them when you have given them their due compensation [i.e., mahr]. And hold not to marriage bonds with disbelieving women, but ask for what you have spent and let them [i.e., the disbelievers] ask for what they have spent.2 That is the judgement of Allāh; He judges between you. And Allāh is Knowing and Wise.",
+            "O you who have believed, when the believing women come to you as emigrants, examine [i.e., test] them. Allāh is most knowing as to their faith. And if you know them to be believers, then do not return them to the disbelievers; they are not lawful [wives] for them, nor are they lawful [husbands] for them. But give them [i.e., the disbelievers] what they have spent.1 And there is no blame upon you if you marry them when you have given them their due compensation [i.e., mahr]. And hold not to marriage bonds with disbelieving women, but ask for what you have spent and let them [i.e., the disbelievers] ask for what they have spent That is the judgement of Allāh; He judges between you. And Allāh is Knowing and Wise.",
         "audio_filename": "5160.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5160.mp3",
@@ -105571,7 +105571,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-in fatakum shay-on min azwajikumila alkuffari faAAaqabtum faatoo allatheenathahabat azwajuhum mithla ma anfaqoo wattaqooAllaha allathee antum bihi mu/minoon",
         "translation":
-            "And if you have lost any of your wives to the disbelievers and you subsequently obtain [something],1 then give those whose wives have gone the equivalent of what they had spent. And fear Allāh, in whom you are believers.",
+            "And if you have lost any of your wives to the disbelievers and you subsequently obtain [something], then give those whose wives have gone the equivalent of what they had spent. And fear Allāh, in whom you are believers.",
         "audio_filename": "5161.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5161.mp3",
@@ -105592,7 +105592,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha annabiyyu ithajaaka almu/minatu yubayiAAnaka AAalaan la yushrikna billahi shay-an walayasriqna wala yazneena wala yaqtulna awladahunnawala ya/teena bibuhtanin yaftareenahu baynaaydeehinna waarjulihinna wala yaAAseenaka feemaAAroofin fabayiAAhunna wastaghfir lahunna Allahainna Allaha ghafoorun raheem",
         "translation":
-            "O Prophet, when the believing women come to you pledging to you that they will not associate anything with Allāh, nor will they steal, nor will they commit unlawful sexual intercourse, nor will they kill their children, nor will they bring forth a slander they have invented between their arms and legs,1 nor will they disobey you in what is right - then accept their pledge and ask forgiveness for them of Allāh. Indeed, Allāh is Forgiving and Merciful.",
+            "O Prophet, when the believing women come to you pledging to you that they will not associate anything with Allāh, nor will they steal, nor will they commit unlawful sexual intercourse, nor will they kill their children, nor will they bring forth a slander they have invented between their arms and legs, nor will they disobey you in what is right - then accept their pledge and ask forgiveness for them of Allāh. Indeed, Allāh is Forgiving and Merciful.",
         "audio_filename": "5162.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5162.mp3",
@@ -105643,7 +105643,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Sabbaha lillahi ma fee assamawatiwama fee al-ardi wahuwa alAAazeezu alhakeem",
         "translation":
-            "Whatever is in the heavens and whatever is on the earth exalts Allāh,1 and He is the Exalted in Might, the Wise.",
+            "Whatever is in the heavens and whatever is on the earth exalts Allāh, and He is the Exalted in Might, the Wise.",
         "audio_filename": "5164.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5164.mp3",
@@ -105946,7 +105946,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Yusabbihu lillahi ma feeassamawati wama fee al-ardialmaliki alquddoosi alAAazeezi alhakeem",
         "translation":
-            "Whatever is in the heavens and whatever is on the earth is exalting Allāh,1 the Sovereign, the Pure, the Exalted in Might, the Wise.2",
+            "Whatever is in the heavens and whatever is on the earth is exalting Allāh, the Sovereign, the Pure, the Exalted in Might, the Wise",
         "audio_filename": "5178.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5178.mp3",
@@ -106030,7 +106030,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Mathalu allatheena hummiloo attawratathumma lam yahmilooha kamathali alhimariyahmilu asfaran bi/sa mathalu alqawmi allatheenakaththaboo bi-ayati Allahi wallahula yahdee alqawma aththalimeen",
         "translation":
-            "The example of those who were entrusted with the Torah and then did not take it on1 is like that of a donkey who carries volumes [of books].2 Wretched is the example of the people who deny the signs of Allāh. And Allāh does not guide the wrongdoing people.",
+            "The example of those who were entrusted with the Torah and then did not take it on1 is like that of a donkey who carries volumes [of books] Wretched is the example of the people who deny the signs of Allāh. And Allāh does not guide the wrongdoing people.",
         "audio_filename": "5182.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5182.mp3",
@@ -106762,7 +106762,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "In tuqridoo Allaha qardanhasanan yudaAAifhu lakum wayaghfir lakum wallahushakoorun haleem",
         "translation":
-            "If you loan Allāh a goodly loan, He will multiply it for you and forgive you. And Allāh is [most] Appreciative1 and Forbearing,2",
+            "If you loan Allāh a goodly loan, He will multiply it for you and forgive you. And Allāh is [most] Appreciative1 and Forbearing,",
         "audio_filename": "5216.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5216.mp3",
@@ -106811,7 +106811,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha annabiyyu ithatallaqtumu annisaa fatalliqoohunnaliAAiddatihinna waahsoo alAAiddata wattaqoo Allaharabbakum la tukhrijoohunna min buyootihinna walayakhrujna illa an ya/teena bifahishatinmubayyinatin watilka hudoodu Allahi wamanyataAAadda hudooda Allahi faqad thalamanafsahu la tadree laAAalla Allaha yuhdithubaAAda thalika amra",
         "translation":
-            "O Prophet, when you [Muslims] divorce women, divorce them for [the commencement of] their waiting period and keep count of the waiting period,1 and fear Allāh, your Lord. Do not turn them out of their [husbands'] houses, nor should they [themselves] leave [during that period] unless they are committing a clear immorality. And those are the limits [set by] Allāh. And whoever transgresses the limits of Allāh has certainly wronged himself. You know not; perhaps Allāh will bring about after that a [different] matter.2",
+            "O Prophet, when you [Muslims] divorce women, divorce them for [the commencement of] their waiting period and keep count of the waiting period, and fear Allāh, your Lord. Do not turn them out of their [husbands'] houses, nor should they [themselves] leave [during that period] unless they are committing a clear immorality. And those are the limits [set by] Allāh. And whoever transgresses the limits of Allāh has certainly wronged himself. You know not; perhaps Allāh will bring about after that a [different] matter",
         "audio_filename": "5218.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5218.mp3",
@@ -106916,7 +106916,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Askinoohunna min haythu sakantum minwujdikum wala tudarroohunna litudayyiqooAAalayhinna wa-in kunna olati hamlin faanfiqooAAalayhinna hatta yadaAAna hamlahunnafa-in ardaAAna lakum faatoohunna ojoorahunnawa/tamiroo baynakum bimaAAroofin wa-in taAAasartum fasaturdiAAulahu okhra",
         "translation":
-            "Lodge them1 [in a section] of where you dwell out of your means and do not harm them in order to oppress them.2 And if they should be pregnant, then spend on them until they give birth. And if they breastfeed for you, then give them their payment and confer among yourselves in the acceptable way; but if you are in discord, then there may breastfeed for him [i.e., the father] another woman.3",
+            "Lodge them1 [in a section] of where you dwell out of your means and do not harm them in order to oppress them And if they should be pregnant, then spend on them until they give birth. And if they breastfeed for you, then give them their payment and confer among yourselves in the acceptable way; but if you are in discord, then there may breastfeed for him [i.e., the father] another woman",
         "audio_filename": "5223.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5223.mp3",
@@ -107261,7 +107261,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Daraba Allahu mathalan lillatheenakafaroo imraata noohin wamraata lootin kanatatahta AAabdayni min AAibadina salihaynifakhanatahuma falam yughniya AAanhumamina Allahi shay-an waqeela odkhula annaramaAAa addakhileen",
         "translation":
-            "Allāh presents an example of those who disbelieved: the wife of Noah and the wife of Lot. They were under two of Our righteous servants but betrayed them,1 so they [i.e., those prophets] did not avail them from Allāh at all, and it was said, \"Enter the Fire with those who enter.\"",
+            "Allāh presents an example of those who disbelieved: the wife of Noah and the wife of Lot. They were under two of Our righteous servants but betrayed them, so they [i.e., those prophets] did not avail them from Allāh at all, and it was said, \"Enter the Fire with those who enter.\"",
         "audio_filename": "5239.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5239.mp3",
@@ -107604,7 +107604,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Ala yaAAlamu man khalaqa wahuwa allateefualkhabeer",
         "translation":
-            "Does He who created not know,1 while He is the Subtle, the Aware?",
+            "Does He who created not know, while He is the Subtle, the Aware?",
         "audio_filename": "5255.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5255.mp3",
@@ -109038,7 +109038,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Waamma AAadun faohlikoo bireehinsarsarin AAatiya",
         "translation":
-            "And as for ʿAad, they were destroyed by a screaming,1 violent wind",
+            "And as for ʿAad, they were destroyed by a screaming, violent wind",
         "audio_filename": "5329.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5329.mp3",
@@ -110038,7 +110038,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 227,
         "sajda": false,
         "transliteration": "Yawma takoonu assamao kalmuhl",
-        "translation": "On the Day the sky will be like murky oil,1",
+        "translation": "On the Day the sky will be like murky oil,",
         "audio_filename": "5383.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5383.mp3",
@@ -110056,7 +110056,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 227,
         "sajda": false,
         "transliteration": "Watakoonu aljibalu kalAAihn",
-        "translation": "And the mountains will be like wool,1",
+        "translation": "And the mountains will be like wool,",
         "audio_filename": "5384.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5384.mp3",
@@ -110431,7 +110431,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Illa AAala azwajihim awma malakat aymanuhum fa-innahum ghayru maloomeen",
         "translation":
-            "Except from their wives or those their right hands possess,1 for indeed, they are not to be blamed -",
+            "Except from their wives or those their right hands possess, for indeed, they are not to be blamed -",
         "audio_filename": "5405.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5405.mp3",
@@ -110523,7 +110523,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 228,
         "sajda": false,
         "transliteration": "Ola-ika fee jannatin mukramoon",
-        "translation": "They will be in gardens,1 honored.",
+        "translation": "They will be in gardens, honored.",
         "audio_filename": "5410.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5410.mp3",
@@ -110850,7 +110850,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Wa-innee kullama daAAawtuhumlitaghfira lahum jaAAaloo asabiAAahum fee athanihimwastaghshaw thiyabahum waasarroo wastakbarooistikbara",
         "translation":
-            "And indeed, every time I invited them that You may forgive them, they put their fingers in their ears, covered themselves with their garments,1 persisted, and were arrogant with [great] arrogance.",
+            "And indeed, every time I invited them that You may forgive them, they put their fingers in their ears, covered themselves with their garments, persisted, and were arrogant with [great] arrogance.",
         "audio_filename": "5426.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5426.mp3",
@@ -111456,7 +111456,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Waanna kunna naqAAudu minhamaqaAAida lissamAAi faman yastamiAAi al-anayajid lahu shihaban rasada",
         "translation":
-            "And we used to sit therein in positions for hearing,1 but whoever listens now will find a burning flame lying in wait for him.",
+            "And we used to sit therein in positions for hearing, but whoever listens now will find a burning flame lying in wait for him.",
         "audio_filename": "5456.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5456.mp3",
@@ -111966,7 +111966,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna nashi-ata allayli hiya ashaddu wat-anwaaqwamu qeela",
         "translation":
-            "Indeed, the hours of the night are more effective for concurrence [of heart and tongue]1 and more suitable for words.2",
+            "Indeed, the hours of the night are more effective for concurrence [of heart and tongue]1 and more suitable for words",
         "audio_filename": "5481.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5481.mp3",
@@ -112245,7 +112245,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna rabbaka yaAAlamu annaka taqoomu adnamin thuluthayi allayli wanisfahu wathuluthahu wata-ifatunmina allatheena maAAaka wallahu yuqaddiruallayla wannahara AAalima an lan tuhsoohufataba AAalaykum faqraoo ma tayassara minaalqur-ani AAalima an sayakoonu minkum marda waakharoonayadriboona fee al-ardi yabtaghoona min fadliAllahi waakharoona yuqatiloona fee sabeeliAllahi faqraoo ma tayassara minhu waaqeemooassalata waatoo azzakatawaaqridoo Allaha qardan hasanan wamatuqaddimoo li-anfusikum min khayrin tajidoohu AAinda Allahihuwa khayran waaAAthama ajran wastaghfirooAllaha inna Allaha ghafoorun raheem",
         "translation":
-            "Indeed, your Lord knows, [O Muḥammad], that you stand [in prayer] almost two thirds of the night or half of it or a third of it, and [so do] a group of those with you. And Allāh determines [the extent of] the night and the day. He has known that you [Muslims] will not be able to do it1 and has turned to you in forgiveness, so recite what is easy [for you] of the Qur’ān. He has known that there will be among you those who are ill and others traveling throughout the land seeking [something] of the bounty of Allāh and others fighting for the cause of Allāh. So recite what is easy from it and establish prayer and give zakāh and loan Allāh a goodly loan.2 And whatever good you put forward for yourselves - you will find it with Allāh. It is better and greater in reward. And seek forgiveness of Allāh. Indeed, Allāh is Forgiving and Merciful.",
+            "Indeed, your Lord knows, [O Muḥammad], that you stand [in prayer] almost two thirds of the night or half of it or a third of it, and [so do] a group of those with you. And Allāh determines [the extent of] the night and the day. He has known that you [Muslims] will not be able to do it1 and has turned to you in forgiveness, so recite what is easy [for you] of the Qur’ān. He has known that there will be among you those who are ill and others traveling throughout the land seeking [something] of the bounty of Allāh and others fighting for the cause of Allāh. So recite what is easy from it and establish prayer and give zakāh and loan Allāh a goodly loan And whatever good you put forward for yourselves - you will find it with Allāh. It is better and greater in reward. And seek forgiveness of Allāh. Indeed, Allāh is Forgiving and Merciful.",
         "audio_filename": "5495.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5495.mp3",
@@ -112273,7 +112273,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 230,
         "sajda": false,
         "transliteration": "Ya ayyuha almuddaththir",
-        "translation": "O you who covers himself [with a garment],1",
+        "translation": "O you who covers himself [with a garment],",
         "audio_filename": "5496.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5496.mp3",
@@ -112928,7 +112928,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 230,
         "sajda": false,
         "transliteration": "Illa as-haba alyameen",
-        "translation": "Except the companions of the right,1.",
+        "translation": "Except the companions of the right,.",
         "audio_filename": "5534.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5534.mp3",
@@ -113159,7 +113159,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Bal yureedu kullu imri-in minhum an yu/tasuhufan munashshara",
         "translation":
-            "Rather, every person among them desires that he1 would be given scriptures spread about.2",
+            "Rather, every person among them desires that he1 would be given scriptures spread about",
         "audio_filename": "5547.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5547.mp3",
@@ -113473,7 +113473,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Yunabbao al-insanu yawma-ithinbima qaddama waakhkhar",
         "translation":
-            "Man will be informed that Day of what he sent ahead1 and kept back.2",
+            "Man will be informed that Day of what he sent ahead1 and kept back",
         "audio_filename": "5564.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5564.mp3",
@@ -113491,7 +113491,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 231,
         "sajda": false,
         "transliteration": "Bali al-insanu AAala nafsihibaseera",
-        "translation": "Rather, man, against himself, will be a witness,1",
+        "translation": "Rather, man, against himself, will be a witness,",
         "audio_filename": "5565.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5565.mp3",
@@ -113757,7 +113757,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 231,
         "sajda": false,
         "transliteration": "Waltaffati assaqu bilssaq",
-        "translation": "And the leg is wound about the leg,1",
+        "translation": "And the leg is wound about the leg,",
         "audio_filename": "5580.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5580.mp3",
@@ -114065,7 +114065,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Inna al-abrara yashraboona min ka/sinkana mizajuha kafoora",
         "translation":
-            "Indeed, the righteous will drink from a cup [of wine] whose mixture is of Kāfūr,1",
+            "Indeed, the righteous will drink from a cup [of wine] whose mixture is of Kāfūr,",
         "audio_filename": "5596.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5596.mp3",
@@ -114864,7 +114864,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 232,
         "sajda": false,
         "transliteration": "Waylun yawma-ithin lilmukaththibeen",
-        "translation": "Woe,1 that Day, to the deniers.",
+        "translation": "Woe, that Day, to the deniers.",
         "audio_filename": "5637.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5637.mp3",
@@ -116118,7 +116118,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Jazaan min rabbika AAataan hisaba",
         "translation":
-            "[As] reward from your Lord, [a generous] gift [made due by] account,1",
+            "[As] reward from your Lord, [a generous] gift [made due by] account,",
         "audio_filename": "5708.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5708.mp3",
@@ -116298,7 +116298,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 233,
         "sajda": false,
         "transliteration": "Falmudabbirati amra",
-        "translation": "And those who arrange [each] matter,1",
+        "translation": "And those who arrange [each] matter,",
         "audio_filename": "5717.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5717.mp3",
@@ -116351,7 +116351,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 233,
         "sajda": false,
         "transliteration": "Quloobun yawma-ithin wajifa",
-        "translation": "Hearts,1 that Day, will tremble,",
+        "translation": "Hearts, that Day, will tremble,",
         "audio_filename": "5720.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5720.mp3",
@@ -116566,7 +116566,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 233,
         "sajda": false,
         "transliteration": "Faarahu al-ayata alkubra",
-        "translation": "And he showed him the greatest sign,1",
+        "translation": "And he showed him the greatest sign,",
         "audio_filename": "5732.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5732.mp3",
@@ -117033,7 +117033,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Kaannahum yawma yarawnaha lamyalbathoo illa AAashiyyatan aw duhaha",
         "translation":
-            "It will be, on the Day they see it,1 as though they had not remained [in the world] except for an afternoon or a morning thereof.",
+            "It will be, on the Day they see it, as though they had not remained [in the world] except for an afternoon or a morning thereof.",
         "audio_filename": "5758.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5758.mp3",
@@ -117078,7 +117078,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "An jaahu al-aAAma",
         "translation":
-            "Because there came to him the blind man,1 [interrupting].",
+            "Because there came to him the blind man, [interrupting].",
         "audio_filename": "5760.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5760.mp3",
@@ -117131,7 +117131,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 234,
         "sajda": false,
         "transliteration": "Amma mani istaghna",
-        "translation": "As for he who thinks himself without need,1",
+        "translation": "As for he who thinks himself without need,",
         "audio_filename": "5763.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5763.mp3",
@@ -118482,7 +118482,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 235,
         "sajda": false,
         "transliteration": "Wa-inna AAalaykum lahafitheen",
-        "translation": "And indeed, [appointed] over you are keepers,1",
+        "translation": "And indeed, [appointed] over you are keepers,",
         "audio_filename": "5839.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5839.mp3",
@@ -118669,7 +118669,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 235,
         "sajda": false,
         "transliteration": "Waylun lilmutaffifeen",
-        "translation": "Woe to those who give less [than due],1",
+        "translation": "Woe to those who give less [than due],",
         "audio_filename": "5849.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5849.mp3",
@@ -119145,7 +119145,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 235,
         "sajda": false,
         "transliteration": "Wamizajuhu min tasneem",
-        "translation": "And its mixture is of Tasneem,1",
+        "translation": "And its mixture is of Tasneem,",
         "audio_filename": "5875.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5875.mp3",
@@ -119434,7 +119434,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "transliteration":
             "Ya ayyuha al-insanuinnaka kadihun ila rabbika kadhanfamulaqeeh",
         "translation":
-            "O mankind, indeed you are laboring toward your Lord with [great] exertion1 and will meet it.2",
+            "O mankind, indeed you are laboring toward your Lord with [great] exertion1 and will meet it",
         "audio_filename": "5890.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5890.mp3",
@@ -120354,7 +120354,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 236,
         "sajda": false,
         "transliteration": "Yawma tubla assara-ir",
-        "translation": "The Day when secrets will be put on trial,1",
+        "translation": "The Day when secrets will be put on trial,",
         "audio_filename": "5940.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5940.mp3",
@@ -120406,7 +120406,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 236,
         "sajda": false,
         "transliteration": "Wal-ardi thati assadAA",
-        "translation": "And [by] the earth which splits,1",
+        "translation": "And [by] the earth which splits,",
         "audio_filename": "5943.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/5943.mp3",
@@ -121423,7 +121423,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 237,
         "sajda": false,
         "transliteration": "Irama thati alAAimad",
-        "translation": "[With] Iram1 - who had lofty pillars,2",
+        "translation": "[With] Iram1 - who had lofty pillars,",
         "audio_filename": "6000.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6000.mp3",
@@ -121642,7 +121642,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Wata/kuloona atturatha aklanlamma",
         "translation":
-            "And you consume inheritance, devouring [it] altogether,1",
+            "And you consume inheritance, devouring [it] altogether,",
         "audio_filename": "6012.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6012.mp3",
@@ -122909,7 +122909,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 238,
         "sajda": false,
         "transliteration": "Wallayli itha saja",
-        "translation": "And [by] the night when it covers with darkness,1",
+        "translation": "And [by] the night when it covers with darkness,",
         "audio_filename": "6081.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6081.mp3",
@@ -123052,7 +123052,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 238,
         "sajda": false,
         "transliteration": "Waamma assa-ila falatanhar",
-        "translation": "And as for the petitioner,1 do not repel [him].",
+        "translation": "And as for the petitioner, do not repel [him].",
         "audio_filename": "6089.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6089.mp3",
@@ -123314,7 +123314,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 239,
         "sajda": false,
         "transliteration": "Thumma radadnahu asfala safileen",
-        "translation": "Then We return him to the lowest of the low,1",
+        "translation": "Then We return him to the lowest of the low,",
         "audio_filename": "6103.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6103.mp3",
@@ -124047,7 +124047,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 239,
         "sajda": false,
         "transliteration": "Waqala al-insanu ma laha",
-        "translation": "And man says,1 \"What is [wrong] with it?\" -",
+        "translation": "And man says, \"What is [wrong] with it?\" -",
         "audio_filename": "6141.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6141.mp3",
@@ -124166,7 +124166,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 239,
         "sajda": false,
         "transliteration": "WalAAadiyati dabha",
-        "translation": "By the racers, panting,1",
+        "translation": "By the racers, panting,",
         "audio_filename": "6147.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6147.mp3",
@@ -124201,7 +124201,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 239,
         "sajda": false,
         "transliteration": "Falmugheerati subha",
-        "translation": "And the chargers at dawn,1",
+        "translation": "And the chargers at dawn,",
         "audio_filename": "6149.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6149.mp3",
@@ -124323,7 +124323,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 240,
         "sajda": false,
         "transliteration": "Wahussila ma fee assudoor",
-        "translation": "And that within the breasts is obtained,1",
+        "translation": "And that within the breasts is obtained,",
         "audio_filename": "6156.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6156.mp3",
@@ -124422,7 +124422,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "sajda": false,
         "transliteration": "Yawma yakoonu annasu kalfarashialmabthooth",
         "translation":
-            "It is the Day when people will be like moths, dispersed,1",
+            "It is the Day when people will be like moths, dispersed,",
         "audio_filename": "6161.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6161.mp3",
@@ -124509,7 +124509,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 240,
         "sajda": false,
         "transliteration": "Faommuhu hawiya",
-        "translation": "His refuge1 will be an abyss.2",
+        "translation": "His refuge1 will be an abyss",
         "audio_filename": "6166.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6166.mp3",
@@ -124723,7 +124723,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 240,
         "sajda": false,
         "transliteration": "WalAAasr",
-        "translation": "By time,1",
+        "translation": "By time,",
         "audio_filename": "6177.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6177.mp3",
@@ -125091,7 +125091,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 240,
         "sajda": false,
         "transliteration": "FalyaAAbudoo rabba hatha albayt",
-        "translation": "Let them worship the Lord of this House,1",
+        "translation": "Let them worship the Lord of this House,",
         "audio_filename": "6196.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6196.mp3",
@@ -125449,7 +125449,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 240,
         "sajda": false,
         "transliteration": "Itha jaa nasru Allahiwalfath",
-        "translation": "When the victory of Allāh has come and the conquest,1",
+        "translation": "When the victory of Allāh has come and the conquest,",
         "audio_filename": "6214.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6214.mp3",
@@ -125614,7 +125614,7 @@ const List<Map<String, dynamic>> _quranRawData = [
         "hizbQuarter": 240,
         "sajda": false,
         "transliteration": "Qul huwa Allahu ahad",
-        "translation": "Say, \"He is Allāh, [who is] One,1",
+        "translation": "Say, \"He is Allāh, [who is] One,",
         "audio_filename": "6222.mp3",
         "remote_url":
             "https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/6222.mp3",

@@ -27,7 +27,7 @@ class SettingsScreen extends ConsumerWidget {
     final versionStr = packageInfoAsync.when(
       data: (info) => 'Version ${info.version}',
       loading: () => 'Loading version...',
-      error: (_, __) => 'Version 1.3.0',
+      error: (_, _) => 'Version 1.3.0',
     );
 
     final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);

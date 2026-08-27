@@ -18,7 +18,6 @@ class AsmaUlHusnaScreen extends ConsumerStatefulWidget {
 }
 
 class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
-  final AsmaAudioController _audioController = AsmaAudioController();
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<double> _titleOpacity = ValueNotifier<double>(0.0);
   bool _isGridView = true; // True for boxes/grid, False for list view
@@ -28,7 +27,6 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   @override
   void initState() {
     super.initState();
-    _audioController.addListener(_onAudioStateChanged);
     _scrollController.addListener(_onScroll);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -57,15 +55,6 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
     if ((opacity - _titleOpacity.value).abs() > 0.01) {
       _titleOpacity.value = opacity;
     }
-  }
-
-  void _onAudioStateChanged() {
-    if (!mounted) return;
-    final activeIndex = _audioController.currentIndex;
-    if (activeIndex >= 0) {
-      _scrollToIndex(activeIndex);
-    }
-    setState(() {});
   }
 
   void _scrollToIndex(int index) {
@@ -97,16 +86,24 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
   @override
   void dispose() {
-    _audioController.removeListener(_onAudioStateChanged);
     _scrollController.removeListener(_onScroll);
-    _audioController.dispose();
     _scrollController.dispose();
     _titleOpacity.dispose();
     super.dispose();
   }
 
+  AsmaAudioController get _audioController => ref.read(asmaAudioProvider);
+
   @override
   Widget build(BuildContext context) {
+    final audioController = ref.watch(asmaAudioProvider);
+
+    ref.listen(asmaAudioProvider, (prev, next) {
+      if (next.currentIndex >= 0 && next.currentIndex != prev?.currentIndex) {
+        _scrollToIndex(next.currentIndex);
+      }
+    });
+
     ref.listen(mediaDownloadProvider, (prev, next) {
       if (next.isCompleted) {
         _checkDownloadStatus();
@@ -115,7 +112,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = screenWidth > 600 ? 5 : 3;
-    final isPlayerActive = _audioController.currentIndex >= 0;
+    final isPlayerActive = audioController.currentIndex >= 0;
 
     return Stack(
       children: [

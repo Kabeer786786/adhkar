@@ -157,9 +157,8 @@ class _QiblaScreenState extends ConsumerState<QiblaScreen> {
               children: [
                 TileLayer(
                   urlTemplate:
-                      'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.sprnt.adhkar',
-                  retinaMode: true,
                 ),
                 PolylineLayer(
                   polylines: [

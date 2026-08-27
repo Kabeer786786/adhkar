@@ -11,17 +11,24 @@ class AsmaAudioController extends ChangeNotifier {
   final AudioPlayer _player = AudioPlayer();
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<int?>? _currentIndexSubscription;
+  StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<Duration?>? _durationSubscription;
 
   ConcatenatingAudioSource? _playlistSource;
   bool _isPlaying = false;
   bool _isBuffering = false;
   int _currentIndex = -1; // -1 means player closed / inactive
   double _speed = 1.0;
+  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero;
 
   bool get isPlaying => _isPlaying;
   bool get isBuffering => _isBuffering;
   int get currentIndex => _currentIndex;
   double get speed => _speed;
+  Duration get position => _position;
+  Duration get duration => _duration;
+
   AsmaUlHusna? get currentName =>
       (_currentIndex >= 0 && _currentIndex < asmaUlHusnaList.length)
       ? asmaUlHusnaList[_currentIndex]
@@ -59,6 +66,16 @@ class AsmaAudioController extends ChangeNotifier {
         }
       }
     });
+
+    _positionSubscription = _player.positionStream.listen((pos) {
+      _position = pos;
+      notifyListeners();
+    });
+
+    _durationSubscription = _player.durationStream.listen((dur) {
+      _duration = dur ?? Duration.zero;
+      notifyListeners();
+    });
   }
 
   Future<void> _ensurePlaylistInitialized() async {
@@ -69,9 +86,14 @@ class AsmaAudioController extends ChangeNotifier {
       final item = asmaUlHusnaList[i];
       final mediaItem = MediaItem(
         id: 'asma_${item.number}',
-        album: 'Asma ul Husna (${item.number}/99)',
-        title: '${item.number}. ${item.name} - ${item.transliteration}',
-        artist: '${item.shortMeaning} (${item.number}/99)',
+        album: 'Asma ul Husna - 99 Names of Allah',
+        title: '${item.number}. ${item.name} (${item.transliteration})',
+        artist: '${item.meaning} • (${item.number}/99)',
+        artUri: Uri.parse('asset:///assets/logo.png'),
+        extras: {
+          'type': 'asma',
+          'route': '/asma-ul-husna',
+        },
       );
 
       final remoteUrl = item.remoteUrl.isNotEmpty
@@ -171,6 +193,10 @@ class AsmaAudioController extends ChangeNotifier {
     }
   }
 
+  Future<void> seek(Duration position) async {
+    await _player.seek(position);
+  }
+
   Future<void> setSpeed(double speed) async {
     _speed = speed;
     await _player.setSpeed(speed);
@@ -188,7 +214,16 @@ class AsmaAudioController extends ChangeNotifier {
   void dispose() {
     _playerStateSubscription?.cancel();
     _currentIndexSubscription?.cancel();
+    _positionSubscription?.cancel();
+    _durationSubscription?.cancel();
     _player.dispose();
     super.dispose();
   }
 }
+
+/// Riverpod provider for AsmaAudioController
+final asmaAudioProvider = ChangeNotifierProvider<AsmaAudioController>((ref) {
+  final controller = AsmaAudioController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});

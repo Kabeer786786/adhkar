@@ -20,13 +20,14 @@ class SurahModel extends Equatable {
   });
 
   factory SurahModel.fromJson(Map<String, dynamic> json) {
+    final surahNum = json['number'] as int;
     final rawAyahs = json['ayahs'] as List<dynamic>? ?? [];
     final parsedAyahs = rawAyahs
-        .map((a) => AyahModel.fromJson(a as Map<String, dynamic>))
+        .map((a) => AyahModel.fromJson(a as Map<String, dynamic>, surahNumber: surahNum))
         .toList();
 
     return SurahModel(
-      number: json['number'] as int,
+      number: surahNum,
       nameArabic: json['name'] as String? ?? json['nameArabic'] as String? ?? '',
       nameEnglish: json['englishName'] as String? ?? json['nameEnglish'] as String? ?? '',
       nameTranslation: json['englishNameTranslation'] as String? ?? json['nameTranslation'] as String? ?? '',
@@ -53,6 +54,7 @@ class SurahModel extends Equatable {
 class AyahModel extends Equatable {
   final int number;
   final int numberInSurah;
+  final int? surahNumber;
   final String arabicText;
   final String englishTranslation;
   final String transliteration;
@@ -68,6 +70,7 @@ class AyahModel extends Equatable {
   const AyahModel({
     required this.number,
     required this.numberInSurah,
+    this.surahNumber,
     required this.arabicText,
     required this.englishTranslation,
     this.transliteration = '',
@@ -84,7 +87,28 @@ class AyahModel extends Equatable {
   /// Relative path for local storage audio caching (e.g. 'quran/1.mp3')
   String get localRelativePath => 'quran/${audioFileName.isEmpty ? "$number.mp3" : audioFileName}';
 
-  factory AyahModel.fromJson(Map<String, dynamic> json) {
+  /// Cleaned Arabic text with Bismillah stripped from verse 1 for surahs 2-114 (since Bismillah is placed in the header)
+  String get displayArabicText {
+    var text = arabicText
+        .replaceAll(RegExp(r'\s*\(\d+:\d+\)\s*'), '')
+        .replaceAll(RegExp(r'\s*﴿\d+:\d+﴾\s*'), '')
+        .replaceAll(RegExp(r'\s*﴿\d+﴾\s*'), '')
+        .replaceAll('\uFEFF', '')
+        .trim();
+
+    if (numberInSurah == 1 && number != 1) {
+      final bismillahRegex = RegExp(
+        r'^(?:[\uFEFF\s]*بّ?ِ?سْمِ\s+[ٱا]للَّ?ٰ?هِ\s+[ٱا]لرَّحْمَٰ?نِ\s+[ٱا]لرَّحِيمِ\s*|[\uFEFF\s]*بّ?ِ?سْمِ\s+اللَّهِ\s+الرَّحْمَٰنِ\s+الرَّحِيمِ\s*)',
+      );
+      final match = bismillahRegex.firstMatch(text);
+      if (match != null && match.end < text.length) {
+        text = text.substring(match.end).trim();
+      }
+    }
+    return text;
+  }
+
+  factory AyahModel.fromJson(Map<String, dynamic> json, {int? surahNumber}) {
     final num = json['number'] as int;
     final fileName = json['audio_filename'] as String? ?? '$num.mp3';
     final remote = json['remote_url'] as String? ??
@@ -93,6 +117,7 @@ class AyahModel extends Equatable {
     return AyahModel(
       number: num,
       numberInSurah: json['numberInSurah'] as int? ?? num,
+      surahNumber: surahNumber ?? json['surahNumber'] as int?,
       arabicText: json['text'] as String? ?? json['arabicText'] as String? ?? '',
       englishTranslation: json['translation'] as String? ?? json['englishTranslation'] as String? ?? '',
       transliteration: json['transliteration'] as String? ?? '',
@@ -111,6 +136,7 @@ class AyahModel extends Equatable {
   List<Object?> get props => [
         number,
         numberInSurah,
+        surahNumber,
         arabicText,
         englishTranslation,
         transliteration,

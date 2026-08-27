@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../core/services/media_download_service.dart';
+import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/floating_download_bar.dart';
 import '../../../widgets/app_header_bar.dart';
+import '../data/juz_model.dart';
 import '../data/surah_model.dart';
 import '../repositories/quran_repository.dart';
 import '../services/quran_audio_service.dart';
@@ -43,6 +45,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDownloadStatus();
+      final storage = ref.read(storageServiceProvider);
+      if (widget.juzNumber != null) {
+        storage.setLastReadJuz(widget.juzNumber!);
+      } else {
+        storage.setLastRead(widget.surahNumber, 1);
+      }
     });
   }
 
@@ -407,6 +415,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                         ayahs,
                                         index,
                                         title: widget.surahName,
+                                        surahNumber: widget.surahNumber,
                                       );
                                     }
                                   },
@@ -463,17 +472,41 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     bool isDark,
     QuranAudioController quranAudio,
   ) {
-    final title = widget.juzNumber != null
-        ? 'Juz ${widget.juzNumber}'
-        : currentSurah.nameEnglish;
+    final bool isJuzMode = widget.juzNumber != null;
+    final JuzModel? currentJuz = isJuzMode
+        ? juzList.firstWhere(
+            (j) => j.number == widget.juzNumber,
+            orElse: () => juzList.first,
+          )
+        : null;
 
-    final subtitle = widget.juzNumber != null
-        ? 'Para ${widget.juzNumber}  •  ${ayahs.length} Ayahs'
-        : '${currentSurah.nameTranslation}  •  ${currentSurah.verseCount} Ayahs  •  ${currentSurah.revelationType}';
+    final String title = isJuzMode
+        ? '${currentJuz!.nameEnglish}  (${currentJuz.nameArabic})'
+        : '${currentSurah.nameEnglish}  (${currentSurah.nameArabic})';
+
+    final String subtitle1 = isJuzMode
+        ? 'Para ${currentJuz!.number}  •  Juz ${currentJuz.number}'
+        : '${currentSurah.nameTranslation}  •  Surah ${currentSurah.number}  •  ${currentSurah.revelationType}';
+
+    final int startJuz = ayahs.isNotEmpty ? ayahs.first.juz : 1;
+    final int endJuz = ayahs.isNotEmpty ? ayahs.last.juz : 1;
+    final int startPage = isJuzMode
+        ? currentJuz!.startPage
+        : (ayahs.isNotEmpty ? ayahs.first.page : 1);
+    final int endPage = isJuzMode
+        ? currentJuz!.endPage
+        : (ayahs.isNotEmpty ? ayahs.last.page : 1);
+
+    final String rangeText = isJuzMode
+        ? '${currentJuz!.surahRange}  •  ${ayahs.length} Ayahs  •  Pages $startPage - $endPage'
+        : 'Ayahs 1 - ${currentSurah.verseCount} (${currentSurah.verseCount} Ayahs)  •  ${startJuz == endJuz ? "Juz $startJuz" : "Juz $startJuz - $endJuz"}  •  ${startPage == endPage ? "Page $startPage" : "Pages $startPage - $endPage"}';
+
+    final bool isPlayingThisPlaylist =
+        quranAudio.currentIndex >= 0 && quranAudio.isPlaying;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
@@ -492,120 +525,130 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         ],
       ),
       child: Stack(
-        alignment: Alignment.center,
         children: [
+          // Background Icon Watermark
           Positioned(
-            right: 10,
-            bottom: 0,
+            left: 10,
+            bottom: -5,
             child: Opacity(
-              opacity: 0.20,
+              opacity: 0.16,
               child: Icon(
-                revelationIcon,
-                size: 64,
+                isJuzMode ? FlutterIslamicIcons.quran2 : revelationIcon,
+                size: 72,
                 color: const Color(0xFFA3E635),
               ),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+
+          // Top Right Beautiful & Attractive Play Button
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  if (isPlayingThisPlaylist) {
+                    quranAudio.togglePlayPause();
+                  } else {
+                    quranAudio.playPlaylist(
+                      ayahs,
+                      0,
+                      title: isJuzMode
+                          ? 'Juz ${widget.juzNumber} - ${currentJuz?.nameEnglish ?? ""}'
+                          : widget.surahName,
+                      surahNumber: widget.surahNumber,
+                    );
+                  }
+                },
+                borderRadius: BorderRadius.circular(28),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isPlayingThisPlaylist
+                        ? const Color(0xFFA3E635)
+                        : Colors.white.withValues(alpha: 0.22),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isPlayingThisPlaylist
+                          ? const Color(0xFFA3E635)
+                          : Colors.white.withValues(alpha: 0.4),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    isPlayingThisPlaylist
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
+                    color: isPlayingThisPlaylist
+                        ? const Color(0xFF1A3512)
+                        : Colors.white,
+                    size: 24,
+                  ),
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFFd1ffbe),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (widget.surahNumber != 9 && widget.juzNumber == null) ...[
-                const SizedBox(height: 12),
+            ),
+          ),
+
+          // Main Header Text Details
+          Padding(
+            padding: const EdgeInsets.only(right: 48),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-                  textAlign: TextAlign.center,
-                  textDirection: TextDirection.rtl,
-                  style: GoogleFonts.amiri(
-                    fontSize: 24,
+                  title,
+                  style: const TextStyle(
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFFd1ffbe),
-                    height: 1.7,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
                   ),
                 ),
-              ],
-              const SizedBox(height: 14),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      if (quranAudio.currentIndex >= 0 && quranAudio.isPlaying) {
-                        quranAudio.togglePlayPause();
-                      } else {
-                        quranAudio.playPlaylist(ayahs, 0, title: widget.surahName);
-                      }
-                    },
-                    icon: Icon(
-                      (quranAudio.currentIndex >= 0 && quranAudio.isPlaying)
-                          ? Icons.pause_rounded
-                          : Icons.play_arrow_rounded,
-                      color: const Color(0xFF1A3512),
-                    ),
-                    label: Text(
-                      (quranAudio.currentIndex >= 0 && quranAudio.isPlaying)
-                          ? 'Pause Audio'
-                          : 'Play Audio',
-                      style: GoogleFonts.outfit(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A3512),
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA3E635),
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
+                const SizedBox(height: 5),
+                Text(
+                  subtitle1,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFFd1ffbe),
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(width: 12),
-                  OutlinedButton.icon(
-                    onPressed: () => _triggerExplicitDownload(context, ayahs),
-                    icon: Icon(
-                      _isDownloaded
-                          ? Icons.check_circle_rounded
-                          : Icons.download_for_offline_rounded,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    label: Text(
-                      _isDownloaded ? 'Downloaded' : 'Download Surah',
-                      style: GoogleFonts.outfit(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFFd1ffbe), width: 1.2),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  rangeText,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: Colors.white.withValues(alpha: 0.88),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (widget.surahNumber != 9) ...[
+                  const SizedBox(height: 14),
+                  Center(
+                    child: Text(
+                      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+                      textAlign: TextAlign.center,
+                      textDirection: TextDirection.rtl,
+                      style: GoogleFonts.amiri(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFFd1ffbe),
+                        height: 1.7,
                       ),
                     ),
                   ),
                 ],
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -895,11 +938,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         SelectableText.rich(
                           TextSpan(
                             children: pAyahs.map((ayah) {
-                              final cleanText = ayah.arabicText
-                                  .replaceAll(RegExp(r'\s*\(\d+:\d+\)\s*'), '')
-                                  .replaceAll(RegExp(r'\s*﴿\d+:\d+﴾\s*'), '')
-                                  .replaceAll(RegExp(r'\s*﴿\d+﴾\s*'), '')
-                                  .trim();
+                              final cleanText = ayah.displayArabicText;
 
                               final isPlayingThis = playingAyah?.number == ayah.number;
 
@@ -973,11 +1012,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     required bool isSelected,
     required VoidCallback onPlayTap,
   }) {
-    final cleanArabicText = ayah.arabicText
-        .replaceAll(RegExp(r'\s*\(\d+:\d+\)\s*'), '')
-        .replaceAll(RegExp(r'\s*﴿\d+:\d+﴾\s*'), '')
-        .replaceAll(RegExp(r'\s*﴿\d+﴾\s*'), '')
-        .trim();
+    final cleanArabicText = ayah.displayArabicText;
 
     final cardBgColor = isSelected
         ? (isDark ? const Color(0xFF1B3623) : const Color(0xFFEAF5E9))
@@ -1151,11 +1186,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       child: SelectableText.rich(
         TextSpan(
           children: ayahs.map((ayah) {
-            final cleanText = ayah.arabicText
-                .replaceAll(RegExp(r'\s*\(\d+:\d+\)\s*'), '')
-                .replaceAll(RegExp(r'\s*﴿\d+:\d+﴾\s*'), '')
-                .replaceAll(RegExp(r'\s*﴿\d+﴾\s*'), '')
-                .trim();
+            final cleanText = ayah.displayArabicText;
 
             final isPlayingThis = playingAyah?.number == ayah.number;
 

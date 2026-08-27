@@ -45,7 +45,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
   int? _selectedDocumentSize;
 
   String _selectedCategory = 'Hadith';
-  List<String> _categories = [
+  final List<String> _categories = [
     'Hadith',
     'Seerah',
     'Fiqh',

@@ -291,6 +291,10 @@ class StorageService {
     return _bookmarksBox.get('last_ayah') as int?;
   }
 
+  int? getLastReadJuz() {
+    return _bookmarksBox.get('last_juz') as int?;
+  }
+
   Future<void> saveBookmark(int surah, int ayah) async {
     await _bookmarksBox.put('last_surah', surah);
     await _bookmarksBox.put('last_ayah', ayah);
@@ -299,6 +303,10 @@ class StorageService {
   Future<void> setLastRead(dynamic surah, int ayah) async {
     await _bookmarksBox.put('last_surah', surah);
     await _bookmarksBox.put('last_ayah', ayah);
+  }
+
+  Future<void> setLastReadJuz(int juz) async {
+    await _bookmarksBox.put('last_juz', juz);
   }
 
   // --- Saved Dua Items ---

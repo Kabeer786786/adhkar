@@ -47,7 +47,7 @@ class AppDropdown<T> extends StatelessWidget {
     final primaryColor = const Color(0xFF2A531D);
 
     final effectiveItemsList = List<AppDropdownItem<T>>.from(items);
-    if (value != null && T == String && value.toString().isNotEmpty && !effectiveItemsList.any((item) => item.value == value)) {
+    if (value != null && value is String && value.toString().isNotEmpty && !effectiveItemsList.any((item) => item.value == value)) {
       effectiveItemsList.add(
         AppDropdownItem<T>(
           value: value as T,
@@ -82,7 +82,7 @@ class AppDropdown<T> extends StatelessWidget {
           ),
           child: DropdownButtonFormField<T>(
             key: ValueKey(effectiveValue),
-            value: effectiveValue,
+            initialValue: effectiveValue,
             isExpanded: isExpanded,
             validator: validator,
             padding: const EdgeInsets.symmetric(vertical: 1),
@@ -170,11 +170,12 @@ class AppDropdown<T> extends StatelessWidget {
             if (onAddCustomCategory != null)
               DropdownMenuItem<T>(
                 value: null,
-                onTap: () async {
-                  final newCategory = await onAddCustomCategory!();
-                  if (newCategory != null && newCategory.isNotEmpty) {
-                    // Handled by parent callback
-                  }
+                onTap: () {
+                  Future.microtask(() async {
+                    if (onAddCustomCategory != null) {
+                      await onAddCustomCategory!();
+                    }
+                  });
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
@@ -199,7 +200,11 @@ class AppDropdown<T> extends StatelessWidget {
                 ),
               ),
           ],
-          onChanged: onChanged,
+          onChanged: (val) {
+            if (val != null) {
+              onChanged(val);
+            }
+          },
         ), 
       ),
     ],

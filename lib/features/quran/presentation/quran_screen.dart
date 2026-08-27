@@ -45,9 +45,14 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     final storage = ref.watch(storageServiceProvider);
 
     final lastSurahNum = storage.getLastReadSurah() ?? 1;
+    final lastJuzNum = storage.getLastReadJuz() ?? 1;
     final lastSurah = allSurahs.firstWhere(
       (s) => s.number == lastSurahNum,
       orElse: () => allSurahs.first,
+    );
+    final lastJuz = juzList.firstWhere(
+      (j) => j.number == lastJuzNum,
+      orElse: () => juzList.first,
     );
 
     final query = _searchController.text.trim().toLowerCase();
@@ -71,7 +76,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
         children: [
           Scaffold(
             backgroundColor:
-                isDark ? const Color(0xFF17241E) : const Color(0xFFF9F9F9),
+                isDark ? const Color(0xFF17241E) : const Color(0xFFFFFFFF),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
@@ -139,7 +144,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     filled: true,
                     fillColor: isDark
                         ? const Color(0xFF23322B)
-                        : const Color(0xFFF4FAF3),
+                        : const Color(0xFFF9F9F9),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
@@ -162,9 +167,17 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                 children: [
                   // Last Read Hero Banner Card
                   GestureDetector(
-                    onTap: () => context.push(
-                      '/quran/surah?num=${lastSurah.number}&name=${Uri.encodeComponent(lastSurah.nameEnglish)}',
-                    ),
+                    onTap: () {
+                      if (_selectedTab == 1) {
+                        context.push(
+                          '/quran/surah?juz=${lastJuz.number}&name=${Uri.encodeComponent("Juz ${lastJuz.number} - ${lastJuz.nameEnglish}")}',
+                        );
+                      } else {
+                        context.push(
+                          '/quran/surah?num=${lastSurah.number}&name=${Uri.encodeComponent(lastSurah.nameEnglish)}',
+                        );
+                      }
+                    },
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
@@ -219,7 +232,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Last Read',
+                                    _selectedTab == 1 ? 'Last Read Juz' : 'Last Read Surah',
                                     style: TextStyle(
                                       color: Colors.white.withValues(
                                         alpha: 0.9,
@@ -233,7 +246,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                lastSurah.nameEnglish,
+                                _selectedTab == 1 ? lastJuz.nameEnglish : lastSurah.nameEnglish,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -242,7 +255,9 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${lastSurah.nameTranslation}  •  Ayah 1',
+                                _selectedTab == 1
+                                    ? 'Para ${lastJuz.number}  •  ${lastJuz.surahRange}'
+                                    : '${lastSurah.nameTranslation}  •  Ayah 1',
                                 style: const TextStyle(
                                   color: Color(0xFFd1ffbe),
                                   fontSize: 12.5,
@@ -409,13 +424,6 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               ),
                             ),
                           ),
-                          Divider(
-                            height: 1,
-                            thickness: 0.8,
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.06)
-                                : const Color(0xFFE2E8F0),
-                          ),
                         ],
                       );
                     }),
@@ -423,6 +431,8 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                   // Tab 1: Juz (30 Paras) List
                   if (_selectedTab == 1)
                     ...filteredJuz.map((juz) {
+                      final isLastRead = juz.number == lastJuzNum;
+
                       return Column(
                         children: [
                           InkWell(
@@ -437,6 +447,43 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               ),
                               child: Row(
                                 children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: isLastRead
+                                          ? const Color(0xFF2A531D)
+                                          : (isDark
+                                                ? const Color(0xFF23322B)
+                                                : const Color(0xFFF4FAF3)),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isLastRead
+                                            ? const Color(0xFF2A531D)
+                                            : (isDark
+                                                  ? Colors.white12
+                                                  : const Color(
+                                                      0xFF2A531D,
+                                                    ).withValues(alpha: 0.15)),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        juz.number < 10
+                                            ? '0${juz.number}'
+                                            : '${juz.number}',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: isLastRead
+                                              ? Colors.white
+                                              : (isDark
+                                                    ? Colors.white70
+                                                    : const Color(0xFF2A531D)),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   Container(
                                     width: 42,
                                     height: 42,
@@ -468,7 +515,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Juz ${juz.number} • ${juz.nameEnglish}',
+                                          juz.nameEnglish,
                                           style: TextStyle(
                                             fontSize: 15.5,
                                             fontWeight: FontWeight.bold,
@@ -479,7 +526,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                         ),
                                         const SizedBox(height: 3),
                                         Text(
-                                          '${juz.surahRange}  •  Pages ${juz.startPage}-${juz.endPage}',
+                                          juz.surahRange,
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
@@ -501,13 +548,6 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                 ],
                               ),
                             ),
-                          ),
-                          Divider(
-                            height: 1,
-                            thickness: 0.8,
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.06)
-                                : const Color(0xFFE2E8F0),
                           ),
                         ],
                       );
