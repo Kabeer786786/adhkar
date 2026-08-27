@@ -82,13 +82,17 @@ class ReminderScheduler {
     }
 
     if (!reminder.isEnabled) {
-      debugPrint('[ReminderScheduler] Reminder ${reminder.id} disabled. Cancelled.');
+      debugPrint(
+        '[ReminderScheduler] Reminder ${reminder.id} disabled. Cancelled.',
+      );
       return;
     }
 
     final nextTrigger = reminder.calculateNextOccurrence(DateTime.now());
     if (nextTrigger == null) {
-      debugPrint('[ReminderScheduler] No next occurrence calculated for ${reminder.id}');
+      debugPrint(
+        '[ReminderScheduler] No next occurrence calculated for ${reminder.id}',
+      );
       return;
     }
 
@@ -113,12 +117,16 @@ class ReminderScheduler {
     _cachedReminders.removeWhere((r) => r.id == id);
     final notifId = generateNotificationId(id);
     await _notificationService.cancel(notifId);
-    debugPrint('[ReminderScheduler] Cancelled notification ID $notifId for reminder $id');
+    debugPrint(
+      '[ReminderScheduler] Cancelled notification ID $notifId for reminder $id',
+    );
   }
 
   Future<void> rescheduleAll(List<CustomReminder> reminders) async {
     _cachedReminders = List<CustomReminder>.from(reminders);
-    debugPrint('[ReminderScheduler] Rescheduling all ${reminders.length} reminders...');
+    debugPrint(
+      '[ReminderScheduler] Rescheduling all ${reminders.length} reminders...',
+    );
     for (final reminder in reminders) {
       await scheduleReminder(reminder);
     }

@@ -11,7 +11,6 @@ import 'package:just_audio_background/just_audio_background.dart';
 import '../../../core/config/reminder_audio_config.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
-import '../../prayer/domain/prayer_models.dart';
 import '../domain/reminder_model.dart';
 import 'providers/reminder_provider.dart';
 
@@ -51,6 +50,9 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   void initState() {
     super.initState();
 
+    // Listen to physical volume / power buttons to dismiss/silence alarm
+    HardwareKeyboard.instance.addHandler(_handleKeyEvent);
+
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1400),
@@ -83,7 +85,21 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     });
 
     _initAudioAndVibration();
-  } 
+  }
+
+  bool _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      final key = event.logicalKey;
+      if (key == LogicalKeyboardKey.audioVolumeDown ||
+          key == LogicalKeyboardKey.audioVolumeUp ||
+          key == LogicalKeyboardKey.audioVolumeMute ||
+          key == LogicalKeyboardKey.power) {
+        _dismissAlarm();
+        return true;
+      }
+    }
+    return false;
+  }
 
   Future<void> _initAudioAndVibration() async {
     final reminders = ref.read(remindersProvider);
@@ -105,7 +121,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     final vibrationEnabled = customReminder?.vibrationEnabled ?? true;
     final durationSeconds = customReminder?.duration.inSeconds ?? 30;
 
-    // Iteratively loop audio for user specified period of time, then auto-dismiss
+    // Auto-dismiss timer based on user specified reminder duration
     _autoDismissTimer?.cancel();
     _autoDismissTimer = Timer(Duration(seconds: durationSeconds), () {
       if (mounted) _dismissAlarm();
@@ -113,38 +129,19 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
 
     if (soundEnabled) {
       final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
-
       try {
         final mediaItem = MediaItem(
           id: 'alarm_${widget.reminderId ?? "prayer"}_${effectiveSoundType.replaceAll(" ", "_")}',
           title: widget.title ?? widget.prayerName ?? effectiveSoundType,
           album: 'Adhkar Alarm',
-        ); 
+        );
         await _audioPlayer.setAudioSource(
           AudioSource.asset(assetPath, tag: mediaItem),
         );
         await _audioPlayer.setLoopMode(LoopMode.one);
         await _audioPlayer.play();
       } catch (e) {
-        debugPrint('[AlarmScreen] Asset error: $e. Trying fallback URL...');
-        try {
-          final fallbackUrl =
-              PrayerNotificationConfig.soundAudioUrls[effectiveSoundType];
-          if (fallbackUrl != null) {
-            final mediaItem = MediaItem(
-              id: 'alarm_fallback_${widget.reminderId ?? "prayer"}',
-              title: widget.title ?? widget.prayerName ?? effectiveSoundType,
-              album: 'Adhkar Alarm',
-            );
-            await _audioPlayer.setAudioSource(
-              AudioSource.uri(Uri.parse(fallbackUrl), tag: mediaItem),
-            );
-            await _audioPlayer.setLoopMode(LoopMode.one);
-            await _audioPlayer.play();
-          }
-        } catch (err) {
-          debugPrint('[AlarmScreen] Fallback audio failed: $err');
-        }
+        debugPrint('[AlarmScreen] Audio playback fallback: $e');
       }
     }
 
@@ -158,6 +155,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
 
   @override
   void dispose() {
+    HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
     _pulseController.dispose();
     _rotateController.dispose();
     _autoDismissTimer?.cancel();

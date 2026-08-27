@@ -33,7 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final ValueNotifier<double> _appBarOpacity = ValueNotifier<double>(0.0);
   static bool _hasPromptedProfileInSession = false;
 
-  @override
+  @override 
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);

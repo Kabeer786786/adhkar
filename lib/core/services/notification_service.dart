@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -37,7 +38,12 @@ class NotificationService {
     await _notificationsPlugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (details) {
-        if (details.payload != null && details.payload!.isNotEmpty) {
+        if (details.actionId == 'turn_off_reminder') {
+          if (details.id != null) {
+            _notificationsPlugin.cancel(details.id!);
+          }
+          _notificationSelectController.add('dismiss:${details.payload ?? ""}');
+        } else if (details.payload != null && details.payload!.isNotEmpty) {
           _notificationSelectController.add(details.payload);
         }
       },
@@ -206,6 +212,14 @@ class NotificationService {
       iosSound = '$rawName.mp3';
     }
 
+    final bigTextStyleInformation = BigTextStyleInformation(
+      body.isNotEmpty
+          ? '$body\n\n⏰ Scheduled Adhkar Alert Active'
+          : 'It\'s time for your scheduled reminder & adhkar.\n\n⏰ Scheduled Adhkar Alert Active',
+      contentTitle: title,
+      summaryText: 'Scheduled Reminder',
+    );
+
     final androidDetails = AndroidNotificationDetails(
       channelId,
       channelName,
@@ -219,7 +233,17 @@ class NotificationService {
       audioAttributesUsage: AudioAttributesUsage.alarm,
       category: AndroidNotificationCategory.alarm,
       visibility: NotificationVisibility.public,
+      styleInformation: bigTextStyleInformation,
+      color: const Color(0xFF2A531D),
       fullScreenIntent: true,
+      actions: const <AndroidNotificationAction>[
+        AndroidNotificationAction(
+          'turn_off_reminder',
+          '⏹ Turn Off Reminder',
+          showsUserInterface: false,
+          cancelNotification: true,
+        ),
+      ],
     );
 
     final notificationDetails = NotificationDetails(
