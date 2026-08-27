@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../../../../core/config/reminder_audio_config.dart';
 import '../../domain/reminder_model.dart';
 
@@ -97,7 +98,14 @@ class _ReminderModalState extends State<ReminderModal> {
       _previewPlayer ??= AudioPlayer();
       await _previewPlayer!.stop();
       final path = ReminderAudioConfig.getAssetPath(_soundType);
-      await _previewPlayer!.setAsset(path);
+      final mediaItem = MediaItem(
+        id: 'preview_${_soundType.replaceAll(" ", "_")}',
+        title: _soundType,
+        album: 'Alarm Preview',
+      );
+      await _previewPlayer!.setAudioSource(
+        AudioSource.asset(path, tag: mediaItem),
+      );
       await _previewPlayer!.play();
       if (mounted) setState(() => _isPreviewPlaying = true);
 

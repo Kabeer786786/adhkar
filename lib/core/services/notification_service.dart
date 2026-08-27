@@ -216,8 +216,8 @@ class NotificationService {
       sound: notifSound,
       enableVibration: vibration,
       vibrationPattern: vibration ? vibrationPattern : null,
-      audioAttributesUsage: AudioAttributesUsage.notification,
-      category: AndroidNotificationCategory.reminder,
+      audioAttributesUsage: AudioAttributesUsage.alarm,
+      category: AndroidNotificationCategory.alarm,
       visibility: NotificationVisibility.public,
       fullScreenIntent: true,
     );

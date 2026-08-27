@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../../../core/config/reminder_audio_config.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
@@ -45,7 +46,6 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   Timer? _clockTimer;
   DateTime _currentTime = DateTime.now();
   String _activeSoundName = 'Default Ringtone';
-  bool _isAudioPlaying = false;
 
   @override
   void initState() {
@@ -115,20 +115,32 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
 
       try {
-        await _audioPlayer.setAsset(assetPath);
+        final mediaItem = MediaItem(
+          id: 'alarm_${widget.reminderId ?? "prayer"}_${effectiveSoundType.replaceAll(" ", "_")}',
+          title: widget.title ?? widget.prayerName ?? effectiveSoundType,
+          album: 'Adhkar Alarm',
+        ); 
+        await _audioPlayer.setAudioSource(
+          AudioSource.asset(assetPath, tag: mediaItem),
+        );
         await _audioPlayer.setLoopMode(LoopMode.one);
         await _audioPlayer.play();
-        if (mounted) setState(() => _isAudioPlaying = true);
       } catch (e) {
         debugPrint('[AlarmScreen] Asset error: $e. Trying fallback URL...');
         try {
           final fallbackUrl =
               PrayerNotificationConfig.soundAudioUrls[effectiveSoundType];
           if (fallbackUrl != null) {
-            await _audioPlayer.setUrl(fallbackUrl);
+            final mediaItem = MediaItem(
+              id: 'alarm_fallback_${widget.reminderId ?? "prayer"}',
+              title: widget.title ?? widget.prayerName ?? effectiveSoundType,
+              album: 'Adhkar Alarm',
+            );
+            await _audioPlayer.setAudioSource(
+              AudioSource.uri(Uri.parse(fallbackUrl), tag: mediaItem),
+            );
             await _audioPlayer.setLoopMode(LoopMode.one);
             await _audioPlayer.play();
-            if (mounted) setState(() => _isAudioPlaying = true);
           }
         } catch (err) {
           debugPrint('[AlarmScreen] Fallback audio failed: $err');
@@ -472,100 +484,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 children: [
-                  // Top Status Badge Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: const Color(0xFF4ADE80).withValues(alpha: 0.5),
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF4ADE80),
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xFF4ADE80),
-                                    blurRadius: 6,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              isPrayer
-                                  ? 'PRAYER ALARM ACTIVE'
-                                  : 'REMINDER ALARM ACTIVE',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF86EFAC),
-                                letterSpacing: 0.8,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Sound Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.15),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _isAudioPlaying
-                                  ? Icons.volume_up_rounded
-                                  : Icons.music_note_rounded,
-                              color: const Color(0xFFFBBF24),
-                              size: 15,
-                            ),
-                            const SizedBox(width: 5),
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 120),
-                              child: Text(
-                                _activeSoundName,
-                                style: GoogleFonts.lexend(
-                                  fontSize: 11,
-                                  color: Colors.white70,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
+                  const SizedBox(height: 24),
                   const Spacer(flex: 1),
 
                   // Animated Concentric Pulsing Center Avatar

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
 import '../config/reminder_audio_config.dart';
 
@@ -21,7 +22,7 @@ class AlarmAudioService {
     bool sound = true,
     bool vibration = true,
     String soundType = 'Madinah Azaan',
-    int maxDurationSeconds = 30,
+    int maxDurationSeconds = 30, 
   }) async {
     await stopAlarm(); // Stop any active alarm
 
@@ -32,20 +33,34 @@ class AlarmAudioService {
       try {
         _audioPlayer = AudioPlayer();
         final assetPath = ReminderAudioConfig.getAssetPath(soundType);
+        final mediaItem = MediaItem(
+          id: 'alarm_audio_service_${soundType.replaceAll(" ", "_")}',
+          title: soundType,
+          album: 'Adhkar Alarm',
+        );
+
         try {
-          await _audioPlayer!.setAsset(assetPath);
+          await _audioPlayer!.setAudioSource(
+            AudioSource.asset(assetPath, tag: mediaItem),
+          );
         } catch (_) {
           // Fallback to local Madina Azaan asset or network
           try {
-            await _audioPlayer!.setAsset('assets/audios/madina_azaan.mp3');
+            await _audioPlayer!.setAudioSource(
+              AudioSource.asset('assets/audios/madina_azaan.mp3', tag: mediaItem),
+            );
           } catch (_) {
-            await _audioPlayer!.setUrl(
-              'https://raw.githubusercontent.com/islamic-network/athan-mp3/master/mecca.mp3',
+            await _audioPlayer!.setAudioSource(
+              AudioSource.uri(
+                Uri.parse(
+                  'https://raw.githubusercontent.com/islamic-network/athan-mp3/master/mecca.mp3',
+                ),
+                tag: mediaItem,
+              ),
             );
           }
         }
         await _audioPlayer!.setLoopMode(LoopMode.one);
-        await _audioPlayer!.setVolume(1.0);
         await _audioPlayer!.play();
       } catch (e) {
         // Fallback gracefully if network/audio is unavailable
