@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/tasbeeh_item.dart';
 
 class TasbeehCardTile extends StatelessWidget {
@@ -68,9 +69,9 @@ class TasbeehCardTile extends StatelessWidget {
                       // Arabic Text
                       Text(
                         item.textAr,
-                        style: GoogleFonts.amiri(
+                        textDirection: TextDirection.rtl,
+                        style: AppTypography.arabicBody(
                           fontSize: 22,
-                          fontWeight: FontWeight.bold,
                           height: 1.8,
                           color: context.isDarkMode
                               ? Colors.white

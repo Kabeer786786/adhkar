@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/services/showcase_service.dart';
+import '../../../core/typography/arabic_font.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/providers/user_profile_provider.dart';
 import '../../../shared/widgets/location_selection_modal.dart';
@@ -377,6 +378,219 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+
+          // 6px light/dark gray divider box
+          const _SectionDivider(),
+
+          // Arabic Font Selection Section
+          const SectionHeader(
+            title: 'Arabic Font',
+            subtitle: 'Global font for Quran, Adhkar, Dua, and Arabic text',
+          ),
+          Consumer(
+            builder: (context, ref, _) {
+              final activeFont = ref.watch(arabicFontProvider);
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: cardBorder, width: 1),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF23352B)
+                                : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.text_fields_rounded,
+                            color: primaryGreen,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Arabic Script Font',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                  color: textColor,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Active: ${activeFont.displayName}',
+                                style: GoogleFonts.lexend(
+                                  fontSize: 12,
+                                  color: subTextColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    ...ArabicFont.values.map((font) {
+                      final isSelected = activeFont == font;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: InkWell(
+                          onTap: () {
+                            ref.read(arabicFontProvider.notifier).setFont(font);
+                          },
+                          borderRadius: BorderRadius.circular(14),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? (isDark
+                                      ? primaryGreen.withValues(alpha: 0.25)
+                                      : const Color(0xFFE8F5E9))
+                                  : (isDark
+                                      ? const Color(0xFF23352B)
+                                      : const Color(0xFFF8FAFC)),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: isSelected
+                                    ? primaryGreen
+                                    : (isDark
+                                        ? Colors.white10
+                                        : const Color(0xFFE2E8F0)),
+                                width: isSelected ? 1.5 : 1.0,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      isSelected
+                                          ? Icons.radio_button_checked_rounded
+                                          : Icons.radio_button_off_rounded,
+                                      color: isSelected
+                                          ? primaryGreen
+                                          : (isDark
+                                              ? Colors.white38
+                                              : const Color(0xFF94A3B8)),
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                font.displayName,
+                                                style: GoogleFonts.outfit(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: isSelected
+                                                      ? (isDark
+                                                          ? Colors.white
+                                                          : primaryGreen)
+                                                      : textColor,
+                                                ),
+                                              ),
+                                              if (font.isDefault) ...[
+                                                const SizedBox(width: 8),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: primaryGreen
+                                                        .withValues(alpha: 0.15),
+                                                    borderRadius:
+                                                        BorderRadius.circular(6),
+                                                  ),
+                                                  child: Text(
+                                                    'DEFAULT',
+                                                    style: GoogleFonts.lexend(
+                                                      fontSize: 9.5,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: primaryGreen,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            font.description,
+                                            style: GoogleFonts.lexend(
+                                              fontSize: 11.5,
+                                              color: subTextColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? Colors.black.withValues(alpha: 0.25)
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white10
+                                          : const Color(0xFFEEF2F6),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    font.samplePreviewText,
+                                    textDirection: TextDirection.rtl,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontFamily: font.fontFamily,
+                                      fontSize: 18,
+                                      height: 1.8,
+                                      fontWeight: FontWeight.normal,
+                                      color: textColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              );
+            },
           ),
 
           // 6px light/dark gray divider box

@@ -1,24 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../typography/arabic_font.dart';
 
 /// Typography hierarchy following Material Design 3 guidelines.
-/// Incorporates Google Fonts Outfit for UI text and Amiri for Arabic script.
+/// Incorporates Google Fonts Outfit for UI text and bundled offline Arabic fonts for Arabic script.
 class AppTypography {
   AppTypography._();
 
-  static TextStyle arabicHeader({double fontSize = 28, Color? color}) {
-    return GoogleFonts.amiri(
+  /// Global active font fallback used when no specific [ArabicFont] is provided.
+  static ArabicFont activeArabicFont = ArabicFont.defaultFont;
+
+  static TextStyle arabicHeader({
+    ArabicFont? arabicFont,
+    double fontSize = 28,
+    Color? color,
+    double height = 1.8,
+    FontWeight fontWeight = FontWeight.normal,
+  }) {
+    final font = arabicFont ?? activeArabicFont;
+    return TextStyle(
+      fontFamily: font.fontFamily,
       fontSize: fontSize,
-      fontWeight: FontWeight.bold,
-      height: 1.8,
+      fontWeight: fontWeight,
+      height: height,
       color: color,
     );
   }
 
-  static TextStyle arabicBody({double fontSize = 22, Color? color, double height = 2.0}) {
-    return GoogleFonts.amiri(
+  static TextStyle arabicBody({
+    ArabicFont? arabicFont,
+    double fontSize = 22,
+    Color? color,
+    double height = 2.0,
+    FontWeight fontWeight = FontWeight.normal,
+  }) {
+    final font = arabicFont ?? activeArabicFont;
+    return TextStyle(
+      fontFamily: font.fontFamily,
       fontSize: fontSize,
-      fontWeight: FontWeight.w500,
+      fontWeight: fontWeight,
       height: height,
       color: color,
     );

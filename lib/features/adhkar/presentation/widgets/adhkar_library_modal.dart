@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/adhkar_category.dart';
 import '../../../../shared/models/dhikr_item.dart';
 import '../../../../shared/widgets/app_floating_toast.dart';
@@ -431,9 +432,8 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                     textDirection: TextDirection.rtl,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.amiri(
+                                    style: AppTypography.arabicHeader(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.bold,
                                       color: gradientPreset.textColor,
                                       height: 1.6,
                                     ),
@@ -522,9 +522,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                 ),
                 child: Text(
                   cat.titleAr,
-                  style: GoogleFonts.amiri(
+                  textDirection: TextDirection.rtl,
+                  style: AppTypography.arabicHeader(
                     fontSize: 15,
-                    fontWeight: FontWeight.bold,
                     color: gradientPreset.textColor,
                   ),
                 ),
@@ -571,10 +571,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                   item.arabicText,
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
-                                  style: GoogleFonts.amiri(
+                                  style: AppTypography.arabicBody(
                                     fontSize: 22,
                                     height: 1.8,
-                                    fontWeight: FontWeight.bold,
                                     color: const Color(0xFF1B5E20),
                                   ),
                                 ),
@@ -752,7 +751,8 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
             TextField(
               controller: _formTitleArController,
               textAlign: TextAlign.right,
-              style: GoogleFonts.amiri(fontSize: 18),
+              textDirection: TextDirection.rtl,
+              style: AppTypography.arabicBody(fontSize: 18),
               decoration: _roundedInputDecoration(
                 labelText: 'Arabic Title (Optional)',
                 hintText: 'أدعية السفر',

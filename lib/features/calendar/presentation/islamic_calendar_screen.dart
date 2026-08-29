@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import '../../../core/extensions/context_extensions.dart';
 import '../../../core/services/hijri_service.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/hijri_disclaimer_chip.dart';
 import '../../../shared/widgets/islamic_monthly_calendar_modal.dart';
@@ -324,9 +325,8 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                     Text(
                       todayData?.monthAr ?? currentHijriMonthMeta['nameAr']!,
                       textDirection: TextDirection.rtl,
-                      style: GoogleFonts.amiri(
+                      style: AppTypography.arabicHeader(
                         fontSize: 22,
-                        fontWeight: FontWeight.bold,
                         color: Colors.amber.shade200,
                       ),
                     ),
@@ -509,9 +509,8 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                                 Text(
                                   '(${month['nameAr']!})',
                                   textDirection: TextDirection.rtl,
-                                  style: GoogleFonts.amiri(
+                                  style: AppTypography.arabicHeader(
                                     fontSize: 14,
-                                    fontWeight: FontWeight.bold,
                                     color: accentColor,
                                   ),
                                 ),
@@ -885,9 +884,8 @@ class _GregorianToHijriModalState
                       Text(
                         _convertedResult!.monthAr,
                         textDirection: TextDirection.rtl,
-                        style: GoogleFonts.amiri(
+                        style: AppTypography.arabicHeader(
                           fontSize: 22,
-                          fontWeight: FontWeight.bold,
                           color: Colors.amber.shade200,
                         ),
                       ),

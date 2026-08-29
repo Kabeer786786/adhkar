@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../data/dua_repository.dart';
@@ -571,9 +571,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                           textDirection: TextDirection.rtl,
-                                          style: GoogleFonts.amiri(
+                                          style: AppTypography.arabicHeader(
                                             fontSize: 18,
-                                            fontWeight: FontWeight.bold,
                                             color: const Color(0xFF1B3512),
                                             height: 1.5,
                                           ),

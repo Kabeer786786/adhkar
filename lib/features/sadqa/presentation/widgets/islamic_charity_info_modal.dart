@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/theme/app_typography.dart';
 
 class IslamicCharityInfoModal extends StatefulWidget {
   const IslamicCharityInfoModal({super.key});
@@ -246,9 +247,8 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                 child: Text(
                   'مَّن ذَا الَّذِي يُقۡرِضُ اللَّهَ قَرۡضًا حَسَنًا فَيُضَاعِفَهُ لَهُ أَضۡعَافًا كَثِيرَةً',
                   textDirection: TextDirection.rtl,
-                  style: GoogleFonts.amiri(
+                  style: AppTypography.arabicBody(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
                     color: const Color(0xFF78350F),
                   ),
                 ),
@@ -393,9 +393,8 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                 child: Text(
                   'وَالَّذِينَ يَكۡنِزُونَ الذَّهَبَ وَالۡفِضَّةَ وَلَا يُنفِقُونَهَا فِي سَبِيلِ اللَّهِ فَبَشِّرۡهُم بِعَذَابٍ أَلِيمٍ',
                   textDirection: TextDirection.rtl,
-                  style: GoogleFonts.amiri(
+                  style: AppTypography.arabicBody(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
                     color: const Color(0xFF7F1D1D),
                   ),
                 ),
@@ -700,9 +699,8 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
             child: Text(
               arabic,
               textDirection: TextDirection.rtl,
-              style: GoogleFonts.amiri(
+              style: AppTypography.arabicBody(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
                 color: const Color(0xFF2A531D),
               ),
             ),

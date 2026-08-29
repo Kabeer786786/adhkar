@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../core/services/media_download_service.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/floating_download_bar.dart';
 import '../../../widgets/app_header_bar.dart';
@@ -286,6 +287,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
 
     final quranAudio = ref.watch(quranAudioProvider);
     final playingAyah = quranAudio.currentAyah;
+    final arabicFont = ref.watch(arabicFontProvider);
 
     // Reactively scroll / sync page when audio changes
     ref.listen(quranAudioProvider, (previous, next) {
@@ -374,11 +376,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         isJuzMode
                             ? currentJuz!.nameArabic
                             : currentSurah.nameArabic,
-                        style: GoogleFonts.amiri(
+                        style: AppTypography.arabicHeader(
+                          arabicFont: arabicFont,
                           color: isDark
                               ? Colors.white
                               : const Color(0xFF2A531D),
-                          fontWeight: FontWeight.bold,
                           fontSize: 21,
                         ),
                       ),
@@ -644,9 +646,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         child: Text(
                           arabicName,
                           textDirection: TextDirection.rtl,
-                          style: GoogleFonts.amiri(
+                          style: AppTypography.arabicHeader(
                             fontSize: 28,
-                            fontWeight: FontWeight.bold,
                             color: const Color(0xFFd1ffbe),
                             height: 1.2,
                           ),
@@ -661,9 +662,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         'بِسۡمِ اللَّهِ الرَّحۡمَٰنِ الرَّحِيمِ',
                         textAlign: TextAlign.center,
                         textDirection: TextDirection.rtl,
-                        style: GoogleFonts.amiri(
+                        style: AppTypography.arabicHeader(
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
                           color: const Color(0xFFd1ffbe),
                           height: 1.4,
                         ),
@@ -914,10 +914,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         child: Text(
                           ayah.displayArabicText,
                           textDirection: TextDirection.rtl,
-                          style: GoogleFonts.amiri(
+                          style: AppTypography.arabicHeader(
                             color: const Color(0xFF4ADE80),
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
                             height: 1.4,
                           ),
                           maxLines: 1,
@@ -1208,9 +1207,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                             ),
                             Text(
                               currentSurah.nameArabic,
-                              style: GoogleFonts.amiri(
+                              style: AppTypography.arabicHeader(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
                                 color: const Color(0xFF2A531D),
                               ),
                             ),
@@ -1231,15 +1229,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                 children: [
                                   TextSpan(
                                     text: '$cleanText ',
-                                    style: GoogleFonts.amiri(
+                                    style: AppTypography.arabicBody(
                                       fontSize: 23,
-                                      fontWeight: FontWeight.w600,
                                       height: 2.2,
-                                      backgroundColor: isPlayingThis
-                                          ? (isDark
-                                                ? const Color(0xFF166534)
-                                                : const Color(0xFFFEF08A))
-                                          : null,
                                       color: isPlayingThis
                                           ? (isDark
                                                 ? Colors.white
@@ -1247,6 +1239,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                           : (isDark
                                                 ? Colors.white
                                                 : const Color(0xFF1F2937)),
+                                    ).copyWith(
+                                      backgroundColor: isPlayingThis
+                                          ? (isDark
+                                                ? const Color(0xFF166534)
+                                                : const Color(0xFFFEF08A))
+                                          : null,
                                     ),
                                   ),
                                   WidgetSpan(
@@ -1437,9 +1435,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                 cleanArabicText,
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.right,
-                style: GoogleFonts.amiri(
+                style: AppTypography.arabicBody(
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
                   height: 2.0,
                   color: isDark ? Colors.white : const Color(0xFF1F2937),
                 ),
@@ -1506,18 +1503,18 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
               children: [
                 TextSpan(
                   text: '$cleanText ',
-                  style: GoogleFonts.amiri(
+                  style: AppTypography.arabicBody(
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
                     height: 2.2,
+                    color: isPlayingThis
+                        ? (isDark ? Colors.white : const Color(0xFF854D0E))
+                        : (isDark ? Colors.white : const Color(0xFF1F2937)),
+                  ).copyWith(
                     backgroundColor: isPlayingThis
                         ? (isDark
                               ? const Color(0xFF166534)
                               : const Color(0xFFFEF08A))
                         : null,
-                    color: isPlayingThis
-                        ? (isDark ? Colors.white : const Color(0xFF854D0E))
-                        : (isDark ? Colors.white : const Color(0xFF1F2937)),
                   ),
                 ),
                 WidgetSpan(

@@ -3,6 +3,8 @@ import '../../core/services/audio_service.dart';
 import '../../core/services/location_service.dart';
 import '../../core/services/prayer_calculation_service.dart';
 import '../../core/services/storage_service.dart';
+import '../../core/theme/app_typography.dart';
+import '../../core/typography/arabic_font.dart';
 import '../../features/prayer/presentation/providers/aladhan_providers.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
@@ -109,6 +111,26 @@ final asrJuristicProvider = StateProvider<String>((ref) {
   final storage = ref.watch(storageServiceProvider);
   return storage.getAsrJuristic();
 });
+
+final arabicFontProvider = StateNotifierProvider<ArabicFontNotifier, ArabicFont>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return ArabicFontNotifier(storage);
+});
+
+class ArabicFontNotifier extends StateNotifier<ArabicFont> {
+  final StorageService _storage;
+
+  ArabicFontNotifier(this._storage)
+      : super(ArabicFont.fromString(_storage.getArabicFont())) {
+    AppTypography.activeArabicFont = state;
+  }
+
+  Future<void> setFont(ArabicFont font) async {
+    state = font;
+    AppTypography.activeArabicFont = font;
+    await _storage.setArabicFont(font.name);
+  }
+}
 
 final themeModeProvider = StateProvider<String>((ref) {
   final storage = ref.watch(storageServiceProvider);

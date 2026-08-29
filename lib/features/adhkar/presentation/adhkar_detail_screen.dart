@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/models/dhikr_item.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/m3_card.dart';
@@ -270,8 +270,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen> {
                     TextField(
                       controller: arabicController,
                       textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
                       maxLines: 3,
-                      style: GoogleFonts.amiri(fontSize: 20, height: 1.8),
+                      style: AppTypography.arabicBody(fontSize: 20, height: 1.8),
                       decoration: _roundedDecoration(
                         labelText: 'Arabic Text *',
                         alignLabelWithHint: true,
@@ -654,10 +655,10 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen> {
                                   child: Text(
                                     item.arabicText,
                                     textAlign: TextAlign.right,
-                                    style: GoogleFonts.amiri(
+                                    textDirection: TextDirection.rtl,
+                                    style: AppTypography.arabicBody(
                                       fontSize: 24,
                                       height: 2.1,
-                                      fontWeight: FontWeight.bold,
                                       color: const Color(0xFF2A531D),
                                     ),
                                   ),

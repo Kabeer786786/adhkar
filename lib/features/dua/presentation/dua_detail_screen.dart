@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/theme/app_typography.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/dua_item.dart';
@@ -234,10 +234,9 @@ class _DuaDetailScreenState extends State<DuaDetailScreen> {
                       _dua.arabic,
                       textAlign: TextAlign.center,
                       textDirection: TextDirection.rtl,
-                      style: GoogleFonts.amiri(
+                      style: AppTypography.arabicHeader(
                         fontSize: 27,
                         height: 1.8,
-                        fontWeight: FontWeight.bold,
                         color: const Color(0xFF1A3512),
                       ),
                     ),

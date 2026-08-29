@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/tasbeeh_item.dart';
 
 class TasbeehDescriptionModal extends StatelessWidget {
@@ -71,10 +72,10 @@ class TasbeehDescriptionModal extends StatelessWidget {
                     ),
                     Text(
                       item.textAr,
-                      style: GoogleFonts.amiri(
+                      textDirection: TextDirection.rtl,
+                      style: AppTypography.arabicBody(
                         fontSize: 22,
                         height: 1.7,
-                        fontWeight: FontWeight.bold,
                         color: context.isDarkMode
                             ? Colors.white70
                             : const Color(0xFF1E3816),

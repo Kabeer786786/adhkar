@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/tasbeeh_item.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../widgets/app_header_bar.dart';
@@ -472,9 +473,9 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                                       Text(
                                         _item.textAr,
                                         textAlign: TextAlign.center,
-                                        style: GoogleFonts.amiri(
+                                        textDirection: TextDirection.rtl,
+                                        style: AppTypography.arabicBody(
                                           fontSize: 28,
-                                          fontWeight: FontWeight.bold,
                                           height: 1.9,
                                           color: context.isDarkMode
                                               ? Colors.white

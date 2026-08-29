@@ -3,6 +3,7 @@ import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../data/asma_ul_husna_model.dart';
 
 class AsmaDetailModal extends StatefulWidget {
@@ -184,9 +185,8 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                               widget.item.name,
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
-                              style: GoogleFonts.amiri(
+                              style: AppTypography.arabicHeader(
                                 fontSize: 42,
-                                fontWeight: FontWeight.bold,
                                 color: const Color(0xFF1A3512),
                                 height: 1.4,
                               ),

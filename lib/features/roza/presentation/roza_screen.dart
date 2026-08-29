@@ -9,6 +9,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../../core/extensions/context_extensions.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/services/prayer_calculation_service.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/fasting_helper.dart';
 import '../../../core/utils/hijri_date_helper.dart';
 import '../../../shared/providers/app_providers.dart';
@@ -345,10 +346,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                           child: Text(
                             fastingInfo.arabicHadith!,
                             textDirection: TextDirection.rtl,
-                            style: GoogleFonts.amiri(
+                            style: AppTypography.arabicBody(
                               fontSize: 18,
                               height: 2,
-                              fontWeight: FontWeight.bold,
                               color: fastingInfo.primaryColor,
                             ),
                           ),
@@ -975,9 +975,8 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
               child: Text(
                 arabic,
                 textDirection: TextDirection.rtl,
-                style: GoogleFonts.amiri(
+                style: AppTypography.arabicBody(
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
                   height: 1.6,
                   color: const Color(0xFF1E3816),
                 ),
@@ -1140,10 +1139,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                           child: Text(
                             occ.arabicHadith!,
                             textDirection: TextDirection.rtl,
-                            style: GoogleFonts.amiri(
+                            style: AppTypography.arabicBody(
                               fontSize: 17,
                               height: 2.2,
-                              fontWeight: FontWeight.bold,
                               color: occ.primaryColor,
                             ),
                           ),

@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/models/adhkar_category.dart';
 import '../../../shared/models/dhikr_item.dart';
 import '../../../shared/providers/app_providers.dart';
@@ -306,7 +306,8 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
                     TextField(
                       controller: titleArController,
                       textAlign: TextAlign.right,
-                      style: GoogleFonts.amiri(fontSize: 18),
+                      textDirection: TextDirection.rtl,
+                      style: AppTypography.arabicBody(fontSize: 18),
                       decoration: _roundedInputDecoration(
                         labelText: 'Arabic Title (Optional)',
                         hintText: 'أدعية السفر',
@@ -681,9 +682,9 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
                                   if (cat.titleAr.isNotEmpty) ...[
                                     Text(
                                       cat.titleAr,
-                                      style: GoogleFonts.amiri(
+                                      textDirection: TextDirection.rtl,
+                                      style: AppTypography.arabicHeader(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.bold,
                                         color: gradientPreset.textColor,
                                       ),
                                     ),

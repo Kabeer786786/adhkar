@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../widgets/app_dropdown.dart';
 import '../../domain/dua_item.dart';
@@ -259,9 +259,8 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
                 controller: _arabicController,
                 textDirection: TextDirection.rtl,
                 maxLines: 2,
-                style: GoogleFonts.amiri(
+                style: AppTypography.arabicBody(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
                 ),
                 decoration: _inputDecoration(
                   'Arabic Text *',

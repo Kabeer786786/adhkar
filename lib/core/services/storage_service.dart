@@ -72,6 +72,14 @@ class StorageService {
     await _settingsBox.put('language', value);
   }
 
+  String getArabicFont() {
+    return _settingsBox.get('arabic_font', defaultValue: 'digitalKhattIndoPak') as String;
+  }
+
+  Future<void> setArabicFont(String value) async {
+    await _settingsBox.put('arabic_font', value);
+  }
+
   // --- Location ---
   Map<String, dynamic>? getSavedLocation() {
     final data = _settingsBox.get('saved_location');

@@ -5,11 +5,12 @@ import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import '../../../core/config/reminder_audio_config.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/reminder_model.dart';
 import 'providers/reminder_provider.dart';
@@ -355,9 +356,9 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                   children: [
                     Text(
                       'اللَّهُمَّ رَبَّ هَذِهِ الدَّعۡوَةِ التَّامَّةِ، وَالصَّلاَةِ الۡقَائِمَةِ، آتِ مُحَمَّدًا الۡوَسِيلَةَ وَالۡفَضِيلَةَ، وَابۡعَثۡهُ مَقَامًا مَحۡمُودًا الَّذِي وَعَدۡتَهُ',
-                      style: GoogleFonts.amiri(
+                      textDirection: TextDirection.rtl,
+                      style: AppTypography.arabicBody(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
                         height: 2.0,
                         color: isDark ? Colors.white : const Color(0xFF1B3D26),
                       ),

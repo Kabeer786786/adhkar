@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/tasbeeh_item.dart';
 
 class AddTasbeehModal extends StatefulWidget {
@@ -209,9 +209,8 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
               TextField(
                 controller: _textArController,
                 textDirection: TextDirection.rtl,
-                style: GoogleFonts.amiri(
+                style: AppTypography.arabicBody(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
                 ),
                 decoration: _inputDecoration(
                   'Arabic Text',

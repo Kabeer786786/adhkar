@@ -5,10 +5,11 @@ import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import '../../../core/services/hijri_service.dart';
 import '../../../core/services/prayer_calculation_service.dart';
 import '../../../core/services/showcase_service.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/hijri_date_helper.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_showcase.dart';
@@ -810,9 +811,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Text(
                       'فَاذۡكُرُونِي أَذۡكُرۡكُمۡ وَاشۡكُرُوا لِي وَلَا تَكۡفُرُونِ',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.amiri(
+                      textDirection: TextDirection.rtl,
+                      style: AppTypography.arabicHeader(
                         fontSize: 22,
-                        fontWeight: FontWeight.bold,
                         height: 1.8,
                         color: const Color(0xFF1A3512),
                       ),

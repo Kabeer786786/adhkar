@@ -69,7 +69,7 @@ void main() {
         updatedAt: DateTime.now(),
         timezone: 'UTC',
       );
-      expect(weekdayRem.formattedDays, equals('Weekdays (Mon-Fri)'));
+      expect(weekdayRem.formattedDays, equals('Weekdays'));
 
       final weekendRem = CustomReminder(
         id: '3',
@@ -82,7 +82,7 @@ void main() {
         updatedAt: DateTime.now(),
         timezone: 'UTC',
       );
-      expect(weekendRem.formattedDays, equals('Weekends (Sat-Sun)'));
+      expect(weekendRem.formattedDays, equals('Weekends'));
     });
   });
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/extensions/context_extensions.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../domain/models/sci_islam_item.dart';
 
@@ -131,9 +132,8 @@ class SciIslamDetailScreen extends StatelessWidget {
                     item.arabicVerse,
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
-                    style: GoogleFonts.amiri(
+                    style: AppTypography.arabicHeader(
                       fontSize: 25,
-                      fontWeight: FontWeight.bold,
                       color: isDark ? const Color(0xFFFDE047) : const Color(0xFF1A3512),
                       height: 1.8,
                     ),

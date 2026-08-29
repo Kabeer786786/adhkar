@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/tasbeeh_item.dart';
 import '../../../../shared/widgets/app_floating_toast.dart';
 
@@ -387,9 +386,8 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                                     textDirection: TextDirection.rtl,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.amiri(
+                                    style: AppTypography.arabicBody(
                                       fontSize: 20,
-                                      fontWeight: FontWeight.bold,
                                       color: const Color(0xFF1B5E20),
                                       height: 1.4,
                                     ),
@@ -540,10 +538,9 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                     item.textAr,
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
-                    style: GoogleFonts.amiri(
+                    style: AppTypography.arabicBody(
                       fontSize: 26,
                       height: 1.7,
-                      fontWeight: FontWeight.bold,
                       color: const Color(0xFF1B5E20),
                     ),
                   ),
@@ -665,9 +662,8 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
             TextField(
               controller: _formTextArController,
               textDirection: TextDirection.rtl,
-              style: GoogleFonts.amiri(
+              style: AppTypography.arabicBody(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
               ),
               decoration: _formInputDecoration(
                 'Arabic Text *',

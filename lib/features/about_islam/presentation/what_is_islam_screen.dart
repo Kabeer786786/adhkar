@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/extensions/context_extensions.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../widgets/app_header_bar.dart';
 
 class WhatIsIslamScreen extends StatelessWidget {
@@ -259,9 +260,8 @@ class WhatIsIslamScreen extends StatelessWidget {
                     'يا أَيُّهَا النَّاسُ إِنَّا خَلَقۡنَاكُم مِّن ذَكَرٍ وَأُنثَىٰ وَجَعَلۡنَاكُمۡ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا',
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
-                    style: GoogleFonts.amiri(
+                    style: AppTypography.arabicHeader(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
                       color: const Color(0xFF2A531D),
                       height: 1.7,
                     ),
@@ -355,9 +355,8 @@ class WhatIsIslamScreen extends StatelessWidget {
                 Text(
                   arabic,
                   textDirection: TextDirection.rtl,
-                  style: GoogleFonts.amiri(
+                  style: AppTypography.arabicHeader(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
                     color: color,
                     height: 1.7,
                   ),

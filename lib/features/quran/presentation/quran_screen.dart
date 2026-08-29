@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/extensions/context_extensions.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/floating_download_bar.dart';
 import '../../../widgets/app_header_bar.dart';
@@ -41,6 +41,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+    final arabicFont = ref.watch(arabicFontProvider);
     final allSurahs = _repository.getSurahs();
     final storage = ref.watch(storageServiceProvider);
 
@@ -274,18 +275,18 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               const SizedBox(width: 12),
                               Padding(
                                 padding: const EdgeInsets.only(right: 6),
-                                child: Text(
-                                  _selectedTab == 1
-                                      ? lastJuz.nameArabic
-                                      : lastSurah.nameArabic,
-                                  textDirection: TextDirection.rtl,
-                                  style: GoogleFonts.amiri(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFFd1ffbe), 
-                                    height: 1.2,
+                                  child: Text(
+                                    _selectedTab == 1
+                                        ? lastJuz.nameArabic
+                                        : lastSurah.nameArabic,
+                                    textDirection: TextDirection.rtl,
+                                    style: AppTypography.arabicHeader(
+                                      arabicFont: arabicFont,
+                                      fontSize: 28,
+                                      color: const Color(0xFFd1ffbe), 
+                                      height: 1.2,
+                                    ),
                                   ),
-                                ),
                               ),
                             ],
                           ),
@@ -462,16 +463,16 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                       ],
                                     ),
                                   ),
-                                  Text(
-                                    surah.nameArabic,
-                                    textDirection: TextDirection.rtl,
-                                    style: GoogleFonts.amiri(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF2A531D),
-                                      height: 1.7,
-                                    ),
-                                  ),
+                                   Text(
+                                     surah.nameArabic,
+                                     textDirection: TextDirection.rtl,
+                                     style: AppTypography.arabicHeader(
+                                       arabicFont: arabicFont,
+                                       fontSize: 20,
+                                       color: const Color(0xFF2A531D),
+                                       height: 1.7,
+                                     ),
+                                   ),
                                 ],
                               ),
                             ),
@@ -565,15 +566,15 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                       ],
                                     ),
                                   ),
-                                  Text(
-                                    juz.nameArabic,
-                                    textDirection: TextDirection.rtl,
-                                    style: GoogleFonts.amiri(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF2A531D),
-                                    ),
-                                  ),
+                                   Text(
+                                     juz.nameArabic,
+                                     textDirection: TextDirection.rtl,
+                                     style: AppTypography.arabicHeader(
+                                       arabicFont: arabicFont,
+                                       fontSize: 22,
+                                       color: const Color(0xFF2A531D),
+                                     ),
+                                   ),
                                 ],
                               ),
                             ),

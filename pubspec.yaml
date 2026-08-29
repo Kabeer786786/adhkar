@@ -96,32 +96,24 @@ flutter:
     - assets/images/
     - assets/data/
     - assets/audios/
+    - assets/fonts/arabic/
 
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
+  fonts:
+    - family: DigitalKhattIndoPak
+      fonts:
+        - asset: assets/fonts/arabic/DigitalKhattIndoPak.otf
 
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
+    - family: DigitalKhattV2
+      fonts:
+        - asset: assets/fonts/arabic/DigitalKhattV2.otf
 
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/arabic/Amiri-Regular.ttf
+
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/fonts/arabic/NotoNaskhArabic-Regular.ttf
 # Build Command for AAB File
 # flutter build appbundle --release --obfuscate --split-debug-info=build/debug-info
 # flutter build apk --release --split-per-abi --obfuscate --split-debug-info=debug-info

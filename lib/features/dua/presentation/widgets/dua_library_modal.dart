@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../widgets/app_dropdown.dart';
 
@@ -490,9 +491,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.right,
                                     textDirection: TextDirection.rtl,
-                                    style: GoogleFonts.amiri(
+                                    style: AppTypography.arabicHeader(
                                       fontSize: 16.5,
-                                      fontWeight: FontWeight.bold,
                                       color: const Color(0xFF1B3512),
                                       height: 1.8,
                                     ),
@@ -598,10 +598,9 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                     dua.arabic,
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
-                    style: GoogleFonts.amiri(
+                    style: AppTypography.arabicBody(
                       fontSize: 24,
                       height: 1.8,
-                      fontWeight: FontWeight.bold,
                       color: const Color(0xFF1B5E20),
                     ),
                   ),
@@ -850,9 +849,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
               controller: _formArabicController,
               textDirection: TextDirection.rtl,
               maxLines: 2,
-              style: GoogleFonts.amiri(
+              style: AppTypography.arabicBody(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
               ),
               decoration: _formInputDecoration(
                 'Arabic Text *',

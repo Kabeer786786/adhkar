@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/extensions/context_extensions.dart';
 import '../../core/services/hijri_service.dart';
+import '../../core/theme/app_typography.dart';
 import '../providers/app_providers.dart';
 
 class IslamicMonthlyCalendarModal extends ConsumerStatefulWidget {
@@ -186,9 +187,8 @@ class _IslamicMonthlyCalendarModalState
                       Text(
                         currentHijriMonthMeta['nameAr']!,
                         textDirection: TextDirection.rtl,
-                        style: GoogleFonts.amiri(
+                        style: AppTypography.arabicHeader(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
                           color: const Color(0xFFD97724),
                         ),
                       ),

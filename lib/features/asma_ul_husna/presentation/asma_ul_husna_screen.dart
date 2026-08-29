@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/providers/media_download_provider.dart';
 import '../../../core/services/media_download_service.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/floating_download_bar.dart';
 import '../data/asma_ul_husna_data.dart';
 import '../data/asma_ul_husna_model.dart';
@@ -143,9 +144,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                       opacity: (1.0 - opacity).clamp(0.0, 1.0),
                       child: Text(
                         'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ',
-                        style: GoogleFonts.amiri(
+                        textDirection: TextDirection.rtl,
+                        style: AppTypography.arabicHeader(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
                           color: const Color(0xFF2A531D),
                         ),
                       ),
@@ -438,9 +439,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     child: Text(
                       item.name,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.amiri(
+                      textDirection: TextDirection.rtl,
+                      style: AppTypography.arabicHeader(
                         fontSize: isSelected ? 32 : 26,
-                        fontWeight: FontWeight.bold,
                         color: isSelected
                             ? const Color(0xFF15803D)
                             : const Color(0xFF1A3512),
@@ -578,9 +579,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.right,
-                  style: GoogleFonts.amiri(
+                  textDirection: TextDirection.rtl,
+                  style: AppTypography.arabicHeader(
                     fontSize: isSelected ? 32 : 26,
-                    fontWeight: FontWeight.bold,
                     color: isSelected
                         ? const Color(0xFF15803D)
                         : const Color(0xFF1A3512),
@@ -681,10 +682,10 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   ),
                   Text(
                     currentItem.name,
-                    style: GoogleFonts.amiri(
+                    textDirection: TextDirection.rtl,
+                    style: AppTypography.arabicHeader(
                       color: const Color(0xFF4ADE80),
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 8),
