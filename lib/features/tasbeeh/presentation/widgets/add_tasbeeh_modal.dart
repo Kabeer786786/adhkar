@@ -63,8 +63,12 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
     final item = widget.existingItem;
     _textArController = TextEditingController(text: item?.textAr ?? '');
     _textEnController = TextEditingController(text: item?.textEn ?? '');
-    _translationController = TextEditingController(text: item?.translation ?? '');
-    _targetController = TextEditingController(text: '${item?.targetGoal ?? 33}');
+    _translationController = TextEditingController(
+      text: item?.translation ?? '',
+    );
+    _targetController = TextEditingController(
+      text: '${item?.targetGoal ?? 33}',
+    );
     _descController = TextEditingController(text: item?.description ?? '');
     _selectedColorValue = item?.colorValue ?? colorOptions.first;
   }
@@ -88,12 +92,16 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
 
     if (ar.isEmpty || en.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter Arabic text and English title.')),
+        const SnackBar(
+          content: Text('Please enter Arabic text and English title.'),
+        ),
       );
       return;
     }
 
-    final id = widget.existingItem?.id ?? 'custom_${DateTime.now().millisecondsSinceEpoch}';
+    final id =
+        widget.existingItem?.id ??
+        'custom_${DateTime.now().millisecondsSinceEpoch}';
 
     final newItem = TasbeehItem(
       id: id,
@@ -117,7 +125,9 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
       hintText: hint,
       prefixIcon: Icon(icon, color: const Color(0xFF2A531D)),
       filled: true,
-      fillColor: context.isDarkMode ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
+      fillColor: context.isDarkMode
+          ? const Color(0xFF23322B)
+          : const Color(0xFFF9FAFB),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -182,7 +192,10 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                   ),
                   if (isEdit && widget.onDelete != null)
                     IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Colors.red,
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                         widget.onDelete!();
@@ -196,22 +209,37 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
               TextField(
                 controller: _textArController,
                 textDirection: TextDirection.rtl,
-                style: GoogleFonts.amiri(fontSize: 20, fontWeight: FontWeight.bold),
-                decoration: _inputDecoration('Arabic Text', 'سُبْحَانَ اللَّهِ', Icons.auto_awesome_rounded),
+                style: GoogleFonts.amiri(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: _inputDecoration(
+                  'Arabic Text',
+                  'سُبۡحَانَ اللَّهِ',
+                  Icons.auto_awesome_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
               // English Transliteration Field
               TextField(
                 controller: _textEnController,
-                decoration: _inputDecoration('English Transliteration / Title', 'SubhanAllah', Icons.text_fields_rounded),
+                decoration: _inputDecoration(
+                  'English Transliteration / Title',
+                  'SubhanAllah',
+                  Icons.text_fields_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
               // English Translation Field
               TextField(
                 controller: _translationController,
-                decoration: _inputDecoration('English Translation / Meaning', 'Glory be to Allah', Icons.translate_rounded),
+                decoration: _inputDecoration(
+                  'English Translation / Meaning',
+                  'Glory be to Allah',
+                  Icons.translate_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
@@ -219,7 +247,11 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
               TextField(
                 controller: _targetController,
                 keyboardType: TextInputType.number,
-                decoration: _inputDecoration('Target Count (Goal)', '33', Icons.flag_rounded),
+                decoration: _inputDecoration(
+                  'Target Count (Goal)',
+                  '33',
+                  Icons.flag_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
@@ -227,7 +259,11 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
               TextField(
                 controller: _descController,
                 maxLines: 3,
-                decoration: _inputDecoration('Description / Benefits (Why it is recited)', 'Enter virtues or why this Tasbeeh is recited...', Icons.info_outline_rounded),
+                decoration: _inputDecoration(
+                  'Description / Benefits (Why it is recited)',
+                  'Enter virtues or why this Tasbeeh is recited...',
+                  Icons.info_outline_rounded,
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -266,7 +302,11 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                             : null,
                       ),
                       child: isSelected
-                          ? const Icon(Icons.check, size: 18, color: Colors.white)
+                          ? const Icon(
+                              Icons.check,
+                              size: 18,
+                              color: Colors.white,
+                            )
                           : null,
                     ),
                   );
@@ -288,7 +328,10 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                 ),
                 child: Text(
                   isEdit ? 'Save Changes' : 'Add Tasbeeh',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

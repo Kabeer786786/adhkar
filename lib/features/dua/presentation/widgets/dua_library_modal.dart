@@ -132,7 +132,9 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
   void initState() {
     super.initState();
     _activeDuas = List.from(widget.currentDuas);
-    final savedCats = ref.read(storageServiceProvider).getCustomCategories('dua');
+    final savedCats = ref
+        .read(storageServiceProvider)
+        .getCustomCategories('dua');
     for (final cat in savedCats) {
       if (!_categories.contains(cat)) {
         _categories.add(cat);
@@ -720,13 +722,19 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
     );
   }
 
-  InputDecoration _formInputDecoration(String label, String hint, IconData icon) {
+  InputDecoration _formInputDecoration(
+    String label,
+    String hint,
+    IconData icon,
+  ) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       prefixIcon: Icon(icon, color: const Color(0xFF2A531D)),
       filled: true,
-      fillColor: context.isDarkMode ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
+      fillColor: context.isDarkMode
+          ? const Color(0xFF23322B)
+          : const Color(0xFFF9FAFB),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -786,7 +794,11 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
             // Title
             TextField(
               controller: _formTitleController,
-              decoration: _formInputDecoration('Dua Title *', 'e.g. Dua for Peace & Protection', Icons.title_rounded),
+              decoration: _formInputDecoration(
+                'Dua Title *',
+                'e.g. Dua for Peace & Protection',
+                Icons.title_rounded,
+              ),
             ),
             const SizedBox(height: 14),
 
@@ -796,14 +808,17 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
               value: _formSelectedCategory,
               prefixIcon: Icons.category_rounded,
               onAddCustomCategory: () async {
-                final newCatName = await AppDropdown.showAddCustomCategoryDialog(
-                  context,
-                  title: 'Add Custom Category',
-                  hintText: 'e.g. Travel & Protection',
-                  icon: Icons.menu_book_rounded,
-                );
+                final newCatName =
+                    await AppDropdown.showAddCustomCategoryDialog(
+                      context,
+                      title: 'Add Custom Category',
+                      hintText: 'e.g. Travel & Protection',
+                      icon: Icons.menu_book_rounded,
+                    );
                 if (newCatName != null && newCatName.isNotEmpty) {
-                  ref.read(storageServiceProvider).saveCustomCategory('dua', newCatName);
+                  ref
+                      .read(storageServiceProvider)
+                      .saveCustomCategory('dua', newCatName);
                   setState(() {
                     if (!_categories.contains(newCatName)) {
                       _categories.add(newCatName);
@@ -835,15 +850,26 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
               controller: _formArabicController,
               textDirection: TextDirection.rtl,
               maxLines: 2,
-              style: GoogleFonts.amiri(fontSize: 20, fontWeight: FontWeight.bold),
-              decoration: _formInputDecoration('Arabic Text *', 'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً', Icons.auto_awesome_rounded),
+              style: GoogleFonts.amiri(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: _formInputDecoration(
+                'Arabic Text *',
+                'اَللَّهُمَّ حَاسِبۡنِي حِسَاباً يَسِيراً',
+                Icons.auto_awesome_rounded,
+              ),
             ),
             const SizedBox(height: 14),
 
             // Transliteration
             TextField(
               controller: _formTransliterationController,
-              decoration: _formInputDecoration('Transliteration', 'e.g. Allahumma hasibni hisaban yasira', Icons.text_fields_rounded),
+              decoration: _formInputDecoration(
+                'Transliteration',
+                'e.g. Allahumma hasibni hisaban yasira',
+                Icons.text_fields_rounded,
+              ),
             ),
             const SizedBox(height: 14),
 
@@ -851,14 +877,22 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
             TextField(
               controller: _formTranslationController,
               maxLines: 2,
-              decoration: _formInputDecoration('English Translation', 'e.g. O Allah, grant me an easy accounting.', Icons.translate_rounded),
+              decoration: _formInputDecoration(
+                'English Translation',
+                'e.g. O Allah, grant me an easy accounting.',
+                Icons.translate_rounded,
+              ),
             ),
             const SizedBox(height: 14),
 
             // Hadith Reference
             TextField(
               controller: _formReferenceController,
-              decoration: _formInputDecoration('Hadith / Book Reference', 'e.g. Musnad Ahmad & Sahih Ibn Hibban', Icons.menu_book_rounded),
+              decoration: _formInputDecoration(
+                'Hadith / Book Reference',
+                'e.g. Musnad Ahmad & Sahih Ibn Hibban',
+                Icons.menu_book_rounded,
+              ),
             ),
             const SizedBox(height: 14),
 
@@ -866,7 +900,11 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
             TextField(
               controller: _formBenefitsController,
               maxLines: 2,
-              decoration: _formInputDecoration('Spiritual & Practical Benefits', 'e.g. Grants ease on the Day of Judgment.', Icons.info_outline_rounded),
+              decoration: _formInputDecoration(
+                'Spiritual & Practical Benefits',
+                'e.g. Grants ease on the Day of Judgment.',
+                Icons.info_outline_rounded,
+              ),
             ),
             const SizedBox(height: 24),
 

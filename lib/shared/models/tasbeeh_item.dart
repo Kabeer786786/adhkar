@@ -69,7 +69,8 @@ class TasbeehItem {
       targetGoal: (json['targetGoal'] as num?)?.toInt() ?? 33,
       colorValue: (json['colorValue'] as num?)?.toInt() ?? 0xFF2A531D,
       isCustom: json['isCustom'] as bool? ?? false,
-      marbleAsset: json['marbleAsset'] as String? ?? 'assets/images/marble1.png',
+      marbleAsset:
+          json['marbleAsset'] as String? ?? 'assets/images/marble1.png',
     );
   }
 
@@ -100,30 +101,33 @@ class TasbeehItem {
   static const List<TasbeehItem> defaults = [
     TasbeehItem(
       id: 'subhanallah',
-      textAr: 'سُبْحَانَ اللَّهِ',
+      textAr: 'سُبۡحَانَ اللَّهِ',
       textEn: 'SubhanAllah',
       translation: 'Glory be to Allah',
-      description: 'Glory be to Allah. Reciting this 33 times after every obligatory prayer wipes away sins. The Prophet (ﷺ) said: "Whoever glorifies Allah 33 times after every prayer will have their sins forgiven even if they were like the foam of the sea." (Sahih Muslim)',
+      description:
+          'Glory be to Allah. Reciting this 33 times after every obligatory prayer wipes away sins. The Prophet (ﷺ) said: "Whoever glorifies Allah 33 times after every prayer will have their sins forgiven even if they were like the foam of the sea." (Sahih Muslim)',
       targetGoal: 33,
       colorValue: 0xFF0284C7, // Sky Blue
       marbleAsset: 'assets/images/marble1.png',
     ),
     TasbeehItem(
       id: 'alhamdulillah',
-      textAr: 'الْحَمْدُ لِلَّهِ',
+      textAr: 'الۡحَمۡدُ لِلَّهِ',
       textEn: 'Alhamdulillah',
       translation: 'All praise is due to Allah',
-      description: 'All praise is due to Allah. Expressing gratitude increases divine blessings and brings tranquillity to the heart. Allah says in the Quran: "If you are grateful, I will surely increase you in favor." (Surah Ibrahim 14:7)',
+      description:
+          'All praise is due to Allah. Expressing gratitude increases divine blessings and brings tranquillity to the heart. Allah says in the Quran: "If you are grateful, I will surely increase you in favor." (Surah Ibrahim 14:7)',
       targetGoal: 33,
       colorValue: 0xFF16A34A, // Emerald Green
       marbleAsset: 'assets/images/marble2.png',
     ),
     TasbeehItem(
       id: 'allahuakbar',
-      textAr: 'اللَّهُ أَكْبَرُ',
+      textAr: 'اللَّهُ أَكۡبَرُ',
       textEn: 'Allahu Akbar',
       translation: 'Allah is the Greatest',
-      description: 'Allah is the Greatest. Reminds the believer of the supreme majesty and greatness of Allah over everything in existence.',
+      description:
+          'Allah is the Greatest. Reminds the believer of the supreme majesty and greatness of Allah over everything in existence.',
       targetGoal: 33,
       colorValue: 0xFFEA580C, // Orange
       marbleAsset: 'assets/images/marble3.png',
@@ -133,27 +137,31 @@ class TasbeehItem {
       textAr: 'لَا إِلَهَ إِلَّا اللَّهُ',
       textEn: 'La ilaha illallah',
       translation: 'There is no god but Allah',
-      description: 'There is no god but Allah. The foundation of faith and the supreme form of remembrance. The Prophet (ﷺ) said: "The best dhikr is La ilaha illallah." (Tirmidhi)',
+      description:
+          'There is no god but Allah. The foundation of faith and the supreme form of remembrance. The Prophet (ﷺ) said: "The best dhikr is La ilaha illallah." (Tirmidhi)',
       targetGoal: 100,
       colorValue: 0xFF9333EA, // Purple
       marbleAsset: 'assets/images/marble4.png',
     ),
     TasbeehItem(
       id: 'astagfirullah',
-      textAr: 'أَسْتَغْفِرُ اللَّهَ',
+      textAr: 'أَسۡتَغۡفِرُ اللَّهَ',
       textEn: 'Astaghfirullah',
       translation: 'I seek forgiveness from Allah',
-      description: 'I seek forgiveness from Allah. Reciting istighfar opens doors of sustenance and peace of mind.',
+      description:
+          'I seek forgiveness from Allah. Reciting istighfar opens doors of sustenance and peace of mind.',
       targetGoal: 100,
       colorValue: 0xFF059669, // Teal
       marbleAsset: 'assets/images/marble5.png',
     ),
     TasbeehItem(
       id: 'subhanallah_bihamdihi',
-      textAr: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ',
+      textAr: 'سُبۡحَانَ اللَّهِ وَبِحَمۡدِهِ سُبۡحَانَ اللَّهِ الۡعَظِيمِ',
       textEn: 'SubhanAllahi wa bihamdihi, SubhanAllahil Azim',
-      translation: 'Glory be to Allah and His is the praise, Glory be to Allah the Supreme',
-      description: 'Glory be to Allah and His is the praise, Glory be to Allah the Supreme. Two phrases light on the tongue but heavy on the scale of deeds. (Sahih al-Bukhari)',
+      translation:
+          'Glory be to Allah and His is the praise, Glory be to Allah the Supreme',
+      description:
+          'Glory be to Allah and His is the praise, Glory be to Allah the Supreme. Two phrases light on the tongue but heavy on the scale of deeds. (Sahih al-Bukhari)',
       targetGoal: 100,
       colorValue: 0xFF2563EB, // Royal Blue
       marbleAsset: 'assets/images/marble1.png',
@@ -163,27 +171,31 @@ class TasbeehItem {
       textAr: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ',
       textEn: 'Allahumma Salli Ala Muhammad',
       translation: 'O Allah, send blessings upon Muhammad',
-      description: 'O Allah, send blessings upon Muhammad and his family. The Prophet (ﷺ) said: "Whoever sends blessings upon me once, Allah sends blessings upon him ten times." (Sahih Muslim)',
+      description:
+          'O Allah, send blessings upon Muhammad and his family. The Prophet (ﷺ) said: "Whoever sends blessings upon me once, Allah sends blessings upon him ten times." (Sahih Muslim)',
       targetGoal: 100,
       colorValue: 0xFFD97724, // Amber
       marbleAsset: 'assets/images/marble2.png',
     ),
     TasbeehItem(
       id: 'lahawla',
-      textAr: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+      textAr: 'لَا حَوۡلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
       textEn: 'La hawla wa la quwwata illa billah',
       translation: 'There is no power nor strength except with Allah',
-      description: 'There is no power nor strength except with Allah. A treasure from the treasures of Paradise. (Sahih al-Bukhari)',
+      description:
+          'There is no power nor strength except with Allah. A treasure from the treasures of Paradise. (Sahih al-Bukhari)',
       targetGoal: 100,
       colorValue: 0xFF0D9488, // Dark Teal
       marbleAsset: 'assets/images/marble3.png',
     ),
     TasbeehItem(
       id: 'hasbunallah',
-      textAr: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',
+      textAr: 'حَسۡبُنَا اللَّهُ وَنِعۡمَ الۡوَكِيلُ',
       textEn: 'Hasbunallahu wa Ni\'mal Wakeel',
-      translation: 'Sufficient for us is Allah, and He is the best Disposer of affairs',
-      description: 'Sufficient for us is Allah, and He is the best Disposer of affairs. Recited by Prophet Ibrahim (AS) in fire and Prophet Muhammad (ﷺ) at Uhud.',
+      translation:
+          'Sufficient for us is Allah, and He is the best Disposer of affairs',
+      description:
+          'Sufficient for us is Allah, and He is the best Disposer of affairs. Recited by Prophet Ibrahim (AS) in fire and Prophet Muhammad (ﷺ) at Uhud.',
       targetGoal: 100,
       colorValue: 0xFFBE123C, // Crimson Rose
       marbleAsset: 'assets/images/marble4.png',

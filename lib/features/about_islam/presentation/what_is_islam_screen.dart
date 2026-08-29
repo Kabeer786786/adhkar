@@ -14,13 +14,17 @@ class WhatIsIslamScreen extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF17241E) : const Color(0xFFF9F9F9),
+        backgroundColor: isDark
+            ? const Color(0xFF17241E)
+            : const Color(0xFFF9F9F9),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
             title: 'WHAT IS ISLAM',
             showBackButton: true,
-            systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+            systemOverlayStyle: isDark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
             backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
             iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
             titleWidget: Text(
@@ -60,7 +64,10 @@ class WhatIsIslamScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
@@ -116,8 +123,10 @@ class WhatIsIslamScreen extends StatelessWidget {
             _buildPillarTile(
               number: '1',
               title: 'Shahada (Declaration of Faith)',
-              arabic: 'أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللهِ',
-              description: 'Bearing witness that there is no deity worthy of worship except Allah, and Muhammad (ﷺ) is His Messenger.',
+              arabic:
+                  'أَشۡهَدُ أَنۡ لَا إِلٰهَ إِلَّا اللهُ وَأَشۡهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللهِ',
+              description:
+                  'Bearing witness that there is no deity worthy of worship except Allah, and Muhammad (ﷺ) is His Messenger.',
               color: const Color(0xFF16A34A),
               isDark: isDark,
             ),
@@ -125,7 +134,8 @@ class WhatIsIslamScreen extends StatelessWidget {
               number: '2',
               title: 'Salah (Daily Prayer)',
               arabic: 'الصَّلَاة',
-              description: 'Performing five daily obligatory prayers to maintain a continuous spiritual connection with Almighty Allah.',
+              description:
+                  'Performing five daily obligatory prayers to maintain a continuous spiritual connection with Almighty Allah.',
               color: const Color(0xFF2563EB),
               isDark: isDark,
             ),
@@ -133,23 +143,26 @@ class WhatIsIslamScreen extends StatelessWidget {
               number: '3',
               title: 'Zakat (Obligatory Charity)',
               arabic: 'الزَّكَاة',
-              description: 'Giving 2.5% of accumulated annual savings to purify wealth and support the poor, orphans, and needy.',
+              description:
+                  'Giving 2.5% of accumulated annual savings to purify wealth and support the poor, orphans, and needy.',
               color: const Color(0xFFD97724),
               isDark: isDark,
             ),
             _buildPillarTile(
               number: '4',
               title: 'Sawm (Fasting in Ramadan)',
-              arabic: 'الصَّوْم',
-              description: 'Fasting from dawn until sunset during the month of Ramadan to cultivate piety, gratitude, and self-restraint.',
+              arabic: 'الصَّوۡم',
+              description:
+                  'Fasting from dawn until sunset during the month of Ramadan to cultivate piety, gratitude, and self-restraint.',
               color: const Color(0xFF9333EA),
               isDark: isDark,
             ),
             _buildPillarTile(
               number: '5',
               title: 'Hajj (Pilgrimage to Makkah)',
-              arabic: 'الْحَجّ',
-              description: 'Pilgrimage to the Holy Kaaba in Makkah once in a lifetime for those physically and financially able.',
+              arabic: 'الۡحَجّ',
+              description:
+                  'Pilgrimage to the Holy Kaaba in Makkah once in a lifetime for those physically and financially able.',
               color: const Color(0xFF0D9488),
               isDark: isDark,
             ),
@@ -181,17 +194,35 @@ class WhatIsIslamScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildFaithBullet('1. Belief in Allah', 'The One and Only Creator, without partners, offspring, or equals.'),
+                  _buildFaithBullet(
+                    '1. Belief in Allah',
+                    'The One and Only Creator, without partners, offspring, or equals.',
+                  ),
                   const Divider(height: 16),
-                  _buildFaithBullet('2. Belief in His Angels', 'Noble spiritual beings created from light who carry out Allah\'s commands.'),
+                  _buildFaithBullet(
+                    '2. Belief in His Angels',
+                    'Noble spiritual beings created from light who carry out Allah\'s commands.',
+                  ),
                   const Divider(height: 16),
-                  _buildFaithBullet('3. Belief in Divine Books', 'Original scriptures including the Torah, Gospel, Psalms, and the final unchanged Quran.'),
+                  _buildFaithBullet(
+                    '3. Belief in Divine Books',
+                    'Original scriptures including the Torah, Gospel, Psalms, and the final unchanged Quran.',
+                  ),
                   const Divider(height: 16),
-                  _buildFaithBullet('4. Belief in His Prophets', 'Messengers sent to all nations, from Adam, Noah, Abraham, Moses, Jesus, to Muhammad (ﷺ).'),
+                  _buildFaithBullet(
+                    '4. Belief in His Prophets',
+                    'Messengers sent to all nations, from Adam, Noah, Abraham, Moses, Jesus, to Muhammad (ﷺ).',
+                  ),
                   const Divider(height: 16),
-                  _buildFaithBullet('5. Belief in the Day of Judgment', 'The day of resurrection when all humans will account for their deeds.'),
+                  _buildFaithBullet(
+                    '5. Belief in the Day of Judgment',
+                    'The day of resurrection when all humans will account for their deeds.',
+                  ),
                   const Divider(height: 16),
-                  _buildFaithBullet('6. Belief in Divine Decree (Qadar)', 'Allah\'s ultimate knowledge, wisdom, and sovereign decree over all creation.'),
+                  _buildFaithBullet(
+                    '6. Belief in Divine Decree (Qadar)',
+                    'Allah\'s ultimate knowledge, wisdom, and sovereign decree over all creation.',
+                  ),
                 ],
               ),
             ),
@@ -225,7 +256,7 @@ class WhatIsIslamScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'يا أَيُّهَا النَّاسُ إِنَّا خَلَقْنَاكُم مِّن ذَكَرٍ وَأُنثَىٰ وَجَعَلْنَاكُمْ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا',
+                    'يا أَيُّهَا النَّاسُ إِنَّا خَلَقۡنَاكُم مِّن ذَكَرٍ وَأُنثَىٰ وَجَعَلۡنَاكُمۡ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا',
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
                     style: GoogleFonts.amiri(

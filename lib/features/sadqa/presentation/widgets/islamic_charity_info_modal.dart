@@ -6,7 +6,8 @@ class IslamicCharityInfoModal extends StatefulWidget {
   const IslamicCharityInfoModal({super.key});
 
   @override
-  State<IslamicCharityInfoModal> createState() => _IslamicCharityInfoModalState();
+  State<IslamicCharityInfoModal> createState() =>
+      _IslamicCharityInfoModalState();
 }
 
 class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
@@ -33,7 +34,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
       'icon': Icons.people_alt_rounded,
       'color': const Color(0xFF2563EB),
     },
-  ]; 
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +139,10 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                   borderRadius: BorderRadius.circular(16),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? primaryColor
@@ -240,7 +244,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'مَّن ذَا الَّذِي يُقْرِضُ اللَّهَ قَرْضًا حَسَنًا فَيُضَاعِفَهُ لَهُ أَضْعَافًا كَثِيرَةً',
+                  'مَّن ذَا الَّذِي يُقۡرِضُ اللَّهَ قَرۡضًا حَسَنًا فَيُضَاعِفَهُ لَهُ أَضۡعَافًا كَثِيرَةً',
                   textDirection: TextDirection.rtl,
                   style: GoogleFonts.amiri(
                     fontSize: 20,
@@ -271,7 +275,8 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           title: 'Protection & Wiping Away Sins',
           description:
               '"Sadaqah extinguishes sin as water extinguishes fire." (Jami` at-Tirmidhi 614)',
-          arabic: 'الصَّدَقَةُ تُطْفِئُ الْخَطِيئَةَ كَمَا يُطْفِئُ الْمَاءُ النَّارَ',
+          arabic:
+              'الصَّدَقَةُ تُطۡفِئُ الۡخَطِيئَةَ كَمَا يُطۡفِئُ الۡمَاءُ النَّارَ',
           isDark: isDark,
         ),
         const SizedBox(height: 8),
@@ -282,7 +287,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           title: 'Increases Wealth & Brings Barakah',
           description:
               '"Sadaqah does not decrease wealth." (Sahih Muslim 2588). Giving charity purifies your remaining wealth and attracts divine multiplication.',
-          arabic: 'مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ',
+          arabic: 'مَا نَقَصَتۡ صَدَقَةٌ مِنۡ مَالٍ',
           isDark: isDark,
         ),
         const SizedBox(height: 8),
@@ -293,7 +298,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           title: 'Shade on Judgment Day',
           description:
               '"The believer’s shade on the Day of Resurrection will be his charity." (Sunan al-Tirmidhi 604)',
-          arabic: 'ظِلُّ الْمُؤْمِنِ يَوْمَ الْقِيَامَةِ صَدَقَتُهُ',
+          arabic: 'ظِلُّ الۡمُؤۡمِنِ يَوۡمَ الۡقِيَامَةِ صَدَقَتُهُ',
           isDark: isDark,
         ),
         const SizedBox(height: 8),
@@ -304,7 +309,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           title: 'Heals Illness & Wards Off Calamities',
           description:
               '"Treat your sick ones with Sadaqah." (Bayhaqi). Charity acts as a spiritual barrier against unexpected trials and harm.',
-          arabic: 'دَاوُوا مَرْضَاكُمْ بِالصَّدَقَةِ',
+          arabic: 'دَاوُوا مَرۡضَاكُمۡ بِالصَّدَقَةِ',
           isDark: isDark,
         ),
       ],
@@ -386,7 +391,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'وَالَّذِينَ يَكْنِزُونَ الذَّهَبَ وَالْفِضَّةَ وَلَا يُنفِقُونَهَا فِي سَبِيلِ اللَّهِ فَبَشِّرْهُم بِعَذَابٍ أَلِيمٍ',
+                  'وَالَّذِينَ يَكۡنِزُونَ الذَّهَبَ وَالۡفِضَّةَ وَلَا يُنفِقُونَهَا فِي سَبِيلِ اللَّهِ فَبَشِّرۡهُم بِعَذَابٍ أَلِيمٍ',
                   textDirection: TextDirection.rtl,
                   style: GoogleFonts.amiri(
                     fontSize: 18,

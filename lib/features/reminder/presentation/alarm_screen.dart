@@ -64,17 +64,11 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     )..repeat();
 
     _scaleAnimation = Tween<double>(begin: 0.94, end: 1.06).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
     _glowAnimation = Tween<double>(begin: 0.35, end: 0.85).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
     // Live clock ticker
@@ -107,7 +101,8 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         ? reminders.where((r) => r.id == widget.reminderId).firstOrNull
         : null;
 
-    final effectiveSoundType = widget.soundType ??
+    final effectiveSoundType =
+        widget.soundType ??
         customReminder?.soundType ??
         (widget.prayerName != null
             ? ReminderAudioConfig.defaultSound
@@ -217,8 +212,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     await _audioPlayer.stop();
 
     final snoozeTime = DateTime.now().add(Duration(minutes: minutes));
-    final snoozeId =
-        (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
+    final snoozeId = (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
 
     final alarmTitle = widget.title ?? widget.prayerName ?? 'Alarm';
 
@@ -360,7 +354,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                 child: Column(
                   children: [
                     Text(
-                      'اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ، وَالصَّلاَةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ',
+                      'اللَّهُمَّ رَبَّ هَذِهِ الدَّعۡوَةِ التَّامَّةِ، وَالصَّلاَةِ الۡقَائِمَةِ، آتِ مُحَمَّدًا الۡوَسِيلَةَ وَالۡفَضِيلَةَ، وَابۡعَثۡهُ مَقَامًا مَحۡمُودًا الَّذِي وَعَدۡتَهُ',
                       style: GoogleFonts.amiri(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -374,8 +368,9 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                       '"O Allah, Lord of this perfect call and established prayer, grant Muhammad the intercession and favor, and raise him to the praised station which You have promised him."',
                       style: GoogleFonts.lexend(
                         fontSize: 12.5,
-                        color:
-                            isDark ? Colors.white70 : const Color(0xFF475569),
+                        color: isDark
+                            ? Colors.white70
+                            : const Color(0xFF475569),
                         height: 1.4,
                       ),
                       textAlign: TextAlign.center,
@@ -449,10 +444,10 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
 
     final alarmSubtitle = isPrayer
         ? (widget.prayerName!.toLowerCase() == 'fajr'
-            ? 'الصلاة خير من النوم'
-            : 'حي على الصلاة • Come to Success')
+              ? 'الصلاة خير من النوم'
+              : 'حي على الصلاة • Come to Success')
         : (customReminder?.description ??
-            'Time for your scheduled reminder & adhkar.');
+              'Time for your scheduled reminder & adhkar.');
 
     final timeStr = DateFormat('hh:mm a').format(_currentTime);
     final dateStr = DateFormat('EEEE, d MMMM yyyy').format(_currentTime);
@@ -496,16 +491,20 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                           height: 150,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFF1E492B).withValues(alpha: 0.4),
+                            color: const Color(
+                              0xFF1E492B,
+                            ).withValues(alpha: 0.4),
                             border: Border.all(
-                              color: const Color(0xFF4ADE80)
-                                  .withValues(alpha: _glowAnimation.value),
+                              color: const Color(
+                                0xFF4ADE80,
+                              ).withValues(alpha: _glowAnimation.value),
                               width: 3.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF22C55E)
-                                    .withValues(alpha: 0.35 * _glowAnimation.value),
+                                color: const Color(0xFF22C55E).withValues(
+                                  alpha: 0.35 * _glowAnimation.value,
+                                ),
                                 blurRadius: 40,
                                 spreadRadius: 10,
                               ),
@@ -666,7 +665,9 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFF0C2417),
                             elevation: 8,
-                            shadowColor: const Color(0xFF4ADE80).withValues(alpha: 0.5),
+                            shadowColor: const Color(
+                              0xFF4ADE80,
+                            ).withValues(alpha: 0.5),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),

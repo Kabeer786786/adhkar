@@ -336,7 +336,6 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                               ],
                             ),
                           ),
-                         
                         ],
                       ),
                       if (fastingInfo.arabicHadith != null) ...[
@@ -850,7 +849,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                         context,
                         title: 'Sehri Dua (Intention for Fasting)',
                         arabic:
-                            'وَبِصَوْمِ غَدٍ نَّوَيْتُ مِنْ شَهْرِ رَمَضَانَ',
+                            'وَبِصَوۡمِ غَدٍ نَّوَيۡتُ مِنۡ شَهۡرِ رَمَضَانَ',
                         transliteration:
                             'Wa bi-sawmi ghadin nawaitu min shahri ramadan.',
                         translation:
@@ -869,7 +868,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                         context,
                         title: 'Iftar Dua (Dua for Breaking Fast)',
                         arabic:
-                            'اللَّهُمَّ إِنِّي لَكُ صُمْتُ وَبِكُ آمَنْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ',
+                            'اللَّهُمَّ إِنِّي لَكُ صُمۡتُ وَبِكُ آمَنۡتُ وَعَلَى رِزۡقِكَ أَفۡطَرۡتُ',
                         transliteration:
                             'Allahumma inni laka sumtu wa bika aamantu wa \'ala rizqika aftartu.',
                         translation:
@@ -1500,8 +1499,8 @@ class _RozaCalendarModalContentState
                             Positioned(
                               top: 4,
                               right: 6,
-                              child: Text( 
-                                '$dayNum',  
+                              child: Text(
+                                '$dayNum',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,

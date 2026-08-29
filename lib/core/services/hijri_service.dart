@@ -31,16 +31,16 @@ class HijriDateData {
   });
 
   Map<String, dynamic> toJson() => {
-        'day': day,
-        'monthNumber': monthNumber,
-        'monthEn': monthEn,
-        'monthAr': monthAr,
-        'year': year,
-        'formatted': formatted,
-        'region': region,
-        'source': source,
-        'isAladhan': isAladhan,
-      };
+    'day': day,
+    'monthNumber': monthNumber,
+    'monthEn': monthEn,
+    'monthAr': monthAr,
+    'year': year,
+    'formatted': formatted,
+    'region': region,
+    'source': source,
+    'isAladhan': isAladhan,
+  };
 
   factory HijriDateData.fromJson(Map<String, dynamic> json) {
     return HijriDateData(
@@ -56,7 +56,11 @@ class HijriDateData {
     );
   }
 
-  factory HijriDateData.fromAlgorithmic(DateTime date, {String region = 'Local', int dayOffset = 0}) {
+  factory HijriDateData.fromAlgorithmic(
+    DateTime date, {
+    String region = 'Local',
+    int dayOffset = 0,
+  }) {
     final hijri = HijriDate.fromGregorian(date, dayOffset: dayOffset);
     return HijriDateData(
       day: hijri.day,
@@ -90,13 +94,13 @@ class HijriCalendarDayData {
   });
 
   Map<String, dynamic> toJson() => {
-        'hijri_day': hijriDay,
-        'gregorian_day': gregorianDay,
-        'gregorian_month': gregorianMonth,
-        'gregorian_year': gregorianYear,
-        'gregorian_weekday': gregorianWeekday,
-        'day_of_week': dayOfWeek,
-      };
+    'hijri_day': hijriDay,
+    'gregorian_day': gregorianDay,
+    'gregorian_month': gregorianMonth,
+    'gregorian_year': gregorianYear,
+    'gregorian_weekday': gregorianWeekday,
+    'day_of_week': dayOfWeek,
+  };
 
   factory HijriCalendarDayData.fromJson(Map<String, dynamic> json) {
     return HijriCalendarDayData(
@@ -130,14 +134,14 @@ class HijriCalendarMonthData {
   });
 
   Map<String, dynamic> toJson() => {
-        'monthNumber': monthNumber,
-        'monthEn': monthEn,
-        'monthAr': monthAr,
-        'year': year,
-        'totalDays': totalDays,
-        'days': days.map((d) => d.toJson()).toList(),
-        'isAladhan': isAladhan,
-      };
+    'monthNumber': monthNumber,
+    'monthEn': monthEn,
+    'monthAr': monthAr,
+    'year': year,
+    'totalDays': totalDays,
+    'days': days.map((d) => d.toJson()).toList(),
+    'isAladhan': isAladhan,
+  };
 
   factory HijriCalendarMonthData.fromJson(Map<String, dynamic> json) {
     final rawDays = json['days'] as List? ?? [];
@@ -148,7 +152,11 @@ class HijriCalendarMonthData {
       year: (json['year'] as num?)?.toInt() ?? 1448,
       totalDays: (json['totalDays'] as num?)?.toInt() ?? rawDays.length,
       days: rawDays
-          .map((e) => HijriCalendarDayData.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map(
+            (e) => HijriCalendarDayData.fromJson(
+              Map<String, dynamic>.from(e as Map),
+            ),
+          )
           .toList(),
       isAladhan: json['isAladhan'] as bool? ?? false,
     );
@@ -157,21 +165,24 @@ class HijriCalendarMonthData {
 
 class HijriService {
   final Dio _dio;
-  static const String _chandKiTarikhBaseUrl = 'https://chandkitarikh.today/api.php';
+  static const String _chandKiTarikhBaseUrl =
+      'https://chandkitarikh.today/api.php';
   static const String _aladhanBaseUrl = 'https://api.aladhan.com/v1';
 
   HijriService({Dio? dio})
-      : _dio = dio ??
-            Dio(
-              BaseOptions(
-                connectTimeout: const Duration(seconds: 8),
-                receiveTimeout: const Duration(seconds: 8),
-                headers: {'Accept': 'application/json'},
-              ),
-            );
+    : _dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              connectTimeout: const Duration(seconds: 8),
+              receiveTimeout: const Duration(seconds: 8),
+              headers: {'Accept': 'application/json'},
+            ),
+          );
 
   static bool isChandKiTarikhRegion(String? country) {
-    if (country == null || country.trim().isEmpty) return true; // Default India/Subcontinent
+    if (country == null || country.trim().isEmpty)
+      return true; // Default India/Subcontinent
     final c = country.trim().toLowerCase();
     return c.contains('india') ||
         c.contains('pakistan') ||
@@ -184,7 +195,7 @@ class HijriService {
   /// Get today's Hijri Date with 12 AM daily cache rule.
   /// Dynamically computes and updates regional day offset for IN/PK/BD vs standard math.
   Future<HijriDateData> getTodayHijriDate({
-    String? country, 
+    String? country,
     double? latitude,
     double? longitude,
   }) async {
@@ -223,7 +234,8 @@ class HijriService {
         // If day wrapped across month boundary (e.g. 1 vs 30), normalize offset
         if (computedOffset > 15) computedOffset -= 30;
         if (computedOffset < -15) computedOffset += 30;
-        if (computedOffset == 0) computedOffset = -1; // Default -1 offset for South Asia
+        if (computedOffset == 0)
+          computedOffset = -1; // Default -1 offset for South Asia
       } else {
         freshData = await _fetchAladhanToday(
           date: now,
@@ -249,9 +261,13 @@ class HijriService {
           return HijriDateData.fromJson(Map<String, dynamic>.from(cachedRaw));
         }
       } catch (_) {}
-      
+
       final defaultOffset = isSubcontinent ? -1 : 0;
-      return HijriDateData.fromAlgorithmic(now, region: country ?? 'Local', dayOffset: defaultOffset);
+      return HijriDateData.fromAlgorithmic(
+        now,
+        region: country ?? 'Local',
+        dayOffset: defaultOffset,
+      );
     }
   }
 
@@ -267,7 +283,8 @@ class HijriService {
         final monthEn = month['en'] as String? ?? '';
         final monthAr = month['ar'] as String? ?? '';
         final year = (hijri['year'] as num).toInt();
-        final formatted = hijri['formatted'] as String? ?? '$day $monthEn $year AH';
+        final formatted =
+            hijri['formatted'] as String? ?? '$day $monthEn $year AH';
         final region = data['region'] as String? ?? 'India';
 
         return HijriDateData(
@@ -356,7 +373,9 @@ class HijriService {
       final box = await Hive.openBox('hijri_cache_box');
       final cachedRaw = box.get(cacheKey);
       if (cachedRaw != null && cachedRaw is Map) {
-        return HijriCalendarMonthData.fromJson(Map<String, dynamic>.from(cachedRaw));
+        return HijriCalendarMonthData.fromJson(
+          Map<String, dynamic>.from(cachedRaw),
+        );
       }
 
       final monthData = await _fetchAladhanHijriCalendar(
@@ -371,11 +390,13 @@ class HijriService {
 
       return monthData;
     } catch (e) {
-      return _buildFallbackMonthData(hijriYear, hijriMonth, isSubcontinent: false);
+      return _buildFallbackMonthData(
+        hijriYear,
+        hijriMonth,
+        isSubcontinent: false,
+      );
     }
   }
-
-
 
   Future<HijriCalendarMonthData> _fetchAladhanHijriCalendar(
     int hijriYear,
@@ -436,14 +457,16 @@ class HijriService {
               break;
           }
 
-          days.add(HijriCalendarDayData(
-            hijriDay: hDay,
-            gregorianDay: gDay,
-            gregorianMonth: gMonth,
-            gregorianYear: gYear,
-            gregorianWeekday: gWeekday,
-            dayOfWeek: dow,
-          ));
+          days.add(
+            HijriCalendarDayData(
+              hijriDay: hDay,
+              gregorianDay: gDay,
+              gregorianMonth: gMonth,
+              gregorianYear: gYear,
+              gregorianWeekday: gWeekday,
+              dayOfWeek: dow,
+            ),
+          );
         }
 
         return HijriCalendarMonthData(
@@ -483,7 +506,9 @@ class HijriService {
     } else {
       try {
         final aladhanFormatted = DateFormat('dd-MM-yyyy').format(date);
-        final response = await _dio.get('$_aladhanBaseUrl/gToH/$aladhanFormatted');
+        final response = await _dio.get(
+          '$_aladhanBaseUrl/gToH/$aladhanFormatted',
+        );
         if (response.statusCode == 200 && response.data is Map) {
           final data = response.data['data'];
           final hijri = data != null ? data['hijri'] : null;
@@ -512,10 +537,18 @@ class HijriService {
     }
 
     final offset = isSubcontinent ? -1 : 0;
-    return HijriDateData.fromAlgorithmic(date, region: country ?? 'Local', dayOffset: offset);
+    return HijriDateData.fromAlgorithmic(
+      date,
+      region: country ?? 'Local',
+      dayOffset: offset,
+    );
   }
 
-  HijriCalendarMonthData _buildFallbackMonthData(int year, int month, {required bool isSubcontinent}) {
+  HijriCalendarMonthData _buildFallbackMonthData(
+    int year,
+    int month, {
+    required bool isSubcontinent,
+  }) {
     const monthNamesEn = [
       'Muharram',
       'Safar',
@@ -528,7 +561,7 @@ class HijriService {
       'Ramadan',
       'Shawwal',
       'Dhul-Qi\'dah',
-      'Dhul-Hijjah'
+      'Dhul-Hijjah',
     ];
     const monthNamesAr = [
       'مُحَرَّم',
@@ -538,23 +571,25 @@ class HijriService {
       'جُمَادَى الأُولَى',
       'جُمَادَى الآخِرَة',
       'رَجَب',
-      'شَعْبَان',
+      'شَعۡبَان',
       'رَمَضَان',
       'شَوَّال',
-      'ذُو القَعْدَة',
-      'ذُو الحِجَّة'
+      'ذُو القَعۡدَة',
+      'ذُو الحِجَّة',
     ];
 
     final days = <HijriCalendarDayData>[];
     for (int i = 1; i <= 29; i++) {
-      days.add(HijriCalendarDayData(
-        hijriDay: i,
-        gregorianDay: i,
-        gregorianMonth: 'Fallback',
-        gregorianYear: 2026,
-        gregorianWeekday: 'Day',
-        dayOfWeek: (i % 7),
-      ));
+      days.add(
+        HijriCalendarDayData(
+          hijriDay: i,
+          gregorianDay: i,
+          gregorianMonth: 'Fallback',
+          gregorianYear: 2026,
+          gregorianWeekday: 'Day',
+          dayOfWeek: (i % 7),
+        ),
+      );
     }
 
     return HijriCalendarMonthData(
@@ -581,7 +616,7 @@ class HijriService {
       'Ramadan',
       'Shawwal',
       'Dhul-Qi\'dah',
-      'Dhul-Hijjah'
+      'Dhul-Hijjah',
     ];
     const monthNamesAr = [
       'مُحَرَّم',
@@ -591,11 +626,11 @@ class HijriService {
       'جُمَادَى الأُولَى',
       'جُمَادَى الآخِرَة',
       'رَجَب',
-      'شَعْبَان',
+      'شَعۡبَان',
       'رَمَضَان',
       'شَوَّال',
-      'ذُو القَعْدَة',
-      'ذُو الحِجَّة'
+      'ذُو القَعۡدَة',
+      'ذُو الحِجَّة',
     ];
 
     const monthLengths = [30, 30, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
@@ -622,14 +657,16 @@ class HijriService {
     final days = <HijriCalendarDayData>[];
     for (int d = 1; d <= totalDays; d++) {
       final currentGDate = firstDayGregorian.add(Duration(days: d - 1));
-      days.add(HijriCalendarDayData(
-        hijriDay: d,
-        gregorianDay: currentGDate.day,
-        gregorianMonth: DateFormat('MMM').format(currentGDate),
-        gregorianYear: currentGDate.year,
-        gregorianWeekday: DateFormat('EEE').format(currentGDate),
-        dayOfWeek: currentGDate.weekday % 7,
-      ));
+      days.add(
+        HijriCalendarDayData(
+          hijriDay: d,
+          gregorianDay: currentGDate.day,
+          gregorianMonth: DateFormat('MMM').format(currentGDate),
+          gregorianYear: currentGDate.year,
+          gregorianWeekday: DateFormat('EEE').format(currentGDate),
+          dayOfWeek: currentGDate.weekday % 7,
+        ),
+      );
     }
 
     return HijriCalendarMonthData(
@@ -656,7 +693,8 @@ final todayHijriProvider = FutureProvider<HijriDateData>((ref) async {
   final calPref = ref.watch(calendarPreferenceProvider);
   final location = locationAsync.value;
 
-  final activeRegion = calPref.region == HijriRegion.global && location?.country != null
+  final activeRegion =
+      calPref.region == HijriRegion.global && location?.country != null
       ? HijriRegionExtension.fromCountryCode(location!.country)
       : calPref.region;
 

@@ -11,11 +11,7 @@ class AddDuaModal extends ConsumerStatefulWidget {
   final DuaItem? initialDua;
   final Function(DuaItem dua) onSave;
 
-  const AddDuaModal({
-    super.key,
-    this.initialDua,
-    required this.onSave,
-  });
+  const AddDuaModal({super.key, this.initialDua, required this.onSave});
 
   static void show(
     BuildContext context, {
@@ -26,10 +22,7 @@ class AddDuaModal extends ConsumerStatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AddDuaModal(
-        initialDua: initialDua,
-        onSave: onSave,
-      ),
+      builder: (context) => AddDuaModal(initialDua: initialDua, onSave: onSave),
     );
   }
 
@@ -58,7 +51,9 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
   @override
   void initState() {
     super.initState();
-    final savedCats = ref.read(storageServiceProvider).getCustomCategories('dua');
+    final savedCats = ref
+        .read(storageServiceProvider)
+        .getCustomCategories('dua');
     for (final cat in savedCats) {
       if (!_categories.contains(cat)) {
         _categories.add(cat);
@@ -99,13 +94,17 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
 
     if (title.isEmpty || arabic.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter at least a title and Arabic text.')),
+        const SnackBar(
+          content: Text('Please enter at least a title and Arabic text.'),
+        ),
       );
       return;
     }
 
     final savedDua = DuaItem(
-      id: widget.initialDua?.id ?? 'custom_dua_${DateTime.now().millisecondsSinceEpoch}',
+      id:
+          widget.initialDua?.id ??
+          'custom_dua_${DateTime.now().millisecondsSinceEpoch}',
       title: title,
       category: _selectedCategory,
       arabic: arabic,
@@ -137,7 +136,9 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
       hintText: hint,
       prefixIcon: Icon(icon, color: const Color(0xFF2A531D)),
       filled: true,
-      fillColor: context.isDarkMode ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
+      fillColor: context.isDarkMode
+          ? const Color(0xFF23322B)
+          : const Color(0xFFF9FAFB),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -202,7 +203,11 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
               // Title
               TextField(
                 controller: _titleController,
-                decoration: _inputDecoration('Dua Title *', 'e.g. Dua for Peace & Protection', Icons.title_rounded),
+                decoration: _inputDecoration(
+                  'Dua Title *',
+                  'e.g. Dua for Peace & Protection',
+                  Icons.title_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
@@ -212,14 +217,17 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
                 value: _selectedCategory,
                 prefixIcon: Icons.category_rounded,
                 onAddCustomCategory: () async {
-                  final newCatName = await AppDropdown.showAddCustomCategoryDialog(
-                    context,
-                    title: 'Add Custom Category',
-                    hintText: 'e.g. Travel & Protection',
-                    icon: Icons.menu_book_rounded,
-                  );
+                  final newCatName =
+                      await AppDropdown.showAddCustomCategoryDialog(
+                        context,
+                        title: 'Add Custom Category',
+                        hintText: 'e.g. Travel & Protection',
+                        icon: Icons.menu_book_rounded,
+                      );
                   if (newCatName != null && newCatName.isNotEmpty) {
-                    ref.read(storageServiceProvider).saveCustomCategory('dua', newCatName);
+                    ref
+                        .read(storageServiceProvider)
+                        .saveCustomCategory('dua', newCatName);
                     setState(() {
                       if (!_categories.contains(newCatName)) {
                         _categories.add(newCatName);
@@ -251,15 +259,26 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
                 controller: _arabicController,
                 textDirection: TextDirection.rtl,
                 maxLines: 2,
-                style: GoogleFonts.amiri(fontSize: 20, fontWeight: FontWeight.bold),
-                decoration: _inputDecoration('Arabic Text *', 'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً', Icons.auto_awesome_rounded),
+                style: GoogleFonts.amiri(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: _inputDecoration(
+                  'Arabic Text *',
+                  'اَللَّهُمَّ حَاسِبۡنِي حِسَاباً يَسِيراً',
+                  Icons.auto_awesome_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
               // Transliteration
               TextField(
                 controller: _transliterationController,
-                decoration: _inputDecoration('Transliteration', 'e.g. Allahumma hasibni hisaban yasira', Icons.text_fields_rounded),
+                decoration: _inputDecoration(
+                  'Transliteration',
+                  'e.g. Allahumma hasibni hisaban yasira',
+                  Icons.text_fields_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
@@ -267,14 +286,22 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
               TextField(
                 controller: _translationController,
                 maxLines: 2,
-                decoration: _inputDecoration('English Translation', 'e.g. O Allah, grant me an easy accounting.', Icons.translate_rounded),
+                decoration: _inputDecoration(
+                  'English Translation',
+                  'e.g. O Allah, grant me an easy accounting.',
+                  Icons.translate_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
               // Hadith Reference
               TextField(
                 controller: _referenceController,
-                decoration: _inputDecoration('Hadith / Book Reference', 'e.g. Musnad Ahmad & Sahih Ibn Hibban', Icons.menu_book_rounded),
+                decoration: _inputDecoration(
+                  'Hadith / Book Reference',
+                  'e.g. Musnad Ahmad & Sahih Ibn Hibban',
+                  Icons.menu_book_rounded,
+                ),
               ),
               const SizedBox(height: 14),
 
@@ -282,7 +309,11 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
               TextField(
                 controller: _benefitsController,
                 maxLines: 2,
-                decoration: _inputDecoration('Spiritual & Practical Benefits', 'e.g. Grants ease on the Day of Judgment.', Icons.info_outline_rounded),
+                decoration: _inputDecoration(
+                  'Spiritual & Practical Benefits',
+                  'e.g. Grants ease on the Day of Judgment.',
+                  Icons.info_outline_rounded,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -299,7 +330,10 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
                 ),
                 child: Text(
                   isEditing ? 'Save Changes' : 'Save Custom Dua',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

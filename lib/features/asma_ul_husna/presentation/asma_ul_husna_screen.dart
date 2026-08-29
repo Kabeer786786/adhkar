@@ -21,7 +21,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<double> _titleOpacity = ValueNotifier<double>(0.0);
   bool _isGridView = true; // True for boxes/grid, False for list view
-  bool _isAllDownloaded = false; 
+  bool _isAllDownloaded = false;
   bool _hasCheckedDownloadStatus = false;
 
   @override
@@ -39,7 +39,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
   Future<void> _checkDownloadStatus() async {
     final paths = asmaUlHusnaList.map((e) => e.localRelativePath).toList();
-    final downloaded = await MediaDownloadService.instance.isBatchDownloaded(paths);
+    final downloaded = await MediaDownloadService.instance.isBatchDownloaded(
+      paths,
+    );
     if (mounted) {
       setState(() {
         _isAllDownloaded = downloaded;
@@ -124,7 +126,10 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
             scrolledUnderElevation: 0,
             titleSpacing: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1A3512)),
+              icon: const Icon(
+                Icons.arrow_back_rounded,
+                color: Color(0xFF1A3512),
+              ),
               onPressed: () => Navigator.pop(context),
               tooltip: 'Back',
             ),
@@ -137,7 +142,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     Opacity(
                       opacity: (1.0 - opacity).clamp(0.0, 1.0),
                       child: Text(
-                        'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+                        'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ',
                         style: GoogleFonts.amiri(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -180,7 +185,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   size: 22,
                 ),
                 onPressed: () => setState(() => _isGridView = !_isGridView),
-                tooltip: _isGridView ? 'Switch to List View' : 'Switch to Grid View',
+                tooltip: _isGridView
+                    ? 'Switch to List View'
+                    : 'Switch to Grid View',
               ),
               const SizedBox(width: 8),
             ],
@@ -195,7 +202,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        child: _buildHeaderCard(), 
+                        child: _buildHeaderCard(),
                       ),
                     ),
                     SliverPadding(
@@ -204,37 +211,35 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                           ? SliverGrid(
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: 0.92,
-                              ),
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) {
-                                  final item = asmaUlHusnaList[index];
-                                  final isSelected =
-                                      _audioController.currentIndex == index;
-                                  return _buildGridCard(item, index, isSelected);
-                                },
-                                childCount: asmaUlHusnaList.length,
-                              ),
+                                    crossAxisCount: crossAxisCount,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    childAspectRatio: 0.92,
+                                  ),
+                              delegate: SliverChildBuilderDelegate((
+                                context,
+                                index,
+                              ) {
+                                final item = asmaUlHusnaList[index];
+                                final isSelected =
+                                    _audioController.currentIndex == index;
+                                return _buildGridCard(item, index, isSelected);
+                              }, childCount: asmaUlHusnaList.length),
                             )
                           : SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) {
-                                  final item = asmaUlHusnaList[index];
-                                  final isSelected =
-                                      _audioController.currentIndex == index;
-                                  return _buildListCard(item, index, isSelected);
-                                },
-                                childCount: asmaUlHusnaList.length,
-                              ),
+                              delegate: SliverChildBuilderDelegate((
+                                context,
+                                index,
+                              ) {
+                                final item = asmaUlHusnaList[index];
+                                final isSelected =
+                                    _audioController.currentIndex == index;
+                                return _buildListCard(item, index, isSelected);
+                              }, childCount: asmaUlHusnaList.length),
                             ),
                     ),
                     SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: isPlayerActive ? 120 : 40,
-                      ),
+                      child: SizedBox(height: isPlayerActive ? 120 : 40),
                     ),
                   ],
                 ),
@@ -323,7 +328,10 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
               child: InkWell(
                 onTap: () {
                   if (_audioController.currentIndex >= 0) {
-                    _audioController.togglePlayPause(context: context, ref: ref);
+                    _audioController.togglePlayPause(
+                      context: context,
+                      ref: ref,
+                    );
                   } else {
                     _audioController.playIndex(0, context: context, ref: ref);
                   }
@@ -343,7 +351,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     // ],
                   ),
                   child: Icon(
-                    isPlayingAny ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    isPlayingAny
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
                     color: const Color(0xFFD4AF37),
                     size: 22,
                   ),
@@ -446,8 +456,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.w600,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w600,
                       color: isSelected
                           ? const Color(0xFF15803D)
                           : const Color(0xFF6B533E),
@@ -678,12 +689,15 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: Colors.white60),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white60,
+                    ),
                     onPressed: _audioController.stop,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
-                ], 
+                ],
               ),
             ),
             Padding(
@@ -694,10 +708,12 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     child: SliderTheme(
                       data: SliderThemeData(
                         trackHeight: 5,
-                        thumbShape:
-                            const RoundSliderThumbShape(enabledThumbRadius: 5),
-                        overlayShape:
-                            const RoundSliderOverlayShape(overlayRadius: 10),
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 5,
+                        ),
+                        overlayShape: const RoundSliderOverlayShape(
+                          overlayRadius: 10,
+                        ),
                         activeTrackColor: const Color(0xFF4ADE80),
                         inactiveTrackColor: Colors.white24,
                         thumbColor: Colors.white,
@@ -710,8 +726,11 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                         onChanged: (val) {
                           final targetIndex = val.toInt() - 1;
                           if (targetIndex != _audioController.currentIndex) {
-                            _audioController.playIndex(targetIndex,
-                                context: context, ref: ref);
+                            _audioController.playIndex(
+                              targetIndex,
+                              context: context,
+                              ref: ref,
+                            );
                           }
                         },
                       ),
@@ -726,17 +745,24 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.skip_previous_rounded,
-                        color: Colors.white, size: 28),
-                    onPressed: () =>
-                        _audioController.playPrevious(context: context, ref: ref),
+                    icon: const Icon(
+                      Icons.skip_previous_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    onPressed: () => _audioController.playPrevious(
+                      context: context,
+                      ref: ref,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () =>
-                          _audioController.togglePlayPause(context: context, ref: ref),
+                      onTap: () => _audioController.togglePlayPause(
+                        context: context,
+                        ref: ref,
+                      ),
                       borderRadius: BorderRadius.circular(20),
                       child: SizedBox(
                         width: 42,
@@ -753,8 +779,11 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   ),
                   const SizedBox(width: 10),
                   IconButton(
-                    icon: const Icon(Icons.skip_next_rounded,
-                        color: Colors.white, size: 28),
+                    icon: const Icon(
+                      Icons.skip_next_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                     onPressed: () =>
                         _audioController.playNext(context: context, ref: ref),
                   ),

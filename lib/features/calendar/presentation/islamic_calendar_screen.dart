@@ -13,7 +13,8 @@ class IslamicCalendarScreen extends ConsumerStatefulWidget {
   const IslamicCalendarScreen({super.key});
 
   @override
-  ConsumerState<IslamicCalendarScreen> createState() => _IslamicCalendarScreenState();
+  ConsumerState<IslamicCalendarScreen> createState() =>
+      _IslamicCalendarScreenState();
 }
 
 class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
@@ -26,7 +27,8 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
       'nameEn': 'Muharram',
       'nameAr': 'المحَرَّم',
       'tag': '1st Month in Islam (Sacred)',
-      'desc': 'The sacred month of Allah and the official beginning of the Islamic lunar calendar year.',
+      'desc':
+          'The sacred month of Allah and the official beginning of the Islamic lunar calendar year.',
       'color': '0xFFD97724',
     },
     {
@@ -42,7 +44,8 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
       'nameEn': 'Rabi\' al-Awwal',
       'nameAr': 'رَبِيع الأَوَّل',
       'tag': '3rd Month',
-      'desc': 'The month in which Prophet Muhammad (peace be upon him) was born.',
+      'desc':
+          'The month in which Prophet Muhammad (peace be upon him) was born.',
       'color': '0xFF2563EB',
     },
     {
@@ -80,9 +83,10 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
     {
       'number': '8',
       'nameEn': 'Sha\'ban',
-      'nameAr': 'شَعْبَان',
+      'nameAr': 'شَعۡبَان',
       'tag': '8th Month',
-      'desc': 'The month of preparation before Ramadan, recommended for voluntary fasting.',
+      'desc':
+          'The month of preparation before Ramadan, recommended for voluntary fasting.',
       'color': '0xFFEC4899',
     },
     {
@@ -90,7 +94,8 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
       'nameEn': 'Ramadan',
       'nameAr': 'رَمَضَان',
       'tag': '9th Month (Holy Fasting)',
-      'desc': 'The holiest month of obligatory fasting, night prayers, and revelation of the Quran.',
+      'desc':
+          'The holiest month of obligatory fasting, night prayers, and revelation of the Quran.',
       'color': '0xFF15803D',
     },
     {
@@ -98,13 +103,14 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
       'nameEn': 'Shawwal',
       'nameAr': 'شَوَّال',
       'tag': '10th Month (Eid al-Fitr)',
-      'desc': 'The month starting with Eid al-Fitr and the recommended 6 days of Sunnah fasting.',
+      'desc':
+          'The month starting with Eid al-Fitr and the recommended 6 days of Sunnah fasting.',
       'color': '0xFFD97724',
     },
     {
       'number': '11',
       'nameEn': 'Dhul-Qi\'dah',
-      'nameAr': 'ذُو القَعْدَة',
+      'nameAr': 'ذُو القَعۡدَة',
       'tag': '11th Month (Sacred)',
       'desc': 'The 11th sacred month during which fighting is prohibited.',
       'color': '0xFF0284C7',
@@ -114,7 +120,8 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
       'nameEn': 'Dhul-Hijjah',
       'nameAr': 'ذُو الحِجَّة',
       'tag': '12th Month (Sacred & Hajj)',
-      'desc': 'The month of the Hajj pilgrimage, the Day of Arafah, and Eid al-Adha.',
+      'desc':
+          'The month of the Hajj pilgrimage, the Day of Arafah, and Eid al-Adha.',
       'color': '0xFFB45309',
     },
   ];
@@ -123,55 +130,64 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
     {
       'hijri': '1 Ramadan',
       'title': 'Start of Ramadan Fasting',
-      'description': 'First day of the holy month of fasting, prayer, and Quran recitation.',
+      'description':
+          'First day of the holy month of fasting, prayer, and Quran recitation.',
       'type': 'fasting',
     },
     {
       'hijri': '27 Ramadan',
       'title': 'Laylat al-Qadr (Night of Power)',
-      'description': 'The night in which the Quran was first revealed to Prophet Muhammad (ﷺ). Better than 1,000 months.',
+      'description':
+          'The night in which the Quran was first revealed to Prophet Muhammad (ﷺ). Better than 1,000 months.',
       'type': 'holy',
     },
     {
       'hijri': '1 Shawwal',
       'title': 'Eid al-Fitr',
-      'description': 'Blessed Islamic festival celebrating the successful completion of Ramadan.',
+      'description':
+          'Blessed Islamic festival celebrating the successful completion of Ramadan.',
       'type': 'eid',
     },
     {
       'hijri': '9 Dhul-Hijjah',
       'title': 'Day of Arafah',
-      'description': 'The pinnacle day of Hajj pilgrimage. Fasting on this day expiates sins of two years.',
+      'description':
+          'The pinnacle day of Hajj pilgrimage. Fasting on this day expiates sins of two years.',
       'type': 'hajj',
     },
     {
       'hijri': '10 Dhul-Hijjah',
       'title': 'Eid al-Adha',
-      'description': 'Feast of Sacrifice honoring Prophet Ibrahim\'s obedience to Allah.',
+      'description':
+          'Feast of Sacrifice honoring Prophet Ibrahim\'s obedience to Allah.',
       'type': 'eid',
     },
     {
       'hijri': '1 Muharram',
       'title': 'Islamic New Year',
-      'description': 'First day of the Hijri year commemorating Prophet Muhammad\'s (ﷺ) migration to Madinah.',
+      'description':
+          'First day of the Hijri year commemorating Prophet Muhammad\'s (ﷺ) migration to Madinah.',
       'type': 'newyear',
     },
     {
       'hijri': '10 Muharram',
       'title': 'Day of Ashura',
-      'description': 'Day Prophet Musa (AS) was saved from Pharaoh. Recommended Sunnah fast.',
+      'description':
+          'Day Prophet Musa (AS) was saved from Pharaoh. Recommended Sunnah fast.',
       'type': 'fasting',
     },
     {
       'hijri': '12 Rabi\' al-Awwal',
       'title': 'Mawlid an-Nabi',
-      'description': 'Commemorating the birth of Prophet Muhammad (peace be upon him).',
+      'description':
+          'Commemorating the birth of Prophet Muhammad (peace be upon him).',
       'type': 'prophet',
     },
     {
       'hijri': '27 Rajab',
       'title': 'Isra and Mi\'raj',
-      'description': 'The miraculous Night Journey and Ascension of Prophet Muhammad (ﷺ).',
+      'description':
+          'The miraculous Night Journey and Ascension of Prophet Muhammad (ﷺ).',
       'type': 'miracle',
     },
   ];
@@ -234,7 +250,9 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
     final isAladhan = todayData?.isAladhan ?? false;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF17241E) : const Color(0xFFF9F9F9),
+      backgroundColor: isDark
+          ? const Color(0xFF17241E)
+          : const Color(0xFFF9F9F9),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppHeaderBar(
@@ -285,7 +303,10 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
@@ -373,7 +394,10 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF2A531D),
-                    side: const BorderSide(color: Color(0xFF2A531D), width: 1.5),
+                    side: const BorderSide(
+                      color: Color(0xFF2A531D),
+                      width: 1.5,
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -476,7 +500,9 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : const Color(0xFF1F2937),
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF1F2937),
                                   ),
                                 ),
                                 const SizedBox(width: 6),
@@ -553,7 +579,10 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: eventColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(10),
@@ -577,7 +606,9 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : const Color(0xFF1F2937),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1F2937),
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -585,7 +616,9 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                             event['description']!,
                             style: GoogleFonts.lexend(
                               fontSize: 12,
-                              color: isDark ? Colors.white60 : const Color(0xFF4B5563),
+                              color: isDark
+                                  ? Colors.white60
+                                  : const Color(0xFF4B5563),
                               height: 1.35,
                             ),
                           ),
@@ -609,10 +642,12 @@ class _GregorianToHijriModal extends ConsumerStatefulWidget {
   const _GregorianToHijriModal();
 
   @override
-  ConsumerState<_GregorianToHijriModal> createState() => _GregorianToHijriModalState();
+  ConsumerState<_GregorianToHijriModal> createState() =>
+      _GregorianToHijriModalState();
 }
 
-class _GregorianToHijriModalState extends ConsumerState<_GregorianToHijriModal> {
+class _GregorianToHijriModalState
+    extends ConsumerState<_GregorianToHijriModal> {
   late DateTime _selectedDate;
   HijriDateData? _convertedResult;
   bool _isConverting = false;
@@ -676,8 +711,10 @@ class _GregorianToHijriModalState extends ConsumerState<_GregorianToHijriModal> 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final location = ref.watch(currentLocationProvider).value; 
-    final isSubcontinent = HijriService.isChandKiTarikhRegion(location?.country);
+    final location = ref.watch(currentLocationProvider).value;
+    final isSubcontinent = HijriService.isChandKiTarikhRegion(
+      location?.country,
+    );
 
     return Container(
       padding: EdgeInsets.only(
@@ -733,7 +770,9 @@ class _GregorianToHijriModalState extends ConsumerState<_GregorianToHijriModal> 
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF23322B) : const Color(0xFFF4FAF3),
+                color: isDark
+                    ? const Color(0xFF23322B)
+                    : const Color(0xFFF4FAF3),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: const Color(0xFF2A531D).withValues(alpha: 0.3),
@@ -767,7 +806,9 @@ class _GregorianToHijriModalState extends ConsumerState<_GregorianToHijriModal> 
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : const Color(0xFF1F2937),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF1F2937),
                           ),
                         ),
                       ],
@@ -823,7 +864,10 @@ class _GregorianToHijriModalState extends ConsumerState<_GregorianToHijriModal> 
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
@@ -921,7 +965,9 @@ class _GregorianToHijriModalState extends ConsumerState<_GregorianToHijriModal> 
                         fontSize: 11,
                         height: 1.35,
                         fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.white70 : const Color(0xFF334155),
+                        color: isDark
+                            ? Colors.white70
+                            : const Color(0xFF334155),
                       ),
                     ),
                   ),
@@ -937,7 +983,9 @@ class _GregorianToHijriModalState extends ConsumerState<_GregorianToHijriModal> 
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? const Color(0xFF23322B) : const Color(0xFFE8F4E5),
+                backgroundColor: isDark
+                    ? const Color(0xFF23322B)
+                    : const Color(0xFFE8F4E5),
                 foregroundColor: const Color(0xFF2A531D),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(

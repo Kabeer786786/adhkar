@@ -22,7 +22,7 @@ class TasbeehLibraryModal extends StatefulWidget {
   });
 
   static void show(
-    BuildContext context, { 
+    BuildContext context, {
     required List<TasbeehItem> currentItems,
     required Function(TasbeehItem item) onAddItem,
     required Function(String itemId) onRemoveItem,
@@ -412,7 +412,7 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        fontSize: 12, 
+                                        fontSize: 12,
                                         fontStyle: FontStyle.italic,
                                         color: Colors.grey.shade700,
                                         height: 1.3,
@@ -671,7 +671,7 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
               ),
               decoration: _formInputDecoration(
                 'Arabic Text *',
-                'سُبْحَانَ اللَّهِ',
+                'سُبۡحَانَ اللَّهِ',
                 Icons.auto_awesome_rounded,
               ),
             ),

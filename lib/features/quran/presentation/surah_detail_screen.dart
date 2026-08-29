@@ -70,7 +70,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     }
   }
 
-  void _scrollToVerse(int index) { 
+  void _scrollToVerse(int index) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients || _selectedMode != 0) return;
       final maxScroll = _scrollController.position.maxScrollExtent;
@@ -86,7 +86,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
 
   void _syncPageWithAyah(AyahModel ayah, List<int> sortedPages) {
     if (_selectedMode != 1 || !_pageController.hasClients) return;
-    final pageIndex = sortedPages.indexOf(ayah.page); 
+    final pageIndex = sortedPages.indexOf(ayah.page);
     if (pageIndex >= 0 && pageIndex != _currentPageIndex) {
       setState(() {
         _currentPageIndex = pageIndex;
@@ -328,7 +328,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         ? '${currentJuz!.number}. ${currentJuz.nameArabic}'
         : '${currentSurah.number}. ${currentSurah.nameArabic}';
 
-    return AnnotatedRegion<SystemUiOverlayStyle>( 
+    return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Stack(
         children: [
@@ -342,7 +342,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                 title: barTitle,
                 showBackButton: true,
                 centerTitle: false,
-                leadingWidth: 60, 
+                leadingWidth: 60,
                 titleSpacing: 6,
                 systemOverlayStyle: isDark
                     ? SystemUiOverlayStyle.light
@@ -352,7 +352,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                     : Colors.white,
                 iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
                 titleWidget: Align(
-                  alignment: Alignment.centerLeft, 
+                  alignment: Alignment.centerLeft,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -363,7 +363,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                             ? '${currentJuz!.number}. '
                             : '${currentSurah.number}. ',
                         style: TextStyle(
-                          color: isDark ? Colors.white : const Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -373,7 +375,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                             ? currentJuz!.nameArabic
                             : currentSurah.nameArabic,
                         style: GoogleFonts.amiri(
-                          color: isDark ? Colors.white : const Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                           fontWeight: FontWeight.bold,
                           fontSize: 21,
                         ),
@@ -654,7 +658,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                     const SizedBox(height: 20),
                     Center(
                       child: Text(
-                        'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+                        'بِسۡمِ اللَّهِ الرَّحۡمَٰنِ الرَّحِيمِ',
                         textAlign: TextAlign.center,
                         textDirection: TextDirection.rtl,
                         style: GoogleFonts.amiri(
@@ -803,21 +807,25 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   }
 
   /// Floating Bottom Audio Player Bar (Identical to Asma Ul Husna Design)
-  Widget _buildStickyAudioPlayerBar( 
-    QuranAudioController quranAudio, 
+  Widget _buildStickyAudioPlayerBar(
+    QuranAudioController quranAudio,
     bool isDark,
   ) {
     final ayah = quranAudio.currentAyah;
     final totalAyahs = quranAudio.playlist.length;
-    final int currentAyahNumber =
-        (quranAudio.currentIndex + 1).clamp(1, totalAyahs > 0 ? totalAyahs : 1);
+    final int currentAyahNumber = (quranAudio.currentIndex + 1).clamp(
+      1,
+      totalAyahs > 0 ? totalAyahs : 1,
+    );
 
-    final double sliderValue =
-        currentAyahNumber.toDouble().clamp(1.0, totalAyahs > 0 ? totalAyahs.toDouble() : 1.0);
+    final double sliderValue = currentAyahNumber.toDouble().clamp(
+      1.0,
+      totalAyahs > 0 ? totalAyahs.toDouble() : 1.0,
+    );
 
     return Material(
       color: Colors.transparent,
-      child: Padding( 
+      child: Padding(
         padding: EdgeInsets.only(
           left: 14,
           right: 14,
@@ -918,7 +926,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       ),
                     const SizedBox(width: 4),
                     IconButton(
-                      icon: const Icon(Icons.close_rounded, color: Colors.white60),
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white60,
+                      ),
                       onPressed: quranAudio.stop,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -934,10 +945,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       child: SliderTheme(
                         data: SliderThemeData(
                           trackHeight: 5,
-                          thumbShape:
-                              const RoundSliderThumbShape(enabledThumbRadius: 5),
-                          overlayShape:
-                              const RoundSliderOverlayShape(overlayRadius: 10),
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 5,
+                          ),
+                          overlayShape: const RoundSliderOverlayShape(
+                            overlayRadius: 10,
+                          ),
                           activeTrackColor: const Color(0xFF4ADE80),
                           inactiveTrackColor: Colors.white24,
                           thumbColor: Colors.white,
@@ -970,7 +983,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       onTap: () {
                         final speeds = [1.0, 1.25, 1.5, 2.0];
                         final currIndex = speeds.indexOf(quranAudio.speed);
-                        final nextSpeed = speeds[(currIndex + 1) % speeds.length];
+                        final nextSpeed =
+                            speeds[(currIndex + 1) % speeds.length];
                         quranAudio.setSpeed(nextSpeed);
                       },
                       borderRadius: BorderRadius.circular(10),
@@ -980,10 +994,14 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF22C55E).withValues(alpha: 0.15),
+                          color: const Color(
+                            0xFF22C55E,
+                          ).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFF4ADE80).withValues(alpha: 0.35),
+                            color: const Color(
+                              0xFF4ADE80,
+                            ).withValues(alpha: 0.35),
                             width: 1,
                           ),
                         ),
@@ -1004,8 +1022,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.skip_previous_rounded,
-                                color: Colors.white, size: 28),
+                            icon: const Icon(
+                              Icons.skip_previous_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                             onPressed: quranAudio.currentIndex > 0
                                 ? () => quranAudio.playPrevious()
                                 : null,
@@ -1031,8 +1052,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           ),
                           const SizedBox(width: 8),
                           IconButton(
-                            icon: const Icon(Icons.skip_next_rounded,
-                                color: Colors.white, size: 28),
+                            icon: const Icon(
+                              Icons.skip_next_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                             onPressed: quranAudio.currentIndex < totalAyahs - 1
                                 ? () => quranAudio.playNext()
                                 : null,
@@ -1313,7 +1337,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF2A531D).withValues(alpha: isDark ? 0.35 : 0.2),
+                      color: const Color(
+                        0xFF2A531D,
+                      ).withValues(alpha: isDark ? 0.35 : 0.2),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),

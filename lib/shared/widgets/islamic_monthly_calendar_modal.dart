@@ -52,10 +52,10 @@ class _IslamicMonthlyCalendarModalState
     {'number': '5', 'nameEn': 'Jumada al-Awwal', 'nameAr': 'جُمَادَى الأُولَى'},
     {'number': '6', 'nameEn': 'Jumada al-Thani', 'nameAr': 'جُمَادَى الآخِرَة'},
     {'number': '7', 'nameEn': 'Rajab', 'nameAr': 'رَجَب'},
-    {'number': '8', 'nameEn': 'Sha\'ban', 'nameAr': 'شَعْبَان'},
+    {'number': '8', 'nameEn': 'Sha\'ban', 'nameAr': 'شَعۡبَان'},
     {'number': '9', 'nameEn': 'Ramadan', 'nameAr': 'رَمَضَان'},
     {'number': '10', 'nameEn': 'Shawwal', 'nameAr': 'شَوَّال'},
-    {'number': '11', 'nameEn': 'Dhul-Qi\'dah', 'nameAr': 'ذُو القَعْدَة'},
+    {'number': '11', 'nameEn': 'Dhul-Qi\'dah', 'nameAr': 'ذُو القَعۡدَة'},
     {'number': '12', 'nameEn': 'Dhul-Hijjah', 'nameAr': 'ذُو الحِجَّة'},
   ];
 
@@ -439,7 +439,7 @@ class _IslamicMonthlyCalendarModalState
                     isSubcontinent
                         ? 'Note: We have adjusted the Hijri dates for India, Pakistan, & Bangladesh based on local moon sighting. Hijri dates may vary by ±1 day.'
                         : 'Note: Hijri dates follow standard global astronomical calculation. Hijri dates may vary by ±1 day based on local moon sighting.',
-                    style: GoogleFonts.lexend( 
+                    style: GoogleFonts.lexend(
                       fontSize: 11,
                       height: 1.35,
                       fontWeight: FontWeight.w500,

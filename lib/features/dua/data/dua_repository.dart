@@ -7,144 +7,195 @@ class DuaRepository {
         id: 'before_eating',
         title: 'Dua Before Eating Food',
         category: 'Food',
-        arabic: 'بِسْمِ اللهِ وَعَلَى بَرَكَةِ اللهِ',
+        arabic: 'بِسۡمِ اللهِ وَعَلَى بَرَكَةِ اللهِ',
         transliteration: 'Bismillāhi wa \'alā barakatillāh.',
-        translation: 'In the name of Allah and with the blessings of Allah [I begin eating].',
+        translation:
+            'In the name of Allah and with the blessings of Allah [I begin eating].',
         repeatCount: 1,
-        reference: 'Al-Mustadrak by Al-Hakim & Sunan Abi Dawud (Hadith 3767). Narrated by Aisha (RA) and Ibn Abbas (RA) that the Prophet (ﷺ) instructed believers to mention Allah\'s name prior to eating.',
-        benefits: 'Prevents Shaytan from partaking in the meal, increases Barakah (blessings) in food, and nourishes both body and soul.',
+        reference:
+            'Al-Mustadrak by Al-Hakim & Sunan Abi Dawud (Hadith 3767). Narrated by Aisha (RA) and Ibn Abbas (RA) that the Prophet (ﷺ) instructed believers to mention Allah\'s name prior to eating.',
+        benefits:
+            'Prevents Shaytan from partaking in the meal, increases Barakah (blessings) in food, and nourishes both body and soul.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'after_eating',
         title: 'Dua After Finishing Meal',
         category: 'Food',
-        arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مِنَ الْمُسْلِمِينَ',
-        transliteration: 'Alhamdu lillāhil-ladhī aṭ\'amanā wa saqānā wa ja\'alanā minal-muslimīn.',
-        translation: 'Praise be to Allah Who has fed us and given us drink, and made us Muslims.',
+        arabic:
+            'الۡحَمۡدُ لِلَّهِ الَّذِي أَطۡعَمَنَا وَسَقَانَا وَجَعَلَنَا مِنَ الۡمُسۡلِمِينَ',
+        transliteration:
+            'Alhamdu lillāhil-ladhī aṭ\'amanā wa saqānā wa ja\'alanā minal-muslimīn.',
+        translation:
+            'Praise be to Allah Who has fed us and given us drink, and made us Muslims.',
         repeatCount: 1,
-        reference: 'Sunan Abi Dawud (Hadith 3850) & At-Tirmidhi (Hadith 3457). Narrated by Abu Sa\'id al-Khudri (RA) regarding the Prophet\'s (ﷺ) post-meal thanksgiving prayer.',
-        benefits: 'Earns the pleasure of Allah, acknowledges physical food and spiritual faith as divine favors, and secures forgiveness.',
+        reference:
+            'Sunan Abi Dawud (Hadith 3850) & At-Tirmidhi (Hadith 3457). Narrated by Abu Sa\'id al-Khudri (RA) regarding the Prophet\'s (ﷺ) post-meal thanksgiving prayer.',
+        benefits:
+            'Earns the pleasure of Allah, acknowledges physical food and spiritual faith as divine favors, and secures forgiveness.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'before_sleeping',
         title: 'Dua Before Sleeping',
         category: 'Sleep',
-        arabic: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+        arabic: 'بِاسۡمِكَ اللَّهُمَّ أَمُوتُ وَأَحۡيَا',
         transliteration: 'Bismika Allāhumma amūtu wa aḥyā.',
         translation: 'In Your name, O Allah, I die and I live.',
         repeatCount: 1,
-        reference: 'Sahih al-Bukhari (Book 80, Hadith 6312) & Sahih Muslim (Hadith 2711). Narrated by Hudhaifah ibn al-Yaman (RA) that whenever the Prophet (ﷺ) retired to his bed at night, he would place his right hand under his cheek and recite this invocation.',
-        benefits: 'Entrusts your soul into Allah\'s divine care during sleep, reminding the believer of mortality and divine preservation.',
+        reference:
+            'Sahih al-Bukhari (Book 80, Hadith 6312) & Sahih Muslim (Hadith 2711). Narrated by Hudhaifah ibn al-Yaman (RA) that whenever the Prophet (ﷺ) retired to his bed at night, he would place his right hand under his cheek and recite this invocation.',
+        benefits:
+            'Entrusts your soul into Allah\'s divine care during sleep, reminding the believer of mortality and divine preservation.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'waking_up',
         title: 'Dua Upon Waking Up',
         category: 'Daily',
-        arabic: 'اَلْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
-        transliteration: 'Alhamdu lillāhil-ladhī aḥyānā ba\'da mā amātanā wa ilaihin-nushūr.',
-        translation: 'All praise is for Allah who gave us life after having caused us to die and unto Him is the resurrection.',
+        arabic:
+            'اَلۡحَمۡدُ لِلَّهِ الَّذِي أَحۡيَانَا بَعۡدَ مَا أَمَاتَنَا وَإِلَيۡهِ النُّشُورُ',
+        transliteration:
+            'Alhamdu lillāhil-ladhī aḥyānā ba\'da mā amātanā wa ilaihin-nushūr.',
+        translation:
+            'All praise is for Allah who gave us life after having caused us to die and unto Him is the resurrection.',
         repeatCount: 1,
-        reference: 'Sahih al-Bukhari (Book 80, Hadith 6312) & Sahih Muslim (Hadith 2711). Narrated by Hudhaifah (RA) that the Messenger of Allah (ﷺ) recited this immediately upon waking up every morning.',
-        benefits: 'Commences the morning with gratitude, revives mindfulness of the Resurrection day, and fills the day with divine light.',
+        reference:
+            'Sahih al-Bukhari (Book 80, Hadith 6312) & Sahih Muslim (Hadith 2711). Narrated by Hudhaifah (RA) that the Messenger of Allah (ﷺ) recited this immediately upon waking up every morning.',
+        benefits:
+            'Commences the morning with gratitude, revives mindfulness of the Resurrection day, and fills the day with divine light.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'wearing_clothes',
         title: 'Dua Before Wearing Clothes',
         category: 'Daily',
-        arabic: 'اَلْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هٰذَا (الثَّوْبَ) وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِّنِّي وَلَا قُوَّةٍ',
-        transliteration: 'Alhamdu lillāhil-ladhī kasānī hādhā (ath-thawba) wa razaqanīhi min ghairi ḥawlim-minnī wa lā quwwah.',
-        translation: 'All praise is due to Allah who has clothed me with this garment and provided it for me without any power or might on my part.',
+        arabic:
+            'اَلۡحَمۡدُ لِلَّهِ الَّذِي كَسَانِي هٰذَا (الثَّوۡبَ) وَرَزَقَنِيهِ مِنۡ غَيۡرِ حَوۡلٍ مِّنِّي وَلَا قُوَّةٍ',
+        transliteration:
+            'Alhamdu lillāhil-ladhī kasānī hādhā (ath-thawba) wa razaqanīhi min ghairi ḥawlim-minnī wa lā quwwah.',
+        translation:
+            'All praise is due to Allah who has clothed me with this garment and provided it for me without any power or might on my part.',
         repeatCount: 1,
-        reference: 'Recorded by Abu Dawud (Book 32, Hadith 4023), At-Tirmidhi, and Ibn Majah. Narrated by Mu\'adh ibn Anas (RA) that the Prophet Muhammad (ﷺ) said: "Whoever puts on a new garment and recites this Dua will have their past minor sins forgiven."',
-        benefits: 'Brings forgiveness of past minor sins, instills deep humility, and acknowledges Allah as the sole Provider of our clothing and dignity.',
+        reference:
+            'Recorded by Abu Dawud (Book 32, Hadith 4023), At-Tirmidhi, and Ibn Majah. Narrated by Mu\'adh ibn Anas (RA) that the Prophet Muhammad (ﷺ) said: "Whoever puts on a new garment and recites this Dua will have their past minor sins forgiven."',
+        benefits:
+            'Brings forgiveness of past minor sins, instills deep humility, and acknowledges Allah as the sole Provider of our clothing and dignity.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'entering_bathroom',
         title: 'Dua Before Entering Bathroom',
         category: 'Hygiene',
-        arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',
-        transliteration: 'Allāhumma innī a\'ūdhu bika minal-khubuthi wal-khabā\'ith.',
-        translation: 'O Allah, I seek refuge in You from all evil spirits (both male and female devils).',
+        arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الۡخُبُثِ وَالۡخَبَائِثِ',
+        transliteration:
+            'Allāhumma innī a\'ūdhu bika minal-khubuthi wal-khabā\'ith.',
+        translation:
+            'O Allah, I seek refuge in You from all evil spirits (both male and female devils).',
         repeatCount: 1,
-        reference: 'Sahih al-Bukhari (Book 4, Hadith 142) & Sahih Muslim (Book 3, Hadith 375). Narrated by Anas ibn Malik (RA) that the Prophet (ﷺ) recited this protection before entering the washroom/toilet.',
-        benefits: 'Establishes a spiritual shield against unseen harmful entities, maintaining purity of mind and spirit in designated wash spaces.',
+        reference:
+            'Sahih al-Bukhari (Book 4, Hadith 142) & Sahih Muslim (Book 3, Hadith 375). Narrated by Anas ibn Malik (RA) that the Prophet (ﷺ) recited this protection before entering the washroom/toilet.',
+        benefits:
+            'Establishes a spiritual shield against unseen harmful entities, maintaining purity of mind and spirit in designated wash spaces.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'leaving_bathroom',
         title: 'Dua After Leaving Bathroom',
         category: 'Hygiene',
-        arabic: 'غُفْرَانَكَ',
+        arabic: 'غُفۡرَانَكَ',
         transliteration: 'Ghufrānaka.',
         translation: 'I seek Your forgiveness.',
         repeatCount: 1,
-        reference: 'Sunan Abi Dawud (Hadith 30), At-Tirmidhi (Hadith 7), and Ibn Majah. Narrated by Aisha (RA) that whenever the Prophet (ﷺ) exited the washroom, he would utter "Ghufranaka".',
-        benefits: 'Expresses heart-felt gratitude for physical relief and asks forgiveness for any brief pause in active remembrance of Allah while inside.',
+        reference:
+            'Sunan Abi Dawud (Hadith 30), At-Tirmidhi (Hadith 7), and Ibn Majah. Narrated by Aisha (RA) that whenever the Prophet (ﷺ) exited the washroom, he would utter "Ghufranaka".',
+        benefits:
+            'Expresses heart-felt gratitude for physical relief and asks forgiveness for any brief pause in active remembrance of Allah while inside.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'leaving_home',
         title: 'Dua Before Leaving Home',
         category: 'Travel',
-        arabic: 'بِسْمِ اللهِ ، تَوَكَّلْتُ عَلَى اللهِ ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ',
-        transliteration: 'Bismillāhi, tawakkaltu \'alallāh, wa lā ḥawla wa lā quwwata illā billāh.',
-        translation: 'In the name of Allah, I place my trust in Allah; there is no might nor power except with Allah.',
+        arabic:
+            'بِسۡمِ اللهِ ، تَوَكَّلۡتُ عَلَى اللهِ ، وَلَا حَوۡلَ وَلَا قُوَّةَ إِلَّا بِاللهِ',
+        transliteration:
+            'Bismillāhi, tawakkaltu \'alallāh, wa lā ḥawla wa lā quwwata illā billāh.',
+        translation:
+            'In the name of Allah, I place my trust in Allah; there is no might nor power except with Allah.',
         repeatCount: 1,
-        reference: 'Sunan Abi Dawud (Book 43, Hadith 5095) & At-Tirmidhi (Hadith 3426). Narrated by Anas ibn Malik (RA) that upon saying this, angels reply: "You are guided, defended, and protected", and Shaytan turns away.',
-        benefits: 'Complete security against physical accidents, deception, misguidance, and evil encounters while outside the home.',
+        reference:
+            'Sunan Abi Dawud (Book 43, Hadith 5095) & At-Tirmidhi (Hadith 3426). Narrated by Anas ibn Malik (RA) that upon saying this, angels reply: "You are guided, defended, and protected", and Shaytan turns away.',
+        benefits:
+            'Complete security against physical accidents, deception, misguidance, and evil encounters while outside the home.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'entering_home',
         title: 'Dua Upon Entering Home',
         category: 'Daily',
-        arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ ، بِسْمِ اللهِ وَلَجْنَا ، وَبِسْمِ اللهِ خَرَجْنَا ، وَعَلَى اللهِ رَبِّنَا تَوَكَّلْنَا',
-        transliteration: 'Allāhumma innī as\'aluka khairal-mawlaji wa khairal-makhraj, bismillāhi walajnā, wa bismillāhi kharajnā, wa \'alallāhi rabbinā tawakkalnā.',
-        translation: 'O Allah, I ask You for the best entrance and the best exit. In the name of Allah we enter, in the name of Allah we leave, and upon Allah our Lord we rely.',
+        arabic:
+            'اللَّهُمَّ إِنِّي أَسۡأَلُكَ خَيۡرَ الۡمَوۡلَجِ وَخَيۡرَ الۡمَخۡرَجِ ، بِسۡمِ اللهِ وَلَجۡنَا ، وَبِسۡمِ اللهِ خَرَجۡنَا ، وَعَلَى اللهِ رَبِّنَا تَوَكَّلۡنَا',
+        transliteration:
+            'Allāhumma innī as\'aluka khairal-mawlaji wa khairal-makhraj, bismillāhi walajnā, wa bismillāhi kharajnā, wa \'alallāhi rabbinā tawakkalnā.',
+        translation:
+            'O Allah, I ask You for the best entrance and the best exit. In the name of Allah we enter, in the name of Allah we leave, and upon Allah our Lord we rely.',
         repeatCount: 1,
-        reference: 'Sunan Abi Dawud (Book 43, Hadith 5096). Narrated by Abu Malik al-Ash\'ari (RA) that the Messenger of Allah (ﷺ) taught this invocation whenever entering one\'s dwelling.',
-        benefits: 'Fills the home with tranquility, harmony, and peace, protecting the household from domestic strife and evil spirits.',
+        reference:
+            'Sunan Abi Dawud (Book 43, Hadith 5096). Narrated by Abu Malik al-Ash\'ari (RA) that the Messenger of Allah (ﷺ) taught this invocation whenever entering one\'s dwelling.',
+        benefits:
+            'Fills the home with tranquility, harmony, and peace, protecting the household from domestic strife and evil spirits.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'travelling_vehicle',
         title: 'Dua for Travelling / Riding Vehicle',
         category: 'Travel',
-        arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',
-        transliteration: 'Subḥānal-ladhī sakhkhara lanā hādhā wa mā kunnā lahū muqrinīn, wa innā ilā rabbinā lamunqalibūn.',
-        translation: 'Glory be to Him Who has subjected this to us, though we could not have done so by ourselves. And surely, to our Lord we shall return.',
+        arabic:
+            'سُبۡحَانَ الَّذِي سَخَّرَ لَنَا هٰذَا وَمَا كُنَّا لَهُ مُقۡرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنۡقَلِبُونَ',
+        transliteration:
+            'Subḥānal-ladhī sakhkhara lanā hādhā wa mā kunnā lahū muqrinīn, wa innā ilā rabbinā lamunqalibūn.',
+        translation:
+            'Glory be to Him Who has subjected this to us, though we could not have done so by ourselves. And surely, to our Lord we shall return.',
         repeatCount: 1,
-        reference: 'Surah Az-Zukhruf (Quran 43:13-14) & Sahih Muslim (Book 15, Hadith 1342). Narrated by Ibn Umar (RA) that the Prophet (ﷺ) recited this whenever mounting his transport for travel.',
-        benefits: 'Grants safe arrival, protects against road hazards, and keeps the believer mindful of life\'s ultimate journey back to Allah.',
+        reference:
+            'Surah Az-Zukhruf (Quran 43:13-14) & Sahih Muslim (Book 15, Hadith 1342). Narrated by Ibn Umar (RA) that the Prophet (ﷺ) recited this whenever mounting his transport for travel.',
+        benefits:
+            'Grants safe arrival, protects against road hazards, and keeps the believer mindful of life\'s ultimate journey back to Allah.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'distress_anxiety',
         title: 'Dua During Distress & Anxiety',
         category: 'Protection',
-        arabic: 'لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
-        transliteration: 'Lā ilāha illā anta subḥānaka innī kuntu minadh-dhālimīn.',
-        translation: 'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
+        arabic:
+            'لَا إِلٰهَ إِلَّا أَنۡتَ سُبۡحَانَكَ إِنِّي كُنۡتُ مِنَ الظَّالِمِينَ',
+        transliteration:
+            'Lā ilāha illā anta subḥānaka innī kuntu minadh-dhālimīn.',
+        translation:
+            'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
         repeatCount: 3,
-        reference: 'Surah Al-Anbiya (Quran 21:87) & Jami\' at-Tirmidhi (Hadith 3505). Narrated by Sa\'d ibn Abi Waqqas (RA) that the Prophet (ﷺ) said: "No Muslim supplicates with the Dua of Prophet Yunus (AS) in hardship except that Allah relieves their distress."',
-        benefits: 'Instant relief from hardship, severe worry, and anxiety through the power of Tawheed and sincere confession of human weakness.',
+        reference:
+            'Surah Al-Anbiya (Quran 21:87) & Jami\' at-Tirmidhi (Hadith 3505). Narrated by Sa\'d ibn Abi Waqqas (RA) that the Prophet (ﷺ) said: "No Muslim supplicates with the Dua of Prophet Yunus (AS) in hardship except that Allah relieves their distress."',
+        benefits:
+            'Instant relief from hardship, severe worry, and anxiety through the power of Tawheed and sincere confession of human weakness.',
         imagePath: 'assets/images/dua.png',
       ),
       DuaItem(
         id: 'seeking_knowledge',
         title: 'Dua for Beneficial Knowledge & Sustenance',
         category: 'Daily',
-        arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا ، وَرِزْقًا طَيِّبًا ، وَعَمَلًا مُتَقَبَّلًا',
-        transliteration: 'Allāhumma innī as\'aluka \'ilman nāfi\'an, wa rizqan ṭayyiban, wa \'amalan mutaqabbalan.',
-        translation: 'O Allah, I ask You for beneficial knowledge, pure provision, and acceptable deeds.',
+        arabic:
+            'اللَّهُمَّ إِنِّي أَسۡأَلُكَ عِلۡمًا نَافِعًا ، وَرِزۡقًا طَيِّبًا ، وَعَمَلًا مُتَقَبَّلًا',
+        transliteration:
+            'Allāhumma innī as\'aluka \'ilman nāfi\'an, wa rizqan ṭayyiban, wa \'amalan mutaqabbalan.',
+        translation:
+            'O Allah, I ask You for beneficial knowledge, pure provision, and acceptable deeds.',
         repeatCount: 1,
-        reference: 'Sunan Ibn Majah (Book 5, Hadith 925) & Musnad Ahmad. Narrated by Umm Salamah (RA) that the Prophet (ﷺ) recited this supplication after completing Fajr prayer every morning.',
-        benefits: 'Aligns daily pursuits with halal income, beneficial learning, and deeds accepted by Allah.',
+        reference:
+            'Sunan Ibn Majah (Book 5, Hadith 925) & Musnad Ahmad. Narrated by Umm Salamah (RA) that the Prophet (ﷺ) recited this supplication after completing Fajr prayer every morning.',
+        benefits:
+            'Aligns daily pursuits with halal income, beneficial learning, and deeds accepted by Allah.',
         imagePath: 'assets/images/dua.png',
       ),
     ];

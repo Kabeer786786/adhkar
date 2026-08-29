@@ -16,7 +16,8 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
     required CalendarType calendarType,
     required HijriRegion region,
   }) async {
-    final isSubcontinent = calendarType == CalendarType.regional &&
+    final isSubcontinent =
+        calendarType == CalendarType.regional &&
         (region == HijriRegion.india ||
             region == HijriRegion.pakistan ||
             region == HijriRegion.bangladesh);
@@ -65,7 +66,8 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
           monthNameEn: hijri['month']['en'].toString(),
           monthNameAr: hijri['month']['ar'].toString(),
           weekday: hijri['weekday']['en'].toString(),
-          formatted: '${hijri['day']} ${hijri['month']['en']} ${hijri['year']} AH',
+          formatted:
+              '${hijri['day']} ${hijri['month']['en']} ${hijri['year']} AH',
           region: 'Global',
           source: 'aladhan.com',
           isAladhan: true,
@@ -83,7 +85,8 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
     required CalendarType calendarType,
     required HijriRegion region,
   }) async {
-    final isSubcontinent = calendarType == CalendarType.regional &&
+    final isSubcontinent =
+        calendarType == CalendarType.regional &&
         (region == HijriRegion.india ||
             region == HijriRegion.pakistan ||
             region == HijriRegion.bangladesh);
@@ -103,14 +106,16 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
         for (var d in daysRaw) {
           final h = d['hijri'];
           final g = d['gregorian'];
-          days.add(HijriCalendarDayData(
-            hijriDay: int.parse(h['day'].toString()),
-            gregorianDay: int.parse(g['day'].toString()),
-            gregorianMonth: g['month']['en'].toString(),
-            gregorianYear: int.parse(g['year'].toString()),
-            gregorianWeekday: g['weekday']['en'].toString(),
-            dayOfWeek: 0,
-          ));
+          days.add(
+            HijriCalendarDayData(
+              hijriDay: int.parse(h['day'].toString()),
+              gregorianDay: int.parse(g['day'].toString()),
+              gregorianMonth: g['month']['en'].toString(),
+              gregorianYear: int.parse(g['year'].toString()),
+              gregorianWeekday: g['weekday']['en'].toString(),
+              dayOfWeek: 0,
+            ),
+          );
         }
 
         if (days.isNotEmpty) {
@@ -123,7 +128,7 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
             totalDays: days.length,
             days: days,
             isAladhan: true,
-          ); 
+          );
         }
       }
     } catch (_) {}
@@ -144,7 +149,7 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
       'Ramadan',
       'Shawwal',
       'Dhul-Qi\'dah',
-      'Dhul-Hijjah'
+      'Dhul-Hijjah',
     ];
     const monthNamesAr = [
       'مُحَرَّم',
@@ -154,11 +159,11 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
       'جُمَادَى الأُولَى',
       'جُمَادَى الآخِرَة',
       'رَجَب',
-      'شَعْبَان',
+      'شَعۡبَان',
       'رَمَضَان',
       'شَوَّال',
-      'ذُو القَعْدَة',
-      'ذُو الحِجَّة'
+      'ذُو القَعۡدَة',
+      'ذُو الحِجَّة',
     ];
 
     const monthLengths = [30, 30, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
@@ -185,14 +190,16 @@ class RemoteHijriDataSource implements HijriCalendarDataSource {
     final days = <HijriCalendarDayData>[];
     for (int d = 1; d <= totalDays; d++) {
       final currentGDate = firstDayGregorian.add(Duration(days: d - 1));
-      days.add(HijriCalendarDayData(
-        hijriDay: d,
-        gregorianDay: currentGDate.day,
-        gregorianMonth: DateFormat('MMM').format(currentGDate),
-        gregorianYear: currentGDate.year,
-        gregorianWeekday: DateFormat('EEE').format(currentGDate),
-        dayOfWeek: currentGDate.weekday % 7,
-      ));
+      days.add(
+        HijriCalendarDayData(
+          hijriDay: d,
+          gregorianDay: currentGDate.day,
+          gregorianMonth: DateFormat('MMM').format(currentGDate),
+          gregorianYear: currentGDate.year,
+          gregorianWeekday: DateFormat('EEE').format(currentGDate),
+          dayOfWeek: currentGDate.weekday % 7,
+        ),
+      );
     }
 
     return HijriCalendarMonthData(

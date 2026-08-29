@@ -33,7 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final ValueNotifier<double> _appBarOpacity = ValueNotifier<double>(0.0);
   static bool _hasPromptedProfileInSession = false;
 
-  @override 
+  @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
@@ -79,9 +79,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     }
   }
-
-
-
 
   void _toggleShowSeconds() {
     _secondsTimer?.cancel();
@@ -200,7 +197,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final locationAsync = ref.watch(currentLocationProvider);
     final now = DateTime.now();
     final todayHijriAsync = ref.watch(todayHijriProvider);
-    final hijriStr = todayHijriAsync.value?.formatted ?? HijriDateHelper.formatHijri(now);
+    final hijriStr =
+        todayHijriAsync.value?.formatted ?? HijriDateHelper.formatHijri(now);
 
     final screenWidth = MediaQuery.of(context).size.width;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 8;
@@ -227,7 +225,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             return AppHeaderBar(
               title: '',
               titleWidget: Text(
-                'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
+                'بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
@@ -400,7 +398,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             Row(
                               children: [
                                 Icon(
-                                  namazInfo?.icon ?? CupertinoIcons.sun_max_fill,
+                                  namazInfo?.icon ??
+                                      CupertinoIcons.sun_max_fill,
                                   size: 24,
                                   color: const Color(0xFFD97724),
                                 ),
@@ -625,7 +624,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                           ),
-
                         ],
                       ),
                     ),
@@ -770,7 +768,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         assetPath: 'assets/images/scifi-islam.png',
                         onTap: () => context.push('/sci-islam'),
                         width: 45,
-                        height: 43, 
+                        height: 43,
                       ),
                     ),
                     AppShowcase(
@@ -792,8 +790,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-
-
               const SizedBox(height: 12),
 
               // 4. Daily Quote Box Container
@@ -812,7 +808,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     // Centered Arabic Quote
                     Text(
-                      'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ',
+                      'فَاذۡكُرُونِي أَذۡكُرۡكُمۡ وَاشۡكُرُوا لِي وَلَا تَكۡفُرُونِ',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.amiri(
                         fontSize: 22,

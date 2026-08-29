@@ -10,7 +10,8 @@ class SciIslamData {
       badgeText: 'Astrophysics',
       shortDescription:
           'Quran describes piercing knocking stars and gravitational voids in deep space 14 centuries ago.',
-      arabicVerse: 'وَالسَّمَاءِ وَالطَّارِقِ ۝ وَمَا أَدْرَاكَ مَا الطَّارِقُ ۝ النَّجْمُ الثَّاقِبُ',
+      arabicVerse:
+          'وَالسَّمَاءِ وَالطَّارِقِ ۝ وَمَا أَدۡرَاكَ مَا الطَّارِقُ ۝ النَّجۡمُ الثَّاقِبُ',
       verseTranslation:
           '"By the sky and At-Tariq (the Night-Comer / Pulsating Knocker)! And what can make you know what At-Tariq is? It is the star of piercing brightness (whose light & radiation penetrates deep space)."\n(Surah At-Tariq 86:1-3)',
       surahReference: 'Surah At-Tariq (86:1-3)',
@@ -23,7 +24,7 @@ class SciIslamData {
         'Pulsar radiation pierces through interstellar dust clouds and billions of light-years of cosmic space.',
         'Black Hole event horizons swallow matter and warp space-time according to Einstein\'s Theory of General Relativity.',
       ],
-      references: [ 
+      references: [
         ScientificReference(
           title: 'Discovery of Pulsars & Neutron Star Accretion',
           source: 'NASA Astrophysics Data System / Nature Journal (1968)',
@@ -45,7 +46,7 @@ class SciIslamData {
       badgeText: 'Cosmology',
       shortDescription:
           'The continuous expansion of the universe revealed centuries before modern Hubble space measurements.',
-      arabicVerse: 'وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ',
+      arabicVerse: 'وَالسَّمَاءَ بَنَيۡنَاهَا بِأَيۡدٍ وَإِنَّا لَمُوسِعُونَ',
       verseTranslation:
           '"And the heaven We constructed with strength, and indeed, We are [continuously] expanding it."\n(Surah Adh-Dhariyat 51:47)',
       surahReference: 'Surah Adh-Dhariyat (51:47)',
@@ -60,8 +61,10 @@ class SciIslamData {
       ],
       references: [
         ScientificReference(
-          title: 'A Relation Between Distance and Radial Velocity Among Extra-Galactic Nebulae',
-          source: 'Edwin Hubble, Proceedings of the National Academy of Sciences (1929)',
+          title:
+              'A Relation Between Distance and Radial Velocity Among Extra-Galactic Nebulae',
+          source:
+              'Edwin Hubble, Proceedings of the National Academy of Sciences (1929)',
           description:
               'Landmark paper establishing the cosmic expansion of the universe based on galactic velocity redshift measurements.',
         ),
@@ -80,7 +83,8 @@ class SciIslamData {
       badgeText: 'Marine Science',
       shortDescription:
           'Invisible water barriers preventing distinct seas from mixing their salinity and density.',
-      arabicVerse: 'مَرَجَ الْبَحْرَيْنِ يَلْتَقِيَانِ ۝ بَيْنَهُمَا بَرْزَخٌ لَّا يَبْغِيَانِ',
+      arabicVerse:
+          'مَرَجَ الۡبَحۡرَيۡنِ يَلۡتَقِيَانِ ۝ بَيۡنَهُمَا بَرۡزَخٌ لَّا يَبۡغِيَانِ',
       verseTranslation:
           '"He released the two seas, meeting side by side; Between them is a barrier [so] neither of them transgresses."\n(Surah Ar-Rahman 55:19-20)',
       surahReference: 'Surah Ar-Rahman (55:19-20)',
@@ -115,7 +119,8 @@ class SciIslamData {
       badgeText: 'Biology',
       shortDescription:
           'Precise microscopic description of human development from blastocyst to bones and muscle.',
-      arabicVerse: 'ثُمَّ خَلَقْنَا النُّطْفَةَ عَلَقَةً فَخَلَقْنَا الْعَلَقَةَ مُضْغَةً فَخَلَقْنَا الْمُضْغَةَ عِظَامًا فَكَسَوْنَا الْعِظَامَ لَحْمًا',
+      arabicVerse:
+          'ثُمَّ خَلَقۡنَا النُّطۡفَةَ عَلَقَةً فَخَلَقۡنَا الۡعَلَقَةَ مُضۡغَةً فَخَلَقۡنَا الۡمُضۡغَةَ عِظَامًا فَكَسَوۡنَا الۡعِظَامَ لَحۡمًا',
       verseTranslation:
           '"Then We made the sperm-drop into a clinging clot (Alaqah), and We made the clot into a lump of chewed flesh (Mudghah), and We made from the lump bones, and We clothed the bones with flesh..."\n(Surah Al-Mu\'minun 23:14)',
       surahReference: 'Surah Al-Mu\'minun (23:14)',
@@ -131,7 +136,8 @@ class SciIslamData {
       references: [
         ScientificReference(
           title: 'The Developing Human: Clinically Oriented Embryology',
-          source: 'Prof. Keith L. Moore & T.V.N. Persaud, Saunders Elsevier (8th Ed)',
+          source:
+              'Prof. Keith L. Moore & T.V.N. Persaud, Saunders Elsevier (8th Ed)',
           description:
               'Standard medical textbook mapping Quranic embryological terminology to modern histological stages.',
         ),
@@ -144,7 +150,8 @@ class SciIslamData {
       badgeText: 'Geology & Space',
       shortDescription:
           'Iron was not formed on Earth but "sent down" from collapsing supernova stars in space.',
-      arabicVerse: 'وَأَنزَلْنَا الْحَدِيدَ فِيهِ بَأْسٌ شَدِيدٌ وَمَنَافِعُ لِلنَّاسِ',
+      arabicVerse:
+          'وَأَنزَلۡنَا الۡحَدِيدَ فِيهِ بَأۡسٌ شَدِيدٌ وَمَنَافِعُ لِلنَّاسِ',
       verseTranslation:
           '"And We sent down iron, wherein is great strength and benefits for humanity..."\n(Surah Al-Hadid 57:25)',
       surahReference: 'Surah Al-Hadid (57:25)',
@@ -173,7 +180,8 @@ class SciIslamData {
       badgeText: 'Marine Physics',
       shortDescription:
           'Layers of internal waves deep beneath the ocean surface where visible light cannot reach.',
-      arabicVerse: 'أَوْ كَظُلُمَاتٍ فِي بَحْرٍ لُّجِّيٍّ يَغْشَاهُ مَوْجٌ مِّن فَوْقِهِ مَوْجٌ مِّن فَوْقِهِ سَحَابٌ ۚ ظُلُمَاتٌ بَعْضُهَا فَوْقَ بَعْضٍ',
+      arabicVerse:
+          'أَوۡ كَظُلُمَاتٍ فِي بَحۡرٍ لُّجِّيٍّ يَغۡشَاهُ مَوۡجٌ مِّن فَوۡقِهِ مَوۡجٌ مِّن فَوۡقِهِ سَحَابٌ ۚ ظُلُمَاتٌ بَعۡضُهَا فَوۡقَ بَعۡضٍ',
       verseTranslation:
           '"Or [they are] like darknesses within a deep ocean which is covered by waves, upon which are waves, over which are clouds - darknesses, one upon another..."\n(Surah An-Nur 24:40)',
       surahReference: 'Surah An-Nur (24:40)',
@@ -202,7 +210,8 @@ class SciIslamData {
       badgeText: 'Geophysics',
       shortDescription:
           'Earth\'s atmospheric ceiling protecting life from lethal solar radiation and space debris.',
-      arabicVerse: 'وَجَعَلْنَا السَّمَاءَ سَقْفًا مَّحْفُوظًا ۖ وَهُمْ عَنْ آيَاتِهَا مُعْرِضُونَ',
+      arabicVerse:
+          'وَجَعَلۡنَا السَّمَاءَ سَقۡفًا مَّحۡفُوظًا ۖ وَهُمۡ عَنۡ آيَاتِهَا مُعۡرِضُونَ',
       verseTranslation:
           '"And We made the sky a protected ceiling, but they turn away from its signs."\n(Surah Al-Anbiya 21:32)',
       surahReference: 'Surah Al-Anbiya (21:32)',
@@ -218,7 +227,8 @@ class SciIslamData {
       references: [
         ScientificReference(
           title: 'The Earth\'s Magnetosphere & Cosmic Radiation Protection',
-          source: 'NASA Goddard Space Flight Center / Space Science Reviews (2012)',
+          source:
+              'NASA Goddard Space Flight Center / Space Science Reviews (2012)',
           description:
               'Comprehensive overview of how the geomagnetic envelope shields terrestrial biology from solar wind storms.',
         ),
@@ -231,7 +241,8 @@ class SciIslamData {
       badgeText: 'Geophysics',
       shortDescription:
           'Deep mountain roots extending into the mantle to stabilize continental tectonic plates.',
-      arabicVerse: 'أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا ۝ وَالْجِبَالَ أَوْتَادًا',
+      arabicVerse:
+          'أَلَمۡ نَجۡعَلِ الۡأَرۡضَ مِهَادًا ۝ وَالۡجِبَالَ أَوۡتَادًا',
       verseTranslation:
           '"Have We not made the earth a smooth expanse? And the mountains as pegs (Awtab)?"\n(Surah An-Naba 78:6-7)',
       surahReference: 'Surah An-Naba (78:6-7)',
@@ -247,7 +258,8 @@ class SciIslamData {
       references: [
         ScientificReference(
           title: 'On the Thickness of the Crust of the Earth (Isostasy Model)',
-          source: 'Sir George Biddell Airy, Philosophical Transactions of the Royal Society (1855)',
+          source:
+              'Sir George Biddell Airy, Philosophical Transactions of the Royal Society (1855)',
           description:
               'Foundational geophysics paper proving that mountain ranges float with deep roots in denser mantle material.',
         ),

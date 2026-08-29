@@ -24,17 +24,17 @@ class BooksRepository {
         const BookChapter(
           title: 'Supplications for Waking Up',
           content:
-              'الحَمْدُ للهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ\n\n"All praise is for Allah Who gave us life after having taken it from us and unto Him is the resurrection."',
+              'الحَمۡدُ للهِ الَّذِي أَحۡيَانَا بَعۡدَ مَا أَمَاتَنَا وَإِلَيۡهِ النُّشُورُ\n\n"All praise is for Allah Who gave us life after having taken it from us and unto Him is the resurrection."',
         ),
         const BookChapter(
           title: 'Supplications Before Sleeping',
           content:
-              'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي، وَبِكَ أَرْفَعُهُ\n\n"In Your name my Lord I lie down and in Your name I rise. If You should take my soul, have mercy upon it, and if You should return my soul then protect it."',
+              'بِاسۡمِكَ رَبِّي وَضَعۡتُ جَنۡبِي، وَبِكَ أَرۡفَعُهُ\n\n"In Your name my Lord I lie down and in Your name I rise. If You should take my soul, have mercy upon it, and if You should return my soul then protect it."',
         ),
         const BookChapter(
           title: 'Morning & Evening Remembrances',
           content:
-              'أَصْبَحْنَا وَأَصْبَحَ المُلْكُ للَّهِ، وَالحَمْدُ للَّهِ\n\n"We have reached the morning and at this very time all sovereignty belongs to Allah, Lord of the Worlds."',
+              'أَصۡبَحۡنَا وَأَصۡبَحَ المُلۡكُ للَّهِ، وَالحَمۡدُ للَّهِ\n\n"We have reached the morning and at this very time all sovereignty belongs to Allah, Lord of the Worlds."',
         ),
       ],
     ),
@@ -190,7 +190,7 @@ class BooksRepository {
     ),
     BookModel(
       id: 'qisas_al_anbiya',
-      title: 'Stories of the Prophets', 
+      title: 'Stories of the Prophets',
       author: 'Imam Hafiz Ibn Kathir',
       category: 'Seerah',
       description:
@@ -350,14 +350,20 @@ class BooksRepository {
           );
           return book.copyWith(
             openMode: match.openMode,
-            chapters: match.chapters.isNotEmpty ? match.chapters : book.chapters,
+            chapters: match.chapters.isNotEmpty
+                ? match.chapters
+                : book.chapters,
           );
         }
         return book;
       }).toList();
 
       // Ensure guide books are present in user shelf
-      for (final guideId in ['namaz_guide_book', 'roza_guide_book', 'sadqa_zakat_guide_book']) {
+      for (final guideId in [
+        'namaz_guide_book',
+        'roza_guide_book',
+        'sadqa_zakat_guide_book',
+      ]) {
         if (!synced.any((b) => b.id == guideId)) {
           final guideBook = prebuiltLibrary.firstWhere((b) => b.id == guideId);
           synced.add(guideBook);

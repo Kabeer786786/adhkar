@@ -31,13 +31,13 @@ void main() {
         id: 'test_dua',
         title: 'Test Dua',
         category: 'Daily',
-        arabic: 'اَلْحَمْدُ لِلَّهِ',
+        arabic: 'اَلۡحَمۡدُ لِلَّهِ',
         transliteration: 'Alhamdulillah',
         translation: 'Praise be to Allah',
         repeatCount: 3,
         reference: 'Sahih al-Bukhari',
         benefits: 'Brings immense reward',
-        imagePath: 'assets/images/dua.png', 
+        imagePath: 'assets/images/dua.png',
       );
 
       final jsonMap = original.toJson();
