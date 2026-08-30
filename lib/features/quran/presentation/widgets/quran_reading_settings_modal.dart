@@ -7,13 +7,12 @@ class QuranReadingSettingsModal {
     required bool isDark,
     required List<AyahModel> ayahs,
     required int selectedMode,
-    required double arabicFontSize,
     required bool isReadingDarkMode,
     required String translationLanguage,
     required bool showTransliteration,
     required bool isDownloaded,
+    bool isJuzMode = false,
     required ValueChanged<int> onModeChanged,
-    required ValueChanged<double> onFontSizeChanged,
     required ValueChanged<bool> onReadingDarkModeChanged,
     required ValueChanged<String> onTranslationLanguageChanged,
     required ValueChanged<bool> onTransliterationChanged,
@@ -22,13 +21,13 @@ class QuranReadingSettingsModal {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
-        int currentMode = selectedMode;
-        double currentFontSize = arabicFontSize;
+        int currentMode = (isJuzMode && selectedMode == 2) ? 0 : selectedMode;
+        int? loadingMode;
         String currentLang = translationLanguage; 
         bool currentTransliteration = showTransliteration;
 
@@ -107,125 +106,69 @@ class QuranReadingSettingsModal {
                       icon: Icons.translate_rounded,
                       modeIndex: 0,
                       selectedMode: currentMode,
+                      isLoading: loadingMode == 0,
                       isDark: isDark,
                       onTap: () {
-                        setModalState(() => currentMode = 0);
+                        setModalState(() {
+                          currentMode = 0;
+                          loadingMode = 0;
+                        });
                         onModeChanged(0);
+                        Future.delayed(const Duration(milliseconds: 300), () {
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        });
                       },
                     ),
                     const SizedBox(height: 8),
                     _buildModeTile(
                       title: 'Page-Wise Mushaf Mode',
                       subtitle:
-                          'Authentic RTL page-by-page Mushaf view with smooth page traversal',
+                          'RTL page-by-page Mushaf view with smooth page traversal',
                       icon: Icons.auto_stories_rounded,
                       modeIndex: 1,
                       selectedMode: currentMode,
+                      isLoading: loadingMode == 1,
                       isDark: isDark,
                       onTap: () {
-                        setModalState(() => currentMode = 1);
+                        setModalState(() {
+                          currentMode = 1;
+                          loadingMode = 1;
+                        });
                         onModeChanged(1);
+                        Future.delayed(const Duration(milliseconds: 300), () {
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        });
                       },
                     ),
-                    const SizedBox(height: 8),
-                    _buildModeTile(
-                      title: 'Continuous Flowing Mushaf Mode',
-                      subtitle:
-                          'Flowing continuous Arabic Mushaf text with Sajda, Rub & Hizb markers',
-                      icon: Icons.menu_book_rounded,
-                      modeIndex: 2,
-                      selectedMode: currentMode,
-                      isDark: isDark,
-                      onTap: () {
-                        setModalState(() => currentMode = 2);
-                        onModeChanged(2);
-                      },
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    // SECTION 2: Typography & Appearance Preferences
-                    Text(
-                      'APPEARANCE & TYPOGRAPHY',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
-                        color: isDark ? Colors.white60 : Colors.grey.shade600,
+                    if (!isJuzMode) ...[
+                      const SizedBox(height: 8),
+                      _buildModeTile(
+                        title: 'Continuous Flowing Mushaf Mode',
+                        subtitle:
+                            'Flowing continuous Arabic Mushaf text with Sajda, Rub & Hizb markers',
+                        icon: Icons.menu_book_rounded,
+                        modeIndex: 2,
+                        selectedMode: currentMode,
+                        isLoading: loadingMode == 2,
+                        isDark: isDark,
+                        onTap: () {
+                          setModalState(() {
+                            currentMode = 2;
+                            loadingMode = 2;
+                          });
+                          onModeChanged(2);
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          });
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Font Size Slider Card
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF23322B)
-                            : const Color(0xFFF4FAF3),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDark
-                              ? Colors.white10
-                              : const Color(0xFF2A531D).withValues(alpha: 0.12),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.format_size_rounded,
-                                    size: 20,
-                                    color: Color(0xFF2A531D),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'Arabic Font Size',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                '${currentFontSize.toInt()} pt',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2A531D),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SliderTheme(
-                            data: SliderThemeData(
-                              trackHeight: 4,
-                              activeTrackColor: const Color(0xFF2A531D),
-                              inactiveTrackColor: Colors.grey.shade300,
-                              thumbColor: const Color(0xFF2A531D),
-                            ),
-                            child: Slider(
-                              value: currentFontSize,
-                              min: 18.0,
-                              max: 42.0,
-                              divisions: 12,
-                              onChanged: (val) {
-                                setModalState(() => currentFontSize = val);
-                                onFontSizeChanged(val);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
 
                     const SizedBox(height: 22),
 
@@ -467,6 +410,7 @@ class QuranReadingSettingsModal {
     required IconData icon,
     required int modeIndex,
     required int selectedMode,
+    bool isLoading = false,
     required bool isDark,
     required VoidCallback onTap,
   }) {
@@ -528,7 +472,16 @@ class QuranReadingSettingsModal {
                 ],
               ),
             ),
-            if (isSelected)
+            if (isLoading)
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  color: Color(0xFF2A531D),
+                ),
+              )
+            else if (isSelected)
               const Icon(
                 Icons.check_circle_rounded,
                 color: Color(0xFF2A531D),

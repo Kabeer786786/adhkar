@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../core/services/media_download_service.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/typography/arabic_font.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/floating_download_bar.dart';
 import '../../../widgets/app_header_bar.dart';
@@ -17,7 +18,11 @@ import '../services/quran_audio_service.dart';
 import 'surah_info_screen.dart';
 import 'widgets/ayah_quick_actions_sheet.dart';
 import 'widgets/ayah_verse_card.dart';
-import 'widgets/quran_audio_player_bar.dart';
+import 'widgets/floating_draggable_page_slider.dart';
+import 'widgets/floating_draggable_scrollbar.dart';
+import 'widgets/mushaf_page_widget.dart';
+import 'widgets/mushaf_pagination_engine.dart';
+import 'widgets/quran_audio_player_bar.dart'; 
 import 'widgets/quran_reading_settings_modal.dart';
 import 'widgets/stop_point_dialog.dart';
 import 'widgets/surah_download_dialog.dart';
@@ -54,15 +59,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   int _currentPageIndex = 0;
   bool _isDownloaded = false;
 
-  // Page slider collapse & drag states (Left-edge pill docking)
-  bool _isPageSliderExpanded = false;
-  Timer? _pageSliderCollapseTimer;
-  bool _isDraggingPageSlider = false;
-  int _pageSliderDragValue = 1;
-
   // Active/Resume verse index for synchronization across modes
   int _activeAyahIndex = 0;
   int? _highlightResumeAyahNumber;
+  int? _selectedAyahForHighlight;
   bool _isNavigatingToTargetAyah = false;
   int? _targetAyahDisplayNumber;
 
@@ -126,29 +126,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     if (targetIdx > 0) {
       _isNavigatingToTargetAyah = true;
     }
-
-    final mushafPages = _computeMushafPages(ayahs);
-    int initialPageIndex = 0;
-    if (targetIdx < ayahs.length) {
-      final targetAyah = ayahs[targetIdx];
-      final foundPage = mushafPages.indexWhere(
-        (p) => p.any(
-          (a) =>
-              a.numberInSurah == targetAyah.numberInSurah &&
-              (a.surahNumber == null ||
-                  targetAyah.surahNumber == null ||
-                  a.surahNumber == targetAyah.surahNumber),
-        ),
-      );
-      if (foundPage >= 0) {
-        initialPageIndex = foundPage;
-      }
-    }
-    _currentPageIndex = initialPageIndex;
-    _pageController = PageController(initialPage: initialPageIndex);
+    _currentPageIndex = 0;
+    _pageController = PageController(initialPage: 0);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDownloadStatus();
+      if (!mounted) return;
       if (widget.juzNumber != null) {
         storage.setLastReadJuz(widget.juzNumber!);
       } else {
@@ -173,44 +156,42 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     });
   }
 
-  void _resetPageSliderCollapseTimer() {
-    _pageSliderCollapseTimer?.cancel();
-    if (_isPageSliderExpanded) {
-      _pageSliderCollapseTimer = Timer(const Duration(seconds: 10), () {
-        if (mounted) {
-          setState(() {
-            _isPageSliderExpanded = false;
-          });
-        }
-      });
-    }
-  }
+  List<MushafPage>? _lastComputedMushafPages;
 
-  void _expandPageSlider() {
-    setState(() {
-      _isPageSliderExpanded = true;
-    });
-    _resetPageSliderCollapseTimer();
-  }
+  /// Dynamic layout-aware pagination using Flutter TextPainter
+  List<MushafPage> _paginateCurrentMushaf(
+    BuildContext context,
+    List<AyahModel> ayahs, {
+    SurahModel? currentSurah,
+  }) {
+    final mediaQuery = MediaQuery.of(context);
+    final isPlayerActive = ref.read(quranAudioProvider).currentIndex >= 0;
+    final double bottomInset = mediaQuery.padding.bottom;
+    final double bottomSpace = isPlayerActive
+        ? (bottomInset + 100.0)
+        : (bottomInset + 8.0);
+    final double topPadding = mediaQuery.padding.top + kToolbarHeight;
+    final double availableWidth =
+        (mediaQuery.size.width - 16.0 - 32.0).clamp(100.0, 1200.0);
+    final double availableHeight =
+        (mediaQuery.size.height - topPadding - bottomSpace - 16.0 - 24.0)
+            .clamp(100.0, 3000.0);
+    final arabicFont = ref.read(arabicFontProvider);
 
-  void _collapsePageSlider() {
-    _pageSliderCollapseTimer?.cancel();
-    setState(() {
-      _isPageSliderExpanded = false;
-    });
-  }
+    final pages = MushafPaginationEngine.paginate(
+      ayahs: ayahs,
+      surahOrJuzId: widget.juzNumber ?? widget.surahNumber,
+      isJuz: widget.juzNumber != null,
+      availableWidth: availableWidth,
+      availableHeight: availableHeight,
+      fontSize: _arabicFontSize,
+      arabicFont: arabicFont,
+      lineHeight: 1.95,
+      defaultSurah: currentSurah,
+    );
 
-  /// Groups verses strictly by authentic standard Quran page (ayah.page)
-  List<List<AyahModel>> _computeMushafPages(List<AyahModel> ayahs) {
-    if (ayahs.isEmpty) return [];
-
-    final Map<int, List<AyahModel>> pageMap = {};
-    for (final ayah in ayahs) {
-      final p = ayah.page > 0 ? ayah.page : 1;
-      pageMap.putIfAbsent(p, () => []).add(ayah);
-    }
-
-    return pageMap.values.toList();
+    _lastComputedMushafPages = pages;
+    return pages;
   }
 
   Future<void> _checkDownloadStatus() async {
@@ -236,14 +217,14 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     if (_activeAyahIndex < 0 || _activeAyahIndex >= ayahs.length) return;
 
     if (_selectedMode == 0) {
-      // Verse-by-Verse list mode: Smoothly position active/speaking verse at top (alignment: 0.08)
+      // Verse-by-Verse list mode: Smoothly position active/speaking verse at exact top (alignment: 0.0)
       final key = _ayahKeys[_activeAyahIndex];
       if (key?.currentContext != null) {
         Scrollable.ensureVisible(
           key!.currentContext!,
-          duration: const Duration(milliseconds: 450),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOutCubic,
-          alignment: 0.08,
+          alignment: 0.0,
         );
       } else if (_scrollController.hasClients) {
         const double headerEstimatedHeight = 340.0;
@@ -255,22 +236,16 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
             0.0,
             _scrollController.position.maxScrollExtent,
           ),
-          duration: const Duration(milliseconds: 450),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOutCubic,
         );
       }
     } else if (_selectedMode == 1) {
-      // Page-wise Mushaf mode: Slide to page containing the active verse
-      final mushafPages = _computeMushafPages(ayahs);
-      final targetAyah = ayahs[_activeAyahIndex];
+      // Page-wise Mushaf mode: Slide to page containing the active verse segment
+      final mushafPages =
+          _lastComputedMushafPages ?? _paginateCurrentMushaf(context, ayahs);
       final pageIdx = mushafPages.indexWhere(
-        (p) => p.any(
-          (a) =>
-              a.numberInSurah == targetAyah.numberInSurah &&
-              (a.surahNumber == null ||
-                  targetAyah.surahNumber == null ||
-                  a.surahNumber == targetAyah.surahNumber),
-        ),
+        (p) => p.containsMasterAyahIndex(_activeAyahIndex),
       );
       if (pageIdx >= 0 && pageIdx != _currentPageIndex) {
         _currentPageIndex = pageIdx;
@@ -309,17 +284,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     }
 
     if (_selectedMode == 1) {
-      // Page-wise Mushaf mode
-      final mushafPages = _computeMushafPages(ayahs);
-      final targetAyah = ayahs[targetIdx];
+      // Page-wise Mushaf mode: jump directly to page containing the target verse
+      final mushafPages =
+          _lastComputedMushafPages ?? _paginateCurrentMushaf(context, ayahs);
       final pageIdx = mushafPages.indexWhere(
-        (p) => p.any(
-          (a) =>
-              a.numberInSurah == targetAyah.numberInSurah &&
-              (a.surahNumber == null ||
-                  targetAyah.surahNumber == null ||
-                  a.surahNumber == targetAyah.surahNumber),
-        ),
+        (p) => p.containsMasterAyahIndex(targetIdx),
       );
       if (pageIdx >= 0) {
         _currentPageIndex = pageIdx;
@@ -349,55 +318,37 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     }
 
     // Mode 0: Verse-by-Verse list mode
-    // Allow initial layout pass
+    // Estimate target offset and jump smoothly
+    const double headerEstimatedHeight = 360.0;
+    const double avgVerseHeight = 220.0;
+    final double estimatedOffset =
+        headerEstimatedHeight + (targetIdx * avgVerseHeight);
+
+    await Future.delayed(const Duration(milliseconds: 60));
+    if (!mounted) return;
+
+    if (_scrollController.hasClients) {
+      final double maxExtent = _scrollController.position.maxScrollExtent;
+      _scrollController.jumpTo(estimatedOffset.clamp(0.0, maxExtent));
+    }
+
     await Future.delayed(const Duration(milliseconds: 120));
     if (!mounted) return;
 
-    // Iteratively advance scroll until target widget is realized and mounted
-    for (int attempt = 0; attempt < 12; attempt++) {
-      if (!mounted) return;
-
-      final key = _ayahKeys[targetIdx];
-      if (key?.currentContext != null) {
-        // Target widget is mounted!
-        await Scrollable.ensureVisible(
-          key!.currentContext!,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutCubic,
-          alignment: 0.05,
-        );
-        break;
-      }
-
-      // If not yet mounted, progressively advance the scroll extent
-      if (_scrollController.hasClients) {
-        final double maxExtent = _scrollController.position.maxScrollExtent;
-        final double fraction = targetIdx / ayahs.length;
-        final double estimatedOffset =
-            (fraction * (maxExtent + 4000)).clamp(0.0, maxExtent);
-        _scrollController.jumpTo(estimatedOffset);
-      }
-
-      await Future.delayed(const Duration(milliseconds: 60));
+    final key = _ayahKeys[targetIdx];
+    if (key?.currentContext != null) {
+      await Scrollable.ensureVisible(
+        key!.currentContext!,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        alignment: 0.06,
+      );
     }
 
-    // Final precision alignment pass
     if (mounted) {
-      final key = _ayahKeys[targetIdx];
-      if (key?.currentContext != null) {
-        Scrollable.ensureVisible(
-          key!.currentContext!,
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOutCubic,
-          alignment: 0.05,
-        );
-      }
-      await Future.delayed(const Duration(milliseconds: 150));
-      if (mounted) {
-        setState(() {
-          _isNavigatingToTargetAyah = false;
-        });
-      }
+      setState(() {
+        _isNavigatingToTargetAyah = false;
+      });
     }
   }
 
@@ -629,14 +580,14 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   }
 
   /// Ayah Quick Action Bottom Sheet for Mushaf Modes
-  void _showAyahQuickActionsSheet({
+  Future<void> _showAyahQuickActionsSheet({
     required BuildContext context,
     required AyahModel ayah,
     required int totalAyahs,
     required SurahModel currentSurah,
     required bool isDark,
     required QuranAudioController quranAudio,
-    required List<AyahModel> allAyahs,
+    required List<AyahModel> allAyahs, 
     required int ayahIndex,
   }) {
     final storage = ref.read(storageServiceProvider);
@@ -652,7 +603,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     );
     final arabicFont = ref.read(arabicFontProvider);
 
-    AyahQuickActionsSheet.show(
+    return AyahQuickActionsSheet.show(
       context: context,
       ayah: ayah,
       totalAyahs: totalAyahs,
@@ -694,22 +645,16 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       isDark: isDark,
       ayahs: ayahs,
       selectedMode: _selectedMode,
-      arabicFontSize: _arabicFontSize,
       isReadingDarkMode: _isReadingDarkMode,
       translationLanguage: _translationLanguage,
       showTransliteration: _showTransliteration,
       isDownloaded: _isDownloaded,
+      isJuzMode: widget.juzNumber != null,
       onModeChanged: (newMode) {
         setState(() {
           _selectedMode = newMode;
         });
         _scrollToActiveAyah();
-      },
-      onFontSizeChanged: (newSize) {
-        setState(() {
-          _arabicFontSize = newSize;
-        });
-        ref.read(storageServiceProvider).setQuranArabicFontSize(newSize);
       },
       onReadingDarkModeChanged: (newDarkMode) {
         setState(() {
@@ -733,11 +678,222 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     );
   }
 
+  /// Updates font size, persists it, and seamlessly preserves reading anchor in Mode 1
+  void _applyFontSizeChange(double newSize, List<AyahModel> ayahs) {
+    int anchorAyahIndex = _activeAyahIndex >= 0 ? _activeAyahIndex : 0;
+    if (_lastComputedMushafPages != null &&
+        _currentPageIndex < _lastComputedMushafPages!.length) {
+      final curPage = _lastComputedMushafPages![_currentPageIndex];
+      for (final line in curPage.lines) {
+        if (line.words.isNotEmpty) {
+          anchorAyahIndex = line.words.first.masterAyahIndex;
+          break;
+        }
+      }
+    }
 
+    setState(() {
+      _arabicFontSize = newSize;
+    });
+    ref.read(storageServiceProvider).setQuranArabicFontSize(newSize);
+
+    if (_selectedMode == 1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final newPages = _paginateCurrentMushaf(context, ayahs);
+        final newPageIdx = newPages.indexWhere(
+          (p) => p.containsMasterAyahIndex(anchorAyahIndex),
+        );
+        if (newPageIdx >= 0 && newPageIdx != _currentPageIndex) {
+          _currentPageIndex = newPageIdx;
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(newPageIdx);
+          }
+        }
+      });
+    }
+  }
+
+  /// Dedicated Live Arabic Text Resize Bottom Sheet
+  void _showFontSizeModal(
+    BuildContext context,
+    bool isDark,
+    List<AyahModel> ayahs,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Grabber
+                    Center(
+                      child: Container(
+                        width: 38,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white24 : Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.format_size_rounded,
+                              color: Color(0xFF2A531D),
+                              size: 22,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Arabic Text Size',
+                              style: TextStyle(
+                                fontSize: 16.5,
+                                fontWeight: FontWeight.bold,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1F2937),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2A531D).withValues(
+                              alpha: isDark ? 0.25 : 0.1,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${_arabicFontSize.toInt()} pt',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2A531D),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Live Slider with Stepper Buttons
+                    Row(
+                      children: [
+                        // Decrease A-
+                        IconButton(
+                          onPressed: _arabicFontSize > 18.0
+                              ? () {
+                                  final newSize = (_arabicFontSize - 2.0)
+                                      .clamp(18.0, 42.0);
+                                  _applyFontSizeChange(newSize, ayahs);
+                                  setModalState(() {});
+                                }
+                              : null,
+                          icon: const Text(
+                            'A-',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: IconButton.styleFrom(
+                            backgroundColor: isDark
+                                ? const Color(0xFF23322B)
+                                : const Color(0xFFE8F5E9),
+                            foregroundColor: const Color(0xFF2A531D),
+                            padding: const EdgeInsets.all(8),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+
+                        // Slider
+                        Expanded(
+                          child: SliderTheme(
+                            data: SliderThemeData(
+                              trackHeight: 4,
+                              activeTrackColor: const Color(0xFF2A531D),
+                              inactiveTrackColor: isDark
+                                  ? Colors.white12
+                                  : Colors.grey.shade300,
+                              thumbColor: const Color(0xFF2A531D),
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 8,
+                              ),
+                            ),
+                            child: Slider(
+                              value: _arabicFontSize,
+                              min: 18.0,
+                              max: 42.0,
+                              divisions: 12,
+                              onChanged: (val) {
+                                _applyFontSizeChange(val, ayahs);
+                                setModalState(() {});
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+
+                        // Increase A+
+                        IconButton(
+                          onPressed: _arabicFontSize < 42.0
+                              ? () {
+                                  final newSize = (_arabicFontSize + 2.0)
+                                      .clamp(18.0, 42.0);
+                                  _applyFontSizeChange(newSize, ayahs);
+                                  setModalState(() {});
+                                }
+                              : null,
+                          icon: const Text(
+                            'A+',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: IconButton.styleFrom(
+                            backgroundColor: isDark
+                                ? const Color(0xFF23322B)
+                                : const Color(0xFFE8F5E9),
+                            foregroundColor: const Color(0xFF2A531D),
+                            padding: const EdgeInsets.all(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   void dispose() {
-    _pageSliderCollapseTimer?.cancel();
     _scrollController.dispose();
     _pageController.dispose();
     super.dispose();
@@ -788,8 +944,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       }
     });
 
-    // Compute standard authentic Mushaf pages for Mode 1 (RTL screen-fit pages)
-    final List<List<AyahModel>> mushafPages = _computeMushafPages(ayahs);
+    // Compute standard authentic Mushaf pages for Mode 1 only when Mode 1 is active
+    final List<MushafPage> mushafPages = _selectedMode == 1
+        ? (_lastComputedMushafPages ??
+            _paginateCurrentMushaf(context, ayahs, currentSurah: currentSurah))
+        : const [];
 
     final revelationIcon = currentSurah.revelationType.toLowerCase() == 'meccan'
         ? FlutterIslamicIcons.solidKaaba
@@ -816,7 +975,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         children: [
           Scaffold(
             backgroundColor: effectiveIsDark
-                ? const Color(0xFF131E18) 
+                ? const Color(0xFF0F0F12) 
                 : const Color(0xFFF8FAFC),
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -830,10 +989,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                     ? SystemUiOverlayStyle.light
                     : SystemUiOverlayStyle.dark,
                 backgroundColor: effectiveIsDark
-                    ? const Color(0xFF192520)
+                    ? const Color(0xFF18181B)
                     : Colors.white,
                 iconColor: effectiveIsDark
-                    ? Colors.white
+                    ? const Color(0xFFF4F4F5)
                     : const Color(0xFF2A531D),
                 titleWidget: Align(
                   alignment: Alignment.centerLeft,
@@ -873,6 +1032,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   // Surah Information Button ('i')
                   if (!isJuzMode)
                     IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -885,14 +1047,17 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       icon: Icon(
                         Icons.info_outline_rounded,
                         color: effectiveIsDark
-                            ? Colors.white
+                            ? const Color(0xFFF4F4F5)
                             : const Color(0xFF2A531D),
-                        size: 22,
+                        size: 21,
                       ),
                       tooltip: 'Surah Information & Context',
                     ),
                   // Favorite Toggle for current Surah / Juz
                   IconButton(
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
                     onPressed: () async {
                       if (isJuzMode) {
                         await storage.toggleFavoriteJuz(widget.juzNumber!);
@@ -908,16 +1073,36 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       color: isFavorited
                           ? const Color(0xFFEF4444)
                           : (effectiveIsDark
-                                ? Colors.white
+                                ? const Color(0xFFF4F4F5)
                                 : const Color(0xFF2A531D)),
-                      size: 22,
+                      size: 21,
                     ),
                     tooltip: isFavorited
                         ? 'Remove from Favorites'
                         : 'Add to Favorites',
                   ),
+                  // Live Text Resize / Font Size Button (Available only in Mode 0 & Mode 2)
+                  if (_selectedMode != 1)
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
+                      onPressed: () =>
+                          _showFontSizeModal(context, effectiveIsDark, ayahs),
+                      icon: Icon(
+                        Icons.format_size_rounded, 
+                        color: effectiveIsDark
+                            ? const Color(0xFFF4F4F5)
+                            : const Color(0xFF2A531D),
+                        size: 21,
+                      ),
+                      tooltip: 'Arabic Text Size',
+                    ),
                   // Dark / Light Mode Toggle Button
                   IconButton(
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
                     onPressed: () {
                       final newDarkMode = !effectiveIsDark;
                       setState(() {
@@ -934,7 +1119,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       color: effectiveIsDark
                           ? const Color(0xFFA3E635)
                           : const Color(0xFF2A531D),
-                      size: 22,
+                      size: 21,
                     ),
                     tooltip: effectiveIsDark
                         ? 'Switch to Light Mode'
@@ -942,18 +1127,21 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   ),
                   // Unified Settings & Preferences Button
                   IconButton(
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
                     onPressed: () =>
                         _showSettingsModal(context, effectiveIsDark, ayahs),
                     icon: Icon(
                       Icons.tune_rounded,
                       color: effectiveIsDark
-                          ? Colors.white
+                          ? const Color(0xFFF4F4F5)
                           : const Color(0xFF2A531D),
-                      size: 22,
+                      size: 21,
                     ),
                     tooltip: 'Reading Preferences & Settings',
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 6),
                 ],
               ),
             ),
@@ -970,53 +1158,91 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                               playingAyah,
                               isPlayerActive,
                               storage,
-                              ayahs.length,
                               ayahs,
+                              allSurahs,
+                              arabicFont,
                             )
-                          : ListView(
-                              controller: _scrollController,
-                              physics: const BouncingScrollPhysics(),
-                              padding: EdgeInsets.fromLTRB(
-                                _selectedMode == 2 ? 4 : 16,
-                                14,
-                                _selectedMode == 2 ? 4 : 16,
-                                isPlayerActive ? 140 : 24,
-                              ),
-                              children: [
-                                // Top Surah Header Card
-                                _buildHeaderCard(
-                                  currentSurah,
-                                  ayahs,
-                                  revelationIcon,
-                                  effectiveIsDark,
-                                  quranAudio,
-                                ),
-
-                                const SizedBox(height: 16),
-
-                                // Mode 0: Verse-by-Verse List Mode
-                                if (_selectedMode == 0)
-                                  ...List.generate(ayahs.length, (index) {
-                                    final ayah = ayahs[index];
+                          : _selectedMode == 2
+                              ? ListView(
+                                  controller: _scrollController,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: EdgeInsets.fromLTRB(
+                                    14,
+                                    14,
+                                    14,
+                                    isPlayerActive ? 140 : 24,
+                                  ),
+                                  children: [
+                                    _buildHeaderCard(
+                                      currentSurah,
+                                      ayahs,
+                                      revelationIcon,
+                                      effectiveIsDark,
+                                      quranAudio,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _buildContinuousMushafCard(
+                                      ayahs,
+                                      effectiveIsDark,
+                                      playingAyah,
+                                      currentSurah,
+                                      storage,
+                                    ),
+                                    SizedBox(height: isPlayerActive ? 140 : 24),
+                                  ],
+                                )
+                              : ListView.builder(
+                                  controller: _scrollController,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: EdgeInsets.fromLTRB(
+                                    16,
+                                    14,
+                                    16,
+                                    isPlayerActive ? 140 : 24,
+                                  ),
+                                  itemCount: ayahs.length + 1,
+                                  itemBuilder: (context, index) {
+                                    if (index == 0) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 16),
+                                        child: _buildHeaderCard(
+                                          currentSurah,
+                                          ayahs,
+                                          revelationIcon,
+                                          effectiveIsDark,
+                                          quranAudio,
+                                        ),
+                                      );
+                                    }
+                                    final ayahIndex = index - 1;
+                                    final ayah = ayahs[ayahIndex];
                                     final isPlayingThis =
-                                        quranAudio.currentIndex == index &&
-                                        quranAudio.isPlaying;
+                                        quranAudio.currentIndex == ayahIndex &&
+                                            quranAudio.isPlaying;
                                     final isSelectedThis =
-                                        quranAudio.currentIndex == index;
-                                    final surahNum = ayah.surahNumber ?? widget.surahNumber;
-                                    final isMarked = storage.isAyahMarkedAsStopPoint(
+                                        quranAudio.currentIndex == ayahIndex;
+                                    final surahNum = ayah.surahNumber ??
+                                        widget.surahNumber;
+                                    final isMarked =
+                                        storage.isAyahMarkedAsStopPoint(
                                       surahNum,
                                       ayah.numberInSurah,
                                       juzNumber: widget.juzNumber,
                                     );
-                                    final isResumeHighlight = _highlightResumeAyahNumber != null &&
-                                        _highlightResumeAyahNumber == ayah.numberInSurah &&
-                                        (widget.juzNumber == null ||
-                                            (storage.getStopPointForJuz(widget.juzNumber!)?['surahNumber'] == surahNum));
+                                    final isResumeHighlight =
+                                        _highlightResumeAyahNumber != null &&
+                                            _highlightResumeAyahNumber ==
+                                                ayah.numberInSurah &&
+                                            (widget.juzNumber == null ||
+                                                (storage.getStopPointForJuz(
+                                                      widget.juzNumber!,
+                                                    )?['surahNumber'] ==
+                                                    surahNum));
 
                                     return _buildVerseCard(
                                       ayah: ayah,
-                                      index: index,
+                                      index: ayahIndex,
                                       isDark: effectiveIsDark,
                                       allAyahs: ayahs,
                                       isPlaying: isPlayingThis,
@@ -1030,42 +1256,57 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                         } else {
                                           quranAudio.playPlaylist(
                                             ayahs,
-                                            index,
+                                            ayahIndex,
                                             title: widget.surahName,
                                             surahNumber: widget.surahNumber,
                                           );
                                           setState(() {
-                                            _activeAyahIndex = index;
+                                            _activeAyahIndex = ayahIndex;
                                           });
                                           _scrollToActiveAyah(ayahs);
                                         }
                                       },
                                     );
-                                  }),
-
-                                // Mode 2: Continuous Flowing Mushaf Text
-                                if (_selectedMode == 2)
-                                  _buildContinuousMushafCard(
-                                    ayahs,
-                                    effectiveIsDark,
-                                    playingAyah,
-                                    currentSurah,
-                                    storage,
-                                  ),
-
-                                SizedBox(height: isPlayerActive ? 140 : 24),
-                              ],
-                            ),
+                                  },
+                                ),
                     ),
                   ],
                 ),
 
-                // Floating Left Edge Semicircular Pill / Full Expanded Horizontal Traverser (Only when more than 1 page)
+                // Absolute Positioned Draggable Floating Scrollbar Tab (Right docked, rounded left) for Mode 0 & Mode 2
+                if (_selectedMode != 1 && ayahs.length > 2)
+                  Positioned(
+                    right: 0,
+                    top: 4,
+                    bottom: isPlayerActive ? 140 : 16,
+                    child: FloatingDraggableScrollbar(
+                      scrollController: _scrollController,
+                      itemCount: ayahs.length,
+                      isDark: effectiveIsDark,
+                    ),
+                  ),
+
+                // Bottom-attached Horizontal Floating Draggable Page Slider for Mode 1 (RTL direction, 10s auto-hide)
                 if (_selectedMode == 1 && mushafPages.length > 1)
-                  _buildFloatingPageTraverser(
-                    mushafPages.length,
-                    effectiveIsDark,
-                    isPlayerActive,
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: isPlayerActive
+                        ? 120
+                        : (MediaQuery.of(context).padding.bottom > 0
+                            ? MediaQuery.of(context).padding.bottom + 2
+                            : 8),
+                    child: FloatingDraggablePageSlider(
+                      pageController: _pageController,
+                      totalPages: mushafPages.length,
+                      currentPage: _currentPageIndex,
+                      isDark: effectiveIsDark,
+                      onPageChanged: (newPage) {
+                        setState(() {
+                          _currentPageIndex = newPage;
+                        });
+                      },
+                    ),
                   ),
 
                 // Beautiful Loading Overlay while scrolling to target bookmark / stop point
@@ -1087,18 +1328,13 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                 ? const Color(0xFF1C2B22)
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(22),
-                            border: Border.all(
-                              color: const Color(0xFFd1ffbe)
-                                  .withValues(alpha: 0.6),
-                              width: 1.4,
-                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xFF2A531D).withValues(
                                   alpha: effectiveIsDark ? 0.35 : 0.2,
                                 ),
                                 blurRadius: 18,
-                                offset: const Offset(0, 5),
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
@@ -1235,710 +1471,120 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     );
   }
 
-  /// 3. Mode 1: Authentic RTL Page-Wise Mushaf View (Standard Quran Pages, Fully Justified, Single-Screen Fit)
+  /// 3. Mode 1: Authentic Adobe-Style Floating Mushaf Page View (Container-Height Relative True Dynamic Pagination)
   Widget _buildPageWiseMushafView(
-    List<List<AyahModel>> mushafPages,
+    List<MushafPage> initialMushafPages,
     bool isDark,
-    SurahModel currentSurah,
+    SurahModel currentSurah, 
     AyahModel? playingAyah,
     bool isPlayerActive,
     dynamic storage,
-    int totalAyahs,
     List<AyahModel> allAyahs,
+    List<SurahModel> allSurahs,
+    ArabicFont? arabicFont,
   ) {
-    if (mushafPages.isEmpty) {
-      return const Center(child: Text('No page data available'));
-    }
+    final double bottomInset = MediaQuery.of(context).padding.bottom;
+    final double bottomSpace = isPlayerActive
+        ? (bottomInset + 100.0)
+        : (bottomInset + 8.0);
 
-    return PageView.builder(
-      controller: _pageController,
-      reverse: true, // Authentic RTL Mushaf page sliding
-      physics: const BouncingScrollPhysics(),
-      onPageChanged: (index) {
-        setState(() {
-          _currentPageIndex = index;
-        });
-        _resetPageSliderCollapseTimer();
-      },
-      itemCount: mushafPages.length,
-      itemBuilder: (context, pageIndex) {
-        final pAyahs = mushafPages[pageIndex];
-        final int pageNumber =
-            pAyahs.isNotEmpty ? pAyahs.first.page : pageIndex + 1;
-        final int juzNumber = pAyahs.isNotEmpty ? pAyahs.first.juz : 1;
+    return Container(
+      color: isDark ? const Color(0xFF0F1A13) : const Color(0xFFE9ECEF),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Calculate exact physical text canvas bounds available inside the card container
+          final double cardWidth =
+              (constraints.maxWidth - 16.0).clamp(100.0, 1200.0);
+          final double cardHeight =
+              (constraints.maxHeight - 8.0 - bottomSpace).clamp(100.0, 3000.0);
 
-        // Check if any surah begins on this page (numberInSurah == 1)
-        final List<int> startingSurahNumbers = pAyahs
-            .where((a) => a.numberInSurah == 1)
-            .map((a) => a.surahNumber ?? currentSurah.number)
-            .toSet()
-            .toList();
+          // Minus card internal padding (16px horizontal, 12px vertical on top & bottom)
+          final double textWidth =
+              (cardWidth - 32.0).clamp(80.0, 1160.0);
+          final double textHeight =
+              (cardHeight - 24.0).clamp(80.0, 2960.0);
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final double bottomSpace = mushafPages.length > 1
-                ? (isPlayerActive ? 160.0 : 80.0)
-                : (isPlayerActive ? 140.0 : 20.0);
-            final double availableHeight = (constraints.maxHeight - bottomSpace)
-                .clamp(100.0, double.infinity);
+          final mushafPages = MushafPaginationEngine.paginate(
+            ayahs: allAyahs,
+            surahOrJuzId: widget.juzNumber ?? widget.surahNumber,
+            isJuz: widget.juzNumber != null,
+            availableWidth: textWidth,
+            availableHeight: textHeight,
+            fontSize: 24.0,
+            arabicFont: arabicFont,
+            lineHeight: 1.8,
+            defaultSurah: currentSurah,
+          ); 
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              child: Column(
-                children: [
-                  // Top Mini Page Indicator (Page on Left, Juz on Right)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Page $pageNumber',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? Colors.white60
-                                : const Color(0xFF64748B),
-                          ),
-                        ),
-                        Text(
-                          'Juz $juzNumber',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? const Color(0xFFA3E635)
-                                : const Color(0xFF2A531D),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+          _lastComputedMushafPages = mushafPages;
 
-                  // Non-scrolling Single-Screen Justified Page Content
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: constraints.maxWidth,
-                          maxHeight: availableHeight,
-                        ),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.topCenter,
-                          child: SizedBox(
-                            width: constraints.maxWidth - 28,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                // If any surah begins on this page, render Surah Banner & Bismillah
-                                if (startingSurahNumbers.isNotEmpty) ...[
-                                  ...startingSurahNumbers.map((sNum) {
-                                    final surah = _repository
-                                        .getSurahs()
-                                        .firstWhere(
-                                          (s) => s.number == sNum,
-                                          orElse: () => currentSurah,
-                                        );
-                                    final showBismillah =
-                                        sNum != 1 && sNum != 9;
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: Column(
-                                        children: [
-                                          // Ornate Surah Title Frame
-                                          Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? const Color(0xFF1E3A2B)
-                                                  : const Color(0xFFE8F5E9),
-                                              borderRadius:
-                                                  BorderRadius.circular(14),
-                                              border: Border.all(
-                                                color: const Color(0xFF2A531D),
-                                                width: 1.2,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  '${surah.verseCount} Ayahs',
-                                                  style: TextStyle(
-                                                    fontSize: 10.5,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isDark
-                                                        ? Colors.white70
-                                                        : const Color(
-                                                            0xFF2A531D,
-                                                          ),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  'سُوْرَةُ ${surah.nameArabic}',
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  style:
-                                                      AppTypography.arabicHeader(
-                                                        fontSize: 17,
-                                                        color: isDark
-                                                            ? const Color(
-                                                                0xFFA3E635,
-                                                              )
-                                                            : const Color(
-                                                                0xFF1A3512,
-                                                              ),
-                                                      ),
-                                                ),
-                                                Text(
-                                                  surah.revelationType,
-                                                  style: TextStyle(
-                                                    fontSize: 10.5,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isDark
-                                                        ? Colors.white70
-                                                        : const Color(
-                                                            0xFF2A531D,
-                                                          ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          if (showBismillah) ...[
-                                            const SizedBox(height: 6),
-                                            Text(
-                                              "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ",
-                                              textDirection: TextDirection.rtl,
-                                              textAlign: TextAlign.center,
-                                              style:
-                                                  AppTypography.arabicHeader(
-                                                    fontSize: 18,
-                                                    color: isDark
-                                                        ? const Color(
-                                                            0xFFA3E635,
-                                                          )
-                                                        : const Color(
-                                                            0xFF2A531D,
-                                                          ),
-                                                  ),
-                                            ),
-                                            const SizedBox(height: 6),
-                                          ],
-                                        ],
-                                      ),
-                                    );
-                                  }),
-                                ],
-
-                                // Fully Justified Page Ayahs Text
-                                SelectableText.rich(
-                                  TextSpan(
-                                    children: pAyahs.asMap().entries.map((
-                                      entry,
-                                    ) {
-                                      final index = entry.key;
-                                      final ayah = entry.value;
-                                      final cleanText = ayah.displayArabicText;
-                                      final isPlayingThis =
-                                          playingAyah?.number == ayah.number;
-                                      final bool isSajda =
-                                          ayah.sajda != null &&
-                                          ayah.sajda != false;
-                                      final fullIndex = allAyahs.indexOf(ayah);
-                                      final bool isNewHizb =
-                                          ayah.hizb > 0 &&
-                                          fullIndex > 0 &&
-                                          allAyahs[fullIndex - 1].hizb !=
-                                              ayah.hizb;
-                                      final bool isNewRub =
-                                          ayah.rub > 0 &&
-                                          fullIndex > 0 &&
-                                          allAyahs[fullIndex - 1].rub !=
-                                              ayah.rub;
-                                      final surahNum = ayah.surahNumber ?? widget.surahNumber;
-                                      final bool isMarked = storage
-                                          .isAyahMarkedAsStopPoint(
-                                            surahNum,
-                                            ayah.numberInSurah,
-                                            juzNumber: juzNumber,
-                                          );
-                                      final bool isResumeHighlight = _highlightResumeAyahNumber != null &&
-                                          _highlightResumeAyahNumber == ayah.numberInSurah &&
-                                          (widget.juzNumber == null ||
-                                              (storage.getStopPointForJuz(widget.juzNumber!)?['surahNumber'] == surahNum));
-
-                                      return TextSpan(
-                                        children: [
-                                          // New Hizb Marker (changes only, no number)
-                                          if (isNewHizb)
-                                            WidgetSpan(
-                                              alignment:
-                                                  PlaceholderAlignment.middle,
-                                              child: Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 4,
-                                                      vertical: 2,
-                                                    ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 2,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: isDark
-                                                      ? const Color(0xFF1E3A2B)
-                                                      : const Color(0xFFE8F5E9),
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                  border: Border.all(
-                                                    color: const Color(
-                                                      0xFF2A531D,
-                                                    ),
-                                                    width: 0.8,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  '۞ حِزْب',
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isDark
-                                                        ? const Color(
-                                                            0xFFA3E635,
-                                                          )
-                                                        : const Color(
-                                                            0xFF2A531D,
-                                                          ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          // New Rub Marker (changes only, no number)
-                                          if (isNewRub && !isNewHizb)
-                                            WidgetSpan(
-                                              alignment:
-                                                  PlaceholderAlignment.middle,
-                                              child: Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 4,
-                                                      vertical: 2,
-                                                    ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 2,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: isDark
-                                                      ? const Color(0xFF1E3A2B)
-                                                      : const Color(0xFFE8F5E9),
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                  border: Border.all(
-                                                    color: const Color(
-                                                      0xFF2A531D,
-                                                    ),
-                                                    width: 0.8,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  '۞ رُبْع',
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isDark
-                                                        ? const Color(
-                                                            0xFFA3E635,
-                                                          )
-                                                        : const Color(
-                                                            0xFF2A531D,
-                                                          ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          // Ayah Arabic Text Span (with authentic end circle)
-                                          TextSpan(
-                                            text: '$cleanText ',
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () =>
-                                                  _showAyahQuickActionsSheet(
-                                                    context: context,
-                                                    ayah: ayah,
-                                                    totalAyahs: totalAyahs,
-                                                    currentSurah: currentSurah,
-                                                    isDark: isDark,
-                                                    quranAudio: ref.read(
-                                                      quranAudioProvider,
-                                                    ),
-                                                    allAyahs: pAyahs,
-                                                    ayahIndex: index,
-                                                  ),
-                                            style: AppTypography.arabicBody(
-                                              fontSize: _arabicFontSize,
-                                              height: 2.15,
-                                              color: isPlayingThis
-                                                  ? (isDark
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFF854D0E,
-                                                          ))
-                                                  : (isResumeHighlight
-                                                        ? (isDark
-                                                              ? const Color(
-                                                                  0xFFFDE047,
-                                                                )
-                                                              : const Color(
-                                                                  0xFF854D0E,
-                                                                ))
-                                                        : (isSajda
-                                                              ? (isDark
-                                                                    ? const Color(
-                                                                        0xFF86EFAC,
-                                                                      )
-                                                                    : const Color(
-                                                                        0xFF166534,
-                                                                      ))
-                                                              : (isDark
-                                                                    ? const Color(
-                                                                        0xFFF1F5F2,
-                                                                      )
-                                                                    : const Color(
-                                                                        0xFF1F2937,
-                                                                      )))),
-                                            ).copyWith(
-                                              backgroundColor: isPlayingThis
-                                                  ? (isDark
-                                                        ? const Color(
-                                                            0xFF166534,
-                                                          )
-                                                        : const Color(
-                                                            0xFFFEF08A,
-                                                          ))
-                                                  : (isResumeHighlight
-                                                        ? (isDark
-                                                              ? const Color(
-                                                                  0xFF78350F,
-                                                                ).withValues(
-                                                                  alpha: 0.45,
-                                                                )
-                                                              : const Color(
-                                                                  0xFFFEF08A,
-                                                                ))
-                                                        : (isSajda
-                                                              ? (isDark
-                                                                    ? const Color(
-                                                                        0xFF14532D,
-                                                                      ).withValues(
-                                                                        alpha:
-                                                                            0.35,
-                                                                      )
-                                                                    : const Color(
-                                                                        0xFFFEF3C7,
-                                                                      ))
-                                                              : null)),
-                                            ),
-                                          ),
-                                          // Stop Point Marker Pin
-                                          if (isMarked)
-                                            WidgetSpan(
-                                              alignment:
-                                                  PlaceholderAlignment.middle,
-                                              child: GestureDetector(
-                                                onTap: () =>
-                                                    _showAyahQuickActionsSheet(
-                                                      context: context,
-                                                      ayah: ayah,
-                                                      totalAyahs: totalAyahs,
-                                                      currentSurah:
-                                                          currentSurah,
-                                                      isDark: isDark,
-                                                      quranAudio: ref.read(
-                                                        quranAudioProvider,
-                                                      ),
-                                                      allAyahs: pAyahs,
-                                                      ayahIndex: index,
-                                                    ),
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 3,
-                                                      ),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 6,
-                                                        vertical: 2,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(
-                                                      0xFFD97706,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          10,
-                                                        ),
-                                                  ),
-                                                  child: const Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.flag_rounded,
-                                                        size: 11,
-                                                        color: Colors.white,
-                                                      ),
-                                                      SizedBox(width: 2),
-                                                      Text(
-                                                        'Stop',
-                                                        style: TextStyle(
-                                                          fontSize: 9.5,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          // Sajda Badge
-                                          if (isSajda)
-                                            WidgetSpan(
-                                              alignment:
-                                                  PlaceholderAlignment.middle,
-                                              child: Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 4,
-                                                    ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 2,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xFF166534,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                ),
-                                                child: const Text(
-                                                  '۩ سَجْدَة',
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Color(0xFF86EFAC),
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          const TextSpan(text: ' '),
-                                        ],
-                                      );
-                                    }).toList(),
-                                  ),
-                                  textAlign: TextAlign.justify,
-                                  textDirection: TextDirection.rtl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          if (mushafPages.isEmpty) {
+            return Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  isDark ? const Color(0xFFA3E635) : const Color(0xFF2A531D),
+                ),
               ),
             );
-          },
-        );
-      },
-    );
-  }
-
-  /// Floating Left Edge Semicircular Pill that smoothly extends to the right showing the slider
-  Widget _buildFloatingPageTraverser(
-    int totalPages,
-    bool isDark,
-    bool isPlayerActive,
-  ) {
-    final currentPageNum = (_currentPageIndex + 1).clamp(1, totalPages);
-    final displayPage = _isDraggingPageSlider
-        ? _pageSliderDragValue
-        : currentPageNum;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final expandedWidth = (screenWidth - 24).clamp(240.0, 370.0);
-
-    return Positioned(
-      left: 0,
-      bottom: isPlayerActive ? 150 : 28,
-      child: GestureDetector(
-        onTap: () {
-          if (!_isPageSliderExpanded) {
-            _expandPageSlider();
           }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOutCubic,
-          width: _isPageSliderExpanded ? expandedWidth : 110,
-          padding: EdgeInsets.only(
-            left: _isPageSliderExpanded ? 12 : 9,
-            right: _isPageSliderExpanded ? 9 : 6,
-            top: _isPageSliderExpanded ? 8 : 9,
-            bottom: _isPageSliderExpanded ? 8 : 9,
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF2A531D), Color(0xFF1E3A15)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
+
+          return PageView.builder(
+            controller: _pageController,
+            reverse: true, // Authentic RTL Mushaf page sliding
+            physics: const SmoothMushafPageScrollPhysics(
+              parent: BouncingScrollPhysics(),
             ),
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(24),
-              bottomRight: Radius.circular(24),
-            ),
-            border: Border.all(
-              color: const Color(0xFFd1ffbe).withValues(alpha: 0.55),
-              width: 1.2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.25),
-                blurRadius: 12,
-                offset: const Offset(2, 4),
-              ),
-            ],
-          ),
-          child: _isPageSliderExpanded
-              ? // Expanded state: Slider + Page count + Right close chevron
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SliderTheme(
-                            data: SliderThemeData(
-                              trackHeight: 3.5,
-                              thumbShape: const RoundSliderThumbShape(
-                                enabledThumbRadius: 6.5,
-                              ),
-                              overlayShape: const RoundSliderOverlayShape(
-                                overlayRadius: 12,
-                              ),
-                              activeTrackColor: const Color(0xFFd1ffbe),
-                              inactiveTrackColor: Colors.white24,
-                              thumbColor: const Color(0xFFA3E635),
-                            ),
-                            child: Slider(
-                              value: displayPage.toDouble(),
-                              min: 1.0,
-                              max: totalPages > 0 ? totalPages.toDouble() : 1.0,
-                              divisions: totalPages > 1 ? totalPages - 1 : 1,
-                              onChangeStart: (_) {
-                                _resetPageSliderCollapseTimer();
-                                setState(() {
-                                  _isDraggingPageSlider = true;
-                                });
-                              },
-                              onChanged: (val) {
-                                _resetPageSliderCollapseTimer();
-                                final target = val.toInt();
-                                setState(() {
-                                  _pageSliderDragValue = target;
-                                });
-                                final pageIdx = target - 1;
-                                if (pageIdx >= 0 &&
-                                    pageIdx < totalPages &&
-                                    pageIdx != _currentPageIndex) {
-                                  _pageController.jumpToPage(pageIdx);
-                                }
-                              },
-                              onChangeEnd: (_) {
-                                _resetPageSliderCollapseTimer();
-                                setState(() {
-                                  _isDraggingPageSlider = false;
-                                });
-                              },
-                            ),
-                          ),
-                          Text(
-                            'Page $currentPageNum of $totalPages (${totalPages - currentPageNum} remaining)',
-                            style: const TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFd1ffbe),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    // Right side chevron to collapse
-                    InkWell(
-                      onTap: _collapsePageSlider,
-                      borderRadius: BorderRadius.circular(16),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.chevron_left_rounded,
-                          color: Color(0xFFd1ffbe),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : // Collapsed compact pill: Quran icon + Page / Total + Right open chevron
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      FlutterIslamicIcons.quran2,
-                      color: Color(0xFFd1ffbe),
-                      size: 16,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      '$currentPageNum / $totalPages',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    const SizedBox(width: 3),
-                    const Icon(
-                      Icons.chevron_right_rounded,
-                      color: Color(0xFFd1ffbe),
-                      size: 18,
-                    ),
-                  ],
+            onPageChanged: (index) {
+              setState(() {
+                _currentPageIndex = index;
+              });
+            },
+            itemCount: mushafPages.length,
+            itemBuilder: (context, pageIndex) {
+              final page = mushafPages[pageIndex];
+
+              return Padding(
+                padding: EdgeInsets.fromLTRB(6, 6, 6, bottomSpace),
+                child: MushafPageWidget(
+                  page: page,
+                  currentSurah: currentSurah,
+                  playingAyah: playingAyah,
+                  isDark: isDark,
+                  storage: storage,
+                  arabicFontSize: 24.0,
+                  arabicFont: arabicFont,
+                  juzNumber: widget.juzNumber,
+                  highlightResumeAyahNumber: _highlightResumeAyahNumber,
+                  selectedAyahIndex: _selectedAyahForHighlight,
+                  allAyahs: allAyahs,
+                  allSurahs: allSurahs,
+                  onAyahTap: (ayah, masterIndex) {
+                    setState(() {
+                      _selectedAyahForHighlight = masterIndex;
+                    });
+                    _showAyahQuickActionsSheet(
+                      context: context,
+                      ayah: ayah,
+                      totalAyahs: allAyahs.length,
+                      currentSurah: currentSurah,
+                      isDark: isDark,
+                      quranAudio: ref.read(quranAudioProvider),
+                      allAyahs: allAyahs,
+                      ayahIndex: masterIndex,
+                    ).then((_) {
+                      if (mounted) {
+                        setState(() {
+                          _selectedAyahForHighlight = null;
+                        });
+                      }
+                    });
+                  },
                 ),
-        ),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -2016,7 +1662,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     );
   }
 
-  /// 5. Mode 2: Continuous Flowing Mushaf View with 4pt Padding, Total Sajda & Ruku Markers
+  /// 5. Mode 2: Continuous Flowing Mushaf View with Chunked Performance & Verse Highlighting
   Widget _buildContinuousMushafCard(
     List<AyahModel> ayahs,
     bool isDark,
@@ -2024,239 +1670,159 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     SurahModel currentSurah,
     dynamic storage,
   ) {
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: SelectableText.rich(
-        TextSpan(
-          children: ayahs.asMap().entries.map((entry) {
-            final index = entry.key;
-            final ayah = entry.value;
-            final cleanText = ayah.displayArabicText;
-            final isPlayingThis = playingAyah?.number == ayah.number;
-            final bool isSajda = ayah.sajda != null && ayah.sajda != false;
-            final bool isNewHizb =
-                ayah.hizb > 0 &&
-                index > 0 &&
-                ayahs[index - 1].hizb != ayah.hizb;
-            final bool isNewRub =
-                ayah.rub > 0 &&
-                index > 0 &&
-                ayahs[index - 1].rub != ayah.rub;
-            final surahNum = ayah.surahNumber ?? widget.surahNumber;
-            final bool isMarked = storage.isAyahMarkedAsStopPoint(
-              surahNum,
-              ayah.numberInSurah,
-              juzNumber: widget.juzNumber,
-            );
-            final bool isResumeHighlight = _highlightResumeAyahNumber != null &&
-                _highlightResumeAyahNumber == ayah.numberInSurah &&
-                (widget.juzNumber == null ||
-                    (storage.getStopPointForJuz(widget.juzNumber!)?['surahNumber'] == surahNum));
-
-            return TextSpan(
-              children: [
-                // New Hizb Marker (changes only, no start, no number)
-                if (isNewHizb)
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.middle,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 2,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1E3A2B)
-                            : const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: const Color(0xFF2A531D),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: Text(
-                        '۞ حِزْب',
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? const Color(0xFFA3E635)
-                              : const Color(0xFF2A531D),
-                        ),
-                      ),
-                    ),
-                  ),
-                // New Rub Marker (changes only, no start, no number)
-                if (isNewRub && !isNewHizb)
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.middle,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 2,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1E3A2B)
-                            : const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: const Color(0xFF2A531D),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: Text(
-                        '۞ رُبْع',
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? const Color(0xFFA3E635)
-                              : const Color(0xFF2A531D),
-                        ),
-                      ),
-                    ),
-                  ),
-                // Arabic text with authentic end circle & highlighting
-                TextSpan(
-                  text: '$cleanText ',
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => _showAyahQuickActionsSheet(
-                      context: context,
-                      ayah: ayah,
-                      totalAyahs: ayahs.length,
-                      currentSurah: currentSurah,
-                      isDark: isDark,
-                      quranAudio: ref.read(quranAudioProvider),
-                      allAyahs: ayahs,
-                      ayahIndex: index,
-                    ),
-                  style:
-                      AppTypography.arabicBody(
-                        fontSize: _arabicFontSize,
-                        height: 2.2,
-                        color: isPlayingThis
-                            ? (isDark ? Colors.white : const Color(0xFF854D0E))
-                            : (isResumeHighlight
-                                  ? (isDark
-                                        ? const Color(0xFFFDE047)
-                                        : const Color(0xFF854D0E))
-                                  : (isSajda
-                                        ? (isDark
-                                              ? const Color(0xFF86EFAC)
-                                              : const Color(0xFF166534))
-                                        : (isDark
-                                              ? const Color(0xFFF1F5F2)
-                                              : const Color(0xFF1F2937)))),
-                      ).copyWith(
-                        backgroundColor: isPlayingThis
-                            ? (isDark
-                                  ? const Color(0xFF166534)
-                                  : const Color(0xFFFEF08A))
-                            : (isResumeHighlight
-                                  ? (isDark
-                                        ? const Color(
-                                            0xFF78350F,
-                                          ).withValues(alpha: 0.45)
-                                        : const Color(0xFFFEF08A))
-                                  : (isSajda
-                                        ? (isDark
-                                              ? const Color(
-                                                  0xFF14532D,
-                                                ).withValues(alpha: 0.35)
-                                              : const Color(0xFFFEF3C7))
-                                        : null)),
-                      ),
-                ),
-                // Stop Point Marker Pin on Marked Stop Ayah (appears immediately before resuming verse in reading order)
-                if (isMarked)
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.middle,
-                    child: GestureDetector(
-                      onTap: () => _showAyahQuickActionsSheet(
-                        context: context,
-                        ayah: ayah,
-                        totalAyahs: ayahs.length,
-                        currentSurah: currentSurah,
-                        isDark: isDark,
-                        quranAudio: ref.read(quranAudioProvider),
-                        allAyahs: ayahs,
-                        ayahIndex: index,
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD97706),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.flag_rounded,
-                              size: 11,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 2),
-                            Text(
-                              'Stop',
-                              style: TextStyle(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                // Sajda Badge
-                if (isSajda)
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.middle,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF166534),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text(
-                        '۩ سَجْدَة',
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF86EFAC),
-                        ),
-                      ),
-                    ),
-                  ),
-                const TextSpan(text: ' '),
-              ],
-            );
-          }).toList(),
+    // Chunk ayahs into smaller blocks of 15 for 60fps smooth scrolling
+    final List<List<MapEntry<int, AyahModel>>> chunks = [];
+    final allEntries = ayahs.asMap().entries.toList();
+    for (int i = 0; i < allEntries.length; i += 15) {
+      chunks.add(
+        allEntries.sublist(
+          i,
+          (i + 15 > allEntries.length) ? allEntries.length : i + 15,
         ),
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.justify,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: chunks.map((chunk) {
+          return SelectableText.rich(
+            TextSpan(
+              children: chunk.map((entry) {
+                final index = entry.key;
+                final ayah = entry.value;
+                final cleanText = ayah.displayArabicText;
+                final isPlayingThis = playingAyah?.number == ayah.number;
+                final bool isSajda = ayah.sajda != null && ayah.sajda != false;
+                final surahNum = ayah.surahNumber ?? widget.surahNumber;
+                final bool isMarked = storage.isAyahMarkedAsStopPoint(
+                  surahNum,
+                  ayah.numberInSurah,
+                  juzNumber: widget.juzNumber,
+                );
+                final bool isResumeHighlight = _highlightResumeAyahNumber != null &&
+                    _highlightResumeAyahNumber == ayah.numberInSurah &&
+                    (widget.juzNumber == null ||
+                        (storage.getStopPointForJuz(widget.juzNumber!)?['surahNumber'] == surahNum));
+                final bool isSelected = _selectedAyahForHighlight == index;
+                final bool isHighlighted = isPlayingThis || isResumeHighlight || isSelected;
+
+                return TextSpan(
+                  children: [
+                    // Arabic text with whole-verse highlight & tap
+                    TextSpan(
+                      text: '$cleanText ',
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          setState(() {
+                            _selectedAyahForHighlight = index;
+                          });
+                          _showAyahQuickActionsSheet(
+                            context: context,
+                            ayah: ayah,
+                            totalAyahs: ayahs.length,
+                            currentSurah: currentSurah,
+                            isDark: isDark,
+                            quranAudio: ref.read(quranAudioProvider),
+                            allAyahs: ayahs,
+                            ayahIndex: index,
+                          ).then((_) {
+                            if (mounted) {
+                              setState(() {
+                                _selectedAyahForHighlight = null;
+                              });
+                            }
+                          });
+                        },
+                      style: AppTypography.arabicBody(
+                        fontSize: _arabicFontSize,
+                        height: 1.97,
+                        color: isHighlighted
+                            ? (isDark ? const Color(0xFFA3E635) : const Color(0xFF854D0E))
+                            : (isSajda
+                                ? (isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : const Color(0xFF166534))
+                                : (isDark
+                                    ? const Color(0xFFF1F5F2)
+                                    : const Color(0xFF1F2937))),
+                      ).copyWith(
+                        backgroundColor: isHighlighted
+                            ? (isDark
+                                ? const Color(0xFF1E3A2B)
+                                : const Color(0xFFFEF9C3))
+                            : (isSajda
+                                ? (isDark
+                                    ? const Color(0xFF14532D).withValues(alpha: 0.35)
+                                    : const Color(0xFFFEF3C7))
+                                : null),
+                      ),
+                    ),
+                    // Stop Point Marker Pin on Marked Stop Ayah
+                    if (isMarked)
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedAyahForHighlight = index;
+                            });
+                            _showAyahQuickActionsSheet(
+                              context: context,
+                              ayah: ayah,
+                              totalAyahs: ayahs.length,
+                              currentSurah: currentSurah,
+                              isDark: isDark,
+                              quranAudio: ref.read(quranAudioProvider),
+                              allAyahs: ayahs,
+                              ayahIndex: index,
+                            ).then((_) {
+                              if (mounted) {
+                                setState(() {
+                                  _selectedAyahForHighlight = null;
+                                });
+                              }
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD97706),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.flag_rounded,
+                                  size: 11,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 2),
+                                Text(
+                                  'Stop',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              }).toList(),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -2271,4 +1837,4 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       isDark: isDark,
     );
   }
-}
+}  

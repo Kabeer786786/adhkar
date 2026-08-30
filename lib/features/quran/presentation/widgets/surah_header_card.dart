@@ -69,7 +69,7 @@ class SurahHeaderCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: isDark
-                  ? [const Color(0xFF1E3A15), const Color(0xFF0F1A0E)]
+                  ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
                   : [const Color(0xFF669f1d), const Color(0xFF2A531D)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

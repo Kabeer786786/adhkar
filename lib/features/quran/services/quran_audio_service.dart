@@ -20,10 +20,12 @@ class QuranAudioController extends ChangeNotifier {
 
   bool _isPlaying = false;
   bool _isBuffering = false;
+  bool _isLoopSingle = false;
   double _speed = 1.0;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   String? _errorMessage;
+  int _currentRequestId = 0;
 
   List<AyahModel> get playlist => _playlist;
   int get currentIndex => _currentIndex;
@@ -31,10 +33,16 @@ class QuranAudioController extends ChangeNotifier {
   int? get surahNumber => _surahNumber;
   bool get isPlaying => _isPlaying;
   bool get isBuffering => _isBuffering;
+  bool get isLoopSingle => _isLoopSingle;
   double get speed => _speed;
   Duration get position => _position;
   Duration get duration => _duration;
   String? get errorMessage => _errorMessage;
+
+  void toggleLoopSingle() {
+    _isLoopSingle = !_isLoopSingle;
+    notifyListeners();
+  }
 
   AyahModel? get currentAyah =>
       (_currentIndex >= 0 && _currentIndex < _playlist.length)
@@ -75,8 +83,11 @@ class QuranAudioController extends ChangeNotifier {
   }
 
   void _onAudioCompleted() {
-    if (_currentIndex >= 0 && _currentIndex < _playlist.length - 1) {
+    if (_isLoopSingle && _currentIndex >= 0 && _currentIndex < _playlist.length) {
+      _playCurrentAyah();
+    } else if (_currentIndex >= 0 && _currentIndex < _playlist.length - 1) {
       _currentIndex++;
+      notifyListeners();
       _playCurrentAyah();
     } else {
       _isPlaying = false;
@@ -103,9 +114,10 @@ class QuranAudioController extends ChangeNotifier {
     await _playCurrentAyah();
   }
 
-  /// Internal playback method for current ayah in playlist.
+  /// Internal playback method for current ayah in playlist with request ID safety.
   Future<void> _playCurrentAyah() async {
     if (_currentIndex < 0 || _currentIndex >= _playlist.length) return;
+    final int requestId = ++_currentRequestId;
     final ayah = _playlist[_currentIndex];
     _errorMessage = null;
 
@@ -132,6 +144,9 @@ class QuranAudioController extends ChangeNotifier {
     );
 
     try {
+      await _player.stop();
+      if (requestId != _currentRequestId) return;
+
       if (isLocal) {
         await _player.setAudioSource(
           AudioSource.file(
@@ -151,47 +166,18 @@ class QuranAudioController extends ChangeNotifier {
             tag: mediaItem,
           ),
         );
-
-        // Background cache of current verse
-        _cacheVerseInBackground(ayah);
       }
+
+      if (requestId != _currentRequestId) return;
 
       await _player.setSpeed(_speed);
       await _player.play();
-
-      // Preload next 1–2 verses for smooth gapless playback
-      _preloadNextVerses();
     } catch (e) {
-      debugPrint('Error playing verse audio (Ayah ${ayah.numberInSurah}): $e');
-      _errorMessage = 'Unable to play audio. Check internet connection.';
-      _isPlaying = false;
-      notifyListeners();
-    }
-  }
-
-  /// Cache current streaming verse in background for future offline use.
-  void _cacheVerseInBackground(AyahModel ayah) async {
-    try {
-      final url = ayah.remoteUrl.isNotEmpty
-          ? ayah.remoteUrl
-          : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/${ayah.number}.mp3';
-
-      await MediaDownloadService.instance.downloadFile(
-        relativePath: ayah.localRelativePath,
-        remoteUrl: url,
-      );
-    } catch (_) {
-      // Ignore background caching errors (e.g. offline during stream)
-    }
-  }
-
-  /// Preload/cache the next 1–2 verses so consecutive verses play without gaps.
-  void _preloadNextVerses() {
-    for (int offset = 1; offset <= 2; offset++) {
-      final nextIndex = _currentIndex + offset;
-      if (nextIndex < _playlist.length) {
-        final nextAyah = _playlist[nextIndex];
-        _cacheVerseInBackground(nextAyah);
+      if (requestId == _currentRequestId) {
+        debugPrint('Error playing verse audio (Ayah ${ayah.numberInSurah}): $e');
+        _errorMessage = 'Unable to play audio. Check internet connection.';
+        _isPlaying = false;
+        notifyListeners();
       }
     }
   }
@@ -199,6 +185,7 @@ class QuranAudioController extends ChangeNotifier {
   Future<void> togglePlayPause() async {
     if (_currentIndex < 0 && _playlist.isNotEmpty) {
       _currentIndex = 0;
+      notifyListeners();
       await _playCurrentAyah();
       return;
     }
@@ -212,6 +199,7 @@ class QuranAudioController extends ChangeNotifier {
   Future<void> playNext() async {
     if (_currentIndex < _playlist.length - 1) {
       _currentIndex++;
+      notifyListeners();
       await _playCurrentAyah();
     }
   }
@@ -219,7 +207,11 @@ class QuranAudioController extends ChangeNotifier {
   Future<void> playPrevious() async {
     if (_currentIndex > 0) {
       _currentIndex--;
+      notifyListeners();
       await _playCurrentAyah();
+    } else if (_currentIndex == 0) {
+      await _player.seek(Duration.zero);
+      await _player.play();
     }
   }
 
@@ -243,6 +235,7 @@ class QuranAudioController extends ChangeNotifier {
   }
 
   Future<void> stop() async {
+    _currentRequestId++;
     await _player.stop();
     _currentIndex = -1;
     _isPlaying = false;

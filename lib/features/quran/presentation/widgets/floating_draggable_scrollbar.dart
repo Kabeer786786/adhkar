@@ -6,8 +6,8 @@ class FloatingDraggableScrollbar extends StatefulWidget {
   final ScrollController scrollController;
   final int itemCount;
   final bool isDark;
-  final List<dynamic> items;
-  final int selectedTab;
+  final List<dynamic>? items;
+  final int? selectedTab;
   final dynamic arabicFont;
 
   const FloatingDraggableScrollbar({
@@ -15,9 +15,9 @@ class FloatingDraggableScrollbar extends StatefulWidget {
     required this.scrollController,
     required this.itemCount,
     required this.isDark,
-    required this.items,
-    required this.selectedTab,
-    required this.arabicFont, 
+    this.items,
+    this.selectedTab,
+    this.arabicFont, 
   });
 
   @override
@@ -62,7 +62,7 @@ class _FloatingDraggableScrollbarState
       });
     }
     _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(seconds: 5), () {
+    _hideTimer = Timer(const Duration(seconds: 3), () {
       if (mounted && !_isDragging) {
         setState(() {
           _isVisible = false;
@@ -115,7 +115,7 @@ class _FloatingDraggableScrollbarState
     if (widget.itemCount <= 2) return const SizedBox.shrink();
 
     // Height 36.0, compact sleek width ~22px
-    const double thumbHeight = 36.0;
+    const double thumbHeight = 36.0; 
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -124,13 +124,14 @@ class _FloatingDraggableScrollbarState
         final double thumbTop =
             (_progress * availableTravel).clamp(0.0, availableTravel);
 
-        return AnimatedSlide(
-          offset: _isVisible ? Offset.zero : const Offset(0.95, 0),
-          duration: const Duration(milliseconds: 260),
-          curve: Curves.easeOutCubic,
-          child: AnimatedOpacity(
-            opacity: _isVisible ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 220),
+        return RepaintBoundary(
+          child: AnimatedSlide(
+            offset: _isVisible ? Offset.zero : const Offset(0.95, 0),
+            duration: const Duration(milliseconds: 260),
+            curve: Curves.easeOutCubic,
+            child: AnimatedOpacity(
+              opacity: _isVisible ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 220),
             child: SizedBox(
               width: 44,
               height: constraints.maxHeight,
@@ -183,7 +184,7 @@ class _FloatingDraggableScrollbarState
                     top: thumbTop,
                     right: 0, // completely touches the right edge
                     child: IgnorePointer(
-                      child: Container(
+                      child: Container( 
                         height: thumbHeight,
                         width: 30,
                         decoration: BoxDecoration(
@@ -236,8 +237,9 @@ class _FloatingDraggableScrollbarState
               ),
             ),
           ),
-        );
-      },
-    );
+        ),
+      );
+    },
+  );
   }
 }

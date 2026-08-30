@@ -40,7 +40,7 @@ class AyahQuickActionsSheet extends StatelessWidget {
     required this.onPlay,
   });
 
-  static void show({
+  static Future<void> show({
     required BuildContext context,
     required AyahModel ayah,
     required int totalAyahs,
@@ -58,7 +58,7 @@ class AyahQuickActionsSheet extends StatelessWidget {
     required VoidCallback onToggleBookmark,
     required VoidCallback onPlay,
   }) {
-    showModalBottomSheet(
+    return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
