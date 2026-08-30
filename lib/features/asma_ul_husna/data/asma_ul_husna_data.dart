@@ -3,7 +3,7 @@ import 'asma_ul_husna_model.dart';
 const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   {
     "number": 1,
-    "name": "الرَّحۡمٰنُ",
+    "name": "الرَّحْمٰنُ",
     "transliteration": "Ar-Rahman",
     "shortMeaning": "The Beneficent / The Most Merciful",
     "longMeaning":
@@ -56,7 +56,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 6,
-    "name": "المُؤۡمِنُ",
+    "name": "المُؤْمِنُ",
     "transliteration": "Al-Mu'min",
     "shortMeaning": "The Inspirer & Guardian of Faith",
     "longMeaning":
@@ -67,7 +67,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 7,
-    "name": "المُهَيۡمِنُ",
+    "name": "المُهَيْمِنُ",
     "transliteration": "Al-Muhaymin",
     "shortMeaning": "The Protector & Guardian",
     "longMeaning":
@@ -301,7 +301,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 29,
-    "name": "العَدۡلُ",
+    "name": "العَدْلُ",
     "transliteration": "Al-'Adl",
     "shortMeaning": "The Utterly Just",
     "longMeaning": "The One who is entitled to do what He does.",
@@ -591,7 +591,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 57,
-    "name": "المُحۡصِي",
+    "name": "المُحْصِي",
     "transliteration": "Al-Muhsee",
     "shortMeaning": "The Appraiser of All",
     "longMeaning": "The One who the count of things are known to him.",
@@ -601,7 +601,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 58,
-    "name": "المُبۡدِئُ",
+    "name": "المُبْدِئُ",
     "transliteration": "Al-Mubdi'",
     "shortMeaning": "The Originator",
     "longMeaning":
@@ -622,7 +622,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 60,
-    "name": "المُحۡيِي",
+    "name": "المُحْيِي",
     "transliteration": "Al-Muhyee",
     "shortMeaning": "The Giver of Life",
     "longMeaning":
@@ -725,7 +725,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 70,
-    "name": "المُقۡتَدِرُ",
+    "name": "المُقْتَدِرُ",
     "transliteration": "Al-Muqtadir",
     "shortMeaning": "The Omnipotent / Powerful",
     "longMeaning":
@@ -842,7 +842,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 81,
-    "name": "المُنۡتَقِمُ",
+    "name": "المُنْتَقِمُ",
     "transliteration": "Al-Muntaqim",
     "shortMeaning": "The Avenger",
     "longMeaning":
@@ -874,7 +874,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 84,
-    "name": "مَالِكُ المُلۡكِ",
+    "name": "مَالِكُ المُلْكِ",
     "transliteration": "Maalik-ul-Mulk",
     "shortMeaning": "Owner of All Sovereignty",
     "longMeaning":
@@ -885,7 +885,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 85,
-    "name": "ذُوالجَلاَلِ وَالإِكۡرَامِ",
+    "name": "ذُوالجَلاَلِ وَالإِكْرَامِ",
     "transliteration": "Dhul-Jalaali wal-Ikraam",
     "shortMeaning": "Lord of Majesty and Bounty",
     "longMeaning": "The One who deserves to be Exalted and not denied.",
@@ -895,7 +895,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 86,
-    "name": "المُقۡسِطُ",
+    "name": "المُقْسِطُ",
     "transliteration": "Al-Muqsit",
     "shortMeaning": "The Equitable One",
     "longMeaning": "The One who is Just in His judgment.",
@@ -926,7 +926,7 @@ const List<Map<String, dynamic>> _asmaUlHusnaRawData = [
   },
   {
     "number": 89,
-    "name": "المُغۡنِي",
+    "name": "المُغْنِي",
     "transliteration": "Al-Mughni",
     "shortMeaning": "The Enricher",
     "longMeaning": "The One who satisfies the necessities of the creatures.",

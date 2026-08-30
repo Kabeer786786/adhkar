@@ -84,7 +84,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
     {
       'number': '8',
       'nameEn': 'Sha\'ban',
-      'nameAr': 'شَعۡبَان',
+      'nameAr': 'شَعْبَان',
       'tag': '8th Month',
       'desc':
           'The month of preparation before Ramadan, recommended for voluntary fasting.',
@@ -111,7 +111,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
     {
       'number': '11',
       'nameEn': 'Dhul-Qi\'dah',
-      'nameAr': 'ذُو القَعۡدَة',
+      'nameAr': 'ذُو القَعْدَة',
       'tag': '11th Month (Sacred)',
       'desc': 'The 11th sacred month during which fighting is prohibited.',
       'color': '0xFF0284C7',

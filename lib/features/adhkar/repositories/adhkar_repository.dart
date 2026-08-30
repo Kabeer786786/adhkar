@@ -86,7 +86,7 @@ class AdhkarRepository {
       id: 'm1',
       category: 'morning',
       arabicText:
-          'أَصۡبَحۡنَا وَأَصۡبَحَ الۡمُلۡكُ لِلَّهِ، وَالۡحَمۡدُ لِلَّهِ لَا إِلَهَ إِلَّا اللَّهُ وَحۡدَهُ لَا شَرِيكَ لَهُ',
+          'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ',
       transliteration:
           'Asbahna wa-asbahal-mulku lillah, wal-hamdu lillah, la ilaha illallahu wahdahu la shareeka lah.',
       translation:
@@ -100,7 +100,7 @@ class AdhkarRepository {
       id: 'm2',
       category: 'morning',
       arabicText:
-          'اللَّهُمَّ بِكَ أَصۡبَحۡنَا، وَبِكَ أَمۡسَيۡنَا، وَبِكَ نَحۡيَا، وَبِكَ نَمُوتُ وَإِلَيۡكَ النُّشُورُ',
+          'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ',
       transliteration:
           'Allahumma bika asbahna, wa bika amsayna, wa bika nahya, wa bika namootu wa ilaykan-nushoor.',
       translation:
@@ -114,7 +114,7 @@ class AdhkarRepository {
       id: 'm3',
       category: 'morning',
       arabicText:
-          'اللَّهُمَّ أَنۡتَ رَبِّي لَا إِلَهَ إِلَّا أَنۡتَ، خَلَقۡتَنِي وَأَنَا عَبۡدُكَ، وَأَنَا عَلَى عَهۡدِكَ وَوَعۡدِكَ مَا اسۡتَطَعۡتُ',
+          'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ',
       transliteration:
           'Allahumma anta Rabbee la ilaha illa anta, khalaqtanee wa ana \'abduka, wa ana \'ala \'ahdika wa wa\'dika mas-tata\'tu.',
       translation:
@@ -128,7 +128,7 @@ class AdhkarRepository {
       id: 'm4',
       category: 'morning',
       arabicText:
-          'سُبۡحَانَ اللَّهِ وَبِحَمۡدِهِ: عَدَدَ خَلۡقِهِ، وَرِضَا نَفۡسِهِ، وَزِنَةَ عَرۡشِهِ، وَمِدَادَ كَلِمَاتِهِ',
+          'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ',
       transliteration:
           'Subhanallahi wa bihamdihi: \'Adada khalqihi, wa rida nafsihi, wa zinata \'arshihi, wa midada kalimatihi.',
       translation:
@@ -142,7 +142,7 @@ class AdhkarRepository {
       id: 'm5',
       category: 'morning',
       arabicText:
-          'بِسۡمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسۡمِهِ شَيۡءٌ فِي الۡأَرۡضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الۡعَلِيمُ',
+          'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',
       transliteration:
           'Bismillahil-ladhi la yadurru ma\'as-mihi shay\'un fil-ardi wa la fis-sama\'i wa Huwas-Samee\'ul-\'Aleem.',
       translation:
@@ -159,7 +159,7 @@ class AdhkarRepository {
       id: 'e1',
       category: 'evening',
       arabicText:
-          'أَمۡسَيۡنَا وَأَمۡسَى الۡمُلۡكُ لِلَّهِ، وَالۡحَمۡدُ لِلَّهِ لَا إِلَهَ إِلَّا اللَّهُ وَحۡدَهُ لَا شَرِيكَ لَهُ',
+          'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ',
       transliteration:
           'Amsayna wa amsal-mulku lillah, wal-hamdu lillah, la ilaha illallahu wahdahu la shareeka lah.',
       translation:
@@ -172,7 +172,7 @@ class AdhkarRepository {
       id: 'e2',
       category: 'evening',
       arabicText:
-          'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنۡ شَرِّ مَا خَلَقَ',
+          'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',
       transliteration:
           'A\'udhu bikalimatil-lahit-tammati min sharri ma khalaq.',
       translation:
@@ -189,7 +189,7 @@ class AdhkarRepository {
       id: 's1',
       category: 'salah',
       arabicText:
-          'أَسۡتَغۡفِرُ اللَّهَ، أَسۡتَغۡفِرُ اللَّهَ، أَسۡتَغۡفِرُ اللَّهَ. اللَّهُمَّ أَنۡتَ السَّلَامُ وَمِنۡكَ السَّلَامُ، تَبَارَكۡتَ يَا ذَا الۡجَلَالِ وَالۡإِكۡرَامِ',
+          'أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ. اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
       transliteration:
           'Astaghfirullah (3x). Allahumma antas-Salamu wa minkas-salam, tabarakta ya Dhal-Jalali wal-Ikram.',
       translation:
@@ -202,7 +202,7 @@ class AdhkarRepository {
       id: 's2',
       category: 'salah',
       arabicText:
-          'سُبۡحَانَ اللَّهِ (33)، الۡحَمۡدُ لِلَّهِ (33)، اللَّهُ أَكۡبَرُ (33)، لَا إِلَهَ إِلَّا اللَّهُ وَحۡدَهُ لَا شَرِيكَ لَهُ، لَهُ الۡمُلۡكُ وَلَهُ الۡحَمۡدُ وَهُوَ عَلَى كُلِّ شَيۡءٍ قَدِيرٌ',
+          'سُبْحَانَ اللَّهِ (33)، الْحَمْدُ لِلَّهِ (33)، اللَّهُ أَكْبَرُ (33)، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
       transliteration:
           'SubhanAllah (33x), Alhamdulillah (33x), Allahu Akbar (33x), La ilaha illallahu wahdahu la shareeka lah...',
       translation:
@@ -219,7 +219,7 @@ class AdhkarRepository {
       id: 'sl1',
       category: 'sleep',
       arabicText:
-          'بِاسۡمِكَ رَبِّي وَضَعۡتُ جَنۡبِي، وَبِاسۡمِكَ أَرۡفَعُهُ، فَإِنۡ أَمۡسَكۡتَ نَفۡسِي فَارۡحَمۡهَا، وَإِنۡ أَرۡسَلۡتَهَا فَاحۡفَظۡهَا',
+          'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي، وَبِاسْمِكَ أَرْفَعُهُ، فَإِنْ أَمْسَكْتَ نَفْسِي فَارْحَمْهَا، وَإِنْ أَرْسَلْتَهَا فَاحْفَظْهَا',
       transliteration:
           'Bismika Rabbee wada\'tu janbee, wa bismika arfa\'uh, fa-in amsakta nafsee farhamha...',
       translation:
@@ -235,7 +235,7 @@ class AdhkarRepository {
       id: 'd1',
       category: 'duas',
       arabicText:
-          'رَبَّنَا آتِنَا فِي الدُّنۡيَا حَسَنَةً وَفِي الۡآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+          'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
       transliteration:
           'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina \'adhaban-nar.',
       translation:

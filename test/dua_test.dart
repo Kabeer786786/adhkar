@@ -31,7 +31,7 @@ void main() {
         id: 'test_dua',
         title: 'Test Dua',
         category: 'Daily',
-        arabic: 'اَلۡحَمۡدُ لِلَّهِ',
+        arabic: 'اَلْحَمْدُ لِلَّهِ',
         transliteration: 'Alhamdulillah',
         translation: 'Praise be to Allah',
         repeatCount: 3,

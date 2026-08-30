@@ -101,7 +101,7 @@ class TasbeehItem {
   static const List<TasbeehItem> defaults = [
     TasbeehItem(
       id: 'subhanallah',
-      textAr: 'سُبۡحَانَ اللَّهِ',
+      textAr: 'سُبْحَانَ اللَّهِ',
       textEn: 'SubhanAllah',
       translation: 'Glory be to Allah',
       description:
@@ -112,7 +112,7 @@ class TasbeehItem {
     ),
     TasbeehItem(
       id: 'alhamdulillah',
-      textAr: 'الۡحَمۡدُ لِلَّهِ',
+      textAr: 'الْحَمْدُ لِلَّهِ',
       textEn: 'Alhamdulillah',
       translation: 'All praise is due to Allah',
       description:
@@ -123,7 +123,7 @@ class TasbeehItem {
     ),
     TasbeehItem(
       id: 'allahuakbar',
-      textAr: 'اللَّهُ أَكۡبَرُ',
+      textAr: 'اللَّهُ أَكْبَرُ',
       textEn: 'Allahu Akbar',
       translation: 'Allah is the Greatest',
       description:
@@ -145,7 +145,7 @@ class TasbeehItem {
     ),
     TasbeehItem(
       id: 'astagfirullah',
-      textAr: 'أَسۡتَغۡفِرُ اللَّهَ',
+      textAr: 'أَسْتَغْفِرُ اللَّهَ',
       textEn: 'Astaghfirullah',
       translation: 'I seek forgiveness from Allah',
       description:
@@ -156,7 +156,7 @@ class TasbeehItem {
     ),
     TasbeehItem(
       id: 'subhanallah_bihamdihi',
-      textAr: 'سُبۡحَانَ اللَّهِ وَبِحَمۡدِهِ سُبۡحَانَ اللَّهِ الۡعَظِيمِ',
+      textAr: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ',
       textEn: 'SubhanAllahi wa bihamdihi, SubhanAllahil Azim',
       translation:
           'Glory be to Allah and His is the praise, Glory be to Allah the Supreme',
@@ -179,7 +179,7 @@ class TasbeehItem {
     ),
     TasbeehItem(
       id: 'lahawla',
-      textAr: 'لَا حَوۡلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+      textAr: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
       textEn: 'La hawla wa la quwwata illa billah',
       translation: 'There is no power nor strength except with Allah',
       description:
@@ -190,7 +190,7 @@ class TasbeehItem {
     ),
     TasbeehItem(
       id: 'hasbunallah',
-      textAr: 'حَسۡبُنَا اللَّهُ وَنِعۡمَ الۡوَكِيلُ',
+      textAr: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',
       textEn: 'Hasbunallahu wa Ni\'mal Wakeel',
       translation:
           'Sufficient for us is Allah, and He is the best Disposer of affairs',

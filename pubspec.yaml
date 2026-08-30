@@ -67,6 +67,7 @@ dependencies:
   showcaseview: ^5.1.0
   package_info_plus: ^8.3.0
   path_provider: ^2.1.6
+  flutter_widget_from_html_core: ^0.17.2
 
 
 dev_dependencies:

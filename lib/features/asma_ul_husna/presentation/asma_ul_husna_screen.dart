@@ -137,13 +137,13 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
             title: ValueListenableBuilder<double>(
               valueListenable: _titleOpacity,
               builder: (context, opacity, child) {
-                return Stack(
+                return Stack( 
                   alignment: Alignment.centerLeft,
                   children: [
                     Opacity(
                       opacity: (1.0 - opacity).clamp(0.0, 1.0),
                       child: Text(
-                        'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ',
+                        "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ",
                         textDirection: TextDirection.rtl,
                         style: AppTypography.arabicHeader(
                           fontSize: 18,

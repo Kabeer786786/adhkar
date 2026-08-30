@@ -290,7 +290,7 @@ class StorageService {
     }
   }
 
-  // --- Quran Bookmarks & Last Read ---
+  // --- Quran Bookmarks, Favorites & Reading Settings ---
   int? getLastReadSurah() {
     return _bookmarksBox.get('last_surah') as int?;
   }
@@ -315,6 +315,233 @@ class StorageService {
 
   Future<void> setLastReadJuz(int juz) async {
     await _bookmarksBox.put('last_juz', juz);
+  }
+
+  List<int> getFavoriteSurahs() {
+    final data = _bookmarksBox.get('favorite_surahs');
+    if (data != null && data is List) {
+      return List<int>.from(data.map((e) => (e as num).toInt()));
+    }
+    return [];
+  }
+
+  Future<void> toggleFavoriteSurah(int surahNumber) async {
+    final current = getFavoriteSurahs();
+    if (current.contains(surahNumber)) {
+      current.remove(surahNumber);
+    } else {
+      current.add(surahNumber);
+    }
+    await _bookmarksBox.put('favorite_surahs', current);
+  }
+
+  bool isSurahFavorite(int surahNumber) {
+    return getFavoriteSurahs().contains(surahNumber);
+  }
+
+  List<int> getFavoriteJuz() {
+    final data = _bookmarksBox.get('favorite_juz');
+    if (data != null && data is List) {
+      return List<int>.from(data.map((e) => (e as num).toInt()));
+    }
+    return [];
+  }
+
+  Future<void> toggleFavoriteJuz(int juzNumber) async {
+    final current = getFavoriteJuz();
+    if (current.contains(juzNumber)) {
+      current.remove(juzNumber);
+    } else {
+      current.add(juzNumber);
+    }
+    await _bookmarksBox.put('favorite_juz', current);
+  }
+
+  bool isJuzFavorite(int juzNumber) {
+    return getFavoriteJuz().contains(juzNumber);
+  }
+
+  // --- Quran Stop Points & Reading History ---
+  List<Map<String, dynamic>> getQuranStopPoints() {
+    final data = _bookmarksBox.get('quran_stop_points');
+    if (data != null && data is List) {
+      return data
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList()
+        ..sort((a, b) => ((b['timestamp'] ?? 0) as num)
+            .compareTo((a['timestamp'] ?? 0) as num));
+    }
+    return [];
+  }
+
+  Future<void> saveQuranStopPoint({
+    required int surahNumber,
+    required String surahNameEnglish,
+    required String surahNameArabic,
+    int? juzNumber,
+    required int markedAyahNumber,
+    required int totalAyahs,
+    int? page,
+  }) async {
+    final currentList = getQuranStopPoints();
+    final String id = juzNumber != null
+        ? 'juz_$juzNumber'
+        : 'surah_$surahNumber';
+
+    final resumeAyah = markedAyahNumber < totalAyahs
+        ? markedAyahNumber + 1
+        : markedAyahNumber;
+
+    final entry = {
+      'id': id,
+      'surahNumber': surahNumber,
+      'surahNameEnglish': surahNameEnglish,
+      'surahNameArabic': surahNameArabic,
+      'juzNumber': juzNumber,
+      'markedAyahNumber': markedAyahNumber,
+      'resumeAyahNumber': resumeAyah,
+      'totalAyahs': totalAyahs,
+      'page': page ?? 1,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+
+    currentList.removeWhere((e) => e['id'] == id);
+    currentList.insert(0, entry);
+    await _bookmarksBox.put('quran_stop_points', currentList);
+
+    // Also update classic last read
+    if (juzNumber != null) {
+      await setLastReadJuz(juzNumber);
+    } else {
+      await setLastRead(surahNumber, markedAyahNumber);
+    }
+  }
+
+  Future<void> removeQuranStopPoint(String id) async {
+    final currentList = getQuranStopPoints();
+    currentList.removeWhere((e) => e['id'] == id);
+    await _bookmarksBox.put('quran_stop_points', currentList);
+  }
+
+  Future<void> clearAllQuranStopPoints() async {
+    await _bookmarksBox.put('quran_stop_points', []);
+  }
+
+  Map<String, dynamic>? getLatestStopPoint({int? surahNumber, int? juzNumber}) {
+    final list = getQuranStopPoints();
+    if (juzNumber != null) {
+      final matches = list.where((e) => e['juzNumber'] == juzNumber);
+      return matches.isNotEmpty ? matches.first : null;
+    }
+    if (surahNumber != null) {
+      final matches = list.where((e) => e['surahNumber'] == surahNumber && e['juzNumber'] == null);
+      return matches.isNotEmpty ? matches.first : null;
+    }
+    return list.isNotEmpty ? list.first : null;
+  }
+
+  Map<String, dynamic>? getStopPointForSurah(int surahNumber) {
+    final list = getQuranStopPoints();
+    final matches = list.where((e) => e['id'] == 'surah_$surahNumber' || (e['surahNumber'] == surahNumber && e['juzNumber'] == null));
+    return matches.isNotEmpty ? matches.first : null;
+  }
+
+  Map<String, dynamic>? getStopPointForJuz(int juzNumber) {
+    final list = getQuranStopPoints();
+    final matches = list.where((e) => e['id'] == 'juz_$juzNumber' || e['juzNumber'] == juzNumber);
+    return matches.isNotEmpty ? matches.first : null;
+  }
+
+  bool isAyahMarkedAsStopPoint(int surahNumber, int ayahNumber, {int? juzNumber}) {
+    final sp = juzNumber != null
+        ? getStopPointForJuz(juzNumber)
+        : getStopPointForSurah(surahNumber);
+    if (sp == null) return false;
+    return sp['surahNumber'] == surahNumber && sp['markedAyahNumber'] == ayahNumber;
+  }
+
+  // --- Quran Ayah Bookmarks ---
+  List<Map<String, dynamic>> getQuranAyahBookmarks() {
+    final data = _bookmarksBox.get('quran_ayah_bookmarks');
+    if (data != null && data is List) {
+      return data
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList()
+        ..sort((a, b) => ((b['timestamp'] ?? 0) as num)
+            .compareTo((a['timestamp'] ?? 0) as num));
+    }
+    return [];
+  }
+
+  Future<void> saveQuranAyahBookmark({
+    required int surahNumber,
+    required String surahNameEnglish,
+    required String surahNameArabic,
+    required int juzNumber,
+    required int ayahNumber,
+    required int totalAyahs,
+    required int page,
+    required String arabicText,
+    required String translationEnglish,
+  }) async {
+    final currentList = getQuranAyahBookmarks();
+    final id = 'bookmark_${surahNumber}_$ayahNumber';
+    final entry = {
+      'id': id,
+      'surahNumber': surahNumber,
+      'surahNameEnglish': surahNameEnglish,
+      'surahNameArabic': surahNameArabic,
+      'juzNumber': juzNumber,
+      'ayahNumber': ayahNumber,
+      'totalAyahs': totalAyahs,
+      'page': page,
+      'arabicText': arabicText,
+      'translationEnglish': translationEnglish,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+    currentList.removeWhere((e) => e['id'] == id);
+    currentList.insert(0, entry);
+    await _bookmarksBox.put('quran_ayah_bookmarks', currentList);
+  }
+
+  Future<void> removeQuranAyahBookmark(String id) async {
+    final currentList = getQuranAyahBookmarks();
+    currentList.removeWhere((e) => e['id'] == id);
+    await _bookmarksBox.put('quran_ayah_bookmarks', currentList);
+  }
+
+  Future<void> clearAllQuranAyahBookmarks() async {
+    await _bookmarksBox.put('quran_ayah_bookmarks', []);
+  }
+
+  bool isAyahBookmarked(int surahNumber, int ayahNumber) {
+    final list = getQuranAyahBookmarks();
+    final id = 'bookmark_${surahNumber}_$ayahNumber';
+    return list.any((e) => e['id'] == id || (e['surahNumber'] == surahNumber && e['ayahNumber'] == ayahNumber));
+  }
+
+  double getQuranArabicFontSize() {
+    return (_settingsBox.get('quran_arabic_font_size', defaultValue: 24.0) as num).toDouble();
+  }
+
+  Future<void> setQuranArabicFontSize(double size) async {
+    await _settingsBox.put('quran_arabic_font_size', size);
+  }
+
+  bool? getQuranReadingDarkMode() {
+    return _settingsBox.get('quran_reading_dark_mode') as bool?;
+  }
+
+  Future<void> setQuranReadingDarkMode(bool isDark) async {
+    await _settingsBox.put('quran_reading_dark_mode', isDark);
+  }
+
+  String getQuranTranslationLanguage() {
+    return _settingsBox.get('quran_translation_lang', defaultValue: 'none') as String;
+  }
+
+  Future<void> setQuranTranslationLanguage(String lang) async {
+    await _settingsBox.put('quran_translation_lang', lang);
   }
 
   // --- Saved Dua Items ---

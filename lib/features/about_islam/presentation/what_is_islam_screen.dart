@@ -125,7 +125,7 @@ class WhatIsIslamScreen extends StatelessWidget {
               number: '1',
               title: 'Shahada (Declaration of Faith)',
               arabic:
-                  'أَشۡهَدُ أَنۡ لَا إِلٰهَ إِلَّا اللهُ وَأَشۡهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللهِ',
+                  'أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللهِ',
               description:
                   'Bearing witness that there is no deity worthy of worship except Allah, and Muhammad (ﷺ) is His Messenger.',
               color: const Color(0xFF16A34A),
@@ -152,7 +152,7 @@ class WhatIsIslamScreen extends StatelessWidget {
             _buildPillarTile(
               number: '4',
               title: 'Sawm (Fasting in Ramadan)',
-              arabic: 'الصَّوۡم',
+              arabic: 'الصَّوْم',
               description:
                   'Fasting from dawn until sunset during the month of Ramadan to cultivate piety, gratitude, and self-restraint.',
               color: const Color(0xFF9333EA),
@@ -161,7 +161,7 @@ class WhatIsIslamScreen extends StatelessWidget {
             _buildPillarTile(
               number: '5',
               title: 'Hajj (Pilgrimage to Makkah)',
-              arabic: 'الۡحَجّ',
+              arabic: 'الْحَجّ',
               description:
                   'Pilgrimage to the Holy Kaaba in Makkah once in a lifetime for those physically and financially able.',
               color: const Color(0xFF0D9488),
@@ -257,7 +257,7 @@ class WhatIsIslamScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'يا أَيُّهَا النَّاسُ إِنَّا خَلَقۡنَاكُم مِّن ذَكَرٍ وَأُنثَىٰ وَجَعَلۡنَاكُمۡ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا',
+                    'يا أَيُّهَا النَّاسُ إِنَّا خَلَقْنَاكُم مِّن ذَكَرٍ وَأُنثَىٰ وَجَعَلْنَاكُمْ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا',
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
                     style: AppTypography.arabicHeader(

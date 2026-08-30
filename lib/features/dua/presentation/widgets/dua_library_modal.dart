@@ -849,12 +849,10 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
               controller: _formArabicController,
               textDirection: TextDirection.rtl,
               maxLines: 2,
-              style: AppTypography.arabicBody(
-                fontSize: 20,
-              ),
+              style: AppTypography.arabicBody(fontSize: 20),
               decoration: _formInputDecoration(
                 'Arabic Text *',
-                'اَللَّهُمَّ حَاسِبۡنِي حِسَاباً يَسِيراً',
+                'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً',
                 Icons.auto_awesome_rounded,
               ),
             ),

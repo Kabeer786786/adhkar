@@ -240,10 +240,13 @@ final appRouter = GoRouter(
         final numStr = state.uri.queryParameters['num'] ?? '1';
         final juzStr = state.uri.queryParameters['juz'];
         final name = state.uri.queryParameters['name'] ?? 'Al-Fatiha';
+        final startAyahStr = state.uri.queryParameters['startAyah'];
         return SurahDetailScreen(
           surahNumber: int.parse(numStr),
           juzNumber: juzStr != null ? int.tryParse(juzStr) : null,
           surahName: name,
+          initialAyahNumber:
+              startAyahStr != null ? int.tryParse(startAyahStr) : null,
         );
       },
     ),

@@ -51,7 +51,7 @@ class FastingHelper {
         hadith:
             '"The Messenger of Allah (ﷺ) forbade fasting on two days: the day of Fitr and the day of Adha." (Sahih al-Bukhari 1991)',
         arabicHadith:
-            'نَهَى رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيۡهِ وَسَلَّمَ عَنۡ صِيَامِ يَوۡمَيۡنِ: يَوۡمِ الۡفِطۡرِ وَيَوۡمِ الأَضۡحَى',
+            'نَهَى رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ عَنْ صِيَامِ يَوْمَيْنِ: يَوْمِ الْفِطْرِ وَيَوْمِ الأَضْحَى',
         type: FastingType.prohibited,
         primaryColor: Color(0xFFDC2626),
         icon: Icons.block_rounded,
@@ -73,7 +73,7 @@ class FastingHelper {
         hadith:
             '"The days of Tashreeq are days of eating, drinking, and remembering Allah." (Sahih Muslim 1141)',
         arabicHadith:
-            'أَيَّامُ التَّشۡرِيقِ أَيَّامُ أَكۡلٍ وَشُرۡبٍ وَذِكۡرٍ لِلَّهِ',
+            'أَيَّامُ التَّشْرِيقِ أَيَّامُ أَكْلٍ وَشُرْبٍ وَذِكْرٍ لِلَّهِ',
         type: FastingType.prohibited,
         primaryColor: const Color(0xFFDC2626),
         icon: Icons.block_rounded,
@@ -91,7 +91,7 @@ class FastingHelper {
         hadith:
             '"Whoever fasts Ramadan out of faith and in the hope of reward, his previous sins will be forgiven." (Sahih al-Bukhari 38, Sahih Muslim 760)',
         arabicHadith:
-            'مَنۡ صَامَ رَمَضَانَ إِيمَانًا وَاحۡتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنۡ ذَنۡبِهِ',
+            'مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ',
         type: FastingType.fard,
         primaryColor: const Color(0xFF15803D),
         icon: Icons.nightlight_round,
@@ -109,7 +109,7 @@ class FastingHelper {
         hadith:
             '"Fasting on the day of Arafah expiates the sins of the preceding year and the coming year." (Sahih Muslim 1162)',
         arabicHadith:
-            'صِيَامُ يَوۡمِ عَرَفَةَ أَحۡتَسِبُ عَلَى اللَّهِ أَنۡ يُكَفِّرَ السَّنَةَ الَّتِي قَبۡلَهُ وَالسَّنَةَ الَّتِي بَعۡدَهُ',
+            'صِيَامُ يَوْمِ عَرَفَةَ أَحْتَسِبُ عَلَى اللَّهِ أَنْ يُكَفِّرَ السَّنَةَ الَّتِي قَبْلَهُ وَالسَّنَةَ الَّتِي بَعْدَهُ',
         type: FastingType.sunnahMuakkadah,
         primaryColor: Color(0xFFB45309),
         icon: Icons.workspace_premium_rounded,
@@ -127,7 +127,7 @@ class FastingHelper {
         hadith:
             '"There are no days in which righteous deeds are more beloved to Allah than these ten days." (Sahih al-Bukhari 969)',
         arabicHadith:
-            'مَا مِنۡ أَيَّامٍ الۡعَمَلُ الصَّالِحُ فِيهَا أَحَبُّ إِلَى اللَّهِ مِنۡ هَذِهِ الأَيَّامِ',
+            'مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهَا أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ',
         type: FastingType.sunnahMuakkadah,
         primaryColor: const Color(0xFFD97724),
         icon: Icons.auto_awesome_rounded,
@@ -145,7 +145,7 @@ class FastingHelper {
         hadith:
             '"Fasting the day of Ashura, I hope that Allah will accept it as expiation for the year that went before it." (Sahih Muslim 1162)',
         arabicHadith:
-            'صِيَامُ يَوۡمِ عَاشُورَاءَ أَحۡتَسِبُ عَلَى اللَّهِ أَنۡ يُكَفِّرَ السَّنَةَ الَّتِي قَبۡلَهُ',
+            'صِيَامُ يَوْمِ عَاشُورَاءَ أَحْتَسِبُ عَلَى اللَّهِ أَنْ يُكَفِّرَ السَّنَةَ الَّتِي قَبْلَهُ',
         type: FastingType.sunnahMuakkadah,
         primaryColor: Color(0xFF0D9488),
         icon: Icons.star_rounded,
@@ -163,7 +163,7 @@ class FastingHelper {
             'Fasting the 9th or 11th of Muharram alongside the 10th (Ashura) is a cherished Sunnah of the Prophet Muhammad (ﷺ).',
         hadith:
             '"If I remain alive until next year, I will certainly fast the ninth day [along with the tenth]." (Sahih Muslim 1134)',
-        arabicHadith: 'لَئِنۡ بَقِيتُ إِلَى قَابِلٍ لأَصُومَنَّ التَّاسِعَ',
+        arabicHadith: 'لَئِنْ بَقِيتُ إِلَى قَابِلٍ لأَصُومَنَّ التَّاسِعَ',
         type: FastingType.sunnah,
         primaryColor: const Color(0xFF0D9488),
         icon: Icons.auto_awesome_rounded,
@@ -181,7 +181,7 @@ class FastingHelper {
         hadith:
             '"Whoever fasts Ramadan and follows it with six days of Shawwal, it is as if he fasted for a lifetime." (Sahih Muslim 1164)',
         arabicHadith:
-            'مَنۡ صَامَ رَمَضَانَ ثُمَّ أَتۡبَعَهُ سِتًّا مِنۡ شَوَّالٍ كَانَ كَصِيَامِ الدَّهۡرِ',
+            'مَنْ صَامَ رَمَضَانَ ثُمَّ أَتْبَعَهُ سِتًّا مِنْ شَوَّالٍ كَانَ كَصِيَامِ الدَّهْرِ',
         type: FastingType.sunnah,
         primaryColor: const Color(0xFF7E22CE),
         icon: Icons.verified_rounded,
@@ -199,7 +199,7 @@ class FastingHelper {
         hadith:
             '"Fasting three days of each month is equivalent to fasting for a lifetime." (Sunan an-Nasa\'i 2420)',
         arabicHadith:
-            'صِيَامُ ثَلاَثَةِ أَيَّامٍ مِنۡ كُلِّ شَهۡرٍ صِيَامُ الدَّهۡرِ',
+            'صِيَامُ ثَلاَثَةِ أَيَّامٍ مِنْ كُلِّ شَهْرٍ صِيَامُ الدَّهْرِ',
         type: FastingType.sunnah,
         primaryColor: const Color(0xFFD97724),
         icon: Icons.brightness_2_rounded,
@@ -218,7 +218,7 @@ class FastingHelper {
         hadith:
             '"Deeds are presented on Monday and Thursday, and I love that my deeds be presented while I am fasting." (Jami` at-Tirmidhi 747)',
         arabicHadith:
-            'تُعۡرَضُ الأَعۡمَالُ يَوۡمَ الاِثۡنَيۡنِ وَالۡخَمِيسِ فَأُحِبُّ أَنۡ يُعۡرَضَ عَمَلِي وَأَنَا صَائِمٌ',
+            'تُعْرَضُ الأَعْمَالُ يَوْمَ الاِثْنَيْنِ وَالْخَمِيسِ فَأُحِبُّ أَنْ يُعْرَضَ عَمَلِي وَأَنَا صَائِمٌ',
         type: FastingType.sunnah,
         primaryColor: const Color(0xFF059669),
         icon: Icons.event_repeat_rounded,
@@ -240,7 +240,7 @@ class FastingHelper {
         hadith:
             '"Whoever fasts Ramadan out of faith and in the hope of reward, his previous sins will be forgiven." (Bukhari & Muslim)',
         arabicHadith:
-            'مَنۡ صَامَ رَمَضَانَ إِيمَانًا وَاحۡتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنۡ ذَنۡبِهِ',
+            'مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ',
         type: FastingType.fard,
         primaryColor: Color(0xFF15803D),
         icon: Icons.nightlight_round,
@@ -254,7 +254,7 @@ class FastingHelper {
         hadith:
             '"Fasting on the day of Arafah expiates the sins of the preceding year and the coming year." (Sahih Muslim 1162)',
         arabicHadith:
-            'صِيَامُ يَوۡمِ عَرَفَةَ أَحۡتَسِبُ عَلَى اللَّهِ أَنۡ يُكَفِّرَ السَّنَةَ الَّتِي قَبۡلَهُ وَالسَّنَةَ الَّتِي بَعۡدَهُ',
+            'صِيَامُ يَوْمِ عَرَفَةَ أَحْتَسِبُ عَلَى اللَّهِ أَنْ يُكَفِّرَ السَّنَةَ الَّتِي قَبْلَهُ وَالسَّنَةَ الَّتِي بَعْدَهُ',
         type: FastingType.sunnahMuakkadah,
         primaryColor: Color(0xFFB45309),
         icon: Icons.workspace_premium_rounded,
@@ -268,7 +268,7 @@ class FastingHelper {
         hadith:
             '"Fasting the day of Ashura, I hope that Allah will accept it as expiation for the year that went before it." (Sahih Muslim 1162)',
         arabicHadith:
-            'صِيَامُ يَوۡمِ عَاشُورَاءَ أَحۡتَسِبُ عَلَى اللَّهِ أَنۡ يُكَفِّرَ السَّنَةَ الَّتِي قَبۡلَهُ',
+            'صِيَامُ يَوْمِ عَاشُورَاءَ أَحْتَسِبُ عَلَى اللَّهِ أَنْ يُكَفِّرَ السَّنَةَ الَّتِي قَبْلَهُ',
         type: FastingType.sunnahMuakkadah,
         primaryColor: Color(0xFF0D9488),
         icon: Icons.star_rounded,
@@ -282,7 +282,7 @@ class FastingHelper {
         hadith:
             '"Whoever fasts Ramadan and follows it with six days of Shawwal, it is as if he fasted for a lifetime." (Sahih Muslim 1164)',
         arabicHadith:
-            'مَنۡ صَامَ رَمَضَانَ ثُمَّ أَتۡبَعَهُ سِتًّا مِنۡ شَوَّالٍ كَانَ كَصِيَامِ الدَّهۡرِ',
+            'مَنْ صَامَ رَمَضَانَ ثُمَّ أَتْبَعَهُ سِتًّا مِنْ شَوَّالٍ كَانَ كَصِيَامِ الدَّهْرِ',
         type: FastingType.sunnah,
         primaryColor: Color(0xFF7E22CE),
         icon: Icons.verified_rounded,
@@ -296,7 +296,7 @@ class FastingHelper {
         hadith:
             '"Fasting three days of each month is equivalent to fasting for a lifetime." (Sunan an-Nasa\'i 2420)',
         arabicHadith:
-            'صِيَامُ ثَلاَثَةِ أَيَّامٍ مِنۡ كُلِّ شَهۡرٍ صِيَامُ الدَّهۡرِ',
+            'صِيَامُ ثَلاَثَةِ أَيَّامٍ مِنْ كُلِّ شَهْرٍ صِيَامُ الدَّهْرِ',
         type: FastingType.sunnah,
         primaryColor: Color(0xFFD97724),
         icon: Icons.brightness_2_rounded,
@@ -310,7 +310,7 @@ class FastingHelper {
         hadith:
             '"Deeds are presented on Monday and Thursday, and I love that my deeds be presented while I am fasting." (Tirmidhi 747)',
         arabicHadith:
-            'تُعۡرَضُ الأَعۡمَالُ يَوۡمَ الاِثۡنَيۡنِ وَالۡخَمِيسِ فَأُحِبُّ أَنۡ يُعۡرَضَ عَمَلِي وَأَنَا صَائِمٌ',
+            'تُعْرَضُ الأَعْمَالُ يَوْمَ الاِثْنَيْنِ وَالْخَمِيسِ فَأُحِبُّ أَنْ يُعْرَضَ عَمَلِي وَأَنَا صَائِمٌ',
         type: FastingType.sunnah,
         primaryColor: Color(0xFF059669),
         icon: Icons.event_repeat_rounded,

@@ -259,12 +259,10 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
                 controller: _arabicController,
                 textDirection: TextDirection.rtl,
                 maxLines: 2,
-                style: AppTypography.arabicBody(
-                  fontSize: 20,
-                ),
+                style: AppTypography.arabicBody(fontSize: 20),
                 decoration: _inputDecoration(
                   'Arabic Text *',
-                  'اَللَّهُمَّ حَاسِبۡنِي حِسَاباً يَسِيراً',
+                  'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً',
                   Icons.auto_awesome_rounded,
                 ),
               ),

@@ -7,7 +7,7 @@ class DuaRepository {
         id: 'before_eating',
         title: 'Dua Before Eating Food',
         category: 'Food',
-        arabic: 'بِسۡمِ اللهِ وَعَلَى بَرَكَةِ اللهِ',
+        arabic: 'بِسْمِ اللهِ وَعَلَى بَرَكَةِ اللهِ',
         transliteration: 'Bismillāhi wa \'alā barakatillāh.',
         translation:
             'In the name of Allah and with the blessings of Allah [I begin eating].',
@@ -23,7 +23,7 @@ class DuaRepository {
         title: 'Dua After Finishing Meal',
         category: 'Food',
         arabic:
-            'الۡحَمۡدُ لِلَّهِ الَّذِي أَطۡعَمَنَا وَسَقَانَا وَجَعَلَنَا مِنَ الۡمُسۡلِمِينَ',
+            'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مِنَ الْمُسْلِمِينَ',
         transliteration:
             'Alhamdu lillāhil-ladhī aṭ\'amanā wa saqānā wa ja\'alanā minal-muslimīn.',
         translation:
@@ -39,7 +39,7 @@ class DuaRepository {
         id: 'before_sleeping',
         title: 'Dua Before Sleeping',
         category: 'Sleep',
-        arabic: 'بِاسۡمِكَ اللَّهُمَّ أَمُوتُ وَأَحۡيَا',
+        arabic: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
         transliteration: 'Bismika Allāhumma amūtu wa aḥyā.',
         translation: 'In Your name, O Allah, I die and I live.',
         repeatCount: 1,
@@ -54,7 +54,7 @@ class DuaRepository {
         title: 'Dua Upon Waking Up',
         category: 'Daily',
         arabic:
-            'اَلۡحَمۡدُ لِلَّهِ الَّذِي أَحۡيَانَا بَعۡدَ مَا أَمَاتَنَا وَإِلَيۡهِ النُّشُورُ',
+            'اَلْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
         transliteration:
             'Alhamdu lillāhil-ladhī aḥyānā ba\'da mā amātanā wa ilaihin-nushūr.',
         translation:
@@ -71,7 +71,7 @@ class DuaRepository {
         title: 'Dua Before Wearing Clothes',
         category: 'Daily',
         arabic:
-            'اَلۡحَمۡدُ لِلَّهِ الَّذِي كَسَانِي هٰذَا (الثَّوۡبَ) وَرَزَقَنِيهِ مِنۡ غَيۡرِ حَوۡلٍ مِّنِّي وَلَا قُوَّةٍ',
+            'اَلْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هٰذَا (الثَّوْبَ) وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِّنِّي وَلَا قُوَّةٍ',
         transliteration:
             'Alhamdu lillāhil-ladhī kasānī hādhā (ath-thawba) wa razaqanīhi min ghairi ḥawlim-minnī wa lā quwwah.',
         translation:
@@ -87,7 +87,7 @@ class DuaRepository {
         id: 'entering_bathroom',
         title: 'Dua Before Entering Bathroom',
         category: 'Hygiene',
-        arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الۡخُبُثِ وَالۡخَبَائِثِ',
+        arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',
         transliteration:
             'Allāhumma innī a\'ūdhu bika minal-khubuthi wal-khabā\'ith.',
         translation:
@@ -103,7 +103,7 @@ class DuaRepository {
         id: 'leaving_bathroom',
         title: 'Dua After Leaving Bathroom',
         category: 'Hygiene',
-        arabic: 'غُفۡرَانَكَ',
+        arabic: 'غُفْرَانَكَ',
         transliteration: 'Ghufrānaka.',
         translation: 'I seek Your forgiveness.',
         repeatCount: 1,
@@ -118,7 +118,7 @@ class DuaRepository {
         title: 'Dua Before Leaving Home',
         category: 'Travel',
         arabic:
-            'بِسۡمِ اللهِ ، تَوَكَّلۡتُ عَلَى اللهِ ، وَلَا حَوۡلَ وَلَا قُوَّةَ إِلَّا بِاللهِ',
+            'بِسْمِ اللهِ ، تَوَكَّلْتُ عَلَى اللهِ ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ',
         transliteration:
             'Bismillāhi, tawakkaltu \'alallāh, wa lā ḥawla wa lā quwwata illā billāh.',
         translation:
@@ -135,7 +135,7 @@ class DuaRepository {
         title: 'Dua Upon Entering Home',
         category: 'Daily',
         arabic:
-            'اللَّهُمَّ إِنِّي أَسۡأَلُكَ خَيۡرَ الۡمَوۡلَجِ وَخَيۡرَ الۡمَخۡرَجِ ، بِسۡمِ اللهِ وَلَجۡنَا ، وَبِسۡمِ اللهِ خَرَجۡنَا ، وَعَلَى اللهِ رَبِّنَا تَوَكَّلۡنَا',
+            'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ ، بِسْمِ اللهِ وَلَجْنَا ، وَبِسْمِ اللهِ خَرَجْنَا ، وَعَلَى اللهِ رَبِّنَا تَوَكَّلْنَا',
         transliteration:
             'Allāhumma innī as\'aluka khairal-mawlaji wa khairal-makhraj, bismillāhi walajnā, wa bismillāhi kharajnā, wa \'alallāhi rabbinā tawakkalnā.',
         translation:
@@ -152,7 +152,7 @@ class DuaRepository {
         title: 'Dua for Travelling / Riding Vehicle',
         category: 'Travel',
         arabic:
-            'سُبۡحَانَ الَّذِي سَخَّرَ لَنَا هٰذَا وَمَا كُنَّا لَهُ مُقۡرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنۡقَلِبُونَ',
+            'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',
         transliteration:
             'Subḥānal-ladhī sakhkhara lanā hādhā wa mā kunnā lahū muqrinīn, wa innā ilā rabbinā lamunqalibūn.',
         translation:
@@ -169,7 +169,7 @@ class DuaRepository {
         title: 'Dua During Distress & Anxiety',
         category: 'Protection',
         arabic:
-            'لَا إِلٰهَ إِلَّا أَنۡتَ سُبۡحَانَكَ إِنِّي كُنۡتُ مِنَ الظَّالِمِينَ',
+            'لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
         transliteration:
             'Lā ilāha illā anta subḥānaka innī kuntu minadh-dhālimīn.',
         translation:
@@ -186,7 +186,7 @@ class DuaRepository {
         title: 'Dua for Beneficial Knowledge & Sustenance',
         category: 'Daily',
         arabic:
-            'اللَّهُمَّ إِنِّي أَسۡأَلُكَ عِلۡمًا نَافِعًا ، وَرِزۡقًا طَيِّبًا ، وَعَمَلًا مُتَقَبَّلًا',
+            'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا ، وَرِزْقًا طَيِّبًا ، وَعَمَلًا مُتَقَبَّلًا',
         transliteration:
             'Allāhumma innī as\'aluka \'ilman nāfi\'an, wa rizqan ṭayyiban, wa \'amalan mutaqabbalan.',
         translation:

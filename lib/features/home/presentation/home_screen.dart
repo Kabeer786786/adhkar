@@ -226,7 +226,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             return AppHeaderBar(
               title: '',
               titleWidget: Text(
-                'بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ',
+                'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
@@ -809,7 +809,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     // Centered Arabic Quote
                     Text(
-                      'فَاذۡكُرُونِي أَذۡكُرۡكُمۡ وَاشۡكُرُوا لِي وَلَا تَكۡفُرُونِ',
+                      'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ',
                       textAlign: TextAlign.center,
                       textDirection: TextDirection.rtl,
                       style: AppTypography.arabicHeader(

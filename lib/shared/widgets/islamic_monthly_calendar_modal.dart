@@ -53,10 +53,10 @@ class _IslamicMonthlyCalendarModalState
     {'number': '5', 'nameEn': 'Jumada al-Awwal', 'nameAr': 'جُمَادَى الأُولَى'},
     {'number': '6', 'nameEn': 'Jumada al-Thani', 'nameAr': 'جُمَادَى الآخِرَة'},
     {'number': '7', 'nameEn': 'Rajab', 'nameAr': 'رَجَب'},
-    {'number': '8', 'nameEn': 'Sha\'ban', 'nameAr': 'شَعۡبَان'},
+    {'number': '8', 'nameEn': 'Sha\'ban', 'nameAr': 'شَعْبَان'},
     {'number': '9', 'nameEn': 'Ramadan', 'nameAr': 'رَمَضَان'},
     {'number': '10', 'nameEn': 'Shawwal', 'nameAr': 'شَوَّال'},
-    {'number': '11', 'nameEn': 'Dhul-Qi\'dah', 'nameAr': 'ذُو القَعۡدَة'},
+    {'number': '11', 'nameEn': 'Dhul-Qi\'dah', 'nameAr': 'ذُو القَعْدَة'},
     {'number': '12', 'nameEn': 'Dhul-Hijjah', 'nameAr': 'ذُو الحِجَّة'},
   ];
 

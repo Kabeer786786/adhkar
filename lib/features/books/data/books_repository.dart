@@ -24,17 +24,17 @@ class BooksRepository {
         const BookChapter(
           title: 'Supplications for Waking Up',
           content:
-              'الحَمۡدُ للهِ الَّذِي أَحۡيَانَا بَعۡدَ مَا أَمَاتَنَا وَإِلَيۡهِ النُّشُورُ\n\n"All praise is for Allah Who gave us life after having taken it from us and unto Him is the resurrection."',
+              'الحَمْدُ للهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ\n\n"All praise is for Allah Who gave us life after having taken it from us and unto Him is the resurrection."',
         ),
         const BookChapter(
           title: 'Supplications Before Sleeping',
           content:
-              'بِاسۡمِكَ رَبِّي وَضَعۡتُ جَنۡبِي، وَبِكَ أَرۡفَعُهُ\n\n"In Your name my Lord I lie down and in Your name I rise. If You should take my soul, have mercy upon it, and if You should return my soul then protect it."',
+              'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي، وَبِكَ أَرْفَعُهُ\n\n"In Your name my Lord I lie down and in Your name I rise. If You should take my soul, have mercy upon it, and if You should return my soul then protect it."',
         ),
         const BookChapter(
           title: 'Morning & Evening Remembrances',
           content:
-              'أَصۡبَحۡنَا وَأَصۡبَحَ المُلۡكُ للَّهِ، وَالحَمۡدُ للَّهِ\n\n"We have reached the morning and at this very time all sovereignty belongs to Allah, Lord of the Worlds."',
+              'أَصْبَحْنَا وَأَصْبَحَ المُلْكُ للَّهِ، وَالحَمْدُ للَّهِ\n\n"We have reached the morning and at this very time all sovereignty belongs to Allah, Lord of the Worlds."',
         ),
       ],
     ),

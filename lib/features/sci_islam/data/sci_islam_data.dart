@@ -11,7 +11,7 @@ class SciIslamData {
       shortDescription:
           'Quran describes piercing knocking stars and gravitational voids in deep space 14 centuries ago.',
       arabicVerse:
-          'وَالسَّمَاءِ وَالطَّارِقِ ۝ وَمَا أَدۡرَاكَ مَا الطَّارِقُ ۝ النَّجۡمُ الثَّاقِبُ',
+          'وَالسَّمَاءِ وَالطَّارِقِ ۝ وَمَا أَدْرَاكَ مَا الطَّارِقُ ۝ النَّجْمُ الثَّاقِبُ',
       verseTranslation:
           '"By the sky and At-Tariq (the Night-Comer / Pulsating Knocker)! And what can make you know what At-Tariq is? It is the star of piercing brightness (whose light & radiation penetrates deep space)."\n(Surah At-Tariq 86:1-3)',
       surahReference: 'Surah At-Tariq (86:1-3)',
@@ -46,7 +46,7 @@ class SciIslamData {
       badgeText: 'Cosmology',
       shortDescription:
           'The continuous expansion of the universe revealed centuries before modern Hubble space measurements.',
-      arabicVerse: 'وَالسَّمَاءَ بَنَيۡنَاهَا بِأَيۡدٍ وَإِنَّا لَمُوسِعُونَ',
+      arabicVerse: 'وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ',
       verseTranslation:
           '"And the heaven We constructed with strength, and indeed, We are [continuously] expanding it."\n(Surah Adh-Dhariyat 51:47)',
       surahReference: 'Surah Adh-Dhariyat (51:47)',
@@ -84,7 +84,7 @@ class SciIslamData {
       shortDescription:
           'Invisible water barriers preventing distinct seas from mixing their salinity and density.',
       arabicVerse:
-          'مَرَجَ الۡبَحۡرَيۡنِ يَلۡتَقِيَانِ ۝ بَيۡنَهُمَا بَرۡزَخٌ لَّا يَبۡغِيَانِ',
+          'مَرَجَ الْبَحْرَيْنِ يَلْتَقِيَانِ ۝ بَيْنَهُمَا بَرْزَخٌ لَّا يَبْغِيَانِ',
       verseTranslation:
           '"He released the two seas, meeting side by side; Between them is a barrier [so] neither of them transgresses."\n(Surah Ar-Rahman 55:19-20)',
       surahReference: 'Surah Ar-Rahman (55:19-20)',
@@ -120,7 +120,7 @@ class SciIslamData {
       shortDescription:
           'Precise microscopic description of human development from blastocyst to bones and muscle.',
       arabicVerse:
-          'ثُمَّ خَلَقۡنَا النُّطۡفَةَ عَلَقَةً فَخَلَقۡنَا الۡعَلَقَةَ مُضۡغَةً فَخَلَقۡنَا الۡمُضۡغَةَ عِظَامًا فَكَسَوۡنَا الۡعِظَامَ لَحۡمًا',
+          'ثُمَّ خَلَقْنَا النُّطْفَةَ عَلَقَةً فَخَلَقْنَا الْعَلَقَةَ مُضْغَةً فَخَلَقْنَا الْمُضْغَةَ عِظَامًا فَكَسَوْنَا الْعِظَامَ لَحْمًا',
       verseTranslation:
           '"Then We made the sperm-drop into a clinging clot (Alaqah), and We made the clot into a lump of chewed flesh (Mudghah), and We made from the lump bones, and We clothed the bones with flesh..."\n(Surah Al-Mu\'minun 23:14)',
       surahReference: 'Surah Al-Mu\'minun (23:14)',
@@ -151,7 +151,7 @@ class SciIslamData {
       shortDescription:
           'Iron was not formed on Earth but "sent down" from collapsing supernova stars in space.',
       arabicVerse:
-          'وَأَنزَلۡنَا الۡحَدِيدَ فِيهِ بَأۡسٌ شَدِيدٌ وَمَنَافِعُ لِلنَّاسِ',
+          'وَأَنزَلْنَا الْحَدِيدَ فِيهِ بَأْسٌ شَدِيدٌ وَمَنَافِعُ لِلنَّاسِ',
       verseTranslation:
           '"And We sent down iron, wherein is great strength and benefits for humanity..."\n(Surah Al-Hadid 57:25)',
       surahReference: 'Surah Al-Hadid (57:25)',
@@ -181,7 +181,7 @@ class SciIslamData {
       shortDescription:
           'Layers of internal waves deep beneath the ocean surface where visible light cannot reach.',
       arabicVerse:
-          'أَوۡ كَظُلُمَاتٍ فِي بَحۡرٍ لُّجِّيٍّ يَغۡشَاهُ مَوۡجٌ مِّن فَوۡقِهِ مَوۡجٌ مِّن فَوۡقِهِ سَحَابٌ ۚ ظُلُمَاتٌ بَعۡضُهَا فَوۡقَ بَعۡضٍ',
+          'أَوْ كَظُلُمَاتٍ فِي بَحْرٍ لُّجِّيٍّ يَغْشَاهُ مَوْجٌ مِّن فَوْقِهِ مَوْجٌ مِّن فَوْقِهِ سَحَابٌ ۚ ظُلُمَاتٌ بَعْضُهَا فَوْقَ بَعْضٍ',
       verseTranslation:
           '"Or [they are] like darknesses within a deep ocean which is covered by waves, upon which are waves, over which are clouds - darknesses, one upon another..."\n(Surah An-Nur 24:40)',
       surahReference: 'Surah An-Nur (24:40)',
@@ -211,7 +211,7 @@ class SciIslamData {
       shortDescription:
           'Earth\'s atmospheric ceiling protecting life from lethal solar radiation and space debris.',
       arabicVerse:
-          'وَجَعَلۡنَا السَّمَاءَ سَقۡفًا مَّحۡفُوظًا ۖ وَهُمۡ عَنۡ آيَاتِهَا مُعۡرِضُونَ',
+          'وَجَعَلْنَا السَّمَاءَ سَقْفًا مَّحْفُوظًا ۖ وَهُمْ عَنْ آيَاتِهَا مُعْرِضُونَ',
       verseTranslation:
           '"And We made the sky a protected ceiling, but they turn away from its signs."\n(Surah Al-Anbiya 21:32)',
       surahReference: 'Surah Al-Anbiya (21:32)',
@@ -242,7 +242,7 @@ class SciIslamData {
       shortDescription:
           'Deep mountain roots extending into the mantle to stabilize continental tectonic plates.',
       arabicVerse:
-          'أَلَمۡ نَجۡعَلِ الۡأَرۡضَ مِهَادًا ۝ وَالۡجِبَالَ أَوۡتَادًا',
+          'أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا ۝ وَالْجِبَالَ أَوْتَادًا',
       verseTranslation:
           '"Have We not made the earth a smooth expanse? And the mountains as pegs (Awtab)?"\n(Surah An-Naba 78:6-7)',
       surahReference: 'Surah An-Naba (78:6-7)',

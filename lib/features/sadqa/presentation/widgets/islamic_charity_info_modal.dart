@@ -245,7 +245,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'مَّن ذَا الَّذِي يُقۡرِضُ اللَّهَ قَرۡضًا حَسَنًا فَيُضَاعِفَهُ لَهُ أَضۡعَافًا كَثِيرَةً',
+                  'مَّن ذَا الَّذِي يُقْرِضُ اللَّهَ قَرْضًا حَسَنًا فَيُضَاعِفَهُ لَهُ أَضْعَافًا كَثِيرَةً',
                   textDirection: TextDirection.rtl,
                   style: AppTypography.arabicBody(
                     fontSize: 20,
@@ -276,7 +276,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           description:
               '"Sadaqah extinguishes sin as water extinguishes fire." (Jami` at-Tirmidhi 614)',
           arabic:
-              'الصَّدَقَةُ تُطۡفِئُ الۡخَطِيئَةَ كَمَا يُطۡفِئُ الۡمَاءُ النَّارَ',
+              'الصَّدَقَةُ تُطْفِئُ الْخَطِيئَةَ كَمَا يُطْفِئُ الْمَاءُ النَّارَ',
           isDark: isDark,
         ),
         const SizedBox(height: 8),
@@ -287,7 +287,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           title: 'Increases Wealth & Brings Barakah',
           description:
               '"Sadaqah does not decrease wealth." (Sahih Muslim 2588). Giving charity purifies your remaining wealth and attracts divine multiplication.',
-          arabic: 'مَا نَقَصَتۡ صَدَقَةٌ مِنۡ مَالٍ',
+          arabic: 'مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ',
           isDark: isDark,
         ),
         const SizedBox(height: 8),
@@ -298,7 +298,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           title: 'Shade on Judgment Day',
           description:
               '"The believer’s shade on the Day of Resurrection will be his charity." (Sunan al-Tirmidhi 604)',
-          arabic: 'ظِلُّ الۡمُؤۡمِنِ يَوۡمَ الۡقِيَامَةِ صَدَقَتُهُ',
+          arabic: 'ظِلُّ الْمُؤْمِنِ يَوْمَ الْقِيَامَةِ صَدَقَتُهُ',
           isDark: isDark,
         ),
         const SizedBox(height: 8),
@@ -309,7 +309,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           title: 'Heals Illness & Wards Off Calamities',
           description:
               '"Treat your sick ones with Sadaqah." (Bayhaqi). Charity acts as a spiritual barrier against unexpected trials and harm.',
-          arabic: 'دَاوُوا مَرۡضَاكُمۡ بِالصَّدَقَةِ',
+          arabic: 'دَاوُوا مَرْضَاكُمْ بِالصَّدَقَةِ',
           isDark: isDark,
         ),
       ],
@@ -391,7 +391,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'وَالَّذِينَ يَكۡنِزُونَ الذَّهَبَ وَالۡفِضَّةَ وَلَا يُنفِقُونَهَا فِي سَبِيلِ اللَّهِ فَبَشِّرۡهُم بِعَذَابٍ أَلِيمٍ',
+                  'وَالَّذِينَ يَكْنِزُونَ الذَّهَبَ وَالْفِضَّةَ وَلَا يُنفِقُونَهَا فِي سَبِيلِ اللَّهِ فَبَشِّرْهُم بِعَذَابٍ أَلِيمٍ',
                   textDirection: TextDirection.rtl,
                   style: AppTypography.arabicBody(
                     fontSize: 18,

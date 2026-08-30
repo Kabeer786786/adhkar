@@ -662,12 +662,10 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
             TextField(
               controller: _formTextArController,
               textDirection: TextDirection.rtl,
-              style: AppTypography.arabicBody(
-                fontSize: 18,
-              ),
+              style: AppTypography.arabicBody(fontSize: 18),
               decoration: _formInputDecoration(
                 'Arabic Text *',
-                'سُبۡحَانَ اللَّهِ',
+                'سُبْحَانَ اللَّهِ',
                 Icons.auto_awesome_rounded,
               ),
             ),

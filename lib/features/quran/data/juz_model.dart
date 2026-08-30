@@ -35,7 +35,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 3,
-    nameArabic: 'تِلۡكَ الرُّسُلُ',
+    nameArabic: 'تِلْكَ الرُّسُلُ',
     nameEnglish: 'Tilkar Rusul',
     surahRange: 'Surah 2:253 - 3:92',
     startPage: 42,
@@ -43,7 +43,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 4,
-    nameArabic: 'لَنۡ تَنَالُوا',
+    nameArabic: 'لَنْ تَنَالُوا',
     nameEnglish: 'Lan Tanaalu',
     surahRange: 'Surah 3:93 - 4:23',
     startPage: 62,
@@ -51,7 +51,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 5,
-    nameArabic: 'وَالۡمُحۡصَنَاتُ',
+    nameArabic: 'وَالْمُحْصَنَاتُ',
     nameEnglish: 'Wal Muhsanat',
     surahRange: 'Surah 4:24 - 4:147',
     startPage: 82,
@@ -75,7 +75,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 8,
-    nameArabic: 'وَلَوۡ أَنَّنَا',
+    nameArabic: 'وَلَوْ أَنَّنَا',
     nameEnglish: 'Wa Lau Annana',
     surahRange: 'Surah 6:111 - 7:87',
     startPage: 142,
@@ -83,7 +83,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 9,
-    nameArabic: 'قَالَ الۡمَلأُ',
+    nameArabic: 'قَالَ الْمَلأُ',
     nameEnglish: 'Qalal Malao',
     surahRange: 'Surah 7:88 - 8:40',
     startPage: 162,
@@ -91,7 +91,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 10,
-    nameArabic: 'وَاعۡلَمُوا',
+    nameArabic: 'وَاعْلَمُوا',
     nameEnglish: 'Walamu',
     surahRange: 'Surah 8:41 - 9:92',
     startPage: 182,
@@ -99,7 +99,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 11,
-    nameArabic: 'يَعۡتَذِرُونَ',
+    nameArabic: 'يَعْتَذِرُونَ',
     nameEnglish: 'Yatazeroona',
     surahRange: 'Surah 9:93 - 11:5',
     startPage: 202,
@@ -107,7 +107,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 12,
-    nameArabic: 'وَمَا مِنۡ دَابَّةٍ',
+    nameArabic: 'وَمَا مِنْ دَابَّةٍ',
     nameEnglish: 'Wa Mamin Dabbatin',
     surahRange: 'Surah 11:6 - 12:52',
     startPage: 222,
@@ -131,7 +131,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 15,
-    nameArabic: 'سُبۡحَانَ الَّذِي',
+    nameArabic: 'سُبْحَانَ الَّذِي',
     nameEnglish: 'Subhanallazi',
     surahRange: 'Surah 17:1 - 18:74',
     startPage: 282,
@@ -139,7 +139,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 16,
-    nameArabic: 'قَالَ أَلَمۡ',
+    nameArabic: 'قَالَ أَلَمْ',
     nameEnglish: 'Qala Alam',
     surahRange: 'Surah 18:75 - 20:135',
     startPage: 302,
@@ -147,7 +147,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 17,
-    nameArabic: 'اقۡتَرَبَ لِلنَّاسِ',
+    nameArabic: 'اقْتَرَبَ لِلنَّاسِ',
     nameEnglish: 'Iqtaraba Linnasi',
     surahRange: 'Surah 21:1 - 22:78',
     startPage: 322,
@@ -155,7 +155,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 18,
-    nameArabic: 'قَدۡ أَفۡلَحَ',
+    nameArabic: 'قَدْ أَفْلَحَ',
     nameEnglish: 'Qad Aflaha',
     surahRange: 'Surah 23:1 - 25:20',
     startPage: 342,
@@ -171,7 +171,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 20,
-    nameArabic: 'أَمَّنۡ خَلَقَ',
+    nameArabic: 'أَمَّنْ خَلَقَ',
     nameEnglish: 'Aman Khalaqa',
     surahRange: 'Surah 27:56 - 29:45',
     startPage: 382,
@@ -179,7 +179,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 21,
-    nameArabic: 'اتۡلُ مَا أُوحِيَ',
+    nameArabic: 'اتْلُ مَا أُوحِيَ',
     nameEnglish: 'Utlu Ma Ohiya',
     surahRange: 'Surah 29:46 - 33:30',
     startPage: 402,
@@ -187,7 +187,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 22,
-    nameArabic: 'وَمَنۡ يَقۡنُتۡ',
+    nameArabic: 'وَمَنْ يَقْنُتْ',
     nameEnglish: 'Wa Manyaqnut',
     surahRange: 'Surah 33:31 - 36:27',
     startPage: 422,
@@ -203,7 +203,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 24,
-    nameArabic: 'فَمَنۡ أَظۡلَمُ',
+    nameArabic: 'فَمَنْ أَظْلَمُ',
     nameEnglish: 'Faman Azlamu',
     surahRange: 'Surah 39:32 - 41:46',
     startPage: 462,
@@ -211,7 +211,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 25,
-    nameArabic: 'إِلَيۡهِ يُرَدُّ',
+    nameArabic: 'إِلَيْهِ يُرَدُّ',
     nameEnglish: 'Elaahe Yuraddu',
     surahRange: 'Surah 41:47 - 45:37',
     startPage: 482,
@@ -227,7 +227,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 27,
-    nameArabic: 'قَالَ فَمَا خَطۡبُكُمۡ',
+    nameArabic: 'قَالَ فَمَا خَطْبُكُمْ',
     nameEnglish: 'Qala Fama Khatbukum',
     surahRange: 'Surah 51:31 - 57:29',
     startPage: 522,
@@ -235,7 +235,7 @@ const List<JuzModel> juzList = [
   ),
   JuzModel(
     number: 28,
-    nameArabic: 'قَدۡ سَمِعَ اللَّهُ',
+    nameArabic: 'قَدْ سَمِعَ اللَّهُ',
     nameEnglish: 'Qad Samiallahu',
     surahRange: 'Surah 58:1 - 66:12',
     startPage: 542,
