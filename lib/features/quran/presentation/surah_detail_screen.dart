@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -217,28 +218,44 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     if (_activeAyahIndex < 0 || _activeAyahIndex >= ayahs.length) return;
 
     if (_selectedMode == 0) {
-      // Verse-by-Verse list mode: Smoothly position active/speaking verse at exact top (alignment: 0.0)
+      // Verse-by-Verse list mode: Position active verse card exactly at top of viewport
+      if (!_scrollController.hasClients) return;
       final key = _ayahKeys[_activeAyahIndex];
-      if (key?.currentContext != null) {
-        Scrollable.ensureVisible(
-          key!.currentContext!,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeInOutCubic,
-          alignment: 0.0,
-        );
-      } else if (_scrollController.hasClients) {
-        const double headerEstimatedHeight = 340.0;
-        const double avgVerseHeight = 260.0;
-        final double estimatedTarget =
-            headerEstimatedHeight + (_activeAyahIndex * avgVerseHeight);
+      final renderBox = key?.currentContext?.findRenderObject() as RenderBox?;
+
+      if (renderBox != null && renderBox.hasSize) {
+        final viewport = RenderAbstractViewport.of(renderBox);
+        final revealedOffset = viewport.getOffsetToReveal(renderBox, 0.0);
         _scrollController.animateTo(
-          estimatedTarget.clamp(
+          revealedOffset.offset.clamp(
             0.0,
             _scrollController.position.maxScrollExtent,
           ),
-          duration: const Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 350),
           curve: Curves.easeInOutCubic,
         );
+      } else {
+        const double headerEstimatedHeight = 360.0;
+        const double avgVerseHeight = 220.0;
+        final double estimatedTarget =
+            headerEstimatedHeight + (_activeAyahIndex * avgVerseHeight);
+        final maxExtent = _scrollController.position.maxScrollExtent;
+        _scrollController.jumpTo(estimatedTarget.clamp(0.0, maxExtent));
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !_scrollController.hasClients) return;
+          final k = _ayahKeys[_activeAyahIndex];
+          final rb = k?.currentContext?.findRenderObject() as RenderBox?;
+          if (rb != null && rb.hasSize) {
+            final vp = RenderAbstractViewport.of(rb);
+            final ro = vp.getOffsetToReveal(rb, 0.0);
+            _scrollController.animateTo(
+              ro.offset.clamp(0.0, _scrollController.position.maxScrollExtent),
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOutCubic,
+            );
+          }
+        });
       }
     } else if (_selectedMode == 1) {
       // Page-wise Mushaf mode: Slide to page containing the active verse segment
@@ -265,7 +282,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
             progress * _scrollController.position.maxScrollExtent;
         _scrollController.animateTo(
           target,
-          duration: const Duration(milliseconds: 450),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOutCubic,
         );
       }
@@ -722,7 +739,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   ) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF212121) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -755,9 +772,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.format_size_rounded,
-                              color: Color(0xFF2A531D),
+                              color: isDark
+                                  ? const Color(0xFFA3E635)
+                                  : const Color(0xFF2A531D),
                               size: 22,
                             ),
                             const SizedBox(width: 8),
@@ -779,17 +798,19 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2A531D).withValues(
-                              alpha: isDark ? 0.25 : 0.1,
-                            ),
+                            color: isDark
+                                ? const Color(0xFF2C2C2C)
+                                : const Color(0xFF2A531D).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             '${_arabicFontSize.toInt()} pt',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF2A531D),
+                              color: isDark
+                                  ? const Color(0xFFA3E635)
+                                  : const Color(0xFF2A531D),
                             ),
                           ),
                         ),
@@ -819,9 +840,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           ),
                           style: IconButton.styleFrom(
                             backgroundColor: isDark
-                                ? const Color(0xFF23322B)
+                                ? const Color(0xFF2C2C2C)
                                 : const Color(0xFFE8F5E9),
-                            foregroundColor: const Color(0xFF2A531D),
+                            foregroundColor: isDark
+                                ? const Color(0xFFA3E635)
+                                : const Color(0xFF2A531D),
                             padding: const EdgeInsets.all(8),
                           ),
                         ),
@@ -832,11 +855,15 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           child: SliderTheme(
                             data: SliderThemeData(
                               trackHeight: 4,
-                              activeTrackColor: const Color(0xFF2A531D),
+                              activeTrackColor: isDark
+                                  ? const Color(0xFFA3E635)
+                                  : const Color(0xFF2A531D),
                               inactiveTrackColor: isDark
                                   ? Colors.white12
                                   : Colors.grey.shade300,
-                              thumbColor: const Color(0xFF2A531D),
+                              thumbColor: isDark
+                                  ? const Color(0xFFA3E635)
+                                  : const Color(0xFF2A531D),
                               thumbShape: const RoundSliderThumbShape(
                                 enabledThumbRadius: 8,
                               ),
@@ -868,15 +895,17 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           icon: const Text(
                             'A+',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           style: IconButton.styleFrom(
                             backgroundColor: isDark
-                                ? const Color(0xFF23322B)
+                                ? const Color(0xFF2C2C2C)
                                 : const Color(0xFFE8F5E9),
-                            foregroundColor: const Color(0xFF2A531D),
+                            foregroundColor: isDark
+                                ? const Color(0xFFA3E635)
+                                : const Color(0xFF2A531D),
                             padding: const EdgeInsets.all(8),
                           ),
                         ),
@@ -940,7 +969,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         setState(() {
           _activeAyahIndex = next.currentIndex;
         });
-        _scrollToActiveAyah(ayahs);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _scrollToActiveAyah(ayahs);
+          }
+        });
       }
     });
 
@@ -1489,12 +1522,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         : (bottomInset + 8.0);
 
     return Container(
-      color: isDark ? const Color(0xFF0F1A13) : const Color(0xFFE9ECEF),
+      color: isDark ? const Color(0xFF121212) : const Color(0xFFE9ECEF),
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Calculate exact physical text canvas bounds available inside the card container
           final double cardWidth =
-              (constraints.maxWidth - 16.0).clamp(100.0, 1200.0);
+              (constraints.maxWidth - 16.0).clamp(100.0, 1200.0); 
           final double cardHeight =
               (constraints.maxHeight - 8.0 - bottomSpace).clamp(100.0, 3000.0);
 

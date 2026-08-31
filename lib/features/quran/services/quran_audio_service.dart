@@ -134,7 +134,6 @@ class QuranAudioController extends ChangeNotifier {
       album: 'Surah $surahTitle (The Noble Qur\'an)',
       title: '$surahTitle • Verse ${ayah.numberInSurah}',
       artist: 'The Noble Qur\'an Recitation',
-      artUri: Uri.parse('asset:///assets/logo.png'),
       extras: {
         'type': 'quran',
         'surahNumber': surahNum,

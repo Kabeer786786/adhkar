@@ -61,7 +61,7 @@ class AyahQuickActionsSheet extends StatelessWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF212121) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -152,7 +152,7 @@ class AyahQuickActionsSheet extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF23322B)
+                                  ? const Color(0xFF2C2C2C)
                                   : const Color(0xFFE8F5E9),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -250,11 +250,11 @@ class AyahQuickActionsSheet extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF202F27)
+                          ? const Color(0xFF2A2A2A)
                           : const Color(0xFFF9FAF9),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isDark ? Colors.white10 : Colors.grey.shade200,
+                        color: isDark ? const Color(0xFF383838) : Colors.grey.shade200,
                       ),
                     ),
                     child: SelectableText(

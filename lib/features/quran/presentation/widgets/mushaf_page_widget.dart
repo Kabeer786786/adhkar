@@ -43,11 +43,11 @@ class MushafPageWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        color: isDark ? const Color(0xFF212121) : Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isDark
-              ? const Color(0xFF27272A)
+              ? const Color(0xFF303030)
               : const Color(0xFF2A531D).withValues(alpha: 0.14),
           width: 1.2,
         ),

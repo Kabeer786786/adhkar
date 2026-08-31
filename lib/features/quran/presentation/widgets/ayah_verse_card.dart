@@ -67,19 +67,21 @@ class AyahVerseCard extends StatelessWidget {
         ayah.rub > 0 && index > 0 && ayah.rub != allAyahs[index - 1].rub;
 
     final cardBgColor = isSelected
-        ? (isDark ? const Color(0xFF27272A) : const Color(0xFFE2F6DB))
+        ? (isDark ? const Color(0xFF2C2C2C) : const Color(0xFFE2F6DB))
         : (isResumeHighlight
-            ? (isDark ? const Color(0xFF27272A) : const Color(0xFFFEF9C3))
-            : (isDark ? const Color(0xFF18181B) : Colors.white));
+            ? (isDark ? const Color(0xFF2C2C2C) : const Color(0xFFFEF9C3))
+            : (isDark ? const Color(0xFF212121) : Colors.white));
 
     final borderColor = isResumeHighlight
         ? const Color(0xFFF59E0B)
         : (isMarkedStopPoint
             ? const Color(0xFFD97706)
             : (isSelected
-                ? const Color(0xFF4ADE80)
+                ? (isDark
+                    ? const Color(0xFF383838)
+                    : const Color(0xFF1E3A1A).withValues(alpha: 0.45))
                 : (isDark
-                    ? const Color(0xFF27272A)
+                    ? const Color(0xFF303030)
                     : const Color(0xFF2A531D).withValues(alpha: 0.12))));
 
     final int resumeAyahNum = ayah.numberInSurah < allAyahs.length
@@ -98,8 +100,8 @@ class AyahVerseCard extends StatelessWidget {
           border: Border.all(
             color: isSajda ? const Color(0xFF22C55E) : borderColor,
             width: isResumeHighlight || isMarkedStopPoint
-                ? 2.0
-                : (isSelected ? 2.5 : 1.0),
+                ? 1.5
+                : (isSelected ? 1.0 : 0.8),
           ),
           boxShadow: isSelected || isMarkedStopPoint || isResumeHighlight
               ? [
@@ -462,7 +464,11 @@ class AyahVerseCard extends StatelessWidget {
                             : (isSelected
                                 ? Icons.play_circle_fill_rounded
                                 : Icons.play_circle_outline_rounded),
-                        color: const Color(0xFF2A531D),
+                        color: isDark
+                            ? const Color(0xFFA3E635)
+                            : (isSelected
+                                ? const Color(0xFF15803D)
+                                : const Color(0xFF2A531D)),
                         size: 26,
                       ),
                       tooltip: isPlaying ? 'Pause Audio' : 'Play Ayah Audio',

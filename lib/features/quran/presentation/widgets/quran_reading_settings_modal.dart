@@ -21,7 +21,7 @@ class QuranReadingSettingsModal {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF212121) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),

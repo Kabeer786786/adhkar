@@ -70,14 +70,14 @@ class QuranAudioPlayerBar extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF22C55E), Color(0xFF15803D)],
+                          colors: [Color(0xFFA3E635), Color(0xFF65A30D)],
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         '${ayah?.numberInSurah ?? currentAyahNumber}',
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: const Color(0xFF14290F),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -113,23 +113,24 @@ class QuranAudioPlayerBar extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 8),
                     if (ayah != null && ayah.displayArabicText.isNotEmpty)
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Text(
-                            ayah.displayArabicText,
-                            textDirection: TextDirection.rtl,
-                            style: AppTypography.arabicHeader(
-                              color: const Color(0xFF4ADE80),
-                              fontSize: 18,
-                              height: 1.2,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 100),
+                        child: Text(
+                          ayah.displayArabicText,
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.right,
+                          style: AppTypography.arabicHeader(
+                            color: const Color(0xFFA3E635),
+                            fontSize: 18,
+                            height: 1.2,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                    const SizedBox(width: 6),
                     IconButton(
                       icon: const Icon(
                         Icons.close_rounded,
@@ -148,15 +149,15 @@ class QuranAudioPlayerBar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: SliderTheme(
-                  data: SliderThemeData(
+                  data: const SliderThemeData(
                     trackHeight: 3.5,
-                    thumbShape: const RoundSliderThumbShape(
+                    thumbShape: RoundSliderThumbShape(
                       enabledThumbRadius: 4.5,
                     ),
-                    overlayShape: const RoundSliderOverlayShape(
+                    overlayShape: RoundSliderOverlayShape(
                       overlayRadius: 8,
                     ),
-                    activeTrackColor: const Color(0xFF4ADE80),
+                    activeTrackColor: Color(0xFFA3E635),
                     inactiveTrackColor: Colors.white24,
                     thumbColor: Colors.white,
                   ),
@@ -201,10 +202,10 @@ class QuranAudioPlayerBar extends StatelessWidget {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF22C55E).withValues(alpha: 0.15),
+                            color: const Color(0xFFA3E635).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: const Color(0xFF4ADE80).withValues(alpha: 0.35),
+                              color: const Color(0xFFA3E635).withValues(alpha: 0.35),
                               width: 0.9,
                             ),
                           ),
@@ -213,7 +214,7 @@ class QuranAudioPlayerBar extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 10.5,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF4ADE80),
+                              color: Color(0xFFA3E635),
                             ),
                           ),
                         ),
@@ -250,8 +251,8 @@ class QuranAudioPlayerBar extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFF22C55E),
-                                    Color(0xFF16A34A),
+                                    Color(0xFFA3E635),
+                                    Color(0xFF84CC16),
                                   ],
                                 ),
                               ),
@@ -259,7 +260,7 @@ class QuranAudioPlayerBar extends StatelessWidget {
                                 quranAudio.isPlaying
                                     ? Icons.pause_rounded
                                     : Icons.play_arrow_rounded,
-                                color: Colors.white,
+                                color: const Color(0xFF14290F),
                                 size: 24,
                               ),
                             ),
@@ -273,8 +274,8 @@ class QuranAudioPlayerBar extends StatelessWidget {
                             size: 24,
                           ),
                           onPressed: quranAudio.currentIndex < totalAyahs - 1
-                            ? () => quranAudio.playNext()
-                            : null,
+                              ? () => quranAudio.playNext()
+                              : null,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                         ),
@@ -288,7 +289,7 @@ class QuranAudioPlayerBar extends StatelessWidget {
                             ? Icons.repeat_one_rounded
                             : Icons.repeat_rounded,
                         color: quranAudio.isLoopSingle
-                            ? const Color(0xFF4ADE80)
+                            ? const Color(0xFFA3E635)
                             : Colors.white60,
                         size: 20,
                       ),

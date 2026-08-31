@@ -15,7 +15,7 @@ class StopPointDialog {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D25) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF212121) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
