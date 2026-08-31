@@ -7,13 +7,11 @@ class QuranReadingSettingsModal {
     required bool isDark,
     required List<AyahModel> ayahs,
     required int selectedMode,
-    required bool isReadingDarkMode,
     required String translationLanguage,
     required bool showTransliteration,
     required bool isDownloaded,
     bool isJuzMode = false,
     required ValueChanged<int> onModeChanged,
-    required ValueChanged<bool> onReadingDarkModeChanged,
     required ValueChanged<String> onTranslationLanguageChanged,
     required ValueChanged<bool> onTransliterationChanged,
     required VoidCallback onTriggerDownload,
@@ -30,17 +28,16 @@ class QuranReadingSettingsModal {
         int? loadingMode;
         String currentLang = translationLanguage;
         bool currentTransliteration = showTransliteration;
-        bool modalIsDark = isReadingDarkMode;
 
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Container(
               decoration: BoxDecoration(
-                color: modalIsDark ? const Color(0xFF212121) : Colors.white,
+                color: isDark ? const Color(0xFF212121) : Colors.white,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
               ),
               child: DraggableScrollableSheet(
-                initialChildSize: 0.88,
+                initialChildSize: 0.85,
                 minChildSize: 0.45,
                 maxChildSize: 0.92,
                 expand: false,
@@ -55,7 +52,7 @@ class QuranReadingSettingsModal {
                           width: 38,
                           height: 4,
                           decoration: BoxDecoration(
-                            color: modalIsDark ? Colors.white24 : Colors.grey.shade300,
+                            color: isDark ? Colors.white24 : Colors.grey.shade300,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -79,7 +76,7 @@ class QuranReadingSettingsModal {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: modalIsDark
+                                  color: isDark
                                       ? Colors.white
                                       : const Color(0xFF1F2937),
                                 ),
@@ -90,7 +87,7 @@ class QuranReadingSettingsModal {
                             onPressed: () => Navigator.pop(context),
                             icon: Icon(
                               Icons.close_rounded,
-                              color: modalIsDark ? Colors.white70 : Colors.grey.shade700,
+                              color: isDark ? Colors.white70 : Colors.grey.shade700,
                             ),
                           ),
                         ],
@@ -104,7 +101,7 @@ class QuranReadingSettingsModal {
                           fontSize: 11.5,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.8,
-                          color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
+                          color: isDark ? Colors.white60 : Colors.grey.shade600,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -116,7 +113,7 @@ class QuranReadingSettingsModal {
                         modeIndex: 0,
                         selectedMode: currentMode,
                         isLoading: loadingMode == 0,
-                        isDark: modalIsDark,
+                        isDark: isDark,
                         onTap: () {
                           setModalState(() {
                             currentMode = 0;
@@ -139,7 +136,7 @@ class QuranReadingSettingsModal {
                         modeIndex: 1,
                         selectedMode: currentMode,
                         isLoading: loadingMode == 1,
-                        isDark: modalIsDark,
+                        isDark: isDark,
                         onTap: () {
                           setModalState(() {
                             currentMode = 1;
@@ -163,7 +160,7 @@ class QuranReadingSettingsModal {
                           modeIndex: 2,
                           selectedMode: currentMode,
                           isLoading: loadingMode == 2,
-                          isDark: modalIsDark,
+                          isDark: isDark,
                           onTap: () {
                             setModalState(() {
                               currentMode = 2;
@@ -181,98 +178,14 @@ class QuranReadingSettingsModal {
 
                       const SizedBox(height: 22),
 
-                      // SECTION 2: Reading Theme (Dark Mode)
-                      Text(
-                        'READING THEME',
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.8,
-                          color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: modalIsDark
-                              ? const Color(0xFF23322B)
-                              : const Color(0xFFF4FAF3),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: modalIsDark
-                                ? Colors.white10
-                                : const Color(0xFF2A531D).withValues(alpha: 0.12),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              modalIsDark
-                                  ? Icons.dark_mode_rounded
-                                  : Icons.light_mode_rounded,
-                              color: modalIsDark
-                                  ? const Color(0xFFFDE047)
-                                  : const Color(0xFF2A531D),
-                              size: 22,
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Reading Dark Mode',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.5,
-                                      color: modalIsDark
-                                          ? Colors.white
-                                          : const Color(0xFF1F2937),
-                                    ),
-                                  ),
-                                  Text(
-                                    modalIsDark
-                                        ? 'Comfortable dark background for night reading'
-                                        : 'Clean light background for daytime reading',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: modalIsDark
-                                          ? Colors.white60
-                                          : Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Switch.adaptive(
-                              value: modalIsDark,
-                              activeTrackColor: const Color(0xFF2A531D),
-                              activeThumbColor: Colors.white,
-                              onChanged: (val) {
-                                setModalState(() {
-                                  modalIsDark = val;
-                                });
-                                onReadingDarkModeChanged(val);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 22),
-
-                      // SECTION 3: Translations & Transliteration
+                      // SECTION 2: Translations & Transliteration
                       Text(
                         'TRANSLATION & TRANSLITERATION',
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.8,
-                          color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
+                          color: isDark ? Colors.white60 : Colors.grey.shade600,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -283,7 +196,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Side-by-side bilingual translation',
                       badge: 'EN + UR',
                       selectedLang: currentLang,
-                      isDark: modalIsDark,
+                      isDark: isDark,
                       onTap: () {
                         setModalState(() => currentLang = 'both');
                         onTranslationLanguageChanged('both');
@@ -296,7 +209,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Sahih International',
                       badge: 'EN',
                       selectedLang: currentLang,
-                      isDark: modalIsDark,
+                      isDark: isDark, 
                       onTap: () {
                         setModalState(() => currentLang = 'en');
                         onTranslationLanguageChanged('en');
@@ -309,7 +222,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Fateh Muhammad Jalandhry',
                       badge: 'UR',
                       selectedLang: currentLang,
-                      isDark: modalIsDark,
+                      isDark: isDark,
                       onTap: () {
                         setModalState(() => currentLang = 'ur');
                         onTranslationLanguageChanged('ur');
@@ -322,7 +235,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Pure Arabic recitation mode',
                       badge: 'AR',
                       selectedLang: currentLang,
-                      isDark: modalIsDark,
+                      isDark: isDark,
                       onTap: () {
                         setModalState(() => currentLang = 'none');
                         onTranslationLanguageChanged('none');
@@ -338,12 +251,12 @@ class QuranReadingSettingsModal {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: modalIsDark
+                        color: isDark
                             ? const Color(0xFF23322B)
                             : const Color(0xFFF4FAF3),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: modalIsDark
+                          color: isDark
                               ? Colors.white10
                               : const Color(0xFF2A531D).withValues(alpha: 0.12),
                         ),
@@ -362,7 +275,7 @@ class QuranReadingSettingsModal {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14.5,
-                                color: modalIsDark
+                                color: isDark
                                     ? Colors.white
                                     : const Color(0xFF1F2937),
                               ),
@@ -382,14 +295,14 @@ class QuranReadingSettingsModal {
 
                     const SizedBox(height: 22),
 
-                    // SECTION 4: Offline Audio Download
+                    // SECTION 3: Offline Audio Download
                     Text(
                       'OFFLINE AUDIO MEDIA',
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.8,
-                        color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
+                        color: isDark ? Colors.white60 : Colors.grey.shade600,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -406,12 +319,12 @@ class QuranReadingSettingsModal {
                           vertical: 14,
                         ),
                         decoration: BoxDecoration(
-                          color: modalIsDark
+                          color: isDark
                               ? const Color(0xFF23322B)
                               : const Color(0xFFF4FAF3),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: modalIsDark
+                            color: isDark
                                 ? Colors.white10
                                 : const Color(
                                     0xFF2A531D,
@@ -441,7 +354,7 @@ class QuranReadingSettingsModal {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14.5,
-                                      color: modalIsDark
+                                      color: isDark
                                           ? Colors.white
                                           : const Color(0xFF1F2937),
                                     ),
@@ -455,7 +368,7 @@ class QuranReadingSettingsModal {
                                         : 'Listen without internet connection',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: modalIsDark
+                                      color: isDark
                                           ? Colors.white60
                                           : Colors.grey.shade600,
                                     ),

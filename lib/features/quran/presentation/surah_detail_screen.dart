@@ -715,7 +715,6 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       isDark: isDark,
       ayahs: ayahs,
       selectedMode: _selectedMode,
-      isReadingDarkMode: _isReadingDarkMode,
       translationLanguage: _translationLanguage,
       showTransliteration: _showTransliteration,
       isDownloaded: _isDownloaded,
@@ -726,12 +725,6 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         });
         ref.read(storageServiceProvider).setQuranReadingMode(newMode);
         _scrollToActiveAyah();
-      },
-      onReadingDarkModeChanged: (newDarkMode) {
-        setState(() {
-          _isReadingDarkMode = newDarkMode;
-        });
-        ref.read(storageServiceProvider).setQuranReadingDarkMode(newDarkMode);
       },
       onTranslationLanguageChanged: (newLang) {
         setState(() {
@@ -1199,6 +1192,44 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       ),
                       tooltip: 'Go to Stop Point (Ayah $spAyahNum)',
                     ),
+                  // Surah / Juz Information Button (Shown specifically in Page View Mode 1)
+                  if (_selectedMode == 1)
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
+                      onPressed: () {
+                        if (!isJuzMode) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SurahInfoScreen(surah: currentSurah),
+                            ),
+                          );
+                        } else if (currentJuz != null) {
+                          _showJuzInfoModal(
+                            context,
+                            currentJuz,
+                            ayahs,
+                            effectiveIsDark,
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        Icons.info_outline_rounded,
+                        color: effectiveIsDark
+                            ? const Color(0xFFF4F4F5)
+                            : const Color(0xFF2A531D),
+                        size: 20,
+                      ),
+                      tooltip: isJuzMode
+                          ? 'Juz Information'
+                          : 'Surah Information & Context',
+                    ),
                   // Live Text Resize / Font Size Button (Available only in Mode 0 & Mode 2)
                   if (_selectedMode != 1)
                     IconButton(
@@ -1219,7 +1250,37 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       ),
                       tooltip: 'Arabic Text Size',
                     ),
-                  // Unified Settings & Preferences Button (Includes Display Modes, Dark Mode Theme, Translations)
+                  // Dark / Light Mode Toggle Button
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                    onPressed: () {
+                      final newDarkMode = !effectiveIsDark;
+                      setState(() {
+                        _isReadingDarkMode = newDarkMode;
+                      });
+                      ref
+                          .read(storageServiceProvider)
+                          .setQuranReadingDarkMode(newDarkMode);
+                    },
+                    icon: Icon(
+                      effectiveIsDark
+                          ? Icons.light_mode_rounded
+                          : Icons.dark_mode_rounded,
+                      color: effectiveIsDark
+                          ? const Color(0xFFA3E635)
+                          : const Color(0xFF2A531D),
+                      size: 20,
+                    ),
+                    tooltip: effectiveIsDark
+                        ? 'Switch to Light Mode'
+                        : 'Switch to Dark Mode',
+                  ),
+                  // Unified Settings & Preferences Button (Includes Display Modes, Translations)
                   IconButton(
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,

@@ -115,83 +115,216 @@ class MushafPageWidget extends StatelessWidget {
     );
   }
 
-  String _toTitleCase(String text) {
-    if (text.isEmpty) return text;
-    return text.split(' ').map((word) {
-      if (word.isEmpty) return word; 
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+
+  String _toArabicDigits(int number) {
+    const arabicDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    return number
+        .toString()
+        .split('')
+        .map((ch) => int.tryParse(ch) != null ? arabicDigits[int.parse(ch)] : ch)
+        .join('');
   }
 
-  /// Ornate Surah Title Frame Line
+  /// Islamic Ornamental Surah Title Frame Line (Pill Frame, Emerald Arabesque Background, Gold Cartouche & Clean Side Badges)
   Widget _buildSurahHeader(SurahModel surah) {
-    final formattedRevelation = _toTitleCase(surah.revelationType);
+    final bool isMeccan = surah.revelationType.toLowerCase() == 'meccan';  
+    final String cityArabic = isMeccan ? 'مكّيّة' : 'مدنيّة';
+    final String ayahDigits = _toArabicDigits(surah.verseCount);
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2.0),
+      padding: const EdgeInsets.all(2.0),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF27272A) : const Color(0xFFE8F5E9),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isDark ? const Color(0xFF3F3F46) : const Color(0xFF2A531D),
-          width: 1.0,
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFB18020),
+            Color(0xFFCDB463),
+            Color(0xFF8A5D12),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(9999),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.18),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '${surah.verseCount} Ayahs',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? const Color(0xFFA1A1AA) : const Color(0xFF2A531D),
-                ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDark
+                ? [const Color(0xFF062817), const Color(0xFF02160C)]
+                : [const Color(0xFF0A4625), const Color(0xFF032313)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(9999),
+          border: Border.all(
+            color: const Color(0xFF573A08),
+            width: 1.0,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Full-Spread Background Grid (Zero padding, spreads totally across the entire box)
+            Positioned.fill(
+              child: CustomPaint(
+                painter: IslamicArabesquePainter(isDark: isDark),
               ),
             ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Text(
-              'سُوْرَةُ ${surah.nameArabic}',
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.arabicHeader(
-                fontSize: arabicFontSize,
-                color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF1A3512),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                formattedRevelation,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? const Color(0xFFA1A1AA) : const Color(0xFF2A531D),
+
+            // Foreground Content Row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                textDirection: TextDirection.rtl,
+                children: [
+                // Right Badge (Place of Revelation: e.g. مكّيّة or مدنيّة)
+                Container(
+                  width: 64,
+                  height: 36,
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [ 
+                        Color(0xFF115C32),
+                        Color(0xFF08381D),
+                        Color(0xFF031E0F),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(9999),
+                    border: Border.all(
+                      color: const Color(0xFFB1801E),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFF6D6).withValues(alpha: 0.25),
+                        blurRadius: 2,
+                        spreadRadius: 0.5,
+                      ),
+                    ], 
+                  ),
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        cityArabic,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Noto',
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          height: 1.15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+
+                // Center Cartouche: Surah Name
+                Expanded(
+                  child: Container(
+                    height: 36,
+                    margin: const EdgeInsets.symmetric(horizontal: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1E2B22) : const Color(0xFFFAF8F2),
+                      borderRadius: BorderRadius.circular(9999),
+                      border: Border.all(
+                        color: isDark ? const Color(0xFFD4A036) : const Color(0xFFFAF8F2),
+                        width: 1, 
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFD4A036).withValues(alpha: 0.4),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'سُوْرَةُ ${surah.nameArabic}',
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.arabicHeader(
+                            arabicFont: arabicFont,
+                            fontSize:22,
+                            color: isDark ? const Color(0xFFFAE084) : const Color(0xFF1A1A1A),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Left Badge (Ayah Count: e.g. ۲۸۶)
+                Container(
+                  width: 64,
+                  height: 36,
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF115C32),
+                        Color(0xFF08381D),
+                        Color(0xFF031E0F),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(9999),
+                    border: Border.all(
+                      color: const Color(0xFFB1801E),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFF6D6).withValues(alpha: 0.25),
+                        blurRadius: 2,
+                        spreadRadius: 0.5,
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        ayahDigits,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Amiri',
+                          color: Colors.white,
+                          fontSize: 15.0,
+                          height: 1.15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   /// Centered Bismillah Line
   Widget _buildBismillah() {
@@ -223,10 +356,10 @@ class MushafPageWidget extends StatelessWidget {
     if (isFirstLineOfJuz) {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
         decoration: BoxDecoration(
           color: const Color(0xFF18181B), // Authentic Mushaf black Juz line background
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(3),
           border: Border.all(
             color: isDark
                 ? const Color(0xFF3F3F46)
@@ -435,3 +568,54 @@ class SmoothMushafPageScrollPhysics extends PageScrollPhysics {
     return null;
   }
 }
+
+/// Authentic Islamic Geometric Lattice Grid Painter for Surah Header (Full-Coverage Diamond Grid Pattern)
+class IslamicArabesquePainter extends CustomPainter { 
+  final bool isDark;
+
+  const IslamicArabesquePainter({required this.isDark});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final gridPaint = Paint()
+      ..color = const Color(0xFFD4A036).withValues(alpha: isDark ? 0.32 : 0.42)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+
+    final dotPaint = Paint()
+      ..color = const Color(0xFFFAE084).withValues(alpha: isDark ? 0.50 : 0.65)
+      ..style = PaintingStyle.fill;
+
+    const double gridStep = 11.0;
+
+    // 1. Full-Coverage Diagonal Criss-Cross Grid Lines (45 degrees forward & backward across entire box)
+    for (double d = -size.height * 2; d < size.width + size.height * 2; d += gridStep) {
+      // Forward diagonal (\)
+      canvas.drawLine(
+        Offset(d, 0),
+        Offset(d + size.height, size.height),
+        gridPaint,
+      );
+      // Backward diagonal (/)
+      canvas.drawLine(
+        Offset(d, size.height),
+        Offset(d + size.height, 0),
+        gridPaint,
+      );
+    }
+
+    
+
+    // 3. Grid Intersection Dots across the full surface
+    for (double x = gridStep / 2; x < size.width; x += gridStep) {
+      for (double y = gridStep / 2; y < size.height; y += gridStep) {
+        canvas.drawCircle(Offset(x-2, y-1), 0.5, dotPaint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant IslamicArabesquePainter oldDelegate) =>
+      oldDelegate.isDark != isDark;
+}
+ 
