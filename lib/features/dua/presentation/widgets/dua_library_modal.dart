@@ -586,7 +586,10 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                 ),
               ],
             ),
-            const Divider(height: 1),
+            Divider(
+              height: 1,
+              color: Colors.grey.shade300,
+            ),
             const SizedBox(height: 14),
 
             Container(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -23,17 +24,18 @@ import 'widgets/floating_draggable_page_slider.dart';
 import 'widgets/floating_draggable_scrollbar.dart';
 import 'widgets/mushaf_page_widget.dart';
 import 'widgets/mushaf_pagination_engine.dart';
-import 'widgets/quran_audio_player_bar.dart'; 
+import 'widgets/quran_audio_player_bar.dart';
 import 'widgets/quran_reading_settings_modal.dart';
 import 'widgets/stop_point_dialog.dart';
 import 'widgets/surah_download_dialog.dart';
-import 'widgets/surah_header_card.dart';
+import 'widgets/surah_header_card.dart'; 
 
 class SurahDetailScreen extends ConsumerStatefulWidget {
   final int surahNumber;
   final int? juzNumber;
   final String surahName;
   final int? initialAyahNumber;
+  final bool fromBookmark;
 
   const SurahDetailScreen({
     super.key,
@@ -41,6 +43,7 @@ class SurahDetailScreen extends ConsumerStatefulWidget {
     this.juzNumber,
     required this.surahName,
     this.initialAyahNumber,
+    this.fromBookmark = false,
   });
 
   @override
@@ -49,8 +52,8 @@ class SurahDetailScreen extends ConsumerStatefulWidget {
 
 class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   final QuranRepository _repository = QuranRepository();
-  final ScrollController _scrollController = ScrollController();
-  late PageController _pageController;
+  late final ScrollController _scrollController;
+  late final PageController _pageController;
 
   bool _showTranslation = false;
   bool _showTransliteration = true;
@@ -68,7 +71,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   int? _targetAyahDisplayNumber;
 
   // On-screen typography & dedicated reading theme controls
-  double _arabicFontSize = 24.0;
+  double _arabicFontSize = 24.0; 
   bool _isReadingDarkMode = false;
   bool _isThemeInitialized = false;
   // Global keys for exact scroll alignment in Mode 0 (Verse List Mode)
@@ -86,11 +89,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     int? targetAyahNum;
     if (widget.initialAyahNumber != null) {
       targetAyahNum = widget.initialAyahNumber;
-      if (sp != null && sp['resumeAyahNumber'] == targetAyahNum) {
-        _highlightResumeAyahNumber = targetAyahNum;
-      } else {
-        _highlightResumeAyahNumber = null;
-      }
+      _highlightResumeAyahNumber = targetAyahNum;
     } else if (sp != null) {
       targetAyahNum = sp['resumeAyahNumber'] as int?;
       _highlightResumeAyahNumber = targetAyahNum;
@@ -127,6 +126,23 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     if (targetIdx > 0) {
       _isNavigatingToTargetAyah = true;
     }
+
+    final savedFontSize = storage.getQuranArabicFontSize();
+    final savedDarkMode = storage.getQuranReadingDarkMode();
+    final savedTranslationLang = storage.getQuranTranslationLanguage();
+    final savedMode = storage.getQuranReadingMode();
+ 
+    _arabicFontSize = savedFontSize;
+    _isReadingDarkMode = savedDarkMode ?? false;
+    _translationLanguage = savedTranslationLang;
+    _showTranslation = savedTranslationLang != 'none';
+    _isThemeInitialized = true;
+
+    _selectedMode = (widget.juzNumber != null && savedMode == 2)
+        ? 0
+        : savedMode;
+
+    _scrollController = ScrollController();
     _currentPageIndex = 0;
     _pageController = PageController(initialPage: 0);
 
@@ -138,17 +154,6 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       } else {
         storage.setLastRead(widget.surahNumber, targetAyahNum ?? 1);
       }
-      final savedFontSize = storage.getQuranArabicFontSize();
-      final savedDarkMode = storage.getQuranReadingDarkMode();
-      final savedTranslationLang = storage.getQuranTranslationLanguage();
-
-      setState(() {
-        _arabicFontSize = savedFontSize;
-        _isReadingDarkMode = savedDarkMode ?? context.isDarkMode;
-        _translationLanguage = savedTranslationLang;
-        _showTranslation = savedTranslationLang != 'none';
-        _isThemeInitialized = true;
-      });
 
       // Scroll/jump to target position accurately with loading overlay
       if (targetIdx > 0) {
@@ -171,12 +176,14 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     final double bottomSpace = isPlayerActive
         ? (bottomInset + 100.0)
         : (bottomInset + 8.0);
-    final double topPadding = mediaQuery.padding.top + kToolbarHeight;
-    final double availableWidth =
-        (mediaQuery.size.width - 16.0 - 32.0).clamp(100.0, 1200.0);
-    final double availableHeight =
-        (mediaQuery.size.height - topPadding - bottomSpace - 16.0 - 24.0)
-            .clamp(100.0, 3000.0);
+    final double cardWidth = (mediaQuery.size.width - 16.0).clamp(
+      100.0,
+      1200.0,
+    );
+    final double cardHeight = (mediaQuery.size.height - 8.0 - bottomSpace)
+        .clamp(100.0, 3000.0);
+    final double availableWidth = (cardWidth - 32.0).clamp(80.0, 1160.0);
+    final double availableHeight = (cardHeight - 24.0).clamp(80.0, 2960.0);
     final arabicFont = ref.read(arabicFontProvider);
 
     final pages = MushafPaginationEngine.paginate(
@@ -185,9 +192,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       isJuz: widget.juzNumber != null,
       availableWidth: availableWidth,
       availableHeight: availableHeight,
-      fontSize: _arabicFontSize,
+      fontSize: 24.0,
       arabicFont: arabicFont,
-      lineHeight: 1.95,
+      lineHeight: 1.8,
       defaultSurah: currentSurah,
     );
 
@@ -211,7 +218,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   }
 
   void _scrollToActiveAyah([List<AyahModel>? ayahsList]) {
-    final ayahs = ayahsList ??
+    final ayahs =
+        ayahsList ??
         (widget.juzNumber != null
             ? _repository.getAyahsForJuz(widget.juzNumber!)
             : _repository.getAyahsForSurah(widget.surahNumber));
@@ -264,14 +272,20 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       final pageIdx = mushafPages.indexWhere(
         (p) => p.containsMasterAyahIndex(_activeAyahIndex),
       );
-      if (pageIdx >= 0 && pageIdx != _currentPageIndex) {
+      if (pageIdx >= 0) {
         _currentPageIndex = pageIdx;
         if (_pageController.hasClients) {
           _pageController.animateToPage(
             pageIdx,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOutCubic,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
           );
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _pageController.hasClients) {
+              _pageController.jumpToPage(pageIdx);
+            }
+          });
         }
       }
     } else if (_selectedMode == 2) {
@@ -289,6 +303,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     }
   }
 
+
   Future<void> _scrollToTargetAyahWithLoading(
     int targetIdx,
     List<AyahModel> ayahs,
@@ -301,7 +316,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     }
 
     if (_selectedMode == 1) {
-      // Page-wise Mushaf mode: jump directly to page containing the target verse
+      // Page-wise Mushaf mode: calculate pages with screen dimensions and jump to target page
+      await Future.delayed(const Duration(milliseconds: 40));
+      if (!mounted) return;
       final mushafPages =
           _lastComputedMushafPages ?? _paginateCurrentMushaf(context, ayahs);
       final pageIdx = mushafPages.indexWhere(
@@ -311,8 +328,15 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         _currentPageIndex = pageIdx;
         if (_pageController.hasClients) {
           _pageController.jumpToPage(pageIdx);
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _pageController.hasClients) {
+              _pageController.jumpToPage(pageIdx);
+            }
+          });
         }
       }
+      await Future.delayed(const Duration(milliseconds: 80));
       if (mounted) {
         setState(() => _isNavigatingToTargetAyah = false);
       }
@@ -335,31 +359,63 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     }
 
     // Mode 0: Verse-by-Verse list mode
-    // Estimate target offset and jump smoothly
-    const double headerEstimatedHeight = 360.0;
-    const double avgVerseHeight = 220.0;
-    final double estimatedOffset =
-        headerEstimatedHeight + (targetIdx * avgVerseHeight);
-
-    await Future.delayed(const Duration(milliseconds: 60));
-    if (!mounted) return;
+    const double headerEstimatedHeight = 320.0;
+    const double avgVerseEstimatedHeight = 250.0;
+    final double initialTargetOffset =
+        headerEstimatedHeight + (targetIdx * avgVerseEstimatedHeight);
 
     if (_scrollController.hasClients) {
-      final double maxExtent = _scrollController.position.maxScrollExtent;
-      _scrollController.jumpTo(estimatedOffset.clamp(0.0, maxExtent));
+      final double maxExt = _scrollController.position.maxScrollExtent;
+      _scrollController.jumpTo(initialTargetOffset.clamp(0.0, maxExt));
     }
 
-    await Future.delayed(const Duration(milliseconds: 120));
-    if (!mounted) return;
+    // Progressively converge onto targetIdx based on mounted keys
+    for (int step = 0; step < 18; step++) {
+      await Future.delayed(const Duration(milliseconds: 20));
+      if (!mounted) return;
 
-    final key = _ayahKeys[targetIdx];
-    if (key?.currentContext != null) {
-      await Scrollable.ensureVisible(
-        key!.currentContext!,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        alignment: 0.06,
-      );
+      final key = _ayahKeys[targetIdx];
+      final renderBox = key?.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null && renderBox.hasSize) {
+        final viewport = RenderAbstractViewport.of(renderBox);
+        final revealedOffset = viewport.getOffsetToReveal(renderBox, 0.05);
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(
+            revealedOffset.offset.clamp(
+              0.0,
+              _scrollController.position.maxScrollExtent,
+            ),
+          );
+        }
+        break;
+      }
+
+      // Steer scroll position towards target index based on what is mounted
+      if (_scrollController.hasClients) {
+        final mountedEntries = _ayahKeys.entries
+            .where((e) => e.value.currentContext != null)
+            .map((e) => e.key)
+            .toList();
+
+        if (mountedEntries.isNotEmpty) {
+          final maxMounted = mountedEntries.reduce(math.max);
+          final minMounted = mountedEntries.reduce(math.min);
+          final curPixels = _scrollController.position.pixels;
+          final maxExtent = _scrollController.position.maxScrollExtent;
+
+          if (targetIdx > maxMounted) {
+            final double delta = (targetIdx - maxMounted) * 230.0;
+            _scrollController.jumpTo(
+              (curPixels + delta).clamp(0.0, maxExtent),
+            );
+          } else if (targetIdx < minMounted) {
+            final double delta = (minMounted - targetIdx) * 230.0;
+            _scrollController.jumpTo(
+              (curPixels - delta).clamp(0.0, maxExtent),
+            );
+          }
+        }
+      }
     }
 
     if (mounted) {
@@ -554,7 +610,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         surahNameEnglish: currentSurah.nameEnglish,
         surahNameArabic: currentSurah.nameArabic,
         juzNumber: ayah.juz > 0 ? ayah.juz : (widget.juzNumber ?? 1),
-        ayahNumber: ayah.numberInSurah, 
+        ayahNumber: ayah.numberInSurah,
         totalAyahs: totalAyahs,
         page: ayah.page,
         arabicText: ayah.arabicText,
@@ -604,7 +660,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     required SurahModel currentSurah,
     required bool isDark,
     required QuranAudioController quranAudio,
-    required List<AyahModel> allAyahs, 
+    required List<AyahModel> allAyahs,
     required int ayahIndex,
   }) {
     final storage = ref.read(storageServiceProvider);
@@ -614,10 +670,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       ayah.numberInSurah,
       juzNumber: widget.juzNumber,
     );
-    final isBookmarked = storage.isAyahBookmarked(
-      surahNum,
-      ayah.numberInSurah,
-    );
+    final isBookmarked = storage.isAyahBookmarked(surahNum, ayah.numberInSurah);
     final arabicFont = ref.read(arabicFontProvider);
 
     return AyahQuickActionsSheet.show(
@@ -671,6 +724,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         setState(() {
           _selectedMode = newMode;
         });
+        ref.read(storageServiceProvider).setQuranReadingMode(newMode);
         _scrollToActiveAyah();
       },
       onReadingDarkModeChanged: (newDarkMode) {
@@ -800,7 +854,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           decoration: BoxDecoration(
                             color: isDark
                                 ? const Color(0xFF2C2C2C)
-                                : const Color(0xFF2A531D).withValues(alpha: 0.1),
+                                : const Color(
+                                    0xFF2A531D,
+                                  ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -825,17 +881,22 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         IconButton(
                           onPressed: _arabicFontSize > 18.0
                               ? () {
-                                  final newSize = (_arabicFontSize - 2.0)
-                                      .clamp(18.0, 42.0);
+                                  final newSize = (_arabicFontSize - 2.0).clamp(
+                                    18.0,
+                                    42.0,
+                                  );
                                   _applyFontSizeChange(newSize, ayahs);
                                   setModalState(() {});
                                 }
                               : null,
-                          icon: const Text(
+                          icon: Text(
                             'A-',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1F2937),
                             ),
                           ),
                           style: IconButton.styleFrom(
@@ -886,17 +947,22 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         IconButton(
                           onPressed: _arabicFontSize < 42.0
                               ? () {
-                                  final newSize = (_arabicFontSize + 2.0)
-                                      .clamp(18.0, 42.0);
+                                  final newSize = (_arabicFontSize + 2.0).clamp(
+                                    18.0,
+                                    42.0,
+                                  );
                                   _applyFontSizeChange(newSize, ayahs);
                                   setModalState(() {});
                                 }
                               : null,
-                          icon: const Text(
+                          icon: Text(
                             'A+',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1F2937),
                             ),
                           ),
                           style: IconButton.styleFrom(
@@ -980,7 +1046,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     // Compute standard authentic Mushaf pages for Mode 1 only when Mode 1 is active
     final List<MushafPage> mushafPages = _selectedMode == 1
         ? (_lastComputedMushafPages ??
-            _paginateCurrentMushaf(context, ayahs, currentSurah: currentSurah))
+              _paginateCurrentMushaf(
+                context,
+                ayahs,
+                currentSurah: currentSurah,
+              ))
         : const [];
 
     final revelationIcon = currentSurah.revelationType.toLowerCase() == 'meccan'
@@ -996,6 +1066,21 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
           )
         : null;
 
+    final sp = isJuzMode
+        ? storage.getStopPointForJuz(widget.juzNumber!)
+        : storage.getStopPointForSurah(widget.surahNumber);
+    final int? spAyahNum = sp?['resumeAyahNumber'] as int?;
+    final int spTargetIdx = (spAyahNum != null && sp != null)
+        ? ayahs.indexWhere(
+            (a) =>
+                a.numberInSurah == spAyahNum &&
+                (!isJuzMode ||
+                    sp['surahNumber'] == null ||
+                    a.surahNumber == null ||
+                    a.surahNumber == sp['surahNumber']),
+          )
+        : -1;
+
     final String barTitle = isJuzMode
         ? '${currentJuz!.number}. ${currentJuz.nameArabic}'
         : '${currentSurah.number}. ${currentSurah.nameArabic}';
@@ -1008,7 +1093,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         children: [
           Scaffold(
             backgroundColor: effectiveIsDark
-                ? const Color(0xFF0F0F12) 
+                ? const Color(0xFF0F0F12)
                 : const Color(0xFFF8FAFC),
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -1062,35 +1147,14 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   ),
                 ),
                 actions: [
-                  // Surah Information Button ('i')
-                  if (!isJuzMode)
-                    IconButton(
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                SurahInfoScreen(surah: currentSurah),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.info_outline_rounded,
-                        color: effectiveIsDark
-                            ? const Color(0xFFF4F4F5)
-                            : const Color(0xFF2A531D),
-                        size: 21,
-                      ),
-                      tooltip: 'Surah Information & Context',
-                    ),
                   // Favorite Toggle for current Surah / Juz
                   IconButton(
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
                     onPressed: () async {
                       if (isJuzMode) {
                         await storage.toggleFavoriteJuz(widget.juzNumber!);
@@ -1108,61 +1172,61 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           : (effectiveIsDark
                                 ? const Color(0xFFF4F4F5)
                                 : const Color(0xFF2A531D)),
-                      size: 21,
+                      size: 20,
                     ),
                     tooltip: isFavorited
                         ? 'Remove from Favorites'
                         : 'Add to Favorites',
                   ),
+                  // Stop Point Flag Button (Shown in Mode 0 & Mode 1, hidden in Continuous Mode 2)
+                  if (_selectedMode != 2 && spAyahNum != null && spTargetIdx >= 0)
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
+                      onPressed: () => _navigateToStopPoint(
+                        spAyahNum,
+                        spTargetIdx,
+                        ayahs,
+                      ),
+                      icon: const Icon(
+                        Icons.flag_rounded,
+                        color: Color(0xFFD97706),
+                        size: 20,
+                      ),
+                      tooltip: 'Go to Stop Point (Ayah $spAyahNum)',
+                    ),
                   // Live Text Resize / Font Size Button (Available only in Mode 0 & Mode 2)
                   if (_selectedMode != 1)
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                       onPressed: () =>
                           _showFontSizeModal(context, effectiveIsDark, ayahs),
                       icon: Icon(
-                        Icons.format_size_rounded, 
+                        Icons.format_size_rounded,
                         color: effectiveIsDark
                             ? const Color(0xFFF4F4F5)
                             : const Color(0xFF2A531D),
-                        size: 21,
+                        size: 20,
                       ),
                       tooltip: 'Arabic Text Size',
                     ),
-                  // Dark / Light Mode Toggle Button
+                  // Unified Settings & Preferences Button (Includes Display Modes, Dark Mode Theme, Translations)
                   IconButton(
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
-                    onPressed: () {
-                      final newDarkMode = !effectiveIsDark;
-                      setState(() {
-                        _isReadingDarkMode = newDarkMode;
-                      });
-                      ref
-                          .read(storageServiceProvider)
-                          .setQuranReadingDarkMode(newDarkMode);
-                    },
-                    icon: Icon(
-                      effectiveIsDark
-                          ? Icons.light_mode_rounded
-                          : Icons.dark_mode_rounded,
-                      color: effectiveIsDark
-                          ? const Color(0xFFA3E635)
-                          : const Color(0xFF2A531D),
-                      size: 21,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
                     ),
-                    tooltip: effectiveIsDark
-                        ? 'Switch to Light Mode'
-                        : 'Switch to Dark Mode',
-                  ),
-                  // Unified Settings & Preferences Button
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
                     onPressed: () =>
                         _showSettingsModal(context, effectiveIsDark, ayahs),
                     icon: Icon(
@@ -1170,11 +1234,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       color: effectiveIsDark
                           ? const Color(0xFFF4F4F5)
                           : const Color(0xFF2A531D),
-                      size: 21,
+                      size: 20,
                     ),
                     tooltip: 'Reading Preferences & Settings',
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                 ],
               ),
             ),
@@ -1196,112 +1260,112 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                               arabicFont,
                             )
                           : _selectedMode == 2
-                              ? ListView(
-                                  controller: _scrollController,
-                                  physics: const BouncingScrollPhysics(),
-                                  padding: EdgeInsets.fromLTRB(
-                                    14,
-                                    14,
-                                    14,
-                                    isPlayerActive ? 140 : 24,
-                                  ),
-                                  children: [
-                                    _buildHeaderCard(
+                          ? ListView(
+                              controller: _scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              padding: EdgeInsets.fromLTRB(
+                                14,
+                                14,
+                                14,
+                                isPlayerActive ? 140 : 24,
+                              ),
+                              children: [
+                                _buildHeaderCard(
+                                  currentSurah,
+                                  ayahs,
+                                  revelationIcon,
+                                  effectiveIsDark,
+                                  quranAudio,
+                                ),
+                                const SizedBox(height: 16),
+                                _buildContinuousMushafCard(
+                                  ayahs,
+                                  effectiveIsDark,
+                                  playingAyah,
+                                  currentSurah,
+                                  storage,
+                                ),
+                                SizedBox(height: isPlayerActive ? 140 : 24),
+                              ],
+                            )
+                          : ListView.builder(
+                              controller: _scrollController,
+                              cacheExtent: 2000.0,
+                              physics: const BouncingScrollPhysics(),
+                              padding: EdgeInsets.fromLTRB(
+                                16,
+                                14,
+                                16,
+                                isPlayerActive ? 140 : 24,
+                              ),
+                              itemCount: ayahs.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index == 0) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: _buildHeaderCard(
                                       currentSurah,
                                       ayahs,
                                       revelationIcon,
                                       effectiveIsDark,
                                       quranAudio,
                                     ),
-                                    const SizedBox(height: 16),
-                                    _buildContinuousMushafCard(
-                                      ayahs,
-                                      effectiveIsDark,
-                                      playingAyah,
-                                      currentSurah,
-                                      storage,
-                                    ),
-                                    SizedBox(height: isPlayerActive ? 140 : 24),
-                                  ],
-                                )
-                              : ListView.builder(
-                                  controller: _scrollController,
-                                  physics: const BouncingScrollPhysics(),
-                                  padding: EdgeInsets.fromLTRB(
-                                    16,
-                                    14,
-                                    16,
-                                    isPlayerActive ? 140 : 24,
-                                  ),
-                                  itemCount: ayahs.length + 1,
-                                  itemBuilder: (context, index) {
-                                    if (index == 0) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 16),
-                                        child: _buildHeaderCard(
-                                          currentSurah,
-                                          ayahs,
-                                          revelationIcon,
-                                          effectiveIsDark,
-                                          quranAudio,
-                                        ),
-                                      );
-                                    }
-                                    final ayahIndex = index - 1;
-                                    final ayah = ayahs[ayahIndex];
-                                    final isPlayingThis =
-                                        quranAudio.currentIndex == ayahIndex &&
-                                            quranAudio.isPlaying;
-                                    final isSelectedThis =
-                                        quranAudio.currentIndex == ayahIndex;
-                                    final surahNum = ayah.surahNumber ??
-                                        widget.surahNumber;
-                                    final isMarked =
-                                        storage.isAyahMarkedAsStopPoint(
+                                  );
+                                }
+                                final ayahIndex = index - 1;
+                                final ayah = ayahs[ayahIndex];
+                                final isPlayingThis =
+                                    quranAudio.currentIndex == ayahIndex &&
+                                    quranAudio.isPlaying;
+                                final isSelectedThis =
+                                    quranAudio.currentIndex == ayahIndex;
+                                final surahNum =
+                                    ayah.surahNumber ?? widget.surahNumber;
+                                final isMarked = storage
+                                    .isAyahMarkedAsStopPoint(
                                       surahNum,
                                       ayah.numberInSurah,
                                       juzNumber: widget.juzNumber,
                                     );
-                                    final isResumeHighlight =
-                                        _highlightResumeAyahNumber != null &&
-                                            _highlightResumeAyahNumber ==
-                                                ayah.numberInSurah &&
-                                            (widget.juzNumber == null ||
-                                                (storage.getStopPointForJuz(
-                                                      widget.juzNumber!,
-                                                    )?['surahNumber'] ==
-                                                    surahNum));
+                                final isResumeHighlight =
+                                    _highlightResumeAyahNumber != null &&
+                                    _highlightResumeAyahNumber ==
+                                        ayah.numberInSurah &&
+                                    (widget.juzNumber == null ||
+                                        (storage.getStopPointForJuz(
+                                              widget.juzNumber!,
+                                            )?['surahNumber'] ==
+                                            surahNum));
 
-                                    return _buildVerseCard(
-                                      ayah: ayah,
-                                      index: ayahIndex,
-                                      isDark: effectiveIsDark,
-                                      allAyahs: ayahs,
-                                      isPlaying: isPlayingThis,
-                                      isSelected: isSelectedThis,
-                                      isMarkedStopPoint: isMarked,
-                                      isResumeHighlight: isResumeHighlight,
-                                      currentSurah: currentSurah,
-                                      onPlayTap: () {
-                                        if (isSelectedThis) {
-                                          quranAudio.togglePlayPause();
-                                        } else {
-                                          quranAudio.playPlaylist(
-                                            ayahs,
-                                            ayahIndex,
-                                            title: widget.surahName,
-                                            surahNumber: widget.surahNumber,
-                                          );
-                                          setState(() {
-                                            _activeAyahIndex = ayahIndex;
-                                          });
-                                          _scrollToActiveAyah(ayahs);
-                                        }
-                                      },
-                                    );
+                                return _buildVerseCard(
+                                  ayah: ayah,
+                                  index: ayahIndex,
+                                  isDark: effectiveIsDark,
+                                  allAyahs: ayahs,
+                                  isPlaying: isPlayingThis,
+                                  isSelected: isSelectedThis,
+                                  isMarkedStopPoint: isMarked,
+                                  isResumeHighlight: isResumeHighlight,
+                                  currentSurah: currentSurah,
+                                  onPlayTap: () {
+                                    if (isSelectedThis) {
+                                      quranAudio.togglePlayPause();
+                                    } else {
+                                      quranAudio.playPlaylist(
+                                        ayahs,
+                                        ayahIndex,
+                                        title: widget.surahName,
+                                        surahNumber: widget.surahNumber,
+                                      );
+                                      setState(() {
+                                        _activeAyahIndex = ayahIndex;
+                                      });
+                                      _scrollToActiveAyah(ayahs);
+                                    }
                                   },
-                                ),
+                                );
+                              },
+                            ),
                     ),
                   ],
                 ),
@@ -1327,8 +1391,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                     bottom: isPlayerActive
                         ? 120
                         : (MediaQuery.of(context).padding.bottom > 0
-                            ? MediaQuery.of(context).padding.bottom + 2
-                            : 8),
+                              ? MediaQuery.of(context).padding.bottom + 2
+                              : 8),
                     child: FloatingDraggablePageSlider(
                       pageController: _pageController,
                       totalPages: mushafPages.length,
@@ -1346,10 +1410,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                 if (_isNavigatingToTargetAyah)
                   Positioned.fill(
                     child: Container(
-                      color: (effectiveIsDark
-                              ? const Color(0xFF131D18)
-                              : Colors.white)
-                          .withValues(alpha: 0.90),
+                      color:
+                          (effectiveIsDark
+                                  ? const Color(0xFF131D18)
+                                  : Colors.white)
+                              .withValues(alpha: 0.90),
                       child: Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -1363,11 +1428,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                             borderRadius: BorderRadius.circular(22),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF2A531D).withValues(
-                                  alpha: effectiveIsDark ? 0.35 : 0.2,
+                                color: const Color(0xFF1C2B22).withValues(
+                                  alpha: effectiveIsDark ? 0.15 : 0.1,
                                 ),
                                 blurRadius: 18,
-                                offset: const Offset(0, 3),
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -1485,6 +1550,18 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       arabicFont: arabicFont,
       quranAudio: quranAudio,
       isDownloaded: _isDownloaded,
+      onInfoTap: () {
+        if (!isJuzMode) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SurahInfoScreen(surah: currentSurah),
+            ),
+          );
+        } else if (currentJuz != null) {
+          _showJuzInfoModal(context, currentJuz, ayahs, isDark);
+        }
+      },
       onPlayPlaylist: () {
         if (quranAudio.currentIndex >= 0) {
           quranAudio.togglePlayPause();
@@ -1504,11 +1581,131 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     );
   }
 
+  void _showJuzInfoModal(
+    BuildContext context,
+    JuzModel juz,
+    List<AyahModel> ayahs,
+    bool isDark,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white24 : Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2A531D).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      FlutterIslamicIcons.quran2,
+                      color: Color(0xFF2A531D),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Juz ${juz.number} - ${juz.nameEnglish}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : const Color(0xFF1F2937),
+                          ),
+                        ),
+                        Text(
+                          juz.nameArabic,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark ? Colors.white70 : const Color(0xFF2A531D),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isDark ? Colors.white10 : Colors.grey.shade200,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    _buildJuzInfoRow('Surah Range', juz.surahRange, isDark),
+                    const Divider(height: 16),
+                    _buildJuzInfoRow('Total Verses in Juz', '${ayahs.length} Ayahs', isDark),
+                    const Divider(height: 16),
+                    _buildJuzInfoRow('Mushaf Page Range', 'Page ${juz.startPage} - ${juz.endPage}', isDark),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildJuzInfoRow(String label, String value, bool isDark) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            color: isDark ? Colors.white60 : Colors.grey.shade600,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13.5,
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : const Color(0xFF1F2937),
+          ),
+        ),
+      ],
+    );
+  }
+
   /// 3. Mode 1: Authentic Adobe-Style Floating Mushaf Page View (Container-Height Relative True Dynamic Pagination)
   Widget _buildPageWiseMushafView(
     List<MushafPage> initialMushafPages,
     bool isDark,
-    SurahModel currentSurah, 
+    SurahModel currentSurah,
     AyahModel? playingAyah,
     bool isPlayerActive,
     dynamic storage,
@@ -1526,16 +1723,16 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Calculate exact physical text canvas bounds available inside the card container
-          final double cardWidth =
-              (constraints.maxWidth - 16.0).clamp(100.0, 1200.0); 
-          final double cardHeight =
-              (constraints.maxHeight - 8.0 - bottomSpace).clamp(100.0, 3000.0);
+          final double cardWidth = (constraints.maxWidth - 16.0).clamp(
+            100.0,
+            1200.0,
+          );
+          final double cardHeight = (constraints.maxHeight - 8.0 - bottomSpace)
+              .clamp(100.0, 3000.0);
 
           // Minus card internal padding (16px horizontal, 12px vertical on top & bottom)
-          final double textWidth =
-              (cardWidth - 32.0).clamp(80.0, 1160.0);
-          final double textHeight =
-              (cardHeight - 24.0).clamp(80.0, 2960.0);
+          final double textWidth = (cardWidth - 32.0).clamp(80.0, 1160.0);
+          final double textHeight = (cardHeight - 24.0).clamp(80.0, 2960.0);
 
           final mushafPages = MushafPaginationEngine.paginate(
             ayahs: allAyahs,
@@ -1547,7 +1744,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
             arabicFont: arabicFont,
             lineHeight: 1.8,
             defaultSurah: currentSurah,
-          ); 
+          );
 
           _lastComputedMushafPages = mushafPages;
 
@@ -1644,8 +1841,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
           )
         : currentSurah;
     final storage = ref.read(storageServiceProvider);
-    final bool isBookmarked =
-        storage.isAyahBookmarked(surahNum, ayah.numberInSurah);
+    final bool isBookmarked = storage.isAyahBookmarked(
+      surahNum,
+      ayah.numberInSurah,
+    );
     final arabicFont = ref.read(arabicFontProvider);
 
     return AyahVerseCard(
@@ -1670,8 +1869,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       onPlayTap: onPlayTap,
       onBookmarkTap: () =>
           _toggleAyahBookmark(ayah, ayahSurah, allAyahs.length),
-      onStopPointTap: () =>
-          _markStopPoint(ayah, allAyahs.length, ayahSurah),
+      onStopPointTap: () => _markStopPoint(ayah, allAyahs.length, ayahSurah),
       onTafsirTap: () => _showAyahQuickActionsSheet(
         context: context,
         ayah: ayah,
@@ -1715,8 +1913,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: chunks.map((chunk) {
@@ -1734,12 +1932,17 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   ayah.numberInSurah,
                   juzNumber: widget.juzNumber,
                 );
-                final bool isResumeHighlight = _highlightResumeAyahNumber != null &&
+                final bool isResumeHighlight =
+                    _highlightResumeAyahNumber != null &&
                     _highlightResumeAyahNumber == ayah.numberInSurah &&
                     (widget.juzNumber == null ||
-                        (storage.getStopPointForJuz(widget.juzNumber!)?['surahNumber'] == surahNum));
+                        (storage.getStopPointForJuz(
+                              widget.juzNumber!,
+                            )?['surahNumber'] ==
+                            surahNum));
                 final bool isSelected = _selectedAyahForHighlight == index;
-                final bool isHighlighted = isPlayingThis || isResumeHighlight || isSelected;
+                final bool isHighlighted =
+                    isPlayingThis || isResumeHighlight || isSelected;
 
                 return TextSpan(
                   children: [
@@ -1768,29 +1971,34 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                             }
                           });
                         },
-                      style: AppTypography.arabicBody(
-                        fontSize: _arabicFontSize,
-                        height: 1.97,
-                        color: isHighlighted
-                            ? (isDark ? const Color(0xFFA3E635) : const Color(0xFF854D0E))
-                            : (isSajda
+                      style:
+                          AppTypography.arabicBody(
+                            fontSize: _arabicFontSize,
+                            height: 1.97,
+                            color: isHighlighted
                                 ? (isDark
-                                    ? const Color(0xFF86EFAC)
-                                    : const Color(0xFF166534))
-                                : (isDark
-                                    ? const Color(0xFFF1F5F2)
-                                    : const Color(0xFF1F2937))),
-                      ).copyWith(
-                        backgroundColor: isHighlighted
-                            ? (isDark
-                                ? const Color(0xFF1E3A2B)
-                                : const Color(0xFFFEF9C3))
-                            : (isSajda
+                                      ? const Color(0xFFA3E635)
+                                      : const Color(0xFF854D0E))
+                                : (isSajda
+                                      ? (isDark
+                                            ? const Color(0xFF86EFAC)
+                                            : const Color(0xFF166534))
+                                      : (isDark
+                                            ? const Color(0xFFF1F5F2)
+                                            : const Color(0xFF1F2937))),
+                          ).copyWith(
+                            backgroundColor: isHighlighted
                                 ? (isDark
-                                    ? const Color(0xFF14532D).withValues(alpha: 0.35)
-                                    : const Color(0xFFFEF3C7))
-                                : null),
-                      ),
+                                      ? const Color(0xFF1E3A2B)
+                                      : const Color(0xFFFEF9C3))
+                                : (isSajda
+                                      ? (isDark
+                                            ? const Color(
+                                                0xFF14532D,
+                                              ).withValues(alpha: 0.35)
+                                            : const Color(0xFFFEF3C7))
+                                      : null),
+                          ),
                     ),
                     // Stop Point Marker Pin on Marked Stop Ayah
                     if (isMarked)
@@ -1820,32 +2028,15 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           },
                           child: Container(
                             margin: const EdgeInsets.symmetric(horizontal: 3),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
+                            padding: const EdgeInsets.all(3),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFD97706),
+                              shape: BoxShape.circle,
                             ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD97706),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.flag_rounded,
-                                  size: 11,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(width: 2),
-                                Text(
-                                  'Stop',
-                                  style: TextStyle(
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
+                            child: const Icon(
+                              Icons.flag_rounded,
+                              size: 12,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -1854,6 +2045,8 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                 );
               }).toList(),
             ),
+            textAlign: TextAlign.justify,
+            textDirection: TextDirection.rtl,
           );
         }).toList(),
       ),
@@ -1865,9 +2058,59 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     QuranAudioController quranAudio,
     bool isDark,
   ) {
-    return QuranAudioPlayerBar(
-      quranAudio: quranAudio,
-      isDark: isDark,
+    return QuranAudioPlayerBar(quranAudio: quranAudio, isDark: isDark);
+  }
+
+  /// 5. Navigate directly to marked Stop Point in the current reading mode
+  void _navigateToStopPoint(
+    int spAyahNum,
+    int spTargetIdx,
+    List<AyahModel> ayahs,
+  ) {
+    setState(() {
+      _highlightResumeAyahNumber = spAyahNum;
+      _activeAyahIndex = spTargetIdx;
+    });
+
+    if (_selectedMode == 0) {
+      // Verse-by-verse list mode
+      _scrollToTargetAyahWithLoading(spTargetIdx, ayahs);
+    } else if (_selectedMode == 1) {
+      // Page-wise Mushaf mode
+      final mushafPages =
+          _lastComputedMushafPages ?? _paginateCurrentMushaf(context, ayahs);
+      final pageIdx = mushafPages.indexWhere(
+        (p) => p.containsMasterAyahIndex(spTargetIdx),
+      );
+      if (pageIdx >= 0) {
+        _currentPageIndex = pageIdx;
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            pageIdx,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
+          );
+        }
+      }
+    } else if (_selectedMode == 2) {
+      // Continuous Mushaf mode
+      _scrollToActiveAyah(ayahs);
+    }
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Jumped to Stop Point • Ayah $spAyahNum',
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color(0xFFD97706),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
     );
   }
-}  
+}

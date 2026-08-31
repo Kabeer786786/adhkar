@@ -17,6 +17,7 @@ class SurahHeaderCard extends StatelessWidget {
   final bool isDownloaded; 
   final VoidCallback onPlayPlaylist;
   final VoidCallback onDownloadTap;
+  final VoidCallback? onInfoTap;
 
   const SurahHeaderCard({
     super.key,
@@ -31,6 +32,7 @@ class SurahHeaderCard extends StatelessWidget {
     required this.isDownloaded,
     required this.onPlayPlaylist,
     required this.onDownloadTap,
+    this.onInfoTap,
   });
 
   @override
@@ -92,24 +94,71 @@ class SurahHeaderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Tag Row (Matching Recent Card)
+              // Top Tag Row (Matching Recent Card) & Info Button on the Right
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(
-                    FlutterIslamicIcons.quran2,
-                    size: 14,
-                    color: Color(0xFFd1ffbe),
+                  Row(
+                    children: [
+                      const Icon(
+                        FlutterIslamicIcons.quran2,
+                        size: 14,
+                        color: Color(0xFFd1ffbe),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        isJuzMode ? 'JUZ DETAILS' : 'SURAH DETAILS',
+                        style: const TextStyle(
+                          color: Color(0xFFd1ffbe),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    isJuzMode ? 'JUZ DETAILS' : 'SURAH DETAILS',
-                    style: const TextStyle(
-                      color: Color(0xFFd1ffbe),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
-                      letterSpacing: 0.8,
+                  if (onInfoTap != null)
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onInfoTap,
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: const Color(0xFFd1ffbe).withValues(alpha: 0.4),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.info_outline_rounded,
+                                size: 13,
+                                color: Color(0xFFd1ffbe),
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Context & Info',
+                                style: TextStyle(
+                                  color: Color(0xFFd1ffbe),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 10.5,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 12),

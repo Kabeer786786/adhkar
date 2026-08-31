@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import '../../../../core/config/reminder_audio_config.dart';
 import '../../domain/reminder_model.dart';
 
@@ -52,7 +51,7 @@ class _ReminderModalState extends State<ReminderModal> {
   String? _titleError;
 
   final List<String> _soundOptions = ReminderAudioConfig.soundOptions;
-  AudioPlayer? _previewPlayer;
+  final AudioPlayer _previewPlayer = AudioPlayer();
   StreamSubscription<PlayerState>? _previewSubscription;
   bool _isPreviewPlaying = false;
 
@@ -81,13 +80,19 @@ class _ReminderModalState extends State<ReminderModal> {
     _soundType = rem?.soundType ?? ReminderAudioConfig.defaultRingtone;
     _vibrationEnabled = rem?.vibrationEnabled ?? true;
     _notificationEnabled = rem?.notificationEnabled ?? true;
+
+    _previewSubscription = _previewPlayer.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        if (mounted) setState(() => _isPreviewPlaying = false);
+      }
+    });
   }
 
   @override
   void dispose() {
     _previewSubscription?.cancel();
-    _previewPlayer?.stop();
-    _previewPlayer?.dispose();
+    _previewPlayer.stop();
+    _previewPlayer.dispose();
     _titleController.dispose();
     _descController.dispose();
     super.dispose();
@@ -95,36 +100,23 @@ class _ReminderModalState extends State<ReminderModal> {
 
   Future<void> _playAudioPreview() async {
     try {
-      _previewPlayer ??= AudioPlayer();
-      await _previewPlayer!.stop();
       final path = ReminderAudioConfig.getAssetPath(_soundType);
-      final mediaItem = MediaItem(
-        id: 'preview_${_soundType.replaceAll(" ", "_")}',
-        title: _soundType,
-        album: 'Alarm Preview',
-      );
-      await _previewPlayer!.setAudioSource(
-        AudioSource.asset(path, tag: mediaItem),
-      );
-      await _previewPlayer!.play();
+      await _previewPlayer.stop();
+      await _previewPlayer.setAsset(path);
       if (mounted) setState(() => _isPreviewPlaying = true);
-
-      _previewSubscription?.cancel();
-      _previewSubscription = _previewPlayer!.playerStateStream.listen((state) {
-        if (state.processingState == ProcessingState.completed) {
-          if (mounted) setState(() => _isPreviewPlaying = false);
-        }
+      _previewPlayer.play().catchError((e) {
+        debugPrint('[ReminderModal] Error during audio playback: $e');
+        if (mounted) setState(() => _isPreviewPlaying = false);
       });
     } catch (e) {
-      debugPrint('[ReminderModal] Error playing preview audio: $e');
+      debugPrint('[ReminderModal] Error loading preview audio: $e');
       if (mounted) setState(() => _isPreviewPlaying = false);
     }
   }
 
   Future<void> _stopAudioPreview() async {
     try {
-      _previewSubscription?.cancel();
-      await _previewPlayer?.stop();
+      await _previewPlayer.stop();
     } catch (_) {}
     if (mounted) setState(() => _isPreviewPlaying = false);
   }
@@ -208,9 +200,7 @@ class _ReminderModalState extends State<ReminderModal> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         icon: const Icon(
           Icons.error_outline_rounded,
           color: Color(0xFFEF4444),
@@ -941,7 +931,9 @@ class _ReminderModalState extends State<ReminderModal> {
                               : 'Play Audio',
                           style: IconButton.styleFrom(
                             backgroundColor: _isPreviewPlaying
-                                ? const Color(0xFFEF4444).withValues(alpha: 0.15)
+                                ? const Color(
+                                    0xFFEF4444,
+                                  ).withValues(alpha: 0.15)
                                 : primaryGreen.withValues(alpha: 0.15),
                           ),
                           icon: Icon(
@@ -958,7 +950,10 @@ class _ReminderModalState extends State<ReminderModal> {
                     ),
                   ),
                 ],
-                const Divider(height: 1),
+                Divider(
+                  height: 1,
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
                 SwitchListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   title: Text(
@@ -969,7 +964,10 @@ class _ReminderModalState extends State<ReminderModal> {
                   activeTrackColor: primaryGreen,
                   onChanged: (val) => setState(() => _vibrationEnabled = val),
                 ),
-                const Divider(height: 1),
+                Divider(
+                  height: 1,
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
                 SwitchListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   title: Text(
@@ -1063,7 +1061,10 @@ class _ReminderModalState extends State<ReminderModal> {
               ),
             ),
 
-            const Divider(height: 1),
+            Divider(
+              height: 1,
+              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+            ),
 
             Flexible(child: formContent),
           ],

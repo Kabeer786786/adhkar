@@ -227,7 +227,10 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
               ),
             ),
 
-            const Divider(height: 1),
+            Divider(
+              height: 1,
+              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+            ),
 
             Flexible(
               child: SingleChildScrollView(
@@ -413,7 +416,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                                     : const Color(0xFFF8FAFC),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: const Color(0xFFDC2626).withValues(alpha: 0.3),
+                                  color: const Color(
+                                    0xFFDC2626,
+                                  ).withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Column(
@@ -603,7 +608,8 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                     const SizedBox(height: 24),
 
                     // Save / Delete Button Row
-                    if (widget.initialSchedule != null && widget.onDelete != null)
+                    if (widget.initialSchedule != null &&
+                        widget.onDelete != null)
                       Row(
                         children: [
                           ElevatedButton.icon(
@@ -623,7 +629,10 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               Navigator.pop(context);
                               widget.onDelete!();
                             },
-                            icon: const Icon(Icons.delete_outline_rounded, size: 20),
+                            icon: const Icon(
+                              Icons.delete_outline_rounded,
+                              size: 20,
+                            ),
                             label: Text(
                               'Delete',
                               style: GoogleFonts.lexend(
@@ -639,7 +648,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                                 backgroundColor: primaryGreen,
                                 foregroundColor: Colors.white,
                                 elevation: 2,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),

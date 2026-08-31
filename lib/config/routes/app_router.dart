@@ -241,12 +241,15 @@ final appRouter = GoRouter(
         final juzStr = state.uri.queryParameters['juz'];
         final name = state.uri.queryParameters['name'] ?? 'Al-Fatiha';
         final startAyahStr = state.uri.queryParameters['startAyah'];
+        final isFromBookmark =
+            state.uri.queryParameters['fromBookmark'] == 'true';
         return SurahDetailScreen(
           surahNumber: int.parse(numStr),
           juzNumber: juzStr != null ? int.tryParse(juzStr) : null,
           surahName: name,
           initialAyahNumber:
               startAyahStr != null ? int.tryParse(startAyahStr) : null,
+          fromBookmark: isFromBookmark,
         );
       },
     ),

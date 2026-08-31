@@ -80,6 +80,12 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
         ? widget.initialConfig.soundType
         : 'Makkah Azaan';
     _selectedDays = Set<int>.from(widget.initialConfig.selectedDays);
+
+    _audioPlayer.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        if (mounted) setState(() => _isPlayingPreview = false);
+      }
+    });
   }
 
   @override
@@ -112,14 +118,20 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
     try {
       setState(() => _isLoadingPreview = true);
       await _audioPlayer.setUrl(url);
-      setState(() {
-        _isLoadingPreview = false;
-        _isPlayingPreview = true;
-      });
-      await _audioPlayer.play();
       if (mounted) {
-        setState(() => _isPlayingPreview = false);
+        setState(() {
+          _isLoadingPreview = false;
+          _isPlayingPreview = true;
+        });
       }
+      _audioPlayer.play().catchError((e) {
+        if (mounted) {
+          setState(() {
+            _isLoadingPreview = false;
+            _isPlayingPreview = false;
+          });
+        }
+      });
     } catch (e) {
       if (mounted) {
         setState(() {

@@ -217,8 +217,11 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   Widget build(BuildContext context) {
     final rawSchedules = ref.watch(quietHoursProvider);
     final schedules = List<QuietHours>.from(rawSchedules)
-      ..sort((a, b) => (a.startHour * 60 + a.startMinute)
-          .compareTo(b.startHour * 60 + b.startMinute));
+      ..sort(
+        (a, b) => (a.startHour * 60 + a.startMinute).compareTo(
+          b.startHour * 60 + b.startMinute,
+        ),
+      );
     final service = ref.watch(quietHoursServiceProvider);
     final isSupported = service.isSupported;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -614,7 +617,12 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                         ),
                       ),
                       const SizedBox(height: 10),
-                      const Divider(height: 1),
+                      Divider(
+                        height: 1,
+                        color: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300,
+                      ),
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),

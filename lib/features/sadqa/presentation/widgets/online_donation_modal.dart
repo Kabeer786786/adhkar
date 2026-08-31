@@ -159,18 +159,20 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
 
         // Auto-log online donation payment directly into Sadaqah records
         final currencySymbol = _selectedCurrency == 'INR' ? '₹' : '\$';
-        ref.read(sadqaRecordsProvider.notifier).addRecord(
-          SadqaRecord(
-            id: 'online_${DateTime.now().millisecondsSinceEpoch}',
-            type: CharityType.sadaqah,
-            category: SadaqahCategory.general,
-            amount: amount,
-            currency: currencySymbol,
-            date: DateTime.now(),
-            recipient: 'Online App Donation',
-            note: 'Razorpay Txn: $paymentId',
-          ),
-        );
+        ref
+            .read(sadqaRecordsProvider.notifier)
+            .addRecord(
+              SadqaRecord(
+                id: 'online_${DateTime.now().millisecondsSinceEpoch}',
+                type: CharityType.sadaqah,
+                category: SadaqahCategory.general,
+                amount: amount,
+                currency: currencySymbol,
+                date: DateTime.now(),
+                recipient: 'Online App Donation',
+                note: 'Razorpay Txn: $paymentId',
+              ),
+            );
 
         Navigator.pop(context);
 
@@ -279,7 +281,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                       ],
                     ),
                   ),
-                  const Divider(height: 1),
+                  Divider(
+                    height: 1,
+                    color:  Colors.grey.shade300,
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,

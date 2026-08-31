@@ -21,146 +21,108 @@ class QuranReadingSettingsModal {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF212121) : Colors.white,
+      backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
         int currentMode = (isJuzMode && selectedMode == 2) ? 0 : selectedMode;
         int? loadingMode;
-        String currentLang = translationLanguage; 
+        String currentLang = translationLanguage;
         bool currentTransliteration = showTransliteration;
+        bool modalIsDark = isReadingDarkMode;
 
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return DraggableScrollableSheet(
-              initialChildSize: 0.88,
-              minChildSize: 0.45,
-              maxChildSize: 0.92,
-              expand: false,
-              builder: (context, scrollController) {
-                return ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(22, 16, 22, 30),
-                  children: [
-                    // Grabber
-                    Center(
-                      child: Container(
-                        width: 38,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.white24 : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(2),
+            return Container(
+              decoration: BoxDecoration(
+                color: modalIsDark ? const Color(0xFF212121) : Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              child: DraggableScrollableSheet(
+                initialChildSize: 0.88,
+                minChildSize: 0.45,
+                maxChildSize: 0.92,
+                expand: false,
+                builder: (context, scrollController) {
+                  return ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.fromLTRB(22, 16, 22, 30),
+                    children: [
+                      // Grabber
+                      Center(
+                        child: Container(
+                          width: 38,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: modalIsDark ? Colors.white24 : Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.tune_rounded,
-                              color: Color(0xFF2A531D),
-                              size: 22,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Reading Preferences',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF1F2937),
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.tune_rounded,
+                                color: Color(0xFF2A531D),
+                                size: 22,
                               ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Reading Preferences',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: modalIsDark
+                                      ? Colors.white
+                                      : const Color(0xFF1F2937),
+                                ),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: Icon(
+                              Icons.close_rounded,
+                              color: modalIsDark ? Colors.white70 : Colors.grey.shade700,
                             ),
-                          ],
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close_rounded),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // SECTION 1: Reading & Display Modes
-                    Text(
-                      'READING DISPLAY MODE',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
-                        color: isDark ? Colors.white60 : Colors.grey.shade600,
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildModeTile(
-                      title: 'Verse-by-Verse List Mode',
-                      subtitle:
-                          'Full Arabic verse, transliteration, translations & audio play',
-                      icon: Icons.translate_rounded,
-                      modeIndex: 0,
-                      selectedMode: currentMode,
-                      isLoading: loadingMode == 0,
-                      isDark: isDark,
-                      onTap: () {
-                        setModalState(() {
-                          currentMode = 0;
-                          loadingMode = 0;
-                        });
-                        onModeChanged(0);
-                        Future.delayed(const Duration(milliseconds: 300), () {
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    _buildModeTile(
-                      title: 'Page-Wise Mushaf Mode',
-                      subtitle:
-                          'RTL page-by-page Mushaf view with smooth page traversal',
-                      icon: Icons.auto_stories_rounded,
-                      modeIndex: 1,
-                      selectedMode: currentMode,
-                      isLoading: loadingMode == 1,
-                      isDark: isDark,
-                      onTap: () {
-                        setModalState(() {
-                          currentMode = 1;
-                          loadingMode = 1;
-                        });
-                        onModeChanged(1);
-                        Future.delayed(const Duration(milliseconds: 300), () {
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        });
-                      },
-                    ),
-                    if (!isJuzMode) ...[
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
+
+                      // SECTION 1: Reading & Display Modes
+                      Text(
+                        'READING DISPLAY MODE',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.8,
+                          color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       _buildModeTile(
-                        title: 'Continuous Flowing Mushaf Mode',
+                        title: 'Verse-by-Verse List Mode',
                         subtitle:
-                            'Flowing continuous Arabic Mushaf text with Sajda, Rub & Hizb markers',
-                        icon: Icons.menu_book_rounded,
-                        modeIndex: 2,
+                            'Full Arabic verse, transliteration, translations & audio play',
+                        icon: Icons.translate_rounded,
+                        modeIndex: 0,
                         selectedMode: currentMode,
-                        isLoading: loadingMode == 2,
-                        isDark: isDark,
+                        isLoading: loadingMode == 0,
+                        isDark: modalIsDark,
                         onTap: () {
                           setModalState(() {
-                            currentMode = 2;
-                            loadingMode = 2;
+                            currentMode = 0;
+                            loadingMode = 0;
                           });
-                          onModeChanged(2);
+                          onModeChanged(0);
                           Future.delayed(const Duration(milliseconds: 300), () {
                             if (context.mounted) {
                               Navigator.of(context).pop();
@@ -168,21 +130,152 @@ class QuranReadingSettingsModal {
                           });
                         },
                       ),
-                    ],
-
-                    const SizedBox(height: 22),
-
-                    // SECTION 3: Translations & Transliteration
-                    Text(
-                      'TRANSLATION & TRANSLITERATION',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
-                        color: isDark ? Colors.white60 : Colors.grey.shade600,
+                      const SizedBox(height: 8),
+                      _buildModeTile(
+                        title: 'Page-wise Mushaf Mode',
+                        subtitle:
+                            'Authentic 15-line Adobe Quran page presentation with full Page slider',
+                        icon: Icons.auto_stories_rounded,
+                        modeIndex: 1,
+                        selectedMode: currentMode,
+                        isLoading: loadingMode == 1,
+                        isDark: modalIsDark,
+                        onTap: () {
+                          setModalState(() {
+                            currentMode = 1;
+                            loadingMode = 1;
+                          });
+                          onModeChanged(1);
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          });
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 10),
+                      if (!isJuzMode) ...[
+                        const SizedBox(height: 8),
+                        _buildModeTile(
+                          title: 'Continuous Flowing Mushaf Mode',
+                          subtitle:
+                              'Flowing continuous Arabic Mushaf text with Sajda, Rub & Hizb markers',
+                          icon: Icons.menu_book_rounded,
+                          modeIndex: 2,
+                          selectedMode: currentMode,
+                          isLoading: loadingMode == 2,
+                          isDark: modalIsDark,
+                          onTap: () {
+                            setModalState(() {
+                              currentMode = 2;
+                              loadingMode = 2;
+                            });
+                            onModeChanged(2);
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
+                            });
+                          },
+                        ),
+                      ],
+
+                      const SizedBox(height: 22),
+
+                      // SECTION 2: Reading Theme (Dark Mode)
+                      Text(
+                        'READING THEME',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.8,
+                          color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: modalIsDark
+                              ? const Color(0xFF23322B)
+                              : const Color(0xFFF4FAF3),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: modalIsDark
+                                ? Colors.white10
+                                : const Color(0xFF2A531D).withValues(alpha: 0.12),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              modalIsDark
+                                  ? Icons.dark_mode_rounded
+                                  : Icons.light_mode_rounded,
+                              color: modalIsDark
+                                  ? const Color(0xFFFDE047)
+                                  : const Color(0xFF2A531D),
+                              size: 22,
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Reading Dark Mode',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.5,
+                                      color: modalIsDark
+                                          ? Colors.white
+                                          : const Color(0xFF1F2937),
+                                    ),
+                                  ),
+                                  Text(
+                                    modalIsDark
+                                        ? 'Comfortable dark background for night reading'
+                                        : 'Clean light background for daytime reading',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: modalIsDark
+                                          ? Colors.white60
+                                          : Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Switch.adaptive(
+                              value: modalIsDark,
+                              activeTrackColor: const Color(0xFF2A531D),
+                              activeThumbColor: Colors.white,
+                              onChanged: (val) {
+                                setModalState(() {
+                                  modalIsDark = val;
+                                });
+                                onReadingDarkModeChanged(val);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 22),
+
+                      // SECTION 3: Translations & Transliteration
+                      Text(
+                        'TRANSLATION & TRANSLITERATION',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.8,
+                          color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
 
                     _buildLangTile(
                       keyName: 'both',
@@ -190,7 +283,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Side-by-side bilingual translation',
                       badge: 'EN + UR',
                       selectedLang: currentLang,
-                      isDark: isDark,
+                      isDark: modalIsDark,
                       onTap: () {
                         setModalState(() => currentLang = 'both');
                         onTranslationLanguageChanged('both');
@@ -203,7 +296,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Sahih International',
                       badge: 'EN',
                       selectedLang: currentLang,
-                      isDark: isDark,
+                      isDark: modalIsDark,
                       onTap: () {
                         setModalState(() => currentLang = 'en');
                         onTranslationLanguageChanged('en');
@@ -216,7 +309,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Fateh Muhammad Jalandhry',
                       badge: 'UR',
                       selectedLang: currentLang,
-                      isDark: isDark,
+                      isDark: modalIsDark,
                       onTap: () {
                         setModalState(() => currentLang = 'ur');
                         onTranslationLanguageChanged('ur');
@@ -229,7 +322,7 @@ class QuranReadingSettingsModal {
                       subtitle: 'Pure Arabic recitation mode',
                       badge: 'AR',
                       selectedLang: currentLang,
-                      isDark: isDark,
+                      isDark: modalIsDark,
                       onTap: () {
                         setModalState(() => currentLang = 'none');
                         onTranslationLanguageChanged('none');
@@ -245,12 +338,12 @@ class QuranReadingSettingsModal {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: isDark
+                        color: modalIsDark
                             ? const Color(0xFF23322B)
                             : const Color(0xFFF4FAF3),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isDark
+                          color: modalIsDark
                               ? Colors.white10
                               : const Color(0xFF2A531D).withValues(alpha: 0.12),
                         ),
@@ -263,12 +356,15 @@ class QuranReadingSettingsModal {
                             color: Color(0xFF2A531D),
                           ),
                           const SizedBox(width: 10),
-                          const Expanded(
+                          Expanded(
                             child: Text(
                               'English Transliteration',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14.5,
+                                color: modalIsDark
+                                    ? Colors.white
+                                    : const Color(0xFF1F2937),
                               ),
                             ),
                           ),
@@ -293,7 +389,7 @@ class QuranReadingSettingsModal {
                         fontSize: 11.5,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.8,
-                        color: isDark ? Colors.white60 : Colors.grey.shade600,
+                        color: modalIsDark ? Colors.white60 : Colors.grey.shade600,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -310,14 +406,16 @@ class QuranReadingSettingsModal {
                           vertical: 14,
                         ),
                         decoration: BoxDecoration(
-                          color: isDark
+                          color: modalIsDark
                               ? const Color(0xFF23322B)
                               : const Color(0xFFF4FAF3),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isDark
+                            color: modalIsDark
                                 ? Colors.white10
-                                : const Color(0xFF2A531D).withValues(alpha: 0.12),
+                                : const Color(
+                                    0xFF2A531D,
+                                  ).withValues(alpha: 0.12),
                           ),
                         ),
                         child: Row(
@@ -343,7 +441,7 @@ class QuranReadingSettingsModal {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14.5,
-                                      color: isDark
+                                      color: modalIsDark
                                           ? Colors.white
                                           : const Color(0xFF1F2937),
                                     ),
@@ -357,7 +455,7 @@ class QuranReadingSettingsModal {
                                         : 'Listen without internet connection',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: isDark
+                                      color: modalIsDark
                                           ? Colors.white60
                                           : Colors.grey.shade600,
                                     ),
@@ -397,12 +495,13 @@ class QuranReadingSettingsModal {
                   ],
                 );
               },
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
   static Widget _buildModeTile({
     required String title,

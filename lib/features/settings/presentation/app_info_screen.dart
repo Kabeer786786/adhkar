@@ -24,13 +24,17 @@ class AppInfoScreen extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF17241E) : const Color(0xFFF9F9F9),
+        backgroundColor: isDark
+            ? const Color(0xFF17241E)
+            : const Color(0xFFF9F9F9),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
             title: 'APP INFO',
             showBackButton: true,
-            systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+            systemOverlayStyle: isDark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
             backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
             iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
             titleWidget: Text(
@@ -110,7 +114,10 @@ class AppInfoScreen extends StatelessWidget {
                           ? 'Version ${snapshot.data!.version}'
                           : 'Version 1.3.0';
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
@@ -261,21 +268,45 @@ class AppInfoScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildFeatureRow('🕌 Prayer Times & Adhan', 'Accurate location-based prayer schedules with countdown'),
+                  _buildFeatureRow(
+                    '🕌 Prayer Times & Adhan',
+                    'Accurate location-based prayer schedules with countdown',
+                  ),
                   const Divider(height: 16),
-                  _buildFeatureRow('📖 Noble Qur\'an', 'Full Surah reader with translation, transliteration & audio'),
+                  _buildFeatureRow(
+                    '📖 Noble Qur\'an',
+                    'Full Surah reader with translation, transliteration & audio',
+                  ),
                   const Divider(height: 16),
-                  _buildFeatureRow('📿 Digital Tasbeeh', 'Customizable dhikr counter with vibration feedback'),
+                  _buildFeatureRow(
+                    '📿 Digital Tasbeeh',
+                    'Customizable dhikr counter with vibration feedback',
+                  ),
                   const Divider(height: 16),
-                  _buildFeatureRow('🤲 Daily Adhkar & Duas', 'Authentic Sunnah supplications for morning and evening'),
+                  _buildFeatureRow(
+                    '🤲 Daily Adhkar & Duas',
+                    'Authentic Sunnah supplications for morning and evening',
+                  ),
                   const Divider(height: 16),
-                  _buildFeatureRow('📅 Islamic Calendar', 'Dual Hijri & Gregorian monthly calendar with date converter'),
+                  _buildFeatureRow(
+                    '📅 Islamic Calendar',
+                    'Dual Hijri & Gregorian monthly calendar with date converter',
+                  ),
                   const Divider(height: 16),
-                  _buildFeatureRow('💰 Sadaqah & Zakat', 'Zakat nisab calculator and charity transaction logger'),
+                  _buildFeatureRow(
+                    '💰 Sadaqah & Zakat',
+                    'Zakat nisab calculator and charity transaction logger',
+                  ),
                   const Divider(height: 16),
-                  _buildFeatureRow('🧭 High-Precision Qibla', 'Real-time sensor-based direction finder towards Kaaba'),
+                  _buildFeatureRow(
+                    '🧭 High-Precision Qibla',
+                    'Real-time sensor-based direction finder towards Kaaba',
+                  ),
                   const Divider(height: 16),
-                  _buildFeatureRow('🔬 Scientific Islam', 'Quranic scientific miracles backed by academic research'),
+                  _buildFeatureRow(
+                    '🔬 Scientific Islam',
+                    'Quranic scientific miracles backed by academic research',
+                  ),
                 ],
               ),
             ),
@@ -310,7 +341,11 @@ class AppInfoScreen extends StatelessWidget {
                 children: [
                   const Row(
                     children: [
-                      Icon(Icons.shield_outlined, color: Color(0xFF16A34A), size: 20),
+                      Icon(
+                        Icons.shield_outlined,
+                        color: Color(0xFF16A34A),
+                        size: 20,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         '100% Offline & Private',
@@ -332,18 +367,27 @@ class AppInfoScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Divider(height: 1),
+                  Divider(
+                    height: 1,
+                    color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                  ),
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      const Icon(Icons.favorite_rounded, color: Colors.redAccent, size: 20),
+                      const Icon(
+                        Icons.favorite_rounded,
+                        color: Colors.redAccent,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Built for the Ummah',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : const Color(0xFF1F2937),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF1F2937),
                         ),
                       ),
                     ],
@@ -383,10 +427,7 @@ class AppInfoScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF23322B) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: accentColor.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

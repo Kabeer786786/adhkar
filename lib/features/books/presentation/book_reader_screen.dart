@@ -21,7 +21,9 @@ class BookReaderScreen extends ConsumerStatefulWidget {
     final filePath = book.fileUrl?.trim() ?? '';
 
     // If forceExternal or if book openMode is strictly 'external' -> Open via external viewer
-    if (forceExternal || book.openMode == 'external' || (book.isCustom && book.openMode != 'in_app')) {
+    if (forceExternal ||
+        book.openMode == 'external' ||
+        (book.isCustom && book.openMode != 'in_app')) {
       if (filePath.isNotEmpty) {
         await openExternal(context, filePath);
         return;
@@ -32,9 +34,7 @@ class BookReaderScreen extends ConsumerStatefulWidget {
     if (context.mounted) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => BookReaderScreen(book: book),
-        ),
+        MaterialPageRoute(builder: (context) => BookReaderScreen(book: book)),
       );
     }
   }
@@ -44,7 +44,11 @@ class BookReaderScreen extends ConsumerStatefulWidget {
     if (path == null || path.trim().isEmpty) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No external document or link available for this book.')),
+          const SnackBar(
+            content: Text(
+              'No external document or link available for this book.',
+            ),
+          ),
         );
       }
       return;
@@ -74,9 +78,9 @@ class BookReaderScreen extends ConsumerStatefulWidget {
         );
       }
     } else if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('File not found: $trimmed')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('File not found: $trimmed')));
     }
   }
 
@@ -119,7 +123,8 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     final chapters = book.chapters;
     final bgColor = _bgColors[_readingTheme];
     final textColor = _textColors[_readingTheme];
-    final allowExternal = book.openMode != 'in_app' && (book.fileUrl?.isNotEmpty ?? false);
+    final allowExternal =
+        book.openMode != 'in_app' && (book.fileUrl?.isNotEmpty ?? false);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -155,20 +160,12 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
         actions: [
           if (allowExternal)
             IconButton(
-              icon: Icon(
-                Icons.open_in_new_rounded,
-                size: 20,
-                color: textColor,
-              ),
+              icon: Icon(Icons.open_in_new_rounded, size: 20, color: textColor),
               tooltip: 'Open in External App',
               onPressed: _openExternalResource,
             ),
           IconButton(
-            icon: Icon(
-              Icons.text_decrease_rounded,
-              size: 20,
-              color: textColor,
-            ),
+            icon: Icon(Icons.text_decrease_rounded, size: 20, color: textColor),
             tooltip: 'Smaller Text',
             onPressed: () {
               if (_fontSize > 12) {
@@ -177,11 +174,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
             },
           ),
           IconButton(
-            icon: Icon(
-              Icons.text_increase_rounded,
-              size: 20,
-              color: textColor,
-            ),
+            icon: Icon(Icons.text_increase_rounded, size: 20, color: textColor),
             tooltip: 'Larger Text',
             onPressed: () {
               if (_fontSize < 28) {
@@ -194,8 +187,8 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
               _readingTheme == 0
                   ? Icons.wb_sunny_outlined
                   : (_readingTheme == 1
-                      ? Icons.auto_stories_rounded
-                      : Icons.nightlight_round),
+                        ? Icons.auto_stories_rounded
+                        : Icons.nightlight_round),
               size: 20,
               color: textColor,
             ),
@@ -212,13 +205,18 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const Divider(height: 1),
+            Divider(
+              height: 1,
+              color:  Colors.grey.shade300,
+            ),
 
             // Chapter Navigation Selector
             if (chapters.isNotEmpty)
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 color: textColor.withValues(alpha: 0.05),
                 child: Row(
                   children: [
@@ -334,9 +332,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
               decoration: BoxDecoration(
                 color: textColor.withValues(alpha: 0.05),
                 border: Border(
-                  top: BorderSide(
-                    color: textColor.withValues(alpha: 0.1),
-                  ),
+                  top: BorderSide(color: textColor.withValues(alpha: 0.1)),
                 ),
               ),
               child: Row(
@@ -348,7 +344,9 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                       label: const Text(
                         'Open External App',
                         style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.bold),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2A531D),

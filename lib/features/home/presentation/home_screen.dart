@@ -265,7 +265,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       right: 0,
                       height: screenWidth,
                       child: Image.asset(
-                        'assets/home.png',
+                        'assets/home_withoutbg.png',
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
@@ -275,28 +275,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             Icons.image_not_supported_rounded,
                             size: 48,
                             color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Bottom gradient fade into white (Pure white alpha interpolation: NO black line)
-                    Positioned(
-                      top: screenWidth - 120,
-                      left: 0,
-                      right: 0,
-                      height: 120,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0x00FFFFFF), // 0% opacity white
-                              Color(0x33FFFFFF), // 20% opacity white
-                              Color(0x99FFFFFF), // 60% opacity white
-                              Color(0xFFFFFFFF), // 100% solid white
-                            ],
                           ),
                         ),
                       ),

@@ -93,9 +93,7 @@ class AyahQuickActionsSheet extends StatelessWidget {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: maxSheetHeight,
-      ),
+      constraints: BoxConstraints(maxHeight: maxSheetHeight),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -193,12 +191,14 @@ class AyahQuickActionsSheet extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF10B981)
-                                    .withValues(alpha: 0.15),
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: const Color(0xFF10B981)
-                                      .withValues(alpha: 0.4),
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.4),
                                 ),
                               ),
                               child: const Row(
@@ -234,7 +234,10 @@ class AyahQuickActionsSheet extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
+          Divider(
+            height: 1,
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          ),
 
           // 2. SCROLLABLE MIDDLE CONTENT (Dynamically adapts to content height)
           Flexible(
@@ -254,7 +257,9 @@ class AyahQuickActionsSheet extends StatelessWidget {
                           : const Color(0xFFF9FAF9),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isDark ? const Color(0xFF383838) : Colors.grey.shade200,
+                        color: isDark
+                            ? const Color(0xFF383838)
+                            : Colors.grey.shade200,
                       ),
                     ),
                     child: SelectableText(
@@ -328,7 +333,10 @@ class AyahQuickActionsSheet extends StatelessWidget {
             ),
           ),
 
-          const Divider(height: 1),
+          Divider(
+            height: 1,
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          ),
 
           // 3. FIXED BOTTOM ACTIONS
           Container(
@@ -374,8 +382,9 @@ class AyahQuickActionsSheet extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              isDark ? Colors.white : const Color(0xFF1F2937),
+                          foregroundColor: isDark
+                              ? Colors.white
+                              : const Color(0xFF1F2937),
                           side: BorderSide(
                             color: isDark
                                 ? Colors.white24
@@ -464,8 +473,9 @@ class AyahQuickActionsSheet extends StatelessWidget {
                               ? const Color(0xFF10B981).withValues(alpha: 0.12)
                               : Colors.transparent,
                           side: BorderSide(
-                            color: const Color(0xFF10B981)
-                                .withValues(alpha: 0.5),
+                            color: const Color(
+                              0xFF10B981,
+                            ).withValues(alpha: 0.5),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 11),
                           shape: RoundedRectangleBorder(

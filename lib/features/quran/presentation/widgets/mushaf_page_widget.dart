@@ -70,7 +70,7 @@ class MushafPageWidget extends StatelessWidget {
                 child: SizedBox(
                   width: constraints.maxWidth,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -79,18 +79,23 @@ class MushafPageWidget extends StatelessWidget {
                         final int idx = entry.key;
                         final line = entry.value;
                         final bool isLastLine = idx == page.lines.length - 1;
+                        final bool isFirstLineOfJuz =
+                            juzNumber != null && page.pageIndex == 0 && idx == 0;
 
                         Widget child;
                         if (line.isSurahHeader) {
                           final surah = allSurahs.firstWhere(
                             (s) => s.number == line.surahNumber,
                             orElse: () => currentSurah,
-                          );
+                          ); 
                           child = _buildSurahHeader(surah);
                         } else if (line.isBismillah) {
                           child = _buildBismillah();
                         } else {
-                          child = _buildAyahLine(line);
+                          child = _buildAyahLine(
+                            line,
+                            isFirstLineOfJuz: isFirstLineOfJuz,
+                          );
                         }
 
                         // Moderate spacing between lines ensuring equal top and bottom page padding
@@ -204,29 +209,49 @@ class MushafPageWidget extends StatelessWidget {
   }
 
   /// Full-width Justified Line with Edge-to-Edge Word Distribution
-  Widget _buildAyahLine(MushafLine line) {
-    if (line.isCentered || line.words.length <= 2) {
-      return SizedBox(
+  Widget _buildAyahLine(MushafLine line, {bool isFirstLineOfJuz = false}) {
+    final content = Row(
+      mainAxisAlignment: (line.isCentered || line.words.length <= 2)
+          ? MainAxisAlignment.center
+          : MainAxisAlignment.spaceBetween,
+      textDirection: TextDirection.rtl,
+      children: line.words
+          .map((w) => _buildWordItem(w, isFirstLineOfJuz: isFirstLineOfJuz))
+          .toList(),
+    );
+
+    if (isFirstLineOfJuz) {
+      return Container(
         width: double.infinity,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          textDirection: TextDirection.rtl,
-          children: line.words.map((w) => _buildWordItem(w)).toList(),
-        ), 
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        decoration: BoxDecoration(
+          color: const Color(0xFF18181B), // Authentic Mushaf black Juz line background
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: isDark
+                ? const Color(0xFF3F3F46)
+                : const Color(0xFF27272A),
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.15),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: content,
       );
     }
 
     return SizedBox(
       width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        textDirection: TextDirection.rtl,
-        children: line.words.map((w) => _buildWordItem(w)).toList(),
-      ),
+      child: content,
     );
   }
 
-  Widget _buildWordItem(MushafWord word) {
+  Widget _buildWordItem(MushafWord word, {bool isFirstLineOfJuz = false}) {
     final ayah = word.ayah;
     final isPlayingThis = playingAyah?.number == ayah.number;
     final bool isSajda = ayah.sajda != null && ayah.sajda != false;
@@ -256,16 +281,16 @@ class MushafPageWidget extends StatelessWidget {
           color: isHighlighted
               ? (isDark
                   ? const Color(0xFF27272A)
-                  : const Color(0xFFFEF9C3))
+                  : (isFirstLineOfJuz ? const Color(0xFF3F3F46) : const Color(0xFFFEF9C3)))
               : (isSajda
-                  ? (isDark
-                      ? const Color(0xFF1F2937).withValues(alpha: 0.5)
+                  ? (isDark || isFirstLineOfJuz
+                      ? const Color(0xFF1F2937).withValues(alpha: 0.7)
                       : const Color(0xFFFEF3C7))
                   : null),
           borderRadius: BorderRadius.circular(4),
-          border: isHighlighted && isDark
+          border: isHighlighted && (isDark || isFirstLineOfJuz)
               ? Border.all(
-                  color: const Color(0xFF4ADE80).withValues(alpha: 0.4),
+                  color: const Color(0xFF4ADE80).withValues(alpha: 0.6),
                   width: 0.8,
                 )
               : null,
@@ -283,14 +308,16 @@ class MushafPageWidget extends StatelessWidget {
                 fontSize: arabicFontSize,
                 height: 1.8,
                 color: isHighlighted
-                    ? (isDark ? const Color(0xFF4ADE80) : const Color(0xFF854D0E))
+                    ? (isDark || isFirstLineOfJuz ? const Color(0xFF4ADE80) : const Color(0xFF854D0E))
                     : (isSajda
-                        ? (isDark
+                        ? (isDark || isFirstLineOfJuz
                             ? const Color(0xFF86EFAC)
                             : const Color(0xFF166534))
-                        : (isDark
-                            ? const Color(0xFFF4F4F5)
-                            : const Color(0xFF1F2937))),
+                        : (isFirstLineOfJuz
+                            ? Colors.white
+                            : (isDark
+                                ? const Color(0xFFF4F4F5)
+                                : const Color(0xFF1F2937)))),
               ),
             ),
 
@@ -298,32 +325,15 @@ class MushafPageWidget extends StatelessWidget {
             if (word.isLastWordOfAyah && isMarked)
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 2),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 3.5,
-                  vertical: 0.5,
+                padding: const EdgeInsets.all(2.5),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFD97706),
+                  shape: BoxShape.circle,
                 ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFD97706),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.flag_rounded,
-                      size: 8,
-                      color: Colors.white,
-                    ),
-                    SizedBox(width: 1),
-                    Text(
-                      'Stop',
-                      style: TextStyle(
-                        fontSize: 7.5,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                child: const Icon(
+                  Icons.flag_rounded,
+                  size: 12,
+                  color: Colors.white,
                 ),
               ),
 

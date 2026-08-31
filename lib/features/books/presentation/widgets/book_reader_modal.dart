@@ -60,7 +60,9 @@ class _BookReaderModalState extends ConsumerState<BookReaderModal> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No external PDF or document link provided for this book.'),
+          content: Text(
+            'No external PDF or document link provided for this book.',
+          ),
         ),
       );
     }
@@ -123,7 +125,9 @@ class _BookReaderModalState extends ConsumerState<BookReaderModal> {
                         book.author,
                         style: TextStyle(
                           fontSize: 11,
-                          color: _textColors[_readingTheme].withValues(alpha: 0.7),
+                          color: _textColors[_readingTheme].withValues(
+                            alpha: 0.7,
+                          ),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -166,8 +170,8 @@ class _BookReaderModalState extends ConsumerState<BookReaderModal> {
                         _readingTheme == 0
                             ? Icons.wb_sunny_outlined
                             : (_readingTheme == 1
-                                ? Icons.auto_stories_rounded
-                                : Icons.nightlight_round),
+                                  ? Icons.auto_stories_rounded
+                                  : Icons.nightlight_round),
                         size: 20,
                         color: _textColors[_readingTheme],
                       ),
@@ -183,7 +187,10 @@ class _BookReaderModalState extends ConsumerState<BookReaderModal> {
               ],
             ),
           ),
-          const Divider(height: 1),
+          Divider(
+            height: 1,
+            color:  Colors.grey.shade300,
+          ),
 
           // Chapter Navigation Bar
           if (chapters.isNotEmpty)
@@ -221,7 +228,9 @@ class _BookReaderModalState extends ConsumerState<BookReaderModal> {
                               _selectedChapterIndex = val;
                               final progress =
                                   (val + 1) / chapters.length.toDouble();
-                              ref.read(userBooksProvider.notifier).updateProgress(
+                              ref
+                                  .read(userBooksProvider.notifier)
+                                  .updateProgress(
                                     bookId: book.id,
                                     progress: progress,
                                     currentPage: val + 1,
@@ -277,7 +286,9 @@ class _BookReaderModalState extends ConsumerState<BookReaderModal> {
                       style: TextStyle(
                         fontSize: 14,
                         fontStyle: FontStyle.italic,
-                        color: _textColors[_readingTheme].withValues(alpha: 0.8),
+                        color: _textColors[_readingTheme].withValues(
+                          alpha: 0.8,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),

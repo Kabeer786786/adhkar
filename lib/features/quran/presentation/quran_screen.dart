@@ -547,7 +547,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                                       vertical: 8,
                                                     ),
                                               ),
-                                              onPressed: () {
+                                              onPressed: () async {
                                                 Navigator.pop(context);
                                                 if (isJuz) {
                                                   context.push(
@@ -804,7 +804,6 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               return InkWell(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  // Always open in Surah mode at that specific Ayah!
                                   context.push(
                                     '/quran/surah?num=$surahNum&name=${Uri.encodeComponent(surahEnglish)}&startAyah=$ayahNum',
                                   );
@@ -1091,22 +1090,8 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     ),
                     tooltip: 'Search Quran',
                   ),
-                  // 2. Saved Bookmarks Button (Right of search button)
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    constraints: const BoxConstraints(
-                      minWidth: 36,
-                      minHeight: 36,
-                    ),
-                    padding: const EdgeInsets.all(4),
-                    onPressed: () => _showBookmarksModal(context, isDark),
-                    icon: Icon(
-                      Icons.bookmark_outline_rounded,
-                      color: isDark ? Colors.white : const Color(0xFF2A531D),
-                    ),
-                    tooltip: 'Saved Verse Bookmarks',
-                  ),
-                  // 3. Filter Favorites Button
+                  
+                  // 2. Filter Favorites Button
                   IconButton(
                     visualDensity: VisualDensity.compact,
                     constraints: const BoxConstraints(
@@ -1131,6 +1116,21 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     tooltip: _showOnlyFavorites
                         ? 'Show All'
                         : 'Filter Favorites Only',
+                  ),
+                  // 3. Saved Bookmarks Button (Right of search button)
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    onPressed: () => _showBookmarksModal(context, isDark),
+                    icon: Icon(
+                      Icons.bookmark_outline_rounded,
+                      color: isDark ? Colors.white : const Color(0xFF2A531D),
+                    ),
+                    tooltip: 'Saved Verse Bookmarks',
                   ),
                   // 4. Reading History & Stop Points Button
                   IconButton(

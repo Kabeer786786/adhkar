@@ -526,7 +526,10 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                 ),
               ],
             ),
-            const Divider(height: 1),
+            Divider(
+              height: 1,
+              color:  Colors.grey.shade300,
+            ),
             const SizedBox(height: 14),
 
             Container(

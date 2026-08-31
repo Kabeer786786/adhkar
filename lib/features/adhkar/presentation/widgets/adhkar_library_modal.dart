@@ -16,7 +16,8 @@ class AdhkarLibraryModal extends StatefulWidget {
   final List<DhikrItem> defaultAdhkarItems;
   final Function(AdhkarCategory category, List<DhikrItem> items) onAddCategory;
   final Function(String categoryId) onRemoveCategory;
-  final Function(AdhkarCategory newCategory, List<DhikrItem> newItems) onCreateCustom;
+  final Function(AdhkarCategory newCategory, List<DhikrItem> newItems)
+  onCreateCustom;
 
   const AdhkarLibraryModal({
     super.key,
@@ -35,9 +36,11 @@ class AdhkarLibraryModal extends StatefulWidget {
     required List<DhikrItem> currentAdhkarItems,
     required List<AdhkarCategory> defaultCategories,
     required List<DhikrItem> defaultAdhkarItems,
-    required Function(AdhkarCategory category, List<DhikrItem> items) onAddCategory,
+    required Function(AdhkarCategory category, List<DhikrItem> items)
+    onAddCategory,
     required Function(String categoryId) onRemoveCategory,
-    required Function(AdhkarCategory newCategory, List<DhikrItem> newItems) onCreateCustom,
+    required Function(AdhkarCategory newCategory, List<DhikrItem> newItems)
+    onCreateCustom,
   }) {
     showModalBottomSheet(
       context: context,
@@ -322,8 +325,13 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2A531D),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 0,
                 ),
               ),
@@ -337,10 +345,16 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
             onChanged: (val) => setState(() {}),
             decoration: InputDecoration(
               hintText: 'Search Adhkar categories...',
-              prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2A531D)),
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: Color(0xFF2A531D),
+              ),
               filled: true,
               fillColor: const Color(0xFFF9F9F9),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 8,
+              ),
               // border: OutlineInputBorder(
               //   borderRadius: BorderRadius.circular(16),
               //   borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -358,7 +372,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
               itemBuilder: (context, index) {
                 final cat = filteredCategories[index];
                 final isSelected = _isCategorySelected(cat.id);
-                final gradientPreset = AdhkarCategory.getGradient(cat.gradientIndex);
+                final gradientPreset = AdhkarCategory.getGradient(
+                  cat.gradientIndex,
+                );
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 10),
@@ -378,7 +394,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                             end: Alignment.bottomRight,
                           ),
                           border: Border.all(
-                            color: gradientPreset.textColor.withValues(alpha: 0.15),
+                            color: gradientPreset.textColor.withValues(
+                              alpha: 0.15,
+                            ),
                             width: 1.0,
                           ),
                         ),
@@ -393,7 +411,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                               child: IgnorePointer(
                                 child: Opacity(
                                   opacity: 0.85,
-                                  child: _buildCategoryImageWidget(cat.imagePath),
+                                  child: _buildCategoryImageWidget(
+                                    cat.imagePath,
+                                  ),
                                 ),
                               ),
                             ),
@@ -414,7 +434,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                     size: 24,
                                     color: isSelected
                                         ? gradientPreset.textColor
-                                        : gradientPreset.textColor.withValues(alpha: 0.45),
+                                        : gradientPreset.textColor.withValues(
+                                            alpha: 0.45,
+                                          ),
                                   ),
                                 ),
                               ),
@@ -422,7 +444,12 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
 
                             // Card Text Content
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(14, 12, 54, 12),
+                              padding: const EdgeInsets.fromLTRB(
+                                14,
+                                12,
+                                54,
+                                12,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -456,7 +483,8 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: gradientPreset.textColor.withValues(alpha: 0.85),
+                                      color: gradientPreset.textColor
+                                          .withValues(alpha: 0.85),
                                       height: 1.35,
                                     ),
                                   ),
@@ -497,7 +525,10 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
           child: Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF2A531D)),
+                icon: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Color(0xFF2A531D),
+                ),
                 onPressed: () {
                   setState(() {
                     _currentView = AdhkarModalView.library;
@@ -532,15 +563,16 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
             ],
           ),
         ),
-        const Divider(height: 1),
+        Divider(
+          height: 1,
+          color: Colors.grey.shade300,
+        ),
 
         // Horizontal PageView of Dhikr Items
         SizedBox(
           height: 320,
           child: itemsForCat.isEmpty
-              ? const Center(
-                  child: Text('No Dhikr items in this section yet.'),
-                )
+              ? const Center(child: Text('No Dhikr items in this section yet.'))
               : PageView.builder(
                   controller: _detailPageController,
                   onPageChanged: (index) {
@@ -552,7 +584,10 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                   itemBuilder: (context, index) {
                     final item = itemsForCat[index];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 10.0,
+                      ),
                       child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -644,7 +679,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                   width: isCurrent ? 10 : 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: isCurrent ? const Color(0xFF2A531D) : Colors.grey.shade300,
+                    color: isCurrent
+                        ? const Color(0xFF2A531D)
+                        : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(3),
                   ),
                 );
@@ -665,17 +702,23 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                 });
               },
               icon: Icon(
-                isSelected ? Icons.check_circle_rounded : Icons.add_circle_rounded,
+                isSelected
+                    ? Icons.check_circle_rounded
+                    : Icons.add_circle_rounded,
               ),
               label: Text(
                 isSelected ? 'Remove from Main Screen' : 'Add to Main Screen',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isSelected ? Colors.red.shade700 : const Color(0xFF2A531D),
+                backgroundColor: isSelected
+                    ? Colors.red.shade700
+                    : const Color(0xFF2A531D),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
           ),
@@ -704,7 +747,10 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF2A531D)),
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Color(0xFF2A531D),
+                  ),
                   onPressed: () {
                     setState(() {
                       _currentView = AdhkarModalView.library;

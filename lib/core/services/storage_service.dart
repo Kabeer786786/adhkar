@@ -544,6 +544,14 @@ class StorageService {
     await _settingsBox.put('quran_translation_lang', lang);
   }
 
+  int getQuranReadingMode() {
+    return _settingsBox.get('quran_reading_mode', defaultValue: 0) as int;
+  }
+
+  Future<void> setQuranReadingMode(int mode) async {
+    await _settingsBox.put('quran_reading_mode', mode);
+  }
+
   // --- Saved Dua Items ---
   List<Map<String, dynamic>>? getSavedDuaItems() {
     final data = _adhkarBox.get('custom_dua_items');
