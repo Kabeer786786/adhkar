@@ -7,21 +7,20 @@ void main() {
     test('Default font is Digital Khatt IndoPak', () {
       expect(ArabicFont.defaultFont, equals(ArabicFont.digitalKhattIndoPak));
       expect(ArabicFont.digitalKhattIndoPak.isDefault, isTrue);
-      expect(ArabicFont.digitalKhattV2.isDefault, isFalse);
+      expect(ArabicFont.notoNaskhArabic.isDefault, isFalse);
     });
 
     test('Font family mappings are exact', () {
       expect(ArabicFont.digitalKhattIndoPak.fontFamily, equals('DigitalKhattIndoPak'));
-      expect(ArabicFont.digitalKhattV2.fontFamily, equals('DigitalKhattV2'));
-      expect(ArabicFont.amiri.fontFamily, equals('Amiri'));
       expect(ArabicFont.notoNaskhArabic.fontFamily, equals('NotoNaskhArabic'));
     });
 
     test('fromString serialization and deserialization with fallback', () {
       expect(ArabicFont.fromString('digitalKhattIndoPak'), equals(ArabicFont.digitalKhattIndoPak));
-      expect(ArabicFont.fromString('digitalKhattV2'), equals(ArabicFont.digitalKhattV2));
-      expect(ArabicFont.fromString('amiri'), equals(ArabicFont.amiri));
       expect(ArabicFont.fromString('notoNaskhArabic'), equals(ArabicFont.notoNaskhArabic));
+      // Removed fonts fall back to default
+      expect(ArabicFont.fromString('digitalKhattV2'), equals(ArabicFont.digitalKhattIndoPak));
+      expect(ArabicFont.fromString('amiri'), equals(ArabicFont.digitalKhattIndoPak));
       expect(ArabicFont.fromString('invalid_key'), equals(ArabicFont.digitalKhattIndoPak));
       expect(ArabicFont.fromString(null), equals(ArabicFont.digitalKhattIndoPak));
     });
@@ -48,10 +47,10 @@ void main() {
 
       // Test explicit font override
       final overrideStyle = AppTypography.arabicBody(
-        arabicFont: ArabicFont.amiri,
+        arabicFont: ArabicFont.notoNaskhArabic,
         fontSize: 20,
       );
-      expect(overrideStyle.fontFamily, equals('Amiri'));
+      expect(overrideStyle.fontFamily, equals('NotoNaskhArabic'));
       expect(overrideStyle.fontSize, equals(20));
     });
   });

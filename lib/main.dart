@@ -11,7 +11,7 @@ import 'core/theme/app_theme.dart';
 import 'shared/providers/app_providers.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); 
 
   // Initialize Background Audio Service
   await JustAudioBackground.init(

@@ -1,8 +1,6 @@
 /// Supported Arabic fonts for Quran, Adhkar, Dua, and Islamic content.
 enum ArabicFont {
   digitalKhattIndoPak,
-  digitalKhattV2,
-  amiri,
   notoNaskhArabic;
 
   /// Default Arabic font across the entire application.
@@ -27,10 +25,6 @@ extension ArabicFontExtension on ArabicFont {
     switch (this) {
       case ArabicFont.digitalKhattIndoPak:
         return 'IndoPak';
-      case ArabicFont.digitalKhattV2:
-        return 'Digital Khatt';
-      case ArabicFont.amiri:
-        return 'Amiri';
       case ArabicFont.notoNaskhArabic:
         return 'Noto Naskh Arabic';
     }
@@ -41,10 +35,6 @@ extension ArabicFontExtension on ArabicFont {
     switch (this) {
       case ArabicFont.digitalKhattIndoPak:
         return 'DigitalKhattIndoPak';
-      case ArabicFont.digitalKhattV2:
-        return 'DigitalKhattV2';
-      case ArabicFont.amiri:
-        return 'Amiri';
       case ArabicFont.notoNaskhArabic:
         return 'NotoNaskhArabic';
     }
@@ -58,10 +48,6 @@ extension ArabicFontExtension on ArabicFont {
     switch (this) {
       case ArabicFont.digitalKhattIndoPak:
         return 'IndoPak Quranic script (Default)';
-      case ArabicFont.digitalKhattV2:
-        return 'Modern Madinah Uthmani script';
-      case ArabicFont.amiri:
-        return 'Classical Naskh typography';
       case ArabicFont.notoNaskhArabic:
         return 'Clean standard Naskh Arabic';
     }
@@ -69,5 +55,5 @@ extension ArabicFontExtension on ArabicFont {
 
   /// Representative Quranic sample text with various diacritical marks
   /// (Fathah, Kasrah, Dammah, Sukūn/Jazm, Shaddah, Madd, and Quranic marks).
-  String get samplePreviewText => 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\nٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ';
+  String get samplePreviewText => 'بِسْمِ ٱللَّهِ الرَّحْمٰنِ ٱلرَّحِيمِ\nٱلْحَمْدُ لِلَّهِ رَبِّ الْعٰلَمِيْنَ';
 }
