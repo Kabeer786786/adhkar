@@ -1,23 +1,69 @@
 import 'package:flutter/material.dart';
+import 'book_content_block.dart';
 
 class BookChapter {
   final String title;
-  final String content;
+  final String content; // Legacy or summary text content
+  final String? subtitle;
+  final List<BookContentBlock> blocks;
 
   const BookChapter({
     required this.title,
-    required this.content,
+    this.content = '',
+    this.subtitle,
+    this.blocks = const [],
   });
+
+  /// Returns structured blocks, auto-parsing legacy content if blocks are empty
+  List<BookContentBlock> get effectiveBlocks {
+    if (blocks.isNotEmpty) {
+      return blocks;
+    }
+    if (content.isNotEmpty) {
+      return BookContentBlock.parseLegacyContent(content);
+    }
+    return [];
+  }
 
   Map<String, dynamic> toJson() => {
         'title': title,
         'content': content,
+        if (subtitle != null) 'subtitle': subtitle,
+        if (blocks.isNotEmpty)
+          'blocks': blocks.map((b) => b.toJson()).toList(),
       };
 
-  factory BookChapter.fromJson(Map<String, dynamic> json) => BookChapter(
-        title: json['title'] as String? ?? '',
-        content: json['content'] as String? ?? '',
-      );
+  factory BookChapter.fromJson(Map<String, dynamic> json) {
+    List<BookContentBlock> loadedBlocks = [];
+    if (json['blocks'] != null) {
+      final rawBlocks = json['blocks'] as List;
+      loadedBlocks = rawBlocks
+          .map((b) => BookContentBlock.fromJson(b as Map<String, dynamic>))
+          .toList();
+    }
+
+    final rawContent = json['content'] as String? ?? '';
+    return BookChapter(
+      title: json['title'] as String? ?? '',
+      content: rawContent,
+      subtitle: json['subtitle'] as String?,
+      blocks: loadedBlocks,
+    );
+  }
+
+  BookChapter copyWith({
+    String? title,
+    String? content,
+    String? subtitle,
+    List<BookContentBlock>? blocks,
+  }) {
+    return BookChapter(
+      title: title ?? this.title,
+      content: content ?? this.content,
+      subtitle: subtitle ?? this.subtitle,
+      blocks: blocks ?? this.blocks,
+    );
+  }
 }
 
 class BookModel {

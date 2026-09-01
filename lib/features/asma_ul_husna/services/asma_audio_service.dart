@@ -108,12 +108,8 @@ class AsmaAudioController extends ChangeNotifier {
   }
 
   void _onAudioCompleted() {
-    if (_currentIndex >= 0 && _currentIndex < asmaUlHusnaList.length - 1) {
-      playIndex(_currentIndex + 1);
-    } else {
-      _isPlaying = false;
-      notifyListeners();
-    }
+    _isPlaying = false;
+    notifyListeners();
   }
 
   /// Play audio for a specific name index.
@@ -180,16 +176,15 @@ class AsmaAudioController extends ChangeNotifier {
   Future<void> playNext({BuildContext? context, WidgetRef? ref}) async {
     if (_player.hasNext) {
       await _player.seekToNext();
-    } else if (_currentIndex < asmaUlHusnaList.length - 1) {
-      await playIndex(_currentIndex + 1, context: context, ref: ref);
     }
   }
 
   Future<void> playPrevious({BuildContext? context, WidgetRef? ref}) async {
     if (_player.hasPrevious) {
       await _player.seekToPrevious();
-    } else if (_currentIndex > 0) {
-      await playIndex(_currentIndex - 1, context: context, ref: ref);
+    } else if (_currentIndex == 0) {
+      await _player.seek(Duration.zero);
+      await _player.play();
     }
   }
 

@@ -17,7 +17,8 @@ void main() async {
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.sprnt.adhkar.channel.audio',
     androidNotificationChannelName: 'Adhkar Audio Playback',
-    androidNotificationOngoing: true,
+    androidNotificationOngoing: false,
+    androidStopForegroundOnPause: true,
   );
 
   // Initialize Local Hive Storage

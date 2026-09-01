@@ -10,9 +10,11 @@ import '../data/surah_model.dart';
 class QuranAudioController extends ChangeNotifier {
   final AudioPlayer _player = AudioPlayer();
   StreamSubscription<PlayerState>? _playerStateSubscription;
+  StreamSubscription<int?>? _currentIndexSubscription;
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<Duration?>? _durationSubscription;
 
+  ConcatenatingAudioSource? _playlistSource;
   List<AyahModel> _playlist = [];
   int _currentIndex = -1; // -1 means player inactive
   String _title = '';
@@ -25,7 +27,6 @@ class QuranAudioController extends ChangeNotifier {
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   String? _errorMessage;
-  int _currentRequestId = 0;
 
   List<AyahModel> get playlist => _playlist;
   int get currentIndex => _currentIndex;
@@ -41,6 +42,7 @@ class QuranAudioController extends ChangeNotifier {
 
   void toggleLoopSingle() {
     _isLoopSingle = !_isLoopSingle;
+    _player.setLoopMode(_isLoopSingle ? LoopMode.one : LoopMode.off);
     notifyListeners();
   }
 
@@ -65,10 +67,22 @@ class QuranAudioController extends ChangeNotifier {
       _isPlaying = playing && processingState != ProcessingState.completed;
 
       if (processingState == ProcessingState.completed) {
-        _onAudioCompleted();
+        _isPlaying = false;
+        notifyListeners();
       }
 
       notifyListeners();
+    });
+
+    _currentIndexSubscription = _player.currentIndexStream.listen((index) {
+      if (index != null && index >= 0 && index < _playlist.length) {
+        if (_currentIndex != index) {
+          _currentIndex = index;
+          _errorMessage = null;
+          notifyListeners();
+          _preloadNextItems(index);
+        }
+      }
     });
 
     _positionSubscription = _player.positionStream.listen((pos) {
@@ -82,16 +96,26 @@ class QuranAudioController extends ChangeNotifier {
     });
   }
 
-  void _onAudioCompleted() {
-    if (_isLoopSingle && _currentIndex >= 0 && _currentIndex < _playlist.length) {
-      _playCurrentAyah();
-    } else if (_currentIndex >= 0 && _currentIndex < _playlist.length - 1) {
-      _currentIndex++;
-      notifyListeners();
-      _playCurrentAyah();
-    } else {
-      _isPlaying = false;
-      notifyListeners();
+  void _cacheItemInBackground(AyahModel ayah) async {
+    try {
+      final url = ayah.remoteUrl.isNotEmpty
+          ? ayah.remoteUrl
+          : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/${ayah.number}.mp3';
+
+      await MediaDownloadService.instance.downloadFile(
+        relativePath: ayah.localRelativePath,
+        remoteUrl: url,
+      );
+    } catch (_) {}
+  }
+
+  void _preloadNextItems(int currentIndex) {
+    for (int offset = 1; offset <= 3; offset++) {
+      final nextIndex = currentIndex + offset;
+      if (nextIndex < _playlist.length) {
+        final nextAyah = _playlist[nextIndex];
+        _cacheItemInBackground(nextAyah);
+      }
     }
   }
 
@@ -104,88 +128,92 @@ class QuranAudioController extends ChangeNotifier {
   }) async {
     if (ayahs.isEmpty || startIndex < 0 || startIndex >= ayahs.length) return;
 
+    final targetSurahNumber = surahNumber ?? ayahs.first.surahNumber ?? 1;
+    final bool isSamePlaylist = _playlist.isNotEmpty &&
+        _surahNumber == targetSurahNumber &&
+        _playlist.length == ayahs.length &&
+        _playlist.first.number == ayahs.first.number;
+
+    _title = title;
+    _surahNumber = targetSurahNumber;
+    _errorMessage = null;
+
+    if (isSamePlaylist && _playlistSource != null) {
+      _currentIndex = startIndex;
+      notifyListeners();
+      try {
+        await _player.seek(Duration.zero, index: startIndex);
+        await _player.setSpeed(_speed);
+        await _player.play();
+        _preloadNextItems(startIndex);
+      } catch (e) {
+        debugPrint('Error seeking in existing playlist: $e');
+      }
+      return;
+    }
+
     _playlist = List.from(ayahs);
     _currentIndex = startIndex;
-    _title = title;
-    _surahNumber = surahNumber ?? ayahs.first.surahNumber ?? 1;
-    _errorMessage = null;
     notifyListeners();
 
-    await _playCurrentAyah();
-  }
+    final surahTitle = _title.isNotEmpty ? _title : 'Surah $targetSurahNumber';
+    final List<AudioSource> sources = [];
 
-  /// Internal playback method for current ayah in playlist with request ID safety.
-  Future<void> _playCurrentAyah() async {
-    if (_currentIndex < 0 || _currentIndex >= _playlist.length) return;
-    final int requestId = ++_currentRequestId;
-    final ayah = _playlist[_currentIndex];
-    _errorMessage = null;
+    for (int i = 0; i < ayahs.length; i++) {
+      final ayah = ayahs[i];
+      final mediaItem = MediaItem(
+        id: 'quran_${targetSurahNumber}_${ayah.numberInSurah}',
+        album: '$surahTitle (The Noble Qur\'an)',
+        title: '$surahTitle • Verse ${ayah.numberInSurah}',
+        artist: 'The Noble Qur\'an Recitation',
+        extras: {
+          'type': 'quran',
+          'surahNumber': targetSurahNumber,
+          'surahName': surahTitle,
+          'route':
+              '/quran/surah?num=$targetSurahNumber&name=${Uri.encodeComponent(surahTitle)}',
+        },
+      );
 
-    final File localFile =
-        await MediaDownloadService.instance.getLocalFile(ayah.localRelativePath);
-    final bool isLocal =
-        await localFile.exists() && (await localFile.length()) > 0;
-
-    final surahNum = _surahNumber ?? ayah.surahNumber ?? 1;
-    final surahTitle = _title.isNotEmpty ? _title : 'Surah $surahNum';
-
-    final mediaItem = MediaItem(
-      id: 'quran_${surahNum}_${ayah.numberInSurah}',
-      album: 'Surah $surahTitle (The Noble Qur\'an)',
-      title: '$surahTitle • Verse ${ayah.numberInSurah}',
-      artist: 'The Noble Qur\'an Recitation',
-      extras: {
-        'type': 'quran',
-        'surahNumber': surahNum,
-        'surahName': surahTitle,
-        'route': '/quran/surah?num=$surahNum&name=${Uri.encodeComponent(surahTitle)}',
-      },
-    );
-
-    try {
-      await _player.stop();
-      if (requestId != _currentRequestId) return;
+      final File localFile =
+          await MediaDownloadService.instance.getLocalFile(ayah.localRelativePath);
+      final bool isLocal =
+          await localFile.exists() && (await localFile.length()) > 0;
 
       if (isLocal) {
-        await _player.setAudioSource(
-          AudioSource.file(
-            localFile.path,
-            tag: mediaItem,
-          ),
-        );
+        sources.add(AudioSource.file(localFile.path, tag: mediaItem));
       } else {
-        // Stream directly from Cloudflare R2
         final url = ayah.remoteUrl.isNotEmpty
             ? ayah.remoteUrl
             : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/${ayah.number}.mp3';
-
-        await _player.setAudioSource(
-          AudioSource.uri(
-            Uri.parse(url),
-            tag: mediaItem,
-          ),
-        );
+        sources.add(AudioSource.uri(Uri.parse(url), tag: mediaItem));
       }
+    }
 
-      if (requestId != _currentRequestId) return;
+    _playlistSource = ConcatenatingAudioSource(children: sources);
 
+    try {
+      await _player.setAudioSource(
+        _playlistSource!,
+        initialIndex: startIndex,
+        initialPosition: Duration.zero,
+        preload: true,
+      );
       await _player.setSpeed(_speed);
+      await _player.setLoopMode(_isLoopSingle ? LoopMode.one : LoopMode.off);
       await _player.play();
+      _preloadNextItems(startIndex);
     } catch (e) {
-      if (requestId == _currentRequestId) {
-        debugPrint('Error playing verse audio (Ayah ${ayah.numberInSurah}): $e');
-        _errorMessage = 'Unable to play audio. Check internet connection.';
-        _isPlaying = false;
-        notifyListeners();
-      }
+      debugPrint('Error playing playlist: $e');
+      _errorMessage = 'Unable to play audio. Check internet connection.';
+      _isPlaying = false;
+      notifyListeners();
     }
   }
 
   Future<void> togglePlayPause() async {
     if (_currentIndex < 0 && _playlist.isNotEmpty) {
-      _currentIndex = 0;
-      notifyListeners();
-      await _playCurrentAyah();
+      await playIndex(0);
       return;
     }
     if (_player.playing) {
@@ -196,18 +224,14 @@ class QuranAudioController extends ChangeNotifier {
   }
 
   Future<void> playNext() async {
-    if (_currentIndex < _playlist.length - 1) {
-      _currentIndex++;
-      notifyListeners();
-      await _playCurrentAyah();
+    if (_player.hasNext) {
+      await _player.seekToNext();
     }
   }
 
   Future<void> playPrevious() async {
-    if (_currentIndex > 0) {
-      _currentIndex--;
-      notifyListeners();
-      await _playCurrentAyah();
+    if (_player.hasPrevious) {
+      await _player.seekToPrevious();
     } else if (_currentIndex == 0) {
       await _player.seek(Duration.zero);
       await _player.play();
@@ -219,7 +243,18 @@ class QuranAudioController extends ChangeNotifier {
     if (index >= 0 && index < _playlist.length) {
       _currentIndex = index;
       notifyListeners();
-      await _playCurrentAyah();
+      if (_playlistSource != null) {
+        try {
+          await _player.seek(Duration.zero, index: index);
+          await _player.setSpeed(_speed);
+          await _player.play();
+          _preloadNextItems(index);
+        } catch (e) {
+          debugPrint('Error seeking to index $index: $e');
+        }
+      } else {
+        await playPlaylist(_playlist, index, title: _title, surahNumber: _surahNumber);
+      }
     }
   }
 
@@ -234,7 +269,6 @@ class QuranAudioController extends ChangeNotifier {
   }
 
   Future<void> stop() async {
-    _currentRequestId++;
     await _player.stop();
     _currentIndex = -1;
     _isPlaying = false;
@@ -244,6 +278,7 @@ class QuranAudioController extends ChangeNotifier {
   @override
   void dispose() {
     _playerStateSubscription?.cancel();
+    _currentIndexSubscription?.cancel();
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
     _player.dispose();

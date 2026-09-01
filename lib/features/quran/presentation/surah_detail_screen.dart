@@ -226,20 +226,16 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     if (_activeAyahIndex < 0 || _activeAyahIndex >= ayahs.length) return;
 
     if (_selectedMode == 0) {
-      // Verse-by-Verse list mode: Position active verse card exactly at top of viewport
+      // Verse-by-Verse list mode: Position active verse card smoothly at the top of the viewport
       if (!_scrollController.hasClients) return;
       final key = _ayahKeys[_activeAyahIndex];
-      final renderBox = key?.currentContext?.findRenderObject() as RenderBox?;
+      final currentCtx = key?.currentContext;
 
-      if (renderBox != null && renderBox.hasSize) {
-        final viewport = RenderAbstractViewport.of(renderBox);
-        final revealedOffset = viewport.getOffsetToReveal(renderBox, 0.0);
-        _scrollController.animateTo(
-          revealedOffset.offset.clamp(
-            0.0,
-            _scrollController.position.maxScrollExtent,
-          ),
-          duration: const Duration(milliseconds: 350),
+      if (currentCtx != null) {
+        Scrollable.ensureVisible(
+          currentCtx,
+          alignment: 0.0,
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOutCubic,
         );
       } else {
@@ -248,57 +244,27 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         final double estimatedTarget =
             headerEstimatedHeight + (_activeAyahIndex * avgVerseHeight);
         final maxExtent = _scrollController.position.maxScrollExtent;
-        _scrollController.jumpTo(estimatedTarget.clamp(0.0, maxExtent));
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted || !_scrollController.hasClients) return;
-          final k = _ayahKeys[_activeAyahIndex];
-          final rb = k?.currentContext?.findRenderObject() as RenderBox?;
-          if (rb != null && rb.hasSize) {
-            final vp = RenderAbstractViewport.of(rb);
-            final ro = vp.getOffsetToReveal(rb, 0.0);
-            _scrollController.animateTo(
-              ro.offset.clamp(0.0, _scrollController.position.maxScrollExtent),
+        _scrollController
+            .animateTo(
+              estimatedTarget.clamp(0.0, maxExtent),
               duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
-            );
-          }
-        });
-      }
-    } else if (_selectedMode == 1) {
-      // Page-wise Mushaf mode: Slide to page containing the active verse segment
-      final mushafPages =
-          _lastComputedMushafPages ?? _paginateCurrentMushaf(context, ayahs);
-      final pageIdx = mushafPages.indexWhere(
-        (p) => p.containsMasterAyahIndex(_activeAyahIndex),
-      );
-      if (pageIdx >= 0) {
-        _currentPageIndex = pageIdx;
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            pageIdx,
-            duration: const Duration(milliseconds: 350),
-            curve: Curves.easeOutCubic,
-          );
-        } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && _pageController.hasClients) {
-              _pageController.jumpToPage(pageIdx);
-            }
-          });
-        }
-      }
-    } else if (_selectedMode == 2) {
-      // Continuous Mushaf mode: Proportional smooth scroll
-      if (_scrollController.hasClients && ayahs.isNotEmpty) {
-        final double progress = _activeAyahIndex / ayahs.length;
-        final double target =
-            progress * _scrollController.position.maxScrollExtent;
-        _scrollController.animateTo(
-          target,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeInOutCubic,
-        );
+              curve: Curves.easeOutCubic,
+            )
+            .then((_) {
+              if (!mounted) return;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                final retryCtx = _ayahKeys[_activeAyahIndex]?.currentContext;
+                if (retryCtx != null) {
+                  Scrollable.ensureVisible(
+                    retryCtx,
+                    alignment: 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOutCubic,
+                  );
+                }
+              });
+            });
       }
     }
   }

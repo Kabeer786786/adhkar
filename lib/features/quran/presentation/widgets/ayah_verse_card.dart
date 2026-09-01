@@ -67,10 +67,10 @@ class AyahVerseCard extends StatelessWidget {
         ayah.rub > 0 && index > 0 && ayah.rub != allAyahs[index - 1].rub;
 
     final cardBgColor = isSelected
-        ? (isDark ? const Color(0xFF2C2C2C) : const Color(0xFFE2F6DB))
+        ? (isDark ? const Color(0xFF27272A) : const Color(0xFFE2F6DB))
         : (isResumeHighlight
-            ? (isDark ? const Color(0xFF2C2C2C) : const Color(0xFFFEF9C3))
-            : (isDark ? const Color(0xFF212121) : Colors.white));
+            ? (isDark ? const Color(0xFF27272A) : const Color(0xFFFEF9C3))
+            : (isDark ? const Color(0xFF1E1E1E) : Colors.white));
 
     final borderColor = isResumeHighlight
         ? const Color(0xFFF59E0B)
@@ -78,10 +78,10 @@ class AyahVerseCard extends StatelessWidget {
             ? const Color(0xFFD97706)
             : (isSelected
                 ? (isDark
-                    ? const Color(0xFF383838)
+                    ? const Color(0xFFA3E635)
                     : const Color(0xFF1E3A1A).withValues(alpha: 0.45))
                 : (isDark
-                    ? const Color(0xFF303030)
+                    ? const Color(0xFF2E2E32)
                     : const Color(0xFF2A531D).withValues(alpha: 0.12))));
 
     final int resumeAyahNum = ayah.numberInSurah < allAyahs.length
