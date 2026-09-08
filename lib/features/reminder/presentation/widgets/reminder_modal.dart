@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import '../../../../core/config/reminder_audio_config.dart';
 import '../../domain/reminder_model.dart';
 
@@ -77,13 +78,19 @@ class _ReminderModalState extends State<ReminderModal> {
     _selectedDays = Set<int>.from(rem?.customDays ?? [1, 2, 3, 4, 5, 6, 7]);
     _duration = rem?.duration ?? AlarmDuration.seconds30;
     _soundEnabled = rem?.soundEnabled ?? true;
-    _soundType = rem?.soundType ?? ReminderAudioConfig.defaultRingtone;
+    _soundType = ReminderAudioConfig.canonicalSoundName(rem?.soundType);
     _vibrationEnabled = rem?.vibrationEnabled ?? true;
     _notificationEnabled = rem?.notificationEnabled ?? true;
 
     _previewSubscription = _previewPlayer.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         if (mounted) setState(() => _isPreviewPlaying = false);
+      } else if (!state.playing &&
+          state.processingState != ProcessingState.loading &&
+          state.processingState != ProcessingState.buffering) {
+        if (mounted && _isPreviewPlaying) {
+          setState(() => _isPreviewPlaying = false);
+        }
       }
     });
   }
@@ -100,14 +107,21 @@ class _ReminderModalState extends State<ReminderModal> {
 
   Future<void> _playAudioPreview() async {
     try {
-      final path = ReminderAudioConfig.getAssetPath(_soundType);
+      final canonicalSound = ReminderAudioConfig.canonicalSoundName(_soundType);
+      final path = ReminderAudioConfig.getAssetPath(canonicalSound);
+      final mediaItem = MediaItem(
+        id: 'reminder_preview_${canonicalSound.replaceAll(" ", "_")}',
+        title: canonicalSound,
+        album: 'Adhkar Preview',
+      );
+
       await _previewPlayer.stop();
-      await _previewPlayer.setAsset(path);
+      await _previewPlayer.setVolume(1.0);
+      await _previewPlayer.setAudioSource(
+        AudioSource.asset(path, tag: mediaItem),
+      );
       if (mounted) setState(() => _isPreviewPlaying = true);
-      _previewPlayer.play().catchError((e) {
-        debugPrint('[ReminderModal] Error during audio playback: $e');
-        if (mounted) setState(() => _isPreviewPlaying = false);
-      });
+      await _previewPlayer.play();
     } catch (e) {
       debugPrint('[ReminderModal] Error loading preview audio: $e');
       if (mounted) setState(() => _isPreviewPlaying = false);
@@ -293,7 +307,7 @@ class _ReminderModalState extends State<ReminderModal> {
       customDays: _selectedDays.toList()..sort(),
       duration: _duration,
       soundEnabled: _soundEnabled,
-      soundType: _soundType,
+      soundType: ReminderAudioConfig.canonicalSoundName(_soundType),
       vibrationEnabled: _vibrationEnabled,
       notificationEnabled: _notificationEnabled,
       isEnabled: widget.initialReminder?.isEnabled ?? true,
@@ -303,6 +317,7 @@ class _ReminderModalState extends State<ReminderModal> {
       timezone: now.timeZoneName,
     );
 
+    _stopAudioPreview();
     widget.onSave(rem);
     Navigator.pop(context);
   }
@@ -873,9 +888,7 @@ class _ReminderModalState extends State<ReminderModal> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            initialValue: _soundOptions.contains(_soundType)
-                                ? _soundType
-                                : _soundOptions.first,
+                            initialValue: ReminderAudioConfig.canonicalSoundName(_soundType),
                             dropdownColor: cardBg,
                             decoration: InputDecoration(
                               labelText: 'ALARM AUDIO / SOUND',

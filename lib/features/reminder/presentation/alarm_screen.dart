@@ -12,6 +12,7 @@ import '../../../core/config/reminder_audio_config.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
+import '../../quiet_hours/presentation/providers/quiet_hours_provider.dart';
 import '../domain/reminder_model.dart';
 import 'providers/reminder_provider.dart';
 
@@ -113,8 +114,12 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       _activeSoundName = effectiveSoundType;
     });
 
-    final soundEnabled = customReminder?.soundEnabled ?? true;
-    final vibrationEnabled = customReminder?.vibrationEnabled ?? true;
+    final quietHours = ref.read(quietHoursProvider);
+    final quietHoursService = ref.read(quietHoursServiceProvider);
+    final isQuietActive = await quietHoursService.isQuietHoursCurrentlyActive(quietHours);
+
+    final soundEnabled = !isQuietActive && (customReminder?.soundEnabled ?? true);
+    final vibrationEnabled = !isQuietActive && (customReminder?.vibrationEnabled ?? true);
     final durationSeconds = customReminder?.duration.inSeconds ?? 30;
 
     // Auto-dismiss timer based on user specified reminder duration

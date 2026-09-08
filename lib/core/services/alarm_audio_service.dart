@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
 import '../config/reminder_audio_config.dart';
+import '../../features/quiet_hours/services/quiet_hours_service.dart';
 
 class AlarmAudioService {
   static final AlarmAudioService _instance = AlarmAudioService._internal();
@@ -25,6 +27,12 @@ class AlarmAudioService {
     int maxDurationSeconds = 30, 
   }) async {
     await stopAlarm(); // Stop any active alarm
+
+    final isQuiet = await QuietHoursService().isQuietHoursCurrentlyActive(null);
+    if (isQuiet) {
+      debugPrint('[AlarmAudioService] Quiet Hours active. Alarm muted.');
+      return;
+    }
 
     _isPlaying = true;
 

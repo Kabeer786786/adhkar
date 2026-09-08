@@ -236,7 +236,18 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: const AppHeaderBar(title: 'QUIET HOURS', showBackButton: true),
+      appBar: AppHeaderBar(
+        title: 'QUIET HOURS',
+        showBackButton: true,
+        actions: [
+          if (isSupported)
+            IconButton(
+              icon: const Icon(Icons.tune_rounded),
+              tooltip: 'Device DND Schedules',
+              onPressed: () => service.openDndSchedulesSettings(),
+            ),
+        ],
+      ),
       body: schedules.isEmpty
           ? _buildEmptyState(context, ref, primaryGreen, isDark, subTextColor)
           : ListView(
@@ -317,14 +328,45 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                     top: 0,
                     bottom: 6,
                   ),
-                  child: Text(
-                    'ALL QUIET TIMINGS',
-                    style: GoogleFonts.lexend(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.6,
-                      color: subTextColor,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'ALL QUIET TIMINGS',
+                        style: GoogleFonts.lexend(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.6,
+                          color: subTextColor,
+                        ),
+                      ),
+                      if (isSupported && _hasDndPermission)
+                        GestureDetector(
+                          onTap: () => service.openDndSchedulesSettings(),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: primaryGreen.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.do_not_disturb_on_outlined, size: 14, color: primaryGreen),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'System Schedules',
+                                  style: GoogleFonts.lexend(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: primaryGreen,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 ...schedules.map(
