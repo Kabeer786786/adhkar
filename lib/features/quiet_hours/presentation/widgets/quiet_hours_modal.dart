@@ -607,91 +607,31 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
 
                     const SizedBox(height: 24),
 
-                    // Save / Delete Button Row
-                    if (widget.initialSchedule != null &&
-                        widget.onDelete != null)
-                      Row(
-                        children: [
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFDC2626),
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              widget.onDelete!();
-                            },
-                            icon: const Icon(
-                              Icons.delete_outline_rounded,
-                              size: 20,
-                            ),
-                            label: Text(
-                              'Delete',
-                              style: GoogleFonts.lexend(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                    // Save / Update Timing Button (Full Width)
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryGreen,
+                          foregroundColor: Colors.white,
+                          elevation: 2,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryGreen,
-                                foregroundColor: Colors.white,
-                                elevation: 2,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                              ),
-                              onPressed: _save,
-                              child: Text(
-                                'Update Timing',
-                                style: GoogleFonts.lexend(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    else
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryGreen,
-                            foregroundColor: Colors.white,
-                            elevation: 2,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          onPressed: _save,
-                          child: Text(
-                            widget.initialSchedule == null
-                                ? 'Save Timing'
-                                : 'Update Timing',
-                            style: GoogleFonts.lexend(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        ),
+                        onPressed: _save,
+                        child: Text(
+                          widget.initialSchedule == null
+                              ? 'Save Timing'
+                              : 'Update Timing',
+                          style: GoogleFonts.lexend(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),

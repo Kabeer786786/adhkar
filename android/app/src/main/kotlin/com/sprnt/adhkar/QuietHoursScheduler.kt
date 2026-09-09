@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
@@ -64,8 +65,21 @@ object QuietHoursScheduler {
     }
 
     /**
+     * Check if Battery Optimization is currently disabled (ignored) for the app.
+     * When disabled, Android power saving mode will NOT kill background alarms or receivers.
+     */
+    fun isBatteryOptimizationIgnored(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager ?: return true
+            return pm.isIgnoringBatteryOptimizations(context.packageName)
+        }
+        return true
+    }
+
+    /**
      * Synchronize schedules directly with Android's system AutomaticZenRule (OS Do Not Disturb Schedules).
-     * This creates native rules visible in Android's Do Not Disturb system settings.
+     * This creates native rules visible in Android's Do Not Disturb system settings using condition://android/schedule.
+     * Android OS evaluates these schedules at the system level independently of app execution state.
      */
     fun syncAutomaticZenRules(context: Context, schedulesJson: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
@@ -73,65 +87,105 @@ object QuietHoursScheduler {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
             if (!nm.isNotificationPolicyAccessGranted) return
 
-            val existingRules = nm.automaticZenRules
+            val existingRules = nm.automaticZenRules ?: emptyMap<String, AutomaticZenRule>()
             val arr = JSONArray(schedulesJson)
-            val currentScheduleIds = mutableSetOf<String>()
+            val currentRuleNames = mutableSetOf<String>()
 
             for (i in 0 until arr.length()) {
                 val obj = arr.getJSONObject(i)
                 val scheduleId = obj.optString("id", "quiet_$i")
-                val title = obj.optString("title", "Adhkar Quiet Hours")
+                val title = obj.optString("title", "Quiet Hours")
+                val ruleName = "Adhkar - $title"
                 val enabled = obj.optBoolean("enabled", true)
-                currentScheduleIds.add(scheduleId)
+                currentRuleNames.add(ruleName)
 
-                val conditionUri = Uri.parse("adhkar://quiet_hours/$scheduleId")
+                val startHour = obj.optInt("startHour", 0)
+                val startMinute = obj.optInt("startMinute", 0)
+                val endHour = obj.optInt("endHour", 0)
+                val endMinute = obj.optInt("endMinute", 0)
+                val weekdays = parseWeekdays(obj.optJSONArray("weekdays"))
+                val repeatDaily = obj.optBoolean("repeatDaily", true)
+
+                // Build days string for Android ScheduleConditionProvider (1=Sun, 2=Mon, ... 7=Sat)
+                val daysList = if (repeatDaily) {
+                    listOf(1, 2, 3, 4, 5, 6, 7)
+                } else {
+                    weekdays.map { toCalendarDay(it) }.distinct().sorted()
+                }
+                val daysParam = daysList.joinToString(".")
+
+                // Native Android schedule condition URI: condition://android/schedule?days=...&start=...&end=...&exitAtAlarm=false
+                val conditionUri = Uri.parse("condition://android/schedule?days=$daysParam&start=$startHour.$startMinute&end=$endHour.$endMinute&exitAtAlarm=false")
 
                 val existingEntry = existingRules.entries.firstOrNull {
-                    it.value.conditionId == conditionUri || it.value.name == title
+                    it.value.name == ruleName || (it.value.conditionId != null && it.value.conditionId.toString().contains("start=$startHour.$startMinute"))
                 }
 
                 val componentName = ComponentName(context.packageName, MainActivity::class.java.name)
 
                 if (existingEntry != null) {
                     val rule = existingEntry.value
-                    rule.name = title
+                    rule.name = ruleName
+                    rule.conditionId = conditionUri
                     rule.isEnabled = enabled
                     rule.interruptionFilter = NotificationManager.INTERRUPTION_FILTER_PRIORITY
-                    nm.updateAutomaticZenRule(existingEntry.key, rule)
-                    Log.d(TAG, "Updated AutomaticZenRule in Android system: ${existingEntry.key} ($title, enabled=$enabled)")
-                } else {
-                    val rule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        AutomaticZenRule(
-                            title,
-                            componentName,
-                            componentName,
-                            conditionUri,
-                            null,
-                            NotificationManager.INTERRUPTION_FILTER_PRIORITY,
-                            enabled
-                        )
-                    } else {
-                        AutomaticZenRule(
-                            title,
-                            componentName,
-                            conditionUri,
-                            NotificationManager.INTERRUPTION_FILTER_PRIORITY,
-                            enabled
-                        )
+                    try {
+                        nm.updateAutomaticZenRule(existingEntry.key, rule)
+                        Log.d(TAG, "Updated AutomaticZenRule: ${existingEntry.key} ($ruleName)")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error updating AutomaticZenRule", e)
                     }
-                    val newRuleId = nm.addAutomaticZenRule(rule)
-                    Log.d(TAG, "Added AutomaticZenRule to Android system: $newRuleId ($title)")
+                } else {
+                    try {
+                        val rule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            AutomaticZenRule(
+                                ruleName,
+                                null, // owner null allows android system ScheduleConditionProvider to evaluate it directly!
+                                componentName,
+                                conditionUri,
+                                null,
+                                NotificationManager.INTERRUPTION_FILTER_PRIORITY,
+                                enabled
+                            )
+                        } else {
+                            AutomaticZenRule(
+                                ruleName,
+                                componentName,
+                                conditionUri,
+                                NotificationManager.INTERRUPTION_FILTER_PRIORITY,
+                                enabled
+                            )
+                        }
+                        val newRuleId = nm.addAutomaticZenRule(rule)
+                        Log.d(TAG, "Added AutomaticZenRule to Android system: $newRuleId ($ruleName)")
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Fallback AutomaticZenRule with component owner: ${e.message}")
+                        try {
+                            val rule = AutomaticZenRule(
+                                ruleName,
+                                componentName,
+                                componentName,
+                                conditionUri,
+                                null,
+                                NotificationManager.INTERRUPTION_FILTER_PRIORITY,
+                                enabled
+                            )
+                            nm.addAutomaticZenRule(rule)
+                        } catch (e2: Exception) {
+                            Log.e(TAG, "Could not add AutomaticZenRule", e2)
+                        }
+                    }
                 }
             }
 
-            // Remove any rules no longer present in Adhkar
+            // Clean up any old Adhkar rules that were removed
             for ((ruleId, rule) in existingRules) {
-                val uriStr = rule.conditionId?.toString() ?: ""
-                if (uriStr.startsWith("adhkar://quiet_hours/")) {
-                    val id = uriStr.substring("adhkar://quiet_hours/".length)
-                    if (!currentScheduleIds.contains(id)) {
+                if (rule.name != null && rule.name.startsWith("Adhkar - ") && !currentRuleNames.contains(rule.name)) {
+                    try {
                         nm.removeAutomaticZenRule(ruleId)
-                        Log.d(TAG, "Removed obsolete AutomaticZenRule: $ruleId")
+                        Log.d(TAG, "Removed obsolete AutomaticZenRule: $ruleId (${rule.name})")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error removing old rule $ruleId", e)
                     }
                 }
             }
@@ -141,32 +195,11 @@ object QuietHoursScheduler {
     }
 
     /**
-     * Enable or disable Do Not Disturb mode directly.
-     * Silent operation: no sound, no notification, no alarm.
+     * Enable or disable Do Not Disturb mode directly via DndScheduler.
+     * Respects prior DND state and ownership policy.
      */
     fun applyDndMode(context: Context, enable: Boolean) {
-        try {
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
-            if (!nm.isNotificationPolicyAccessGranted) {
-                Log.w(TAG, "Notification policy access not granted. Cannot toggle DND.")
-                return
-            }
-
-            if (enable) {
-                val currentFilter = nm.currentInterruptionFilter
-                setSavedDndFilter(context, currentFilter)
-                setAdhkarOwnsDnd(context, true)
-                nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
-                Log.d(TAG, "Quiet Hours: DND Enabled (INTERRUPTION_FILTER_PRIORITY). Prior filter: $currentFilter")
-            } else {
-                // Always unconditionally disable DND and restore INTERRUPTION_FILTER_ALL when quiet hours ends
-                nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
-                setAdhkarOwnsDnd(context, false)
-                Log.d(TAG, "Quiet Hours: DND Disabled. Successfully restored INTERRUPTION_FILTER_ALL")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error toggling DND mode", e)
-        }
+        DndScheduler.applyDndMode(context, enable)
     }
 
     /**
@@ -253,18 +286,22 @@ object QuietHoursScheduler {
                 val repeatDaily = obj.optBoolean("repeatDaily", true)
 
                 // Schedule Next Start
-                val nextStartMillis = calculateNextOccurrence(
-                    targetHour = startHour,
-                    targetMinute = startMinute,
+                val nextStartMillis = calculateNextStartOccurrence(
+                    startHour = startHour,
+                    startMinute = startMinute,
+                    endHour = endHour,
+                    endMinute = endMinute,
                     repeatDaily = repeatDaily,
                     weekdays = weekdays
                 )
                 setExactAlarm(context, alarmManager, nextStartMillis, ACTION_START_QUIET_HOURS, scheduleId, title, getStartRequestCode(scheduleId))
 
                 // Schedule Next End
-                val nextEndMillis = calculateNextOccurrence(
-                    targetHour = endHour,
-                    targetMinute = endMinute,
+                val nextEndMillis = calculateNextEndOccurrence(
+                    startHour = startHour,
+                    startMinute = startMinute,
+                    endHour = endHour,
+                    endMinute = endMinute,
                     repeatDaily = repeatDaily,
                     weekdays = weekdays
                 )
@@ -302,15 +339,11 @@ object QuietHoursScheduler {
                 val weekdays = parseWeekdays(obj.optJSONArray("weekdays"))
                 val repeatDaily = obj.optBoolean("repeatDaily", true)
 
-                val targetHour = if (isStart) startHour else endHour
-                val targetMinute = if (isStart) startMinute else endMinute
-
-                val nextMillis = calculateNextOccurrence(
-                    targetHour = targetHour,
-                    targetMinute = targetMinute,
-                    repeatDaily = repeatDaily,
-                    weekdays = weekdays
-                )
+                val nextMillis = if (isStart) {
+                    calculateNextStartOccurrence(startHour, startMinute, endHour, endMinute, repeatDaily, weekdays)
+                } else {
+                    calculateNextEndOccurrence(startHour, startMinute, endHour, endMinute, repeatDaily, weekdays)
+                }
 
                 val action = if (isStart) ACTION_START_QUIET_HOURS else ACTION_END_QUIET_HOURS
                 val requestCode = if (isStart) getStartRequestCode(scheduleId) else getEndRequestCode(scheduleId)
@@ -406,22 +439,68 @@ object QuietHoursScheduler {
         }
     }
 
-    private fun calculateNextOccurrence(
-        targetHour: Int,
-        targetMinute: Int,
+    fun calculateNextStartOccurrence(
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int,
         repeatDaily: Boolean,
         weekdays: List<Int>
     ): Long {
         val now = Calendar.getInstance()
         val candidate = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, targetHour)
-            set(Calendar.MINUTE, targetMinute)
+            set(Calendar.HOUR_OF_DAY, startHour)
+            set(Calendar.MINUTE, startMinute)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
 
+        // If start time has already passed today, advance to tomorrow
         if (candidate.timeInMillis <= now.timeInMillis) {
             candidate.add(Calendar.DAY_OF_YEAR, 1)
+        }
+
+        if (!repeatDaily && weekdays.isNotEmpty()) {
+            while (!weekdays.contains(toDartWeekday(candidate.get(Calendar.DAY_OF_WEEK)))) {
+                candidate.add(Calendar.DAY_OF_YEAR, 1)
+            }
+        }
+
+        return candidate.timeInMillis
+    }
+
+    fun calculateNextEndOccurrence(
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int,
+        repeatDaily: Boolean,
+        weekdays: List<Int>
+    ): Long {
+        val now = Calendar.getInstance()
+        val isOvernight = (startHour > endHour) || (startHour == endHour && startMinute > endMinute)
+        val nowMinutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+        val startMinutes = startHour * 60 + startMinute
+        val endMinutes = endHour * 60 + endMinute
+
+        val candidate = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, endHour)
+            set(Calendar.MINUTE, endMinute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        if (!isOvernight) {
+            if (candidate.timeInMillis <= now.timeInMillis) {
+                candidate.add(Calendar.DAY_OF_YEAR, 1)
+            }
+        } else {
+            if (nowMinutes >= startMinutes) {
+                // Evening portion: end is tomorrow morning
+                candidate.add(Calendar.DAY_OF_YEAR, 1)
+            } else if (candidate.timeInMillis <= now.timeInMillis) {
+                candidate.add(Calendar.DAY_OF_YEAR, 1)
+            }
         }
 
         if (!repeatDaily && weekdays.isNotEmpty()) {
@@ -452,6 +531,19 @@ object QuietHoursScheduler {
             Calendar.SATURDAY -> 6
             Calendar.SUNDAY -> 7
             else -> 1
+        }
+    }
+
+    private fun toCalendarDay(dartWeekday: Int): Int {
+        return when (dartWeekday) {
+            1 -> Calendar.MONDAY
+            2 -> Calendar.TUESDAY
+            3 -> Calendar.WEDNESDAY
+            4 -> Calendar.THURSDAY
+            5 -> Calendar.FRIDAY
+            6 -> Calendar.SATURDAY
+            7 -> Calendar.SUNDAY
+            else -> Calendar.MONDAY
         }
     }
 

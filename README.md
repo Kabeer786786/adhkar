@@ -29,16 +29,10 @@
 Experience a calm, ad-free, and distraction-free Islamic companion on your mobile device.
 
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.kabeer.adhkar">
+  <a href="https://play.google.com/store/apps/details?id=com.sprnt.adhkar">
     <img src="https://img.shields.io/badge/Google_Play-Download-414141?style=for-the-badge&logo=google-play&logoColor=white" alt="Get it on Google Play"/>
   </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://apps.apple.com/app/id0000000000">
-    <img src="https://img.shields.io/badge/App_Store-Download-0D96F6?style=for-the-badge&logo=app-store&logoColor=white" alt="Download on App Store"/>
-  </a>
 </p>
-
-> 💡 *Note: Download links are currently placeholders and will be updated upon official store publication.*
 
 ---
 

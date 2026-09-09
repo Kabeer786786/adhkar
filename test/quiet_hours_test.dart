@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:adhkar/features/quiet_hours/domain/quiet_hours_model.dart';
+import 'package:adhkar/features/quiet_hours/services/dnd_service.dart';
 
 void main() {
   group('QuietHours Model & Time Logic Tests', () {
@@ -211,6 +212,100 @@ void main() {
       expect(schedules.any((s) => s.isTimeInQuietHours(at830)), isTrue);
       expect(schedules.any((s) => s.isTimeInQuietHours(at1320)), isTrue);
       expect(schedules.any((s) => s.isTimeInQuietHours(at1100)), isFalse);
+    });
+
+    test('Boundary Schedule: 12:00 AM to 6:00 AM', () {
+      final quietHours = QuietHours(
+        id: 'midnight_to_morning',
+        startHour: 0,
+        startMinute: 0,
+        endHour: 6,
+        endMinute: 0,
+        enabled: true,
+        repeatDaily: true,
+        weekdays: const [1, 2, 3, 4, 5, 6, 7],
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      );
+
+      expect(quietHours.isOvernight, isFalse);
+
+      final at1159Prev = DateTime(2026, 8, 15, 23, 59);
+      final atMidnight = DateTime(2026, 8, 16, 0, 0);
+      final at3am = DateTime(2026, 8, 16, 3, 0);
+      final at6am = DateTime(2026, 8, 16, 6, 0);
+
+      expect(quietHours.isTimeInQuietHours(at1159Prev), isFalse);
+      expect(quietHours.isTimeInQuietHours(atMidnight), isTrue);
+      expect(quietHours.isTimeInQuietHours(at3am), isTrue);
+      expect(quietHours.isTimeInQuietHours(at6am), isFalse);
+    });
+
+    test('Boundary Schedule: 11:59 PM to 12:01 AM (2-Minute Midnight Crossing)', () {
+      final quietHours = QuietHours(
+        id: 'two_min_crossing',
+        startHour: 23,
+        startMinute: 59,
+        endHour: 0,
+        endMinute: 1,
+        enabled: true,
+        repeatDaily: true,
+        weekdays: const [1, 2, 3, 4, 5, 6, 7],
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      );
+
+      expect(quietHours.isOvernight, isTrue);
+
+      final at2358 = DateTime(2026, 8, 15, 23, 58);
+      final at2359 = DateTime(2026, 8, 15, 23, 59);
+      final at0000 = DateTime(2026, 8, 16, 0, 0);
+      final at0001 = DateTime(2026, 8, 16, 0, 1);
+
+      expect(quietHours.isTimeInQuietHours(at2358), isFalse);
+      expect(quietHours.isTimeInQuietHours(at2359), isTrue);
+      expect(quietHours.isTimeInQuietHours(at0000), isTrue);
+      expect(quietHours.isTimeInQuietHours(at0001), isFalse);
+    });
+
+    test('DndScheduleModel and DndStateModel Parsing', () {
+      final stateMap = {
+        'filter': 2,
+        'isDndActive': true,
+        'adhkarOwnsDnd': true,
+      };
+      final state = DndStateModel.fromMap(stateMap);
+      expect(state.filter, 2);
+      expect(state.isDndActive, isTrue);
+      expect(state.adhkarOwnsDnd, isTrue);
+
+      final scheduleMap = {
+        'enabled': true,
+        'startHour': 22,
+        'startMinute': 30,
+        'endHour': 6,
+        'endMinute': 0,
+        'repeatDaily': true,
+        'weekdays': [1, 2, 3, 4, 5, 6, 7],
+        'nextEnableTimestamp': 1757437800000,
+        'nextDisableTimestamp': 1757464800000,
+        'timeZone': 'Asia/Kolkata',
+        'lastKnownDndState': 'ENABLED',
+        'adhkarOwnsDnd': true,
+      };
+      final schedule = DndScheduleModel.fromMap(scheduleMap);
+      expect(schedule.enabled, isTrue);
+      expect(schedule.startHour, 22);
+      expect(schedule.startMinute, 30);
+      expect(schedule.endHour, 6);
+      expect(schedule.endMinute, 0);
+      expect(schedule.repeatDaily, isTrue);
+      expect(schedule.weekdays.length, 7);
+      expect(schedule.timeZone, 'Asia/Kolkata');
+      expect(schedule.lastKnownDndState, 'ENABLED');
+      expect(schedule.adhkarOwnsDnd, isTrue);
+      expect(schedule.nextEnableTime, isNotNull);
+      expect(schedule.nextDisableTime, isNotNull);
     });
   });
 }

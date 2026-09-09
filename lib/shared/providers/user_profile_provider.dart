@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/services/supabase_service.dart';
 
 class UserProfileState {
@@ -13,6 +12,8 @@ class UserProfileState {
   final bool isLoading;
   final bool registrationCompleted;
   final bool hasSkippedRegistration;
+
+  bool get isRegistered => registrationCompleted;
 
   UserProfileState({
     this.userId = '',
@@ -143,87 +144,23 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
   }
 
 
-  /// Register User with Supabase (Collects name, email, phone, location)
-  Future<SignUpResultStatus> signUpWithEmail({
+  /// Register User with Supabase Edge Function without auth or OTP
+  Future<bool> registerUser({
     required String name,
     required String email,
     required String phone,
     required String location,
-    String? password,
   }) async {
     state = state.copyWith(isLoading: true);
     try {
-      final result = await SupabaseService().signUpWithEmail(
-        name: name,
-        email: email,
-        password: password,
-        phone: phone,
-        location: location,
-      );
-
-      final isVerified = result.status == SignUpResultStatus.alreadyVerified;
-
-      await _saveLocalStorage(
-        userId: result.userId,
+      final profile = await SupabaseService().registerUser(
         name: name,
         email: email,
         phone: phone,
         location: location,
-        registrationCompleted: isVerified,
-        emailVerified: isVerified,
-        hasSkippedRegistration: false,
       );
 
-      state = state.copyWith(
-        userId: result.userId,
-        name: name,
-        email: email,
-        phone: phone,
-        location: location,
-        isEmailVerified: isVerified,
-        registrationCompleted: isVerified,
-        isLoading: false,
-      );
-
-      return result.status;
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-      rethrow;
-    }
-  }
-
-  /// Verify Email OTP & Complete Registration Profile in Supabase
-  Future<AuthResponse> verifyEmailOTP({
-    required String email,
-    required String token,
-  }) async {
-    state = state.copyWith(isLoading: true);
-    try {
-      final response = await SupabaseService().verifyEmailOTP(
-        email: email,
-        token: token,
-      );
-
-      final uid = response.user?.id ?? state.userId;
-
-      final prefs = await SharedPreferences.getInstance();
-      final name =
-          state.name.isNotEmpty ? state.name : (prefs.getString(_keyName) ?? '');
-      final phone = state.phone.isNotEmpty
-          ? state.phone
-          : (prefs.getString(_keyPhone) ?? '');
-      final location = state.location.isNotEmpty
-          ? state.location
-          : (prefs.getString(_keyLocation) ?? '');
-
-      await SupabaseService().saveUserProfile(
-        name: name,
-        email: email,
-        phone: phone,
-        location: location,
-        userId: uid,
-        emailVerified: true,
-      );
+      final uid = (profile['id'] ?? '').toString();
 
       await _saveLocalStorage(
         userId: uid,
@@ -233,6 +170,7 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
         location: location,
         registrationCompleted: true,
         emailVerified: true,
+        hasSkippedRegistration: false,
       );
 
       state = state.copyWith(
@@ -243,14 +181,32 @@ class UserProfileNotifier extends StateNotifier<UserProfileState> {
         location: location,
         isEmailVerified: true,
         registrationCompleted: true,
+        hasSkippedRegistration: false,
         isLoading: false,
       );
 
-      return response;
+      return true;
     } catch (e) {
       state = state.copyWith(isLoading: false);
       rethrow;
     }
+  }
+
+  /// Backward-compatible signUpWithEmail delegating directly to registerUser (No OTP)
+  Future<SignUpResultStatus> signUpWithEmail({
+    required String name,
+    required String email,
+    required String phone,
+    required String location,
+    String? password,
+  }) async {
+    await registerUser(
+      name: name,
+      email: email,
+      phone: phone,
+      location: location,
+    );
+    return SignUpResultStatus.alreadyVerified;
   }
 
   /// Resend Verification OTP Code

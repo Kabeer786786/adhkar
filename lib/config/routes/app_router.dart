@@ -27,7 +27,6 @@ import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/presentation/profile_setup_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
-import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../widgets/main_shell.dart';
 
@@ -44,7 +43,6 @@ final appRouter = GoRouter(
     final isAuthRoute = location == '/splash' ||
         location == '/onboarding' ||
         location == '/auth' ||
-        location.startsWith('/verify-email') ||
         location == '/profile-setup';
 
     final prefs = await SharedPreferences.getInstance();
@@ -71,15 +69,6 @@ final appRouter = GoRouter(
       path: '/auth',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const AuthScreen(),
-    ),
-
-    GoRoute(
-      path: '/verify-email',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) {
-        final email = state.uri.queryParameters['email'];
-        return VerifyEmailScreen(email: email);
-      },
     ),
 
     GoRoute(

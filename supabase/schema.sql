@@ -1,65 +1,23 @@
 -- ========================================================
 -- SUPABASE DATABASE SCHEMA: PROFILES & DONATIONS (RAZORPAY)
 -- ========================================================
+-- This schema supports friction-free, passwordless user profile
+-- registration via Supabase Edge Function without requiring auth.users or email OTP.
+-- The Razorpay donations workflow remains fully intact.
 
--- 1. Create PROFILES Table linked to auth.users (1:1 relationship)
+-- 1. Create PROFILES Table (Independent of auth.users)
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  name TEXT,
-  email TEXT,
-  phone TEXT,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  phone TEXT NOT NULL,
   location TEXT,
-  email_verified BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Index for profile email lookups
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
-
--- Automatic trigger to create or update a profile entry when a user registers in auth.users
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
-DECLARE
-  v_name text;
-  v_phone text;
-  v_location text;
-BEGIN
-  v_name := COALESCE(new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'full_name', '');
-  v_phone := COALESCE(new.raw_user_meta_data->>'phone', new.raw_user_meta_data->>'phone_number', '');
-  v_location := COALESCE(new.raw_user_meta_data->>'location', new.raw_user_meta_data->>'address', '');
-
-  INSERT INTO public.profiles (id, user_id, email, name, phone, location, email_verified, updated_at)
-  VALUES (
-    new.id,
-    new.id,
-    new.email,
-    v_name,
-    v_phone,
-    v_location,
-    (new.email_confirmed_at IS NOT NULL),
-    timezone('utc'::text, now())
-  )
-  ON CONFLICT (id) DO UPDATE SET
-    email = EXCLUDED.email,
-    name = CASE WHEN EXCLUDED.name <> '' THEN EXCLUDED.name ELSE public.profiles.name END,
-    phone = CASE WHEN EXCLUDED.phone <> '' THEN EXCLUDED.phone ELSE public.profiles.phone END,
-    location = CASE WHEN EXCLUDED.location <> '' THEN EXCLUDED.location ELSE public.profiles.location END,
-    email_verified = (new.email_confirmed_at IS NOT NULL),
-    updated_at = timezone('utc'::text, now());
-  RETURN new;
-EXCEPTION
-  WHEN OTHERS THEN
-    -- Ensure trigger never fails auth user creation
-    RETURN new;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
- 
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT OR UPDATE ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
 
 -- 2. Create DONATIONS Table (1:N relationship with profiles)
@@ -87,20 +45,20 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.donations ENABLE ROW LEVEL SECURITY;
 
 -- Profiles Security Policies:
--- Allow viewing profile if authenticated or matched id
-CREATE POLICY "Users can view own profile"
+-- Allow public select for profiles
+CREATE POLICY "Allow public read access to profiles"
   ON public.profiles
   FOR SELECT
   USING (true);
 
--- Allow inserting profile during registration
-CREATE POLICY "Users can insert own profile"
+-- Allow public insert to profiles (used by Edge Functions and client fallback)
+CREATE POLICY "Allow public insert to profiles"
   ON public.profiles
   FOR INSERT
   WITH CHECK (true);
 
 -- Allow updating profile details
-CREATE POLICY "Users can update own profile"
+CREATE POLICY "Allow public update to profiles"
   ON public.profiles
   FOR UPDATE
   USING (true)
@@ -108,11 +66,30 @@ CREATE POLICY "Users can update own profile"
 
 
 -- Donations Security Policies:
--- Users can read only their own donations
-CREATE POLICY "Users can view own donations"
+-- Allow viewing donations
+CREATE POLICY "Allow public read access to donations"
   ON public.donations
   FOR SELECT
-  USING (auth.uid() = user_id);
+  USING (true);
 
--- Note: Inserting and updating donations is restricted to Edge Functions running with SUPABASE_SERVICE_ROLE_KEY,
--- which bypasses RLS safely and prevents clients from spoofing payment statuses or amounts.
+-- Note: Inserting and updating donations is executed by Razorpay Edge Functions
+-- (create-order, verify-payment, razorpay-webhook) running with SUPABASE_SERVICE_ROLE_KEY,
+-- which bypasses RLS safely and guarantees payment integrity.
+
+CREATE TABLE IF NOT EXISTS public.keep_alive (
+    id INTEGER PRIMARY KEY,
+    last_ping TIMESTAMP WITH TIME ZONE
+        DEFAULT timezone('utc'::text, now())
+);
+
+INSERT INTO public.keep_alive (id)
+VALUES (1)
+ON CONFLICT (id) DO NOTHING;
+
+ALTER TABLE public.keep_alive ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow keep alive read"
+ON public.keep_alive
+FOR SELECT
+TO anon
+USING (true);

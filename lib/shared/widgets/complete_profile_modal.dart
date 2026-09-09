@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/country_code.dart';
 import '../../core/services/location_service.dart';
 import '../../core/utils/error_formatter.dart';
 import '../../features/auth/presentation/widgets/country_code_picker_modal.dart';
-import '../../core/services/supabase_service.dart';
 import '../providers/app_providers.dart';
 import '../providers/user_profile_provider.dart';
 
@@ -126,28 +124,22 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
     setState(() => _isSaving = true);
 
     try {
-      final resultStatus =
-          await ref.read(userProfileProvider.notifier).signUpWithEmail(
-                name: name,
-                email: email,
-                phone: fullPhone,
-                location: location,
-              );
+      await ref.read(userProfileProvider.notifier).registerUser(
+            name: name,
+            email: email,
+            phone: fullPhone,
+            location: location,
+          );
 
       if (mounted) {
         Navigator.pop(context);
-        if (resultStatus == SignUpResultStatus.alreadyVerified) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Account already verified! Welcome back to Adhkar.'),
-              backgroundColor: Color(0xFF2A531D),
-              duration: Duration(seconds: 3),
-            ),
-          );
-          context.go('/');
-        } else {
-          context.go('/verify-email?email=${Uri.encodeComponent(email)}');
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile saved successfully!'),
+            backgroundColor: Color(0xFF2A531D),
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -275,12 +267,13 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                       borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
                     ),
                   ),
-                  validator: (val) {
+                    validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Please enter your email';
                     }
-                    if (!val.contains('@') || !val.contains('.')) {
-                      return 'Please enter a valid email';
+                    final trimmed = val.trim();
+                    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(trimmed)) {
+                      return 'Please enter a valid email address';
                     }
                     return null;
                   },
@@ -346,6 +339,10 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                           if (val == null || val.trim().isEmpty) {
                             return 'Please enter phone number';
                           }
+                          final digitsOnly = val.replaceAll(RegExp(r'\s+'), '');
+                          if (!RegExp(r'^[0-9]{7,15}$').hasMatch(digitsOnly)) {
+                            return 'Enter a valid 7-15 digit phone number';
+                          }
                           return null;
                         },
                       ),
@@ -355,7 +352,7 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
 
                 const SizedBox(height: 20),
 
-                // Save & Verify Primary Button
+                // Save Primary Button
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -382,14 +379,14 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Save & Verify Email',
+                                'Save Profile',
                                 style: GoogleFonts.outfit(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              const Icon(Icons.arrow_forward_rounded, size: 17),
+                              const Icon(Icons.check_rounded, size: 17),
                             ],
                           ),
                   ),

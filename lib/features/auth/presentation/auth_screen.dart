@@ -6,7 +6,6 @@ import '../../../../core/models/country_code.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../shared/providers/user_profile_provider.dart';
-import '../../../../core/services/supabase_service.dart';
 import '../../../../core/utils/error_formatter.dart';
 import 'widgets/country_code_picker_modal.dart';
 
@@ -90,6 +89,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
+  static final RegExp _emailRegex = RegExp(
+    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+  );
+
+  static final RegExp _phoneRegex = RegExp(
+    r'^[0-9]{7,15}$',
+  );
+
   Future<void> _skipAndNavigateHome() async {
     await ref.read(userProfileProvider.notifier).skipRegistration();
     if (mounted) {
@@ -109,27 +116,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         : 'Unknown Location';
 
     try {
-      final resultStatus =
-          await ref.read(userProfileProvider.notifier).signUpWithEmail(
-                name: name,
-                email: email,
-                phone: fullPhone,
-                location: location,
-              );
+      await ref.read(userProfileProvider.notifier).registerUser(
+            name: name,
+            email: email,
+            phone: fullPhone,
+            location: location,
+          );
 
       if (mounted) {
-        if (resultStatus == SignUpResultStatus.alreadyVerified) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Account already verified! Welcome back to Adhkar.'),
-              backgroundColor: Color(0xFF2A531D),
-              duration: Duration(seconds: 3),
-            ),
-          );
-          context.go('/');
-        } else {
-          context.go('/verify-email?email=${Uri.encodeComponent(email)}');
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Welcome to Adhkar, $name! Profile created successfully.'),
+            backgroundColor: const Color(0xFF2A531D),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        context.go('/');
       }
     } catch (e) {
       if (mounted) {
@@ -234,7 +236,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              'No passwords or login required! Simply create your profile once to personalize your Islamic experience. You can also skip now and complete it anytime.',
+                              'No passwords or OTP required! Simply enter your details once to personalize your Islamic experience. You can also skip now and complete it anytime.',
                               style: GoogleFonts.outfit(
                                 fontSize: 12.5,
                                 color: const Color(0xFF4A5568),
@@ -297,6 +299,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           if (val == null || val.trim().isEmpty) {
                             return 'Please enter your name';
                           }
+                          if (val.trim().length < 2) {
+                            return 'Name must be at least 2 characters';
+                          }
                           return null;
                         },
                       ),
@@ -321,8 +326,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           if (val == null || val.trim().isEmpty) {
                             return 'Please enter your email';
                           }
-                          if (!val.contains('@') || !val.contains('.')) {
-                            return 'Please enter a valid email';
+                          if (!_emailRegex.hasMatch(val.trim())) {
+                            return 'Please enter a valid email address (e.g. name@example.com)';
                           }
                           return null;
                         },
@@ -380,6 +385,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               validator: (val) {
                                 if (val == null || val.trim().isEmpty) {
                                   return 'Please enter phone number';
+                                }
+                                final digits = val.replaceAll(RegExp(r'\D'), '');
+                                if (!_phoneRegex.hasMatch(digits)) {
+                                  return 'Please enter a valid phone number (7 to 15 digits)';
                                 }
                                 return null;
                               },
@@ -446,7 +455,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Save & Verify Email',
+                                      'Complete Registration',
                                       style: GoogleFonts.outfit(
                                         fontSize: 15.5,
                                         fontWeight: FontWeight.bold,

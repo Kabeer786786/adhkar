@@ -20,6 +20,8 @@ class QuietHoursScreen extends ConsumerStatefulWidget {
 class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     with WidgetsBindingObserver {
   bool _hasDndPermission = true;
+  bool _isBatteryOptIgnored = true;
+  bool _canScheduleExactAlarms = true;
   Timer? _timer;
 
   @override
@@ -57,9 +59,13 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       return;
     }
     final granted = await service.isDndPermissionGranted();
+    final batteryIgnored = await service.isBatteryOptimizationIgnored();
+    final canAlarms = await service.canScheduleExactAlarms();
     if (mounted) {
       setState(() {
         _hasDndPermission = granted;
+        _isBatteryOptIgnored = batteryIgnored;
+        _canScheduleExactAlarms = canAlarms;
       });
     }
   }
@@ -241,11 +247,60 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
         showBackButton: true,
         actions: [
           if (isSupported)
-            IconButton(
-              icon: const Icon(Icons.tune_rounded),
-              tooltip: 'Device DND Schedules',
-              onPressed: () => service.openDndSchedulesSettings(),
+            Padding(
+              padding: const EdgeInsets.only(right: 14),
+              child: Center(
+                child: GestureDetector(
+                  onTap: _hasDndPermission
+                      ? null
+                      : () => service.openDndPermissionSettings(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _hasDndPermission
+                          ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                          : const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: _hasDndPermission
+                            ? const Color(0xFF10B981).withValues(alpha: 0.35)
+                            : const Color(0xFFF59E0B).withValues(alpha: 0.4),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _hasDndPermission
+                              ? Icons.check_circle_rounded
+                              : Icons.info_outline_rounded,
+                          size: 13,
+                          color: _hasDndPermission
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFFD97706),
+                        ),
+                        const SizedBox(width: 4.5),
+                        Text(
+                          _hasDndPermission ? 'Granted' : 'Not Granted',
+                          style: GoogleFonts.lexend(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: _hasDndPermission
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFD97706),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
+          const SizedBox(width: 4),
         ],
       ),
       body: schedules.isEmpty
@@ -321,6 +376,156 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                   const SizedBox(height: 12),
                 ],
 
+                // Battery Saver / Optimization Warning Card
+                if (isSupported && !_isBatteryOptIgnored) ...[
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF261C14)
+                          : const Color(0xFFFFFBEB),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFFD97706).withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.battery_alert_rounded, color: Color(0xFFD97706), size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Allow Background Activity',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFFD97706),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Power Saving Mode on your device will block Quiet Hours from toggling Do Not Disturb when the app is closed. Allow Adhkar to run unrestricted in the background.',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12,
+                            color: isDark ? Colors.white70 : const Color(0xFF92400E),
+                            height: 1.35,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD97706),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await service.requestIgnoreBatteryOptimization();
+                              await Future.delayed(const Duration(seconds: 1));
+                              _checkPermission();
+                            },
+                            child: Text(
+                              'Allow Background Running',
+                              style: GoogleFonts.lexend(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+
+                // Exact Alarms Permission Card on Android 12+
+                if (isSupported && !_canScheduleExactAlarms) ...[
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF1E2638)
+                          : const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.alarm_on_rounded, color: Color(0xFF2563EB), size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Exact Alarms Permission',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF2563EB),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Allow Adhkar to schedule exact start and end triggers so Do Not Disturb turns on and off precisely on time when the app is closed.',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12,
+                            color: isDark ? Colors.white70 : const Color(0xFF1E40AF),
+                            height: 1.35,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2563EB),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await service.openExactAlarmSettings();
+                              await Future.delayed(const Duration(seconds: 1));
+                              _checkPermission();
+                            },
+                            child: Text(
+                              'Enable Exact Alarms',
+                              style: GoogleFonts.lexend(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+
                 Padding(
                   padding: const EdgeInsets.only(
                     left: 20,
@@ -328,45 +533,14 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                     top: 0,
                     bottom: 6,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'ALL QUIET TIMINGS',
-                        style: GoogleFonts.lexend(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0.6,
-                          color: subTextColor,
-                        ),
-                      ),
-                      if (isSupported && _hasDndPermission)
-                        GestureDetector(
-                          onTap: () => service.openDndSchedulesSettings(),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: primaryGreen.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.do_not_disturb_on_outlined, size: 14, color: primaryGreen),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'System Schedules',
-                                  style: GoogleFonts.lexend(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w600,
-                                    color: primaryGreen,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
+                  child: Text(
+                    'ALL QUIET TIMINGS',
+                    style: GoogleFonts.lexend(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.6,
+                      color: subTextColor,
+                    ),
                   ),
                 ),
                 ...schedules.map(

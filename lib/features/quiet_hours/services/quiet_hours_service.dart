@@ -65,6 +65,48 @@ class QuietHoursService {
     }
   }
 
+  /// Check whether battery optimization is ignored (unrestricted)
+  Future<bool> isBatteryOptimizationIgnored() async {
+    if (!isSupported) return true;
+    try {
+      final ignored = await _channel.invokeMethod<bool>('isBatteryOptimizationIgnored');
+      return ignored ?? true;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// Request to ignore battery optimizations so Quiet Hours triggers in power savings mode
+  Future<void> requestIgnoreBatteryOptimization() async {
+    if (!isSupported) return;
+    try {
+      await _channel.invokeMethod('requestIgnoreBatteryOptimization');
+    } catch (e) {
+      debugPrint('Error requesting ignore battery optimization: $e');
+    }
+  }
+
+  /// Check if exact alarms permission is granted on Android 12+
+  Future<bool> canScheduleExactAlarms() async {
+    if (!isSupported) return true;
+    try {
+      final can = await _channel.invokeMethod<bool>('canScheduleExactAlarms');
+      return can ?? true;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// Open exact alarm permission settings on Android 12+
+  Future<void> openExactAlarmSettings() async {
+    if (!isSupported) return;
+    try {
+      await _channel.invokeMethod('openExactAlarmSettings');
+    } catch (e) {
+      debugPrint('Error opening exact alarm settings: $e');
+    }
+  }
+
   /// Get current system interruption filter (1=all, 2=priority, 3=none, 4=alarms)
   Future<int?> getCurrentDndFilter() async {
     if (!isSupported) return null;

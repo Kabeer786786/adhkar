@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/providers/user_profile_provider.dart';
 import '../../../widgets/app_header_bar.dart';
@@ -245,43 +244,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: 4),
 
-                    // Email verification badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: profile.isEmailVerified
-                            ? Colors.white.withValues(alpha: 0.2)
-                            : const Color(0xFFFEF3C7).withValues(alpha: 0.95),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            profile.isEmailVerified
-                                ? Icons.verified_outlined
-                                : Icons.gpp_maybe_outlined,
-                            size: 13,
-                            color: profile.isEmailVerified
-                                ? const Color(0xFFA3E635)
-                                : const Color(0xFFD97724),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            profile.isEmailVerified
-                                ? 'Verified Email'
-                                : 'Unverified Email',
-                            style: GoogleFonts.lexend(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: profile.isEmailVerified
-                                  ? Colors.white
-                                  : const Color(0xFF92400E),
+                    // Registered badge
+                    if (profile.isRegistered)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.verified_user_outlined,
+                              size: 13,
+                              color: Color(0xFFA3E635),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 4),
+                            Text(
+                              'Registered Member',
+                              style: GoogleFonts.lexend(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -375,83 +365,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ],
                 ),
               ),
-
-              const SizedBox(height: 14),
-
-              // 3. Verification Action Banner if email unverified
-              if (!profile.isEmailVerified)
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF2A2012)
-                        : const Color(0xFFFFFBEB),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.mark_email_unread_outlined,
-                        color: Color(0xFFD97724),
-                        size: 22,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Verify Your Email',
-                              style: GoogleFonts.outfit(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? const Color(0xFFFDE68A)
-                                    : const Color(0xFF92400E),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Verify your email to secure your registration.',
-                              style: GoogleFonts.lexend(
-                                fontSize: 11.5,
-                                color: isDark
-                                    ? const Color(0xFFFCD34D)
-                                    : const Color(0xFF78350F),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.push(
-                            '/verify-email?email=${Uri.encodeComponent(profile.email)}',
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD97724),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          'Verify',
-                          style: GoogleFonts.lexend(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
 
               const SizedBox(height: 20),
             ],

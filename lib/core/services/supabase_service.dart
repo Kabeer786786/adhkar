@@ -84,6 +84,80 @@ class SupabaseService {
     }
   }
 
+  /// Registers or updates a user profile via the `register-user` Edge Function.
+  /// Validates details and persists them into the `profiles` table without requiring Supabase Auth or OTP.
+  Future<Map<String, dynamic>> registerUser({
+    required String name,
+    required String email,
+    required String phone,
+    required String location,
+  }) async {
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanPhone = phone.trim();
+    final cleanName = name.trim();
+    final cleanLocation =
+        location.trim().isNotEmpty ? location.trim() : 'Unknown Location';
+
+    // 1. Invoke the register-user Supabase Edge Function
+    try {
+      final response = await client.functions.invoke(
+        'register-user',
+        body: {
+          'name': cleanName,
+          'email': cleanEmail,
+          'phone': cleanPhone,
+          'location': cleanLocation,
+        },
+      );
+
+      if (response.status == 200 && response.data != null) {
+        final data = Map<String, dynamic>.from(response.data as Map);
+        if (data['success'] == true && data['profile'] != null) {
+          debugPrint('User profile registered via Edge Function successfully: ${data['profile']}');
+          return Map<String, dynamic>.from(data['profile'] as Map);
+        }
+      }
+
+      if (response.status != 200) {
+        final err = (response.data is Map)
+            ? (response.data['error'] ?? 'Registration failed')
+            : 'Registration failed';
+        debugPrint('Edge function returned error: $err. Trying direct database fallback...');
+      }
+    } catch (e) {
+      debugPrint('Edge function invocation note: $e. Falling back to direct database upsert.');
+    }
+
+    // 2. Direct database fallback for resilience
+    try {
+      final existing = await fetchProfileByEmail(cleanEmail);
+      final nowIso = DateTime.now().toIso8601String();
+      final Map<String, dynamic> record = {
+        'name': cleanName,
+        'email': cleanEmail,
+        'phone': cleanPhone,
+        'location': cleanLocation,
+        'updated_at': nowIso,
+      };
+
+      if (existing != null && existing['id'] != null) {
+        record['id'] = existing['id'];
+      }
+
+      final saved = await client
+          .from('profiles')
+          .upsert(record, onConflict: 'email')
+          .select()
+          .single();
+
+      debugPrint('User profile saved directly to profiles table: $saved');
+      return Map<String, dynamic>.from(saved);
+    } catch (e) {
+      debugPrint('Direct profile upsert error: $e');
+      rethrow;
+    }
+  }
+
   /// Find user profile by email in `profiles` table
   Future<Map<String, dynamic>?> fetchProfileByEmail(String email) async {
     try {
@@ -276,35 +350,15 @@ class SupabaseService {
     String? userId,
     bool emailVerified = true,
   }) async {
-    final uid = userId ?? currentUser?.id;
-    if (uid == null) {
-      debugPrint('Cannot save profile: no user ID available');
-      return null;
-    }
-
     try {
-      final nowIso = DateTime.now().toIso8601String();
-      final profileData = {
-        'id': uid,
-        'user_id': uid,
-        'name': name,
-        'email': email,
-        'phone': phone,
-        'location': location,
-        'email_verified': emailVerified,
-        'updated_at': nowIso,
-      };
-
-      final response = await client
-          .from('profiles')
-          .upsert(profileData, onConflict: 'id')
-          .select()
-          .single();
-
-      debugPrint('Saved profile to Supabase: $response');
-      return response;
+      return await registerUser(
+        name: name,
+        email: email,
+        phone: phone,
+        location: location,
+      );
     } catch (e) {
-      debugPrint('Error saving user profile to Supabase: $e');
+      debugPrint('Error in saveUserProfile: $e');
       return null;
     }
   }
