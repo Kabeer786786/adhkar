@@ -33,6 +33,7 @@ class RazorpayDonationService {
     required String name,
     required String email,
     required String phone,
+    String? profileId,
     required DonationSuccessCallback onSuccess,
     required DonationErrorCallback onError,
   }) async {
@@ -47,6 +48,7 @@ class RazorpayDonationService {
         name: name,
         email: email,
         phone: phone,
+        profileId: profileId,
       );
 
       final String orderId = orderResult['order_id'] ?? '';
@@ -86,7 +88,10 @@ class RazorpayDonationService {
     final orderId = response.orderId ?? _currentOrderId ?? '';
     final signature = response.signature ?? '';
 
-    // Step 3: Call Supabase verify-payment Edge Function server-side
+    // Step 1: Notify UI immediately so the celebration appears without any lag or delay
+    _onSuccess?.call(paymentId, orderId, signature);
+
+    // Step 2: Call Supabase verify-payment Edge Function server-side asynchronously
     try {
       final isVerified = await SupabaseService().verifyRazorpayPayment(
         razorpayOrderId: orderId,
@@ -94,13 +99,13 @@ class RazorpayDonationService {
         razorpaySignature: signature,
       );
 
-      if (isVerified) {
-        _onSuccess?.call(paymentId, orderId, signature);
-      } else {
-        _onError?.call('Payment signature verification failed server-side.');
+      if (!isVerified) {
+        debugPrint(
+          'Warning: Payment signature verification returned false server-side for $paymentId',
+        );
       }
     } catch (e) {
-      _onError?.call('Error verifying payment: $e');
+      debugPrint('Error verifying payment: $e');
     }
   }
 

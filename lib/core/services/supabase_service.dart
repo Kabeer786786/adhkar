@@ -370,15 +370,21 @@ class SupabaseService {
     required String name,
     required String email,
     required String phone,
+    String? profileId,
     String? userId,
   }) async {
     try {
+      final effectiveProfileId = profileId ?? userId;
       final response = await client.functions.invoke(
         'create-order',
         body: {
           'amount': amount,
           'currency': currency,
-          'user_id': userId ?? currentUser?.id,
+          'name': name,
+          'email': email,
+          'phone': phone,
+          'profile_id': effectiveProfileId,
+          'user_id': effectiveProfileId,
           'user_details': {
             'name': name,
             'email': email,

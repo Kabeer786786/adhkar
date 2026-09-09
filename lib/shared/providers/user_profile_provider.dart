@@ -14,6 +14,7 @@ class UserProfileState {
   final bool hasSkippedRegistration;
 
   bool get isRegistered => registrationCompleted;
+  String? get profileId => userId.trim().isNotEmpty ? userId.trim() : null;
 
   UserProfileState({
     this.userId = '',

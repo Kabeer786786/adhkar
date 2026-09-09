@@ -20,10 +20,13 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 
 
--- 2. Create DONATIONS Table (1:N relationship with profiles)
+-- 2. Create DONATIONS Table (Stores donor details directly + optional profile_id link)
 CREATE TABLE IF NOT EXISTS public.donations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  profile_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  name TEXT,
+  email TEXT,
+  phone TEXT,
   amount NUMERIC(10, 2) NOT NULL,
   currency TEXT DEFAULT 'INR' NOT NULL,
   razorpay_order_id TEXT NOT NULL UNIQUE,
@@ -34,9 +37,23 @@ CREATE TABLE IF NOT EXISTS public.donations (
 );
 
 -- Indexes for donation queries
-CREATE INDEX IF NOT EXISTS idx_donations_user_id ON public.donations(user_id);
+CREATE INDEX IF NOT EXISTS idx_donations_profile_id ON public.donations(profile_id);
+CREATE INDEX IF NOT EXISTS idx_donations_email ON public.donations(email);
 CREATE INDEX IF NOT EXISTS idx_donations_order_id ON public.donations(razorpay_order_id);
 CREATE INDEX IF NOT EXISTS idx_donations_payment_id ON public.donations(razorpay_payment_id);
+
+-- Optional migration snippet for existing databases:
+-- ALTER TABLE public.donations ADD COLUMN IF NOT EXISTS profile_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL;
+-- ALTER TABLE public.donations ADD COLUMN IF NOT EXISTS name TEXT;
+-- ALTER TABLE public.donations ADD COLUMN IF NOT EXISTS email TEXT;
+-- ALTER TABLE public.donations ADD COLUMN IF NOT EXISTS phone TEXT;
+-- DO $$
+-- BEGIN
+--   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'donations' AND column_name = 'user_id') THEN
+--     UPDATE public.donations SET profile_id = user_id WHERE profile_id IS NULL;
+--     ALTER TABLE public.donations DROP COLUMN user_id;
+--   END IF;
+-- END $$;
 
 
 -- 3. Row Level Security (RLS) Policies

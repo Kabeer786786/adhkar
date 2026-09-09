@@ -32,8 +32,11 @@ Deno.serve(async (req) => {
 
     const amount = Number(body.amount);
     const currency = body.currency ?? "INR";
-    const userId = body.user_id ?? null;
     const userDetails = body.user_details ?? {};
+    const name = (body.name ?? userDetails.name ?? "").toString().trim();
+    const email = (body.email ?? userDetails.email ?? "").toString().trim().toLowerCase();
+    const phone = (body.phone ?? userDetails.phone ?? "").toString().trim();
+    let profileId = body.profile_id ?? body.user_id ?? null;
 
     if (!Number.isFinite(amount) || amount <= 0) {
       return new Response(
@@ -193,10 +196,30 @@ Deno.serve(async (req) => {
       },
     );
 
+    // Link existing profile_id if user registered previously with this email
+    if (!profileId && email) {
+      try {
+        const { data: existingProfile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("email", email)
+          .maybeSingle();
+
+        if (existingProfile?.id) {
+          profileId = existingProfile.id;
+        }
+      } catch (e) {
+        console.warn("Could not query profiles for email match:", e);
+      }
+    }
+
     const { error: donationError } = await supabase
       .from("donations")
       .insert({
-        user_id: userId,
+        profile_id: profileId || null,
+        name: name || null,
+        email: email || null,
+        phone: phone || null,
         amount,
         currency,
         razorpay_order_id: razorpayData.id,
