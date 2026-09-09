@@ -107,6 +107,40 @@ class QuietHoursService {
     }
   }
 
+  /// Check if the current device manufacturer has an OEM autostart / task killer
+  Future<bool> isAutoStartSupported() async {
+    if (!isSupported) return false;
+    try {
+      final supported = await _channel.invokeMethod<bool>('isAutoStartSupported');
+      return supported ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Open manufacturer-specific Autostart / Background management settings
+  Future<bool> openAutoStartSettings() async {
+    if (!isSupported) return false;
+    try {
+      final opened = await _channel.invokeMethod<bool>('openAutoStartSettings');
+      return opened ?? false;
+    } catch (e) {
+      debugPrint('Error opening autostart settings: $e');
+      return false;
+    }
+  }
+
+  /// Get device manufacturer name
+  Future<String> getDeviceManufacturer() async {
+    if (!isSupported) return '';
+    try {
+      final m = await _channel.invokeMethod<String>('getDeviceManufacturer');
+      return m ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
+
   /// Get current system interruption filter (1=all, 2=priority, 3=none, 4=alarms)
   Future<int?> getCurrentDndFilter() async {
     if (!isSupported) return null;

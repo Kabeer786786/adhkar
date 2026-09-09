@@ -4,11 +4,9 @@ import android.app.AlarmManager
 import android.app.AutomaticZenRule
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
@@ -77,110 +75,18 @@ object QuietHoursScheduler {
     }
 
     /**
-     * Synchronize schedules directly with Android's system AutomaticZenRule (OS Do Not Disturb Schedules).
-     * This creates native rules visible in Android's Do Not Disturb system settings using condition://android/schedule.
-     * Android OS evaluates these schedules at the system level independently of app execution state.
+     * Clean up any old AutomaticZenRule entries previously registered in Android system settings.
+     * Real background DND execution is handled directly and reliably via AlarmManager + QuietHoursReceiver.
      */
-    fun syncAutomaticZenRules(context: Context, schedulesJson: String) {
+    fun cleanupAutomaticZenRules(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
         try {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
             if (!nm.isNotificationPolicyAccessGranted) return
 
             val existingRules = nm.automaticZenRules ?: emptyMap<String, AutomaticZenRule>()
-            val arr = JSONArray(schedulesJson)
-            val currentRuleNames = mutableSetOf<String>()
-
-            for (i in 0 until arr.length()) {
-                val obj = arr.getJSONObject(i)
-                val scheduleId = obj.optString("id", "quiet_$i")
-                val title = obj.optString("title", "Quiet Hours")
-                val ruleName = "Adhkar - $title"
-                val enabled = obj.optBoolean("enabled", true)
-                currentRuleNames.add(ruleName)
-
-                val startHour = obj.optInt("startHour", 0)
-                val startMinute = obj.optInt("startMinute", 0)
-                val endHour = obj.optInt("endHour", 0)
-                val endMinute = obj.optInt("endMinute", 0)
-                val weekdays = parseWeekdays(obj.optJSONArray("weekdays"))
-                val repeatDaily = obj.optBoolean("repeatDaily", true)
-
-                // Build days string for Android ScheduleConditionProvider (1=Sun, 2=Mon, ... 7=Sat)
-                val daysList = if (repeatDaily) {
-                    listOf(1, 2, 3, 4, 5, 6, 7)
-                } else {
-                    weekdays.map { toCalendarDay(it) }.distinct().sorted()
-                }
-                val daysParam = daysList.joinToString(".")
-
-                // Native Android schedule condition URI: condition://android/schedule?days=...&start=...&end=...&exitAtAlarm=false
-                val conditionUri = Uri.parse("condition://android/schedule?days=$daysParam&start=$startHour.$startMinute&end=$endHour.$endMinute&exitAtAlarm=false")
-
-                val existingEntry = existingRules.entries.firstOrNull {
-                    it.value.name == ruleName || (it.value.conditionId != null && it.value.conditionId.toString().contains("start=$startHour.$startMinute"))
-                }
-
-                val componentName = ComponentName(context.packageName, MainActivity::class.java.name)
-
-                if (existingEntry != null) {
-                    val rule = existingEntry.value
-                    rule.name = ruleName
-                    rule.conditionId = conditionUri
-                    rule.isEnabled = enabled
-                    rule.interruptionFilter = NotificationManager.INTERRUPTION_FILTER_PRIORITY
-                    try {
-                        nm.updateAutomaticZenRule(existingEntry.key, rule)
-                        Log.d(TAG, "Updated AutomaticZenRule: ${existingEntry.key} ($ruleName)")
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error updating AutomaticZenRule", e)
-                    }
-                } else {
-                    try {
-                        val rule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            AutomaticZenRule(
-                                ruleName,
-                                null, // owner null allows android system ScheduleConditionProvider to evaluate it directly!
-                                componentName,
-                                conditionUri,
-                                null,
-                                NotificationManager.INTERRUPTION_FILTER_PRIORITY,
-                                enabled
-                            )
-                        } else {
-                            AutomaticZenRule(
-                                ruleName,
-                                componentName,
-                                conditionUri,
-                                NotificationManager.INTERRUPTION_FILTER_PRIORITY,
-                                enabled
-                            )
-                        }
-                        val newRuleId = nm.addAutomaticZenRule(rule)
-                        Log.d(TAG, "Added AutomaticZenRule to Android system: $newRuleId ($ruleName)")
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Fallback AutomaticZenRule with component owner: ${e.message}")
-                        try {
-                            val rule = AutomaticZenRule(
-                                ruleName,
-                                componentName,
-                                componentName,
-                                conditionUri,
-                                null,
-                                NotificationManager.INTERRUPTION_FILTER_PRIORITY,
-                                enabled
-                            )
-                            nm.addAutomaticZenRule(rule)
-                        } catch (e2: Exception) {
-                            Log.e(TAG, "Could not add AutomaticZenRule", e2)
-                        }
-                    }
-                }
-            }
-
-            // Clean up any old Adhkar rules that were removed
             for ((ruleId, rule) in existingRules) {
-                if (rule.name != null && rule.name.startsWith("Adhkar - ") && !currentRuleNames.contains(rule.name)) {
+                if (rule.name != null && rule.name.startsWith("Adhkar - ")) {
                     try {
                         nm.removeAutomaticZenRule(ruleId)
                         Log.d(TAG, "Removed obsolete AutomaticZenRule: $ruleId (${rule.name})")
@@ -190,7 +96,7 @@ object QuietHoursScheduler {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error syncing AutomaticZenRules", e)
+            Log.e(TAG, "Error cleaning up AutomaticZenRules", e)
         }
     }
 
@@ -263,9 +169,10 @@ object QuietHoursScheduler {
      * Synchronize and schedule exact alarms in AlarmManager for all enabled schedules.
      */
     fun scheduleAll(context: Context, schedulesJson: String) {
-        saveSchedules(context, schedulesJson)
+        // CRITICAL FIX: Cancel old alarms using the previous saved schedules BEFORE overwriting KEY_SCHEDULES_JSON!
         cancelAll(context)
-        syncAutomaticZenRules(context, schedulesJson)
+        saveSchedules(context, schedulesJson)
+        cleanupAutomaticZenRules(context)
 
         try {
             val arr = JSONArray(schedulesJson)

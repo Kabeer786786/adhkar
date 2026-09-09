@@ -157,6 +157,18 @@ class MainActivity : AudioServiceActivity() {
                     }
                 }
 
+                "isAutoStartSupported" -> {
+                    result.success(AutoStartHelper.isAutoStartSupported())
+                }
+
+                "openAutoStartSettings" -> {
+                    result.success(AutoStartHelper.openAutoStartSettings(this))
+                }
+
+                "getDeviceManufacturer" -> {
+                    result.success(AutoStartHelper.getManufacturer())
+                }
+
                 else -> result.notImplemented()
             }
         }
@@ -285,6 +297,18 @@ class MainActivity : AudioServiceActivity() {
                         } catch (e: Exception) {
                             result.error("EXACT_ALARM_ERROR", e.message, null)
                         }
+                    }
+
+                    "isAutoStartSupported" -> {
+                        result.success(AutoStartHelper.isAutoStartSupported())
+                    }
+
+                    "openAutoStartSettings" -> {
+                        result.success(AutoStartHelper.openAutoStartSettings(this))
+                    }
+
+                    "getDeviceManufacturer" -> {
+                        result.success(AutoStartHelper.getManufacturer())
                     }
 
                     else -> result.notImplemented()

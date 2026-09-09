@@ -84,42 +84,23 @@
             </intent-filter>
         </receiver>
 
-        <!-- Dedicated Native DND Scheduling Receivers -->
-        <receiver
-            android:name="com.sprnt.adhkar.DndAlarmReceiver"
-            android:exported="false" />
-        <receiver
-            android:name="com.sprnt.adhkar.DndBootReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.sprnt.adhkar.DndTimeChangeReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.TIME_SET" />
-                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
-                <action android:name="android.intent.action.DATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Quiet Hours Background DND Receivers (Backward Compatibility) -->
+        <!-- Native Quiet Hours & DND Alarm Receiver (Explicit Intent via AlarmManager) -->
         <receiver
             android:name="com.sprnt.adhkar.QuietHoursReceiver"
             android:exported="false" />
+
+        <!-- Native Quiet Hours & DND Boot, Package Replaced & Time Change Receiver (System Broadcasts) -->
         <receiver
             android:name="com.sprnt.adhkar.QuietHoursBootReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
         </receiver>
 

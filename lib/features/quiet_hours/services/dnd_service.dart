@@ -40,7 +40,7 @@ class DndScheduleModel {
   final DateTime? nextDisableTime;
   final String timeZone;
   final String lastKnownDndState;
-  final bool adhkarOwnsDnd;
+  final bool adhkarOwnsDnd; 
 
   const DndScheduleModel({
     required this.enabled,

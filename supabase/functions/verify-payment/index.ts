@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
 
     const razorpaySecret = Deno.env.get(
       "RAZORPAY_KEY_SECRET",
-    );
+    )?.trim();
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get(

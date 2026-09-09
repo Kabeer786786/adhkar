@@ -12,12 +12,12 @@ class QuietHoursBootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
         val action = intent?.action ?: return
-        Log.d(TAG, "Device boot / update completed: $action. Re-arming Quiet Hours alarms.")
+        Log.i(TAG, "System event received: $action. Re-evaluating and re-arming Quiet Hours alarms.")
 
         val savedJson = QuietHoursScheduler.getSchedules(context)
         if (!savedJson.isNullOrEmpty()) {
             QuietHoursScheduler.scheduleAll(context, savedJson)
-            Log.d(TAG, "Successfully re-armed Quiet Hours exact alarms after device boot.")
+            Log.i(TAG, "Successfully re-armed Quiet Hours exact alarms after $action.")
         }
     }
 }

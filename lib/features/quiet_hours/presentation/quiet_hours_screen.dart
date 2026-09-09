@@ -22,6 +22,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   bool _hasDndPermission = true;
   bool _isBatteryOptIgnored = true;
   bool _canScheduleExactAlarms = true;
+  bool _isAutoStartSupported = false;
+  String _deviceManufacturer = '';
   Timer? _timer;
 
   @override
@@ -61,11 +63,15 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     final granted = await service.isDndPermissionGranted();
     final batteryIgnored = await service.isBatteryOptimizationIgnored();
     final canAlarms = await service.canScheduleExactAlarms();
+    final autoStartSupported = await service.isAutoStartSupported();
+    final manufacturer = await service.getDeviceManufacturer();
     if (mounted) {
       setState(() {
         _hasDndPermission = granted;
         _isBatteryOptIgnored = batteryIgnored;
         _canScheduleExactAlarms = canAlarms;
+        _isAutoStartSupported = autoStartSupported;
+        _deviceManufacturer = manufacturer;
       });
     }
   }
@@ -438,6 +444,83 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                             },
                             child: Text(
                               'Allow Background Running',
+                              style: GoogleFonts.lexend(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+
+                // OEM Autostart / Protected App Card (Xiaomi, Oppo, Vivo, Realme, OnePlus, Samsung, etc.)
+                if (isSupported && _isAutoStartSupported) ...[
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF1B2836)
+                          : const Color(0xFFF0FDF4),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFF16A34A).withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.rocket_launch_rounded,
+                              color: Color(0xFF16A34A),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Enable Autostart (${_deviceManufacturer.toUpperCase()})',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF15803D),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'On ${_deviceManufacturer.isNotEmpty ? _deviceManufacturer[0].toUpperCase() + _deviceManufacturer.substring(1) : "OEM"} devices, swiping the app from recents revokes background alarms. Enable Autostart so Quiet Hours always triggers on schedule.',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12,
+                            color: isDark
+                                ? Colors.white70
+                                : const Color(0xFF14532D),
+                            height: 1.35,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF16A34A),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () => service.openAutoStartSettings(),
+                            child: Text(
+                              'Allow Autostart / Background Run',
                               style: GoogleFonts.lexend(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,

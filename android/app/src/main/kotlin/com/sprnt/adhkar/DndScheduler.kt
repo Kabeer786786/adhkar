@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.PowerManager
 import android.util.Log
 import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -334,73 +335,20 @@ object DndScheduler {
         scheduleId: String = "dnd_primary",
         title: String = "Quiet Hours"
     ) {
-        val now = System.currentTimeMillis()
-        val tz = TimeZone.getDefault()
-
-        // 1. Cancel previous alarms first to prevent accumulation
-        cancelAlarms(context, scheduleId)
-
-        // 2. Compute occurrences
-        val isCurrentlyInside = isInsideSchedule(
-            nowMillis = now,
-            startHour = startHour,
-            startMinute = startMinute,
-            endHour = endHour,
-            endMinute = endMinute,
-            repeatDaily = repeatDaily,
-            weekdays = weekdays,
-            timeZone = tz
-        )
-
-        val nextStart = calculateNextStart(
-            fromMillis = now,
-            startHour = startHour,
-            startMinute = startMinute,
-            repeatDaily = repeatDaily,
-            weekdays = weekdays,
-            timeZone = tz
-        )
-
-        val nextEnd = calculateNextEnd(
-            fromMillis = now,
-            startHour = startHour,
-            startMinute = startMinute,
-            endHour = endHour,
-            endMinute = endMinute,
-            repeatDaily = repeatDaily,
-            weekdays = weekdays,
-            timeZone = tz
-        )
-
-        // 3. Persist to SharedPreferences
-        val weekdaysJson = JSONArray(weekdays).toString()
-        getPrefs(context).edit()
-            .putBoolean(KEY_SCHEDULE_ENABLED, true)
-            .putInt(KEY_START_HOUR, startHour)
-            .putInt(KEY_START_MINUTE, startMinute)
-            .putInt(KEY_END_HOUR, endHour)
-            .putInt(KEY_END_MINUTE, endMinute)
-            .putBoolean(KEY_REPEAT_DAILY, repeatDaily)
-            .putString(KEY_WEEKDAYS_JSON, weekdaysJson)
-            .putString(KEY_SCHEDULE_ID, scheduleId)
-            .putString(KEY_SCHEDULE_TITLE, title)
-            .putLong(KEY_NEXT_ENABLE_MILLIS, nextStart)
-            .putLong(KEY_NEXT_DISABLE_MILLIS, nextEnd)
-            .putString(KEY_TIMEZONE_ID, tz.id)
-            .apply()
-
-        // 4. Arm alarms in AlarmManager
-        armAlarm(context, nextStart, ACTION_ENABLE_DND, scheduleId, title, getEnableRequestCode(scheduleId))
-        Log.i(TAG, "DND_SCHEDULER: Scheduling enable alarm: ${formatTimestamp(nextStart)} (rc=${getEnableRequestCode(scheduleId)})")
-
-        armAlarm(context, nextEnd, ACTION_DISABLE_DND, scheduleId, title, getDisableRequestCode(scheduleId))
-        Log.i(TAG, "DND_SCHEDULER: Scheduling disable alarm: ${formatTimestamp(nextEnd)} (rc=${getDisableRequestCode(scheduleId)})")
-
-        // 5. Apply immediately if already inside schedule window
-        if (isCurrentlyInside) {
-            Log.i(TAG, "DND_SCHEDULER: Current time is inside the scheduled window. Enabling DND immediately.")
-            applyDndMode(context, true)
+        // Delegate directly to QuietHoursScheduler for single source of truth
+        val scheduleObj = JSONObject().apply {
+            put("id", scheduleId)
+            put("title", title)
+            put("startHour", startHour)
+            put("startMinute", startMinute)
+            put("endHour", endHour)
+            put("endMinute", endMinute)
+            put("repeatDaily", repeatDaily)
+            put("weekdays", JSONArray(weekdays))
+            put("enabled", true)
         }
+        val array = JSONArray().put(scheduleObj)
+        QuietHoursScheduler.scheduleAll(context, array.toString())
     }
 
     /**
@@ -408,221 +356,24 @@ object DndScheduler {
      */
     @Synchronized
     fun cancelDnd(context: Context, scheduleId: String = "dnd_primary", restoreDnd: Boolean = true) {
-        cancelAlarms(context, scheduleId)
-
-        getPrefs(context).edit()
-            .putBoolean(KEY_SCHEDULE_ENABLED, false)
-            .remove(KEY_NEXT_ENABLE_MILLIS)
-            .remove(KEY_NEXT_DISABLE_MILLIS)
-            .apply()
-
+        QuietHoursScheduler.cancelAll(context)
         if (restoreDnd) {
-            applyDndMode(context, false)
+            QuietHoursScheduler.applyDndMode(context, false)
         }
-        Log.i(TAG, "DND_SCHEDULER: DND schedule cancelled and alarms removed.")
+        Log.i(TAG, "DND_SCHEDULER: DND schedule cancelled and alarms removed via QuietHoursScheduler.")
     }
-
-    private fun armAlarm(
-        context: Context,
-        triggerAtMillis: Long,
-        action: String,
-        scheduleId: String,
-        title: String,
-        requestCode: Int
-    ) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
-        val intent = Intent(context, DndAlarmReceiver::class.java).apply {
-            this.action = action
-            putExtra(EXTRA_SCHEDULE_ID, scheduleId)
-            putExtra(EXTRA_SCHEDULE_TITLE, title)
-        }
-
-        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, flags)
-
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (canScheduleExactAlarms(context)) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
-                } else {
-                    Log.w(TAG, "DND_SCHEDULER: canScheduleExactAlarms=false. Fallback to setAndAllowWhileIdle.")
-                    alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
-                }
-            } else {
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
-            }
-        } catch (e: SecurityException) {
-            Log.w(TAG, "DND_SCHEDULER: SecurityException scheduling exact alarm. Fallback to inexact: ${e.message}")
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
-                } else {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
-                }
-            } catch (e2: Exception) {
-                Log.e(TAG, "DND_SCHEDULER: Failed to schedule fallback alarm: ${e2.message}", e2)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "DND_SCHEDULER: Unexpected error setting alarm: ${e.message}", e)
-        }
-    }
-
-    private fun cancelAlarms(context: Context, scheduleId: String) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
-
-        fun cancelSpecific(action: String, rc: Int) {
-            val intent = Intent(context, DndAlarmReceiver::class.java).apply { this.action = action }
-            val flags = PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            val pi = PendingIntent.getBroadcast(context, rc, intent, flags)
-            if (pi != null) {
-                alarmManager.cancel(pi)
-                pi.cancel()
-            }
-        }
-
-        cancelSpecific(ACTION_ENABLE_DND, getEnableRequestCode(scheduleId))
-        cancelSpecific(ACTION_DISABLE_DND, getDisableRequestCode(scheduleId))
-    }
-
-    // =========================================================================
-    // AlarmReceiver Callbacks
-    // =========================================================================
-
-    /**
-     * Called when ACTION_ENABLE_DND triggers.
-     */
-    fun onEnableAlarmTriggered(context: Context, scheduleId: String, title: String) {
-        Log.i(TAG, "DND_SCHEDULER: Enable alarm received for $scheduleId ($title)")
-        applyDndMode(context, true)
-
-        // Reschedule next enable occurrence
-        val prefs = getPrefs(context)
-        if (!prefs.getBoolean(KEY_SCHEDULE_ENABLED, false)) return
-
-        val startHour = prefs.getInt(KEY_START_HOUR, 0)
-        val startMinute = prefs.getInt(KEY_START_MINUTE, 0)
-        val repeatDaily = prefs.getBoolean(KEY_REPEAT_DAILY, true)
-        val weekdays = parseWeekdaysJson(prefs.getString(KEY_WEEKDAYS_JSON, null))
-
-        val nextStart = calculateNextStart(
-            fromMillis = System.currentTimeMillis(),
-            startHour = startHour,
-            startMinute = startMinute,
-            repeatDaily = repeatDaily,
-            weekdays = weekdays
-        )
-
-        prefs.edit().putLong(KEY_NEXT_ENABLE_MILLIS, nextStart).apply()
-        armAlarm(context, nextStart, ACTION_ENABLE_DND, scheduleId, title, getEnableRequestCode(scheduleId))
-        Log.i(TAG, "DND_SCHEDULER: Scheduling next enable alarm: ${formatTimestamp(nextStart)}")
-    }
-
-    /**
-     * Called when ACTION_DISABLE_DND triggers.
-     */
-    fun onDisableAlarmTriggered(context: Context, scheduleId: String, title: String) {
-        Log.i(TAG, "DND_SCHEDULER: Disable alarm received for $scheduleId ($title)")
-        applyDndMode(context, false)
-
-        // Reschedule next disable occurrence
-        val prefs = getPrefs(context)
-        if (!prefs.getBoolean(KEY_SCHEDULE_ENABLED, false)) return
-
-        val startHour = prefs.getInt(KEY_START_HOUR, 0)
-        val startMinute = prefs.getInt(KEY_START_MINUTE, 0)
-        val endHour = prefs.getInt(KEY_END_HOUR, 0)
-        val endMinute = prefs.getInt(KEY_END_MINUTE, 0)
-        val repeatDaily = prefs.getBoolean(KEY_REPEAT_DAILY, true)
-        val weekdays = parseWeekdaysJson(prefs.getString(KEY_WEEKDAYS_JSON, null))
-
-        val nextEnd = calculateNextEnd(
-            fromMillis = System.currentTimeMillis(),
-            startHour = startHour,
-            startMinute = startMinute,
-            endHour = endHour,
-            endMinute = endMinute,
-            repeatDaily = repeatDaily,
-            weekdays = weekdays
-        )
-
-        prefs.edit().putLong(KEY_NEXT_DISABLE_MILLIS, nextEnd).apply()
-        armAlarm(context, nextEnd, ACTION_DISABLE_DND, scheduleId, title, getDisableRequestCode(scheduleId))
-        Log.i(TAG, "DND_SCHEDULER: Scheduling next disable alarm: ${formatTimestamp(nextEnd)}")
-    }
-
-    // =========================================================================
-    // System Event Reconciler (Boot / Time Change / Missed Alarms - Req 8 & 18)
-    // =========================================================================
 
     /**
      * Reconciles current device state and re-registers alarms.
-     * Evaluates current time vs schedule window and corrects state if device was off.
      */
     @Synchronized
     fun reconcileCurrentState(context: Context, reason: String) {
         Log.i(TAG, "DND_SCHEDULER: Reconciling schedule state (reason: $reason)...")
-
-        // First check multi-schedule JSON if present (from Quiet Hours)
-        val multiJson = prefsGetSchedulesList(context)
+        val multiJson = prefsGetSchedulesList(context) ?: QuietHoursScheduler.getSchedules(context)
         if (!multiJson.isNullOrEmpty()) {
             QuietHoursScheduler.scheduleAll(context, multiJson)
-            Log.i(TAG, "DND_SCHEDULER: Restored multi-schedule Quiet Hours.")
-            return
+            Log.i(TAG, "DND_SCHEDULER: Restored and re-armed Quiet Hours schedules.")
         }
-
-        val prefs = getPrefs(context)
-        if (!prefs.getBoolean(KEY_SCHEDULE_ENABLED, false)) {
-            Log.d(TAG, "DND_SCHEDULER: No active DND schedule found to restore.")
-            return
-        }
-
-        val startHour = prefs.getInt(KEY_START_HOUR, 0)
-        val startMinute = prefs.getInt(KEY_START_MINUTE, 0)
-        val endHour = prefs.getInt(KEY_END_HOUR, 0)
-        val endMinute = prefs.getInt(KEY_END_MINUTE, 0)
-        val repeatDaily = prefs.getBoolean(KEY_REPEAT_DAILY, true)
-        val weekdays = parseWeekdaysJson(prefs.getString(KEY_WEEKDAYS_JSON, null))
-        val scheduleId = prefs.getString(KEY_SCHEDULE_ID, "dnd_primary") ?: "dnd_primary"
-        val title = prefs.getString(KEY_SCHEDULE_TITLE, "Quiet Hours") ?: "Quiet Hours"
-
-        val now = System.currentTimeMillis()
-        val isInside = isInsideSchedule(
-            nowMillis = now,
-            startHour = startHour,
-            startMinute = startMinute,
-            endHour = endHour,
-            endMinute = endMinute,
-            repeatDaily = repeatDaily,
-            weekdays = weekdays
-        )
-
-        Log.i(TAG, "DND_SCHEDULER: Schedule evaluation at ${formatTimestamp(now)}: isInside=$isInside")
-
-        if (isInside) {
-            // Device booted or time shifted inside the active window.
-            applyDndMode(context, true)
-        } else {
-            // Outside window. If Adhkar previously owned DND, ensure it's cleared now.
-            if (prefs.getBoolean(KEY_ADHKAR_OWNS_DND, false)) {
-                Log.i(TAG, "DND_SCHEDULER: Outside scheduled window, but Adhkar owned DND (missed end alarm while off). Restoring normal filter.")
-                applyDndMode(context, false)
-            }
-        }
-
-        // Re-calculate and re-arm next alarms
-        val nextStart = calculateNextStart(now, startHour, startMinute, repeatDaily, weekdays)
-        val nextEnd = calculateNextEnd(now, startHour, startMinute, endHour, endMinute, repeatDaily, weekdays)
-
-        prefs.edit()
-            .putLong(KEY_NEXT_ENABLE_MILLIS, nextStart)
-            .putLong(KEY_NEXT_DISABLE_MILLIS, nextEnd)
-            .putString(KEY_TIMEZONE_ID, TimeZone.getDefault().id)
-            .apply()
-
-        armAlarm(context, nextStart, ACTION_ENABLE_DND, scheduleId, title, getEnableRequestCode(scheduleId))
-        armAlarm(context, nextEnd, ACTION_DISABLE_DND, scheduleId, title, getDisableRequestCode(scheduleId))
-
-        Log.i(TAG, "DND_SCHEDULER: Schedule re-armed successfully: enable=${formatTimestamp(nextStart)}, disable=${formatTimestamp(nextEnd)}")
     }
 
     // =========================================================================
