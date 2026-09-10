@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/services/audio_service.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../domain/dua_item.dart';
@@ -25,15 +29,86 @@ class DuaDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<DuaDetailScreen> createState() => _DuaDetailScreenState();
 }
 
-class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen> {
+class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
+    with SingleTickerProviderStateMixin {
   late DuaItem _dua;
   late String _currentLang;
+  bool _isPlaying = false;
+  bool _isBuffering = false;
+  StreamSubscription<AudioPlaybackState>? _playerStateSub;
+  AppAudioService? _audioService;
+  late AnimationController _waveController;
 
   @override
   void initState() {
     super.initState();
     _dua = widget.dua;
     _currentLang = widget.selectedLanguage;
+    _loadPersistedLanguage();
+    _waveController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _audioService = ref.read(audioServiceProvider);
+      _playerStateSub = _audioService?.playbackStateStream.listen((state) {
+        if (!mounted) return;
+        final playing = state.isPlaying;
+        setState(() {
+          _isPlaying = playing;
+          _isBuffering = state.isBuffering;
+        });
+        if (playing) {
+          if (!_waveController.isAnimating) _waveController.repeat(reverse: true);
+        } else {
+          if (_waveController.isAnimating) _waveController.stop();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _waveController.dispose();
+    _playerStateSub?.cancel();
+    _audioService?.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleAudio() async {
+    final audioService = _audioService;
+    if (audioService == null) return;
+
+    if (_isPlaying) {
+      await audioService.stop();
+      if (mounted) setState(() => _isPlaying = false);
+    } else {
+      if (_dua.audioUrl == null || _dua.audioUrl!.isEmpty) {
+        AppFloatingToast.showAdded(
+          context,
+          message: 'Audio recitation not available for this Dua',
+        );
+        return;
+      }
+
+      setState(() => _isBuffering = true);
+      try {
+        await audioService.playUrl(_dua.audioUrl!);
+      } catch (_) {
+        if (mounted) {
+          setState(() {
+            _isPlaying = false;
+            _isBuffering = false;
+          });
+          AppFloatingToast.showAdded(
+            context,
+            message: 'Could not stream audio recitation',
+          );
+        }
+      }
+    }
   }
 
   void _confirmDelete(BuildContext context) {
@@ -182,7 +257,7 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen> {
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    const EdgeInsets.fromLTRB(20, 16, 20, 96),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -317,24 +392,24 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen> {
                       const Text(
                         'REFERENCE',
                         style: TextStyle(
-                          fontSize: 11.5,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 0.6,
+                          letterSpacing: 0.8,
                           color: Color(0xFFD97724),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       SelectableText(
                         _dua.reference,
                         style: const TextStyle(
-                          fontSize: 13.5,
-                          height: 1.45,
+                          fontSize: 16.0,
+                          height: 1.55,
                           letterSpacing: -0.1,
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF4A3728),
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 22),
                     ],
 
                     // Spiritual Benefits Section
@@ -342,18 +417,18 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen> {
                       const Text(
                         'SPIRITUAL & PRACTICAL BENEFITS',
                         style: TextStyle(
-                          fontSize: 11.5,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 0.6,
+                          letterSpacing: 0.8,
                           color: Color(0xFF9333EA),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       SelectableText(
                         _dua.getBenefits(_currentLang),
                         style: const TextStyle(
-                          fontSize: 13.5,
-                          height: 1.45,
+                          fontSize: 16.0,
+                          height: 1.55,
                           letterSpacing: -0.1,
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF3B0764),
@@ -365,20 +440,197 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen> {
                 ),
               ),
             ),
+
+            // Absolute Floating Audio Player at Left Bottom Corner
+            if (_dua.audioUrl != null && _dua.audioUrl!.isNotEmpty)
+              _buildFloatingAudioPlayer(),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildFloatingAudioPlayer() {
+    final hasAudio = _dua.audioUrl != null && _dua.audioUrl!.isNotEmpty;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+
+    return Positioned(
+      left: 20,
+      bottom: bottomInset + 18,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: hasAudio ? _toggleAudio : null,
+          borderRadius: BorderRadius.circular(32),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 260),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: _isPlaying
+                    ? const [Color(0xFF1F4A18), Color(0xFF13360E)]
+                    : const [Color(0xFF2A531D), Color(0xFF1B3D14)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: _isPlaying ? 0.35 : 0.2),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF1B3D14).withValues(alpha: 0.35),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+                if (_isPlaying)
+                  BoxShadow(
+                    color: const Color(0xFF22C55E).withValues(alpha: 0.28),
+                    blurRadius: 16,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 2),
+                  ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Circular Play / Buffering / Stop Button
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: _isBuffering
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Icon(
+                            _isPlaying
+                                ? Icons.stop_rounded
+                                : Icons.play_arrow_rounded,
+                            color: Colors.white,
+                            size: 22,
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                // Title & Subtitle Labels
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _isPlaying
+                          ? 'Reciting...'
+                          : (_isBuffering ? 'Loading...' : 'Audio Recitation'),
+                      style: GoogleFonts.lexend(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.1,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _isPlaying ? 'Tap to pause' : 'Tap to listen',
+                      style: GoogleFonts.lexend(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(width: 12),
+
+                // Sound Wave Bars
+                _buildWaveBars(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWaveBars() {
+    return AnimatedBuilder(
+      animation: _waveController,
+      builder: (context, child) {
+        final val = _waveController.value;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildBar((_isPlaying ? 6.0 + 12.0 * ((val + 0.1) % 1.0) : 6.0)),
+            const SizedBox(width: 2.5),
+            _buildBar((_isPlaying ? 8.0 + 14.0 * ((val + 0.4) % 1.0) : 10.0)),
+            const SizedBox(width: 2.5),
+            _buildBar((_isPlaying ? 5.0 + 16.0 * ((val + 0.7) % 1.0) : 14.0)),
+            const SizedBox(width: 2.5),
+            _buildBar((_isPlaying ? 7.0 + 10.0 * ((val + 0.2) % 1.0) : 8.0)),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildBar(double height) {
+    return Container(
+      width: 3,
+      height: height.clamp(4.0, 20.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: _isPlaying ? 0.95 : 0.45),
+        borderRadius: BorderRadius.circular(2),
+      ),
+    );
+  }
+
+  void _loadPersistedLanguage() {
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final savedLangs = storage.getGenericData('dua_selected_languages');
+      if (savedLangs is List && savedLangs.isNotEmpty) {
+        final lang = savedLangs.first.toString();
+        if (lang.isNotEmpty) {
+          _currentLang = lang;
+        }
+      } else {
+        final savedPrimary = storage.getGenericData('dua_primary_language');
+        if (savedPrimary is String && savedPrimary.isNotEmpty) {
+          _currentLang = savedPrimary;
+        }
+      }
+    } catch (_) {}
+  }
+
   Widget _buildLangChip(String langCode, String label) {
     final isSelected = _currentLang == langCode;
     return InkWell(
       borderRadius: BorderRadius.circular(10),
-      onTap: () {
+      onTap: () async {
         setState(() {
           _currentLang = langCode;
         });
+        try {
+          final storage = ref.read(storageServiceProvider);
+          await storage.saveGenericData('dua_selected_languages', [langCode]);
+          await storage.saveGenericData('dua_primary_language', langCode);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('dua_primary_language', langCode);
+        } catch (_) {}
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),

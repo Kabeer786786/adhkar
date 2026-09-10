@@ -175,31 +175,13 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           style: GoogleFonts.outfit(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: textColor,
+            color: textColor, 
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              isAllSelected
-                  ? Icons.select_all_rounded
-                  : Icons.deselect_rounded,
-              color: isAllSelected ? primaryGreen : textColor,
-            ),
-            tooltip: isAllSelected ? 'Deselect All' : 'Select All',
-            onPressed: () {
-              setState(() {
-                if (isAllSelected) {
-                  _selectedIds.clear();
-                } else {
-                  _selectedIds.addAll(allReminders.map((r) => r.id));
-                }
-              });
-            },
-          ),
-          IconButton(
             icon: const Icon(
-              Icons.delete_outline_rounded,
+              Icons.delete_outline_rounded, 
               color: Color(0xFFEF4444),
             ),
             onPressed: _selectedIds.isEmpty

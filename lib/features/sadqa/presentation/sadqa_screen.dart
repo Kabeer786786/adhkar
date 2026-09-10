@@ -147,7 +147,9 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
         statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFF173a24), // Deep forest green matching Roza
+        backgroundColor: const Color(
+          0xFF173a24,
+        ), // Deep forest green matching Roza
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
@@ -172,7 +174,10 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                 onPressed: () => _openCalculatorModal(context),
               ),
               IconButton(
-                icon: const Icon(Icons.info_outline_rounded, color: Colors.white),
+                icon: const Icon(
+                  Icons.info_outline_rounded,
+                  color: Colors.white,
+                ),
                 tooltip: 'Islamic Guidelines & Benefits',
                 onPressed: () => _openInfoModal(context),
               ),
@@ -188,17 +193,19 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                 foregroundColor: Colors.white,
                 elevation: 3,
                 shape: const CircleBorder(),
-                child: const Icon(
-                  Icons.add_rounded,
-                  size: 32,
-                ),
+                child: const Icon(Icons.add_rounded, size: 32),
               ),
         body: SafeArea(
           child: Column(
             children: [
               // 1. Upper Half Container (Forest Green Summary Metrics & Banners)
               Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 12),
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 8,
+                  bottom: 12,
+                ),
                 child: Column(
                   children: [
                     Row(
@@ -206,12 +213,19 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                         // Total Sadaqah Card
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFF16A34A).withValues(alpha: 0.92),
-                                  const Color(0xFF15803D).withValues(alpha: 0.92),
+                                  const Color(
+                                    0xFF16A34A,
+                                  ).withValues(alpha: 0.92),
+                                  const Color(
+                                    0xFF15803D,
+                                  ).withValues(alpha: 0.92),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -266,12 +280,19 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                         // Total Zakat Paid Card
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFFEAB308).withValues(alpha: 0.92),
-                                  const Color(0xFFD1820E).withValues(alpha: 0.92),
+                                  const Color(
+                                    0xFFEAB308,
+                                  ).withValues(alpha: 0.92),
+                                  const Color(
+                                    0xFFD1820E,
+                                  ).withValues(alpha: 0.92),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -413,7 +434,8 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                 ),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -424,7 +446,8 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           const Text(
                                             'Online Donation',
@@ -438,7 +461,9 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                             'Support App & Sadqa via Razorpay',
                                             style: TextStyle(
                                               fontSize: 10,
-                                              color: Colors.white.withValues(alpha: 0.85),
+                                              color: Colors.white.withValues(
+                                                alpha: 0.85,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -490,15 +515,24 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                     children: [
                       // 3 Centered Filter Buttons: All Logs, Sadaqah Only, Zakat Only
                       Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 8, left: 16, right: 16),
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          bottom: 8,
+                          left: 16,
+                          right: 16,
+                        ),
                         child: Center(
                           child: Container(
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF131D18) : const Color(0xFFF1F5F9),
+                              color: isDark
+                                  ? const Color(0xFF131D18)
+                                  : const Color(0xFFF1F5F9),
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                                color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                                color: isDark
+                                    ? Colors.white12
+                                    : const Color(0xFFE2E8F0),
                               ),
                             ),
                             child: Row(
@@ -507,22 +541,28 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                 _buildFilterPill(
                                   label: 'All Logs',
                                   isSelected: _filterType == null,
-                                  activeColor: const Color(0xFF173a24),
-                                  onTap: () => setState(() => _filterType = null),
+                                  activeColor: const Color(0xFF2A531D),
+                                  onTap: () =>
+                                      setState(() => _filterType = null),
                                   isDark: isDark,
                                 ),
                                 _buildFilterPill(
                                   label: 'Sadaqah Only',
-                                  isSelected: _filterType == CharityType.sadaqah,
+                                  isSelected:
+                                      _filterType == CharityType.sadaqah,
                                   activeColor: const Color(0xFF16A34A),
-                                  onTap: () => setState(() => _filterType = CharityType.sadaqah),
+                                  onTap: () => setState(
+                                    () => _filterType = CharityType.sadaqah,
+                                  ),
                                   isDark: isDark,
                                 ),
                                 _buildFilterPill(
                                   label: 'Zakat Only',
                                   isSelected: _filterType == CharityType.zakat,
                                   activeColor: const Color(0xFFD1820E),
-                                  onTap: () => setState(() => _filterType = CharityType.zakat),
+                                  onTap: () => setState(
+                                    () => _filterType = CharityType.zakat,
+                                  ),
                                   isDark: isDark,
                                 ),
                               ],
@@ -546,7 +586,11 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                 itemCount: filteredRecords.length,
                                 itemBuilder: (context, index) {
                                   final item = filteredRecords[index];
-                                  return _buildRecordCard(context, item, isDark);
+                                  return _buildRecordCard(
+                                    context,
+                                    item,
+                                    isDark,
+                                  );
                                 },
                               ),
                       ),
@@ -659,7 +703,9 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
   Widget _buildRecordCard(BuildContext context, SadqaRecord item, bool isDark) {
     final isExpanded = _expandedRecordIds.contains(item.id);
     final isSadaqah = item.type == CharityType.sadaqah;
-    final badgeColor = isSadaqah ? const Color(0xFF16A34A) : const Color(0xFFD1820E);
+    final badgeColor = isSadaqah
+        ? const Color(0xFF16A34A)
+        : const Color(0xFFD1820E);
     final iconData = isSadaqah
         ? Icons.volunteer_activism_rounded
         : Icons.account_balance_wallet_rounded;
@@ -699,7 +745,12 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
           child: Stack(
             children: [
               Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  bottom: 12,
+                  left: 14,
+                  right: 14,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -714,11 +765,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                             color: badgeColor.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(
-                            iconData,
-                            color: badgeColor,
-                            size: 22,
-                          ),
+                          child: Icon(iconData, color: badgeColor, size: 22),
                         ),
                         const SizedBox(width: 12),
 
@@ -732,14 +779,16 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                               Text(
                                 _getCategoryTitle(item.category),
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.white : const Color(0xFF1E293B),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF1E293B),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
 
                               // Row 2: Recipient and Date
                               Row(
@@ -749,7 +798,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                       child: Text(
                                         item.recipient,
                                         style: TextStyle(
-                                          fontSize: 11.5,
+                                          fontSize: 13,
                                           fontWeight: FontWeight.w600,
                                           color: badgeColor,
                                         ),
@@ -757,19 +806,29 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const Text(' • ', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                                    const Text(
+                                      ' • ',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                      ),
+                                    ),
                                   ],
                                   Icon(
                                     Icons.calendar_today_rounded,
-                                    size: 11,
-                                    color: isDark ? Colors.white54 : Colors.grey,
+                                    size: 12,
+                                    color: isDark
+                                        ? Colors.white54
+                                        : Colors.grey,
                                   ),
                                   const SizedBox(width: 3),
                                   Text(
                                     DateFormat('MMM d, yyyy').format(item.date),
                                     style: TextStyle(
-                                      fontSize: 11,
-                                      color: isDark ? Colors.white54 : Colors.grey.shade600,
+                                      fontSize: 12,
+                                      color: isDark
+                                          ? Colors.white54
+                                          : Colors.grey.shade600,
                                     ),
                                   ),
                                 ],
@@ -782,9 +841,14 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
 
                         // Amount: Rightmost, sitting below the 3 dots at top-right
                         Padding(
-                          padding: const EdgeInsets.only(top: 18, right: 2),
+                          padding: const EdgeInsets.only(top: 26, right: 2),
                           child: Text(
-                            _formatMoney(item.amount, symbol: item.currency.isNotEmpty ? item.currency : '₹'),
+                            _formatMoney(
+                              item.amount,
+                              symbol: item.currency.isNotEmpty
+                                  ? item.currency
+                                  : '₹',
+                            ),
                             style: GoogleFonts.oxanium(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -799,76 +863,91 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
 
                     // Description/Note row shown when card is clicked
                     AnimatedCrossFade(
-                  firstChild: const SizedBox.shrink(),
-                  secondChild: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      Divider(height: 1, color: isDark ? Colors.white12 : const Color(0xFFE2E8F0)),
-                      const SizedBox(height: 8),
-                      Row(
+                      firstChild: const SizedBox.shrink(),
+                      secondChild: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.notes_rounded,
-                            size: 14,
-                            color: isDark ? Colors.white54 : Colors.grey,
+                          const SizedBox(height: 10),
+                          Divider(
+                            height: 1,
+                            color: isDark
+                                ? Colors.white12
+                                : const Color(0xFFE2E8F0),
                           ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              item.note.isNotEmpty ? item.note : 'No description provided.',
-                              style: GoogleFonts.lexend(
-                                fontSize: 12,
-                                fontStyle: item.note.isNotEmpty ? FontStyle.normal : FontStyle.italic,
-                                color: isDark ? Colors.white70 : const Color(0xFF475569),
-                                height: 1.4,
+                          const SizedBox(height: 8),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.notes_rounded,
+                                size: 14,
+                                color: isDark ? Colors.white54 : Colors.grey,
                               ),
-                            ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  item.note.isNotEmpty
+                                      ? item.note
+                                      : 'No description provided.',
+                                  style: GoogleFonts.lexend(
+                                    fontSize: 12,
+                                    fontStyle: item.note.isNotEmpty
+                                        ? FontStyle.normal
+                                        : FontStyle.italic,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : const Color(0xFF475569),
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-                  duration: const Duration(milliseconds: 200),
+                      crossFadeState: isExpanded
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      duration: const Duration(milliseconds: 200),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // 3 Dots at top right corner absolute (comes over the amount)
-          Positioned(
-            top: 2,
-            right: 2,
-            child: AppActionPopupMenu<String>(
-              items: const [
-                AppActionMenuItem(
-                  value: 'edit',
-                  title: 'Edit Record',
-                  icon: Icons.edit_outlined,
+              // 3 Dots at top right corner absolute (comes over the amount)
+              Positioned(
+                top: 0,
+                right: 0, 
+                child: AppActionPopupMenu<String>(
+                  items: const [
+                    AppActionMenuItem(
+                      value: 'edit',
+                      title: 'Edit Record',
+                      icon: Icons.edit_outlined,
+                    ),
+                    AppActionMenuItem(
+                      value: 'delete',
+                      title: 'Delete Record',
+                      icon: Icons.delete_outline_rounded,
+                      isDestructive: true,
+                    ),
+                  ],
+                  onSelected: (action) {
+                    if (action == 'edit') {
+                      _openAddModal(context, record: item);
+                    } else if (action == 'delete') {
+                      ref
+                          .read(sadqaRecordsProvider.notifier)
+                          .deleteRecord(item.id);
+                    }
+                  },
                 ),
-                AppActionMenuItem(
-                  value: 'delete',
-                  title: 'Delete Record',
-                  icon: Icons.delete_outline_rounded,
-                  isDestructive: true,
-                ),
-              ],
-              onSelected: (action) {
-                if (action == 'edit') {
-                  _openAddModal(context, record: item);
-                } else if (action == 'delete') {
-                  ref.read(sadqaRecordsProvider.notifier).deleteRecord(item.id);
-                }
-              },
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-  ),
-);
+    );
   }
 
   String _getCategoryTitle(SadaqahCategory category) {

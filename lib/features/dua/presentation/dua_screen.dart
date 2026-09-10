@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
@@ -38,55 +39,38 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
     'Protection',
     'Hygiene',
     'Prayer',
-    'Adhan',
     'Forgiveness',
-    'Healing',
-    'Guidance',
-    'Family',
-    'Marriage',
-    'Distress',
-    'Sustenance',
-    'Etiquette',
-    'Nature',
-    'Hajj',
-    'Afterlife',
-    'Dhikr',
-    'Mosque',
-    'Clothing',
     'General',
   ];
 
-  static ({List<Color> colors, Color textColor}) _getCategoryPreset(String category) {
+  static ({List<Color> colors, Color textColor}) _getCategoryPreset(
+      String category) {
     switch (category.trim().toLowerCase()) {
       case 'morning':
+      case 'food':
         return (
           colors: const [Color(0xFFFFFBEB), Color(0xFFFEF3C7)],
           textColor: const Color(0xFFB45309),
         );
       case 'sleep':
         return (
-          colors: const [Color(0xFFF0F5FF), Color(0xFFE0EAFF)],
+          colors: const [Color(0xFFEFF6FF), Color(0xFFDBEAFE)],
           textColor: const Color(0xFF1E3A8A),
         );
-      case 'food':
+      case 'hygiene':
         return (
-          colors: const [Color(0xFFFFFDF2), Color(0xFFFFF8DE)],
-          textColor: const Color(0xFFB45309),
+          colors: const [Color(0xFFFDF2F8), Color(0xFFFCE7F3)],
+          textColor: const Color(0xFFDB2777),
         );
       case 'travel':
         return (
-          colors: const [Color(0xFFF3FBF7), Color(0xFFE2F6EC)],
+          colors: const [Color(0xFFECFDF5), Color(0xFFD1FAE5)],
           textColor: const Color(0xFF047857),
         );
       case 'protection':
         return (
           colors: const [Color(0xFFFAF5FF), Color(0xFFF3E8FF)],
           textColor: const Color(0xFF7E22CE),
-        );
-      case 'hygiene':
-        return (
-          colors: const [Color(0xFFFFF0F5), Color(0xFFFFE4EC)],
-          textColor: const Color(0xFFDB2777),
         );
       case 'prayer':
       case 'adhan':
@@ -166,6 +150,21 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
       _selectedLanguages =
           Set<String>.from(savedLangs.map((e) => e.toString()));
       _primaryLanguage = _selectedLanguages.first;
+    } else {
+      final savedPrimary = storage.getGenericData('dua_primary_language');
+      if (savedPrimary is String && savedPrimary.isNotEmpty) {
+        _primaryLanguage = savedPrimary;
+        _selectedLanguages = {savedPrimary};
+      } else {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          final prefLang = prefs.getString('dua_primary_language');
+          if (prefLang != null && prefLang.isNotEmpty) {
+            _primaryLanguage = prefLang;
+            _selectedLanguages = {prefLang};
+          }
+        } catch (_) {}
+      }
     }
 
     // 2. Load Duas
@@ -416,7 +415,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              onTap: () {
+                              onTap: () async {
                                 setSheetState(() {
                                   _primaryLanguage = code;
                                   _selectedLanguages = {code};
@@ -424,10 +423,20 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                 setState(() {});
                                 final storage =
                                     ref.read(storageServiceProvider);
-                                storage.saveGenericData(
+                                await storage.saveGenericData(
                                   'dua_selected_languages',
                                   _selectedLanguages.toList(),
                                 );
+                                await storage.saveGenericData(
+                                  'dua_primary_language',
+                                  code,
+                                );
+                                try {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setString(
+                                      'dua_primary_language', code);
+                                } catch (_) {}
                                 _filterDuas();
                               },
                               title: Text(
@@ -651,9 +660,6 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
     Color primaryGreen,
   ) {
     if (_isSelectionMode) {
-      final isAllSelected = _filteredDuas.isNotEmpty &&
-          _selectedIds.length == _filteredDuas.length;
-
       return AppBar(
         backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
         elevation: 1,
@@ -676,24 +682,6 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              isAllSelected
-                  ? Icons.select_all_rounded
-                  : Icons.deselect_rounded,
-              color: isAllSelected ? primaryGreen : textColor,
-            ),
-            tooltip: isAllSelected ? 'Deselect All' : 'Select All',
-            onPressed: () {
-              setState(() {
-                if (isAllSelected) {
-                  _selectedIds.clear();
-                } else {
-                  _selectedIds.addAll(_filteredDuas.map((d) => d.id));
-                }
-              });
-            },
-          ),
-          IconButton(
             icon: const Icon(
               Icons.delete_outline_rounded,
               color: Color(0xFFEF4444),
@@ -711,8 +699,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
     return AppHeaderBar(
       title: 'DAILY DUAS',
       showBackButton: true,
-      centerTitle: false,
-      titleSpacing: 12,
+      centerTitle: true,
+      titleSpacing: 0,
       backgroundColor: Colors.white,
       actions: [
         IconButton(
@@ -1053,7 +1041,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                           borderRadius: BorderRadius.circular(20),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
-                            onTap: () {
+                            onTap: () async {
                               if (_isSelectionMode) {
                                 setState(() {
                                   if (isSelected) {
@@ -1066,7 +1054,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                   }
                                 });
                               } else {
-                                Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DuaDetailScreen(
@@ -1096,6 +1084,24 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                     ),
                                   ),
                                 );
+                                if (mounted) {
+                                  final storage =
+                                      ref.read(storageServiceProvider);
+                                  final savedLangs = storage.getGenericData(
+                                      'dua_selected_languages');
+                                  if (savedLangs is List &&
+                                      savedLangs.isNotEmpty) {
+                                    final newLang =
+                                        savedLangs.first.toString();
+                                    if (newLang != _primaryLanguage) {
+                                      setState(() {
+                                        _primaryLanguage = newLang;
+                                        _selectedLanguages = {newLang};
+                                      });
+                                      _filterDuas();
+                                    }
+                                  }
+                                }
                               }
                             },
                             onLongPress: () {
@@ -1166,8 +1172,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
 
                                   // Background Illustration Image
                                   Positioned(
-                                    bottom: 6,
-                                    right: 6,
+                                    bottom: 2,
+                                    right: 2,
                                     child: IgnorePointer(
                                       child: Container(
                                         width: 80,
@@ -1208,14 +1214,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                                 : Colors.grey.shade400,
                                             width: 1.8,
                                           ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black
-                                                  .withValues(alpha: 0.08),
-                                              blurRadius: 4,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
+                                         
                                         ),
                                         child: isSelected
                                             ? const Icon(
@@ -1232,7 +1231,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                     padding: EdgeInsets.fromLTRB(
                                       _isSelectionMode ? 44 : 16,
                                       36,
-                                      50,
+                                      82,
                                       14,
                                     ),
                                     child: Column(

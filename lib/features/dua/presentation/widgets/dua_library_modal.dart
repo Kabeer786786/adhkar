@@ -395,9 +395,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                           children: [
                             // Radio button positioned at the right center
                             Positioned(
-                              top: 0,
-                              bottom: 0,
-                              right: 12,
+                              top: 8,
+                              right: 8,
                               child: Center(
                                 child: GestureDetector(
                                   onTap: () => _toggleDua(dua),
@@ -424,11 +423,11 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                             // Minimized Background Illustration Image
                             Positioned(
                               bottom: 4,
-                              right: 48,
+                              right: 0,
                               child: IgnorePointer(
                                 child: Container(
-                                  width: 50,
-                                  height: 50,
+                                  width: 64,
+                                  height: 64,
                                   padding: const EdgeInsets.all(2),
                                   child: Opacity(
                                     opacity: 0.85,
@@ -449,7 +448,7 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                               padding: const EdgeInsets.fromLTRB(
                                 14,
                                 12,
-                                48,
+                                64,
                                 12,
                               ),
                               child: Column(

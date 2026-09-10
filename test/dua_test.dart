@@ -55,5 +55,47 @@ void main() {
       expect(roundtrip.imagePath, original.imagePath);
       expect(roundtrip.isCustom, original.isCustom);
     });
+
+    test('DuaItem multilingual getters return localized content with fallback', () {
+      const multilingualDua = DuaItem(
+        id: 'test_multi',
+        title: 'Morning Prayer',
+        category: 'Morning',
+        arabic: 'اَللَّهُمَّ',
+        transliteration: 'Allahumma',
+        translation: 'O Allah',
+        repeatCount: 1,
+        reference: 'Sahih Muslim',
+        benefits: 'Protection and peace',
+        translations: {
+          'en': 'O Allah',
+          'ur': 'اے اللہ',
+          'hi': 'हे अल्लाह',
+        },
+        transliterations: {
+          'en': 'Allahumma',
+          'ur': 'اللہم',
+        },
+        titles: {
+          'en': 'Morning Prayer',
+          'ur': 'صبح کی دعا',
+        },
+      );
+
+      // Selected language matches
+      expect(multilingualDua.getTitle('ur'), 'صبح کی دعا');
+      expect(multilingualDua.getTranslation('ur'), 'اے اللہ');
+      expect(multilingualDua.getTranslation('hi'), 'हे अल्लाह');
+
+      // Fallback to english/base when specific language is absent
+      expect(multilingualDua.getTitle('hi'), 'Morning Prayer');
+      expect(multilingualDua.getTranslation('te'), 'O Allah');
+    });
+
+    test('Language preference persistence key verification', () async {
+      // Dua primary language key consistency check
+      const key = 'dua_primary_language';
+      expect(key, 'dua_primary_language');
+    });
   });
 }

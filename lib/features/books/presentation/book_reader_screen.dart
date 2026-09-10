@@ -164,6 +164,20 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
   ];
 
   Timer? _progressDebounceTimer;
+  bool _isBackButtonVisible = true;
+  Timer? _backButtonFadeTimer;
+
+  void _triggerBackButtonVisibility() {
+    if (!_isBackButtonVisible) {
+      setState(() => _isBackButtonVisible = true);
+    }
+    _backButtonFadeTimer?.cancel();
+    _backButtonFadeTimer = Timer(const Duration(milliseconds: 2800), () {
+      if (mounted && _isBackButtonVisible) {
+        setState(() => _isBackButtonVisible = false);
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -174,10 +188,12 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     for (int i = 0; i < widget.book.chapters.length; i++) {
       _chapterKeys.add(GlobalKey());
     }
+    _triggerBackButtonVisibility();
   }
 
   @override
   void dispose() {
+    _backButtonFadeTimer?.cancel();
     _progressDebounceTimer?.cancel();
     if (_scrollController.hasClients && widget.book.chapters.isNotEmpty) {
       final total = widget.book.chapters.length;
@@ -199,6 +215,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
+    _triggerBackButtonVisibility();
     if (_isControlsOpen) {
       setState(() {
         _isControlsOpen = false;
@@ -286,8 +303,12 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       ),
       child: Scaffold(
         backgroundColor: bgColor,
-        body: Stack(
-          children: [
+        body: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (_) => _triggerBackButtonVisibility(),
+          onPointerMove: (_) => _triggerBackButtonVisibility(),
+          child: Stack(
+            children: [
             // Continuous Reading View (SingleChildScrollView guarantees all chapter keys are laid out for perfect top-0 scrolling)
             GestureDetector(
               onTap: () {
@@ -520,7 +541,50 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                 ],
               ),
             ),
+
+            // Floating Back Button (White background, black arrow, visible on scroll / touch)
+            Positioned(
+              top: topInset + 10,
+              left: 16,
+              child: AnimatedOpacity(
+                opacity: _isBackButtonVisible ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 220),
+                child: IgnorePointer(
+                  ignoring: !_isBackButtonVisible,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.18),
+                          blurRadius: 12,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () => Navigator.pop(context),
+                        child: const Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Icon(
+                            Icons.arrow_back_rounded,
+                            color: Colors.black,
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
+        ),
         ),
       ),
     );

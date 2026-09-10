@@ -281,24 +281,6 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              isAllSelected
-                  ? Icons.select_all_rounded
-                  : Icons.deselect_rounded,
-              color: isAllSelected ? primaryGreen : textColor,
-            ),
-            tooltip: isAllSelected ? 'Deselect All' : 'Select All',
-            onPressed: () {
-              setState(() {
-                if (isAllSelected) {
-                  _selectedIds.clear();
-                } else {
-                  _selectedIds.addAll(allSchedules.map((s) => s.id));
-                }
-              });
-            },
-          ),
-          IconButton(
             icon: const Icon(
               Icons.delete_outline_rounded,
               color: Color(0xFFEF4444),
