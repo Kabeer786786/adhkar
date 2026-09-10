@@ -1,34 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_typography.dart';
-import '../../../widgets/app_header_bar.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
+import '../../../widgets/app_header_bar.dart';
 import '../domain/dua_item.dart';
 import 'widgets/add_dua_modal.dart';
 
-class DuaDetailScreen extends StatefulWidget {
+class DuaDetailScreen extends ConsumerStatefulWidget {
   final DuaItem dua;
+  final String selectedLanguage;
   final VoidCallback? onDelete;
   final Function(DuaItem updatedDua)? onSave;
 
   const DuaDetailScreen({
     super.key,
     required this.dua,
+    this.selectedLanguage = 'en',
     this.onDelete,
     this.onSave,
   });
 
   @override
-  State<DuaDetailScreen> createState() => _DuaDetailScreenState();
+  ConsumerState<DuaDetailScreen> createState() => _DuaDetailScreenState();
 }
 
-class _DuaDetailScreenState extends State<DuaDetailScreen> {
+class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen> {
   late DuaItem _dua;
+  late String _currentLang;
 
   @override
   void initState() {
     super.initState();
     _dua = widget.dua;
+    _currentLang = widget.selectedLanguage;
   }
 
   void _confirmDelete(BuildContext context) {
@@ -90,20 +95,25 @@ class _DuaDetailScreenState extends State<DuaDetailScreen> {
 
   static Color _getCategoryTextColor(String category) {
     switch (category.trim().toLowerCase()) {
-      case 'daily':
-        return const Color(0xFF1B5E20);
+      case 'morning':
+      case 'food':
+        return const Color(0xFFB45309);
       case 'sleep':
         return const Color(0xFF1E3A8A);
       case 'hygiene':
         return const Color(0xFFDB2777);
-      case 'food':
-        return const Color(0xFFB45309);
       case 'travel':
         return const Color(0xFF047857);
       case 'protection':
-        return const Color(0xFF7E22CE); 
+        return const Color(0xFF7E22CE);
+      case 'prayer':
+      case 'adhan':
+      case 'mosque':
+        return const Color(0xFF1B5E20);
+      case 'forgiveness':
+        return const Color(0xFF0F766E);
       default:
-        return const Color(0xFFBE123C);
+        return const Color(0xFF1B5E20);
     }
   }
 
@@ -116,10 +126,13 @@ class _DuaDetailScreenState extends State<DuaDetailScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppHeaderBar(
-          title: _dua.title,
+          title: _dua.getTitle(_currentLang),
           showBackButton: true,
+          centerTitle: false,
+          titleSpacing: 12,
           backgroundColor: Colors.white,
           actions: [
+            // Edit Dua
             IconButton(
               icon: const Icon(
                 Icons.edit_outlined,
@@ -128,6 +141,8 @@ class _DuaDetailScreenState extends State<DuaDetailScreen> {
               tooltip: 'Edit Dua',
               onPressed: _openEditModal,
             ),
+
+            // Delete / Remove Dua
             IconButton(
               icon: const Icon(
                 Icons.delete_outline_rounded,
@@ -141,84 +156,104 @@ class _DuaDetailScreenState extends State<DuaDetailScreen> {
         ),
       ),
       body: SizedBox.expand(
-        child: Stack( 
+        child: Stack(
           children: [
-            // Fixed Decorative Image at Bottom-Right Corner of Screen Viewport
+            // Decorative Image at Bottom-Right Corner
             Positioned(
               bottom: 40,
               right: 12,
               child: IgnorePointer(
-                child: Opacity(  
-                  opacity: 0.3,
+                child: Opacity(
+                  opacity: 0.2,
                   child: Image.asset(
                     _dua.imagePath,
                     width: 160,
                     height: 160,
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const SizedBox.shrink(),
                   ),
                 ),
               ),
             ),
 
-            // Main Single Scrollable Screen Content
+            // Main Content
             Positioned.fill(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Top Tags Row: Category Chip + Optional Recitation Count Badge (Only if > 1)
+                    // Top Tags Row: Category Chip + Optional Repeat Count + Language Pills
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: themeColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            _dua.category.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.2,
-                              color: themeColor,
-                            ),
-                          ),
-                        ),
-                        if (_dua.repeatCount > 1)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD97724),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Recite ${_dua.repeatCount} Times',
-                              style: const TextStyle(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.1,
-                                color: Colors.white,
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: themeColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                _dua.category.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.2,
+                                  color: themeColor,
+                                ),
                               ),
                             ),
-                          ),
+                            if (_dua.repeatCount > 1) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD97724),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'Recite ${_dua.repeatCount}x',
+                                  style: const TextStyle(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+
+                        // Language Switcher Chips
+                        Row(
+                          children: [
+                            _buildLangChip('en', 'EN'),
+                            const SizedBox(width: 4),
+                            _buildLangChip('ur', 'UR'),
+                            const SizedBox(width: 4),
+                            _buildLangChip('hi', 'HI'),
+                            const SizedBox(width: 4),
+                            _buildLangChip('te', 'TE'),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 18),
 
-                    // Main Title
+                    // Main Title in Selected Language
                     Text(
-                      _dua.title,
+                      _dua.getTitle(_currentLang),
                       style: TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.bold,
@@ -247,81 +282,132 @@ class _DuaDetailScreenState extends State<DuaDetailScreen> {
                       thickness: 1.0,
                     ),
                     const SizedBox(height: 12),
-                    SelectableText(
-                      _dua.transliteration,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 1.45,
-                        letterSpacing: 0,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF334155),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
 
+                    // Transliteration in Selected Language
+                    if (_dua.getTransliteration(_currentLang).isNotEmpty) ...[
+                      SelectableText(
+                        _dua.getTransliteration(_currentLang),
+                        style: const TextStyle(
+                          fontSize: 15.5,
+                          height: 1.45,
+                          letterSpacing: 0,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF334155),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+
+                    // Translation in Selected Language
                     SelectableText(
-                      '"${_dua.translation}"',
+                      '"${_dua.getTranslation(_currentLang)}"',
                       style: GoogleFonts.lexend(
                         fontSize: 15,
                         height: 1.45,
-                        letterSpacing: -0.6,
+                        letterSpacing: -0.4,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFF1B5E20),
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 20),
 
-                    // Origin & Reference Section
-                    const Text(
-                      'REFERENCE',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.6,
-                        color: Color(0xFFD97724),
+                    // Reference Section
+                    if (_dua.reference.isNotEmpty) ...[
+                      const Text(
+                        'REFERENCE',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.6,
+                          color: Color(0xFFD97724),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    SelectableText(
-                      _dua.reference,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.45,
-                        letterSpacing: -0.1,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF4A3728),
+                      const SizedBox(height: 6),
+                      SelectableText(
+                        _dua.reference,
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          height: 1.45,
+                          letterSpacing: -0.1,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF4A3728),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 18),
+                      const SizedBox(height: 18),
+                    ],
 
-                    // Spiritual & Practical Benefits Section
-                    const Text(
-                      'SPIRITUAL & PRACTICAL BENEFITS',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.6,
-                        color: Color(0xFF9333EA),
+                    // Spiritual Benefits Section
+                    if (_dua.getBenefits(_currentLang).isNotEmpty) ...[
+                      const Text(
+                        'SPIRITUAL & PRACTICAL BENEFITS',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.6,
+                          color: Color(0xFF9333EA),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    SelectableText(
-                      _dua.benefits,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.45,
-                        letterSpacing: -0.1,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF3B0764),
+                      const SizedBox(height: 6),
+                      SelectableText(
+                        _dua.getBenefits(_currentLang),
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          height: 1.45,
+                          letterSpacing: -0.1,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF3B0764),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 36),
+                      const SizedBox(height: 36),
+                    ],
                   ],
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLangChip(String langCode, String label) {
+    final isSelected = _currentLang == langCode;
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: () {
+        setState(() {
+          _currentLang = langCode;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF2A531D) : const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF2A531D) : const Color(0xFFE2E8F0),
+            width: 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.2,
+            color: isSelected ? Colors.white : const Color(0xFF475569),
+          ),
         ),
       ),
     );

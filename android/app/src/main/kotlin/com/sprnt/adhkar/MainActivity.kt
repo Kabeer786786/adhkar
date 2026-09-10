@@ -223,20 +223,19 @@ class MainActivity : AudioServiceActivity() {
 
                     "scheduleQuietHours" -> {
                         val schedulesJson = call.argument<String>("schedulesJson") ?: "[]"
-                        DndScheduler.prefsSaveSchedulesList(this, schedulesJson)
                         QuietHoursScheduler.scheduleAll(this, schedulesJson)
                         result.success(true)
                     }
 
                     "cancelAllQuietHours" -> {
                         QuietHoursScheduler.cancelAll(this)
-                        DndScheduler.applyDndMode(this, false)
+                        QuietHoursScheduler.applyDndMode(this, false)
                         result.success(true)
                     }
 
                     "setDndMode" -> {
                         val enable = call.argument<Boolean>("enable") ?: false
-                        DndScheduler.applyDndMode(this, enable)
+                        QuietHoursScheduler.applyDndMode(this, enable)
                         result.success(true)
                     }
 

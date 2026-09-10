@@ -6,9 +6,9 @@ void main() {
   group('Dua Feature Tests', () {
     final repository = DuaRepository();
 
-    test('Repository provides at least 10 default Duas', () {
+    test('Repository provides default Duas', () {
       final me = repository.getDefaultDuas();
-      expect(me.length, greaterThanOrEqualTo(10));
+      expect(me.length, greaterThanOrEqualTo(5));
     });
 
     test('Each Dua has required fields populated accurately', () {

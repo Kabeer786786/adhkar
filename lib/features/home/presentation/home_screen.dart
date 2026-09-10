@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,7 +8,6 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../../core/services/hijri_service.dart';
 import '../../../core/services/prayer_calculation_service.dart';
 import '../../../core/services/showcase_service.dart';
-import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/hijri_date_helper.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_showcase.dart';
@@ -18,6 +16,7 @@ import '../../prayer/presentation/providers/aladhan_providers.dart';
 
 import '../../../shared/providers/user_profile_provider.dart';
 import '../../../shared/widgets/complete_profile_modal.dart';
+import 'widgets/daily_ayah_card.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -662,13 +661,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     AppShowcase(
                       globalKey: ShowcaseService.keyTileSadqa,
-                      title: 'Sadaqah & Zakat',
+                      title: 'Zakat & Sadaqah',
                       description:
                           'Calculate Zakat obligation accurately and track charitable Sadaqah contributions.',
                       stepIndex: 6,
                       totalSteps: 15,
                       child: _FeatureTile(
-                        title: 'Sadqa',
+                        title: 'Zakat',
                         assetPath: 'assets/images/sadqa.png',
                         onTap: () => context.push('/sadqa'),
                         width: 38,
@@ -771,74 +770,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
               const SizedBox(height: 12),
 
-              // 4. Daily Quote Box Container
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 24,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3FAF2),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Centered Arabic Quote
-                    Text(
-                      'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ',
-                      textAlign: TextAlign.center,
-                      textDirection: TextDirection.rtl,
-                      style: AppTypography.arabicHeader(
-                        fontSize: 22,
-                        height: 1.8,
-                        color: const Color(0xFF1A3512),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Translation below it
-                    Text(
-                      '"So remember Me; I will remember you. And be grateful to Me and do not deny Me."',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.lexend(
-                        fontSize: 13.5,
-                        height: 1.5,
-                        fontWeight: FontWeight.w500,
-                        fontStyle: FontStyle.italic,
-                        color: const Color(0xFF2A531D),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Bottom Left Corner: Author / Source with Icon
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            FlutterIslamicIcons.quran2,
-                            size: 15,
-                            color: Color(0xFF8C6D53),
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'Quran • Surah Al-Baqarah 2:152',
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF8C6D53),
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // 4. Daily Ayah Card
+              const DailyAyahCard(),
             ],
           ),
         ),

@@ -1,18 +1,23 @@
 import 'dart:async';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+import '../../../core/services/adhkar_audio_handler.dart';
 import '../../../core/services/media_download_service.dart';
+import '../../../shared/providers/app_providers.dart';
 import '../data/asma_ul_husna_data.dart';
 import '../data/asma_ul_husna_model.dart';
 
 class AsmaAudioController extends ChangeNotifier {
-  final AudioPlayer _player = AudioPlayer();
+  final AdhkarAudioHandler _audioHandler;
+  AudioPlayer get _player => _audioHandler.player;
+
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<int?>? _currentIndexSubscription;
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<Duration?>? _durationSubscription;
+  StreamSubscription<SequenceState?>? _sequenceSubscription;
 
   ConcatenatingAudioSource? _playlistSource;
   bool _isPlaying = false;
@@ -36,7 +41,7 @@ class AsmaAudioController extends ChangeNotifier {
 
   AudioPlayer get player => _player;
 
-  AsmaAudioController() {
+  AsmaAudioController(this._audioHandler) {
     _initAudio();
   }
 
@@ -76,34 +81,50 @@ class AsmaAudioController extends ChangeNotifier {
       _duration = dur ?? Duration.zero;
       notifyListeners();
     });
+
+    _sequenceSubscription = _player.sequenceStateStream.listen((seqState) {
+      if (seqState == null) return;
+      final currentTag = seqState.currentSource?.tag;
+      if (currentTag is MediaItem) {
+        if (currentTag.extras?['type'] != 'asma') {
+          if (_currentIndex != -1) {
+            _currentIndex = -1;
+            _isPlaying = false;
+            notifyListeners();
+          }
+        }
+      }
+    });
   }
 
   Future<void> _ensurePlaylistInitialized() async {
-    if (_playlistSource != null) return;
+    if (_playlistSource != null && _player.audioSource == _playlistSource) return;
 
-    final children = <AudioSource>[];
-    for (int i = 0; i < asmaUlHusnaList.length; i++) {
-      final item = asmaUlHusnaList[i];
-      final mediaItem = MediaItem(
-        id: 'asma_${item.number}',
-        album: 'Asma ul Husna - 99 Names of Allah',
-        title: '${item.number}. ${item.name} (${item.transliteration})',
-        artist: '${item.meaning} • (${item.number}/99)',
-        artUri: Uri.parse('asset:///assets/logo.png'),
-        extras: {
-          'type': 'asma',
-          'route': '/asma-ul-husna',
-        },
-      );
+    if (_playlistSource == null) {
+      final children = <AudioSource>[];
+      for (int i = 0; i < asmaUlHusnaList.length; i++) {
+        final item = asmaUlHusnaList[i];
+        final mediaItem = MediaItem(
+          id: 'asma_${item.number}',
+          album: 'Asma ul Husna - 99 Names of Allah',
+          title: '${item.number}. ${item.name} (${item.transliteration})',
+          artist: '${item.meaning} • (${item.number}/99)',
+          artUri: Uri.parse('asset:///assets/logo.png'),
+          extras: {
+            'type': 'asma',
+            'route': '/asma-ul-husna',
+          },
+        );
 
-      final remoteUrl = item.remoteUrl.isNotEmpty
-          ? item.remoteUrl
-          : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
+        final remoteUrl = item.remoteUrl.isNotEmpty
+            ? item.remoteUrl
+            : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
 
-      children.add(AudioSource.uri(Uri.parse(remoteUrl), tag: mediaItem));
+        children.add(AudioSource.uri(Uri.parse(remoteUrl), tag: mediaItem));
+      }
+
+      _playlistSource = ConcatenatingAudioSource(children: children);
     }
-
-    _playlistSource = ConcatenatingAudioSource(children: children);
     await _player.setAudioSource(_playlistSource!, preload: false);
   }
 
@@ -199,7 +220,7 @@ class AsmaAudioController extends ChangeNotifier {
   }
 
   Future<void> stop() async {
-    await _player.stop();
+    await _audioHandler.stop();
     _currentIndex = -1;
     _isPlaying = false;
     notifyListeners();
@@ -211,14 +232,15 @@ class AsmaAudioController extends ChangeNotifier {
     _currentIndexSubscription?.cancel();
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
-    _player.dispose();
+    _sequenceSubscription?.cancel();
     super.dispose();
   }
 }
 
 /// Riverpod provider for AsmaAudioController
 final asmaAudioProvider = ChangeNotifierProvider<AsmaAudioController>((ref) {
-  final controller = AsmaAudioController();
+  final audioHandler = ref.watch(adhkarAudioHandlerProvider);
+  final controller = AsmaAudioController(audioHandler);
   ref.onDispose(() => controller.dispose());
   return controller;
 });

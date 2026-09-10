@@ -23,18 +23,16 @@ class SadqaScreen extends ConsumerStatefulWidget {
   ConsumerState<SadqaScreen> createState() => _SadqaScreenState();
 }
 
-class _SadqaScreenState extends ConsumerState<SadqaScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _SadqaScreenState extends ConsumerState<SadqaScreen> {
   CharityType? _filterType;
   bool _isDonationBannerDismissed = false;
+  final Set<String> _expandedRecordIds = <String>{};
 
   final currencyFormatter = NumberFormat('#,##,###');
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _checkDonationBannerStatus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FeatureIntroModal.show(context, FeatureIntroType.sadqa);
@@ -61,10 +59,23 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
     }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  String _formatMoney(double amount, {String symbol = '₹'}) {
+    final cleanSymbol = symbol.trim().isEmpty ? '' : '$symbol ';
+    if (amount >= 10000000) {
+      final v = amount / 10000000;
+      final formatted = v.toStringAsFixed(v.truncateToDouble() == v ? 0 : 1);
+      return '$cleanSymbol${formatted}Cr';
+    } else if (amount >= 100000) {
+      final v = amount / 100000;
+      final formatted = v.toStringAsFixed(v.truncateToDouble() == v ? 0 : 1);
+      return '$cleanSymbol${formatted}L';
+    } else if (amount >= 10000) {
+      final v = amount / 1000;
+      final formatted = v.toStringAsFixed(v.truncateToDouble() == v ? 0 : 1);
+      return '$cleanSymbol${formatted}k';
+    } else {
+      return '$cleanSymbol${currencyFormatter.format(amount)}';
+    }
   }
 
   void _openInfoModal(BuildContext context) {
@@ -130,23 +141,24 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
         : records.where((r) => r.type == _filterType).toList();
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
       child: Scaffold(
-        backgroundColor: isDark
-            ? const Color(0xFF173a24)
-            : const Color(0xFFF3FAF2),
+        backgroundColor: const Color(0xFF173a24), // Deep forest green matching Roza
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
-            title: 'Sadaqah & Zakat',
+            title: 'Zakat & Sadaqah',
             showBackButton: true,
             systemOverlayStyle: SystemUiOverlayStyle.light,
-            backgroundColor: isDark
-                ? const Color(0xFF192520)
-                : const Color(0xFF173a24),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             iconColor: Colors.white,
             titleWidget: const Text(
-              'Sadaqah & Zakat',
+              'Zakat & Sadaqah',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -154,6 +166,11 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
               ),
             ),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.calculate_rounded, color: Colors.white),
+                tooltip: 'Zakat Calculator',
+                onPressed: () => _openCalculatorModal(context),
+              ),
               IconButton(
                 icon: const Icon(Icons.info_outline_rounded, color: Colors.white),
                 tooltip: 'Islamic Guidelines & Benefits',
@@ -163,710 +180,695 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen>
             ],
           ),
         ),
-        floatingActionButton: Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFFD1820E),
-                Color(0xFFA16207),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            shape: BoxShape.circle,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            shape: const CircleBorder(),
-            child: InkWell(
-              onTap: () => _openCalculatorModal(context),
-              customBorder: const CircleBorder(),
-              child: const Center(
-                child: Icon(
-                  Icons.calculate_rounded,
-                  color: Colors.white,
-                  size: 30,
+        floatingActionButton: filteredRecords.isEmpty
+            ? null
+            : FloatingActionButton(
+                onPressed: () => _openAddModal(context),
+                backgroundColor: const Color(0xFF16A34A),
+                foregroundColor: Colors.white,
+                elevation: 3,
+                shape: const CircleBorder(),
+                child: const Icon(
+                  Icons.add_rounded,
+                  size: 32,
                 ),
               ),
-            ),
-          ),
-        ),
         body: SafeArea(
-        child: Column(
-          children: [
-            // Top Summary Hero Container
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(left:20,right:20,bottom:20),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF192520)
-                    : const Color(0xFF173a24),
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(28),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      // Total Sadaqah Card
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF16A34A).withValues(alpha: 0.9),
-                                const Color(0xFF15803D).withValues(alpha: 0.9),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(18),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.15),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.volunteer_activism_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    'Total Sadaqah',
-                                    style: TextStyle(
-                                      fontSize: 11.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '₹ ${currencyFormatter.format(totalSadaqah)}',
-                                style: GoogleFonts.oxanium(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-
-                      // Total Zakat Paid Card
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFFEAB308).withValues(alpha: 0.9),
-                                const Color(0xFFd1820e).withValues(alpha: 0.9),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight, 
-                            ), 
-                            borderRadius: BorderRadius.circular(18),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.15),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.account_balance_wallet_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    'Zakat Paid',
-                                    style: TextStyle(
-                                      fontSize: 11.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '₹ ${currencyFormatter.format(totalZakat)}',
-                                style: GoogleFonts.oxanium(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-
-                  // Quick Zakat Banner / Action Button
-                  InkWell(
-                    onTap: () => _openCalculatorModal(context),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.calculate_rounded,
-                                color: Color(0xFFFACC15),
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Zakat Payable:',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                  Text(
-                                    zakatModel.isNisabReached
-                                        ? '₹ ${currencyFormatter.format(zakatModel.zakatPayable)} (2.5%)'
-                                        : 'Calculate Wealth Zakat',
-                                    style: GoogleFonts.oxanium(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFFACC15),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                size: 12,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (!_isDonationBannerDismissed) ...[
-                    const SizedBox(height: 10),
-                    Stack(
+          child: Column(
+            children: [
+              // 1. Upper Half Container (Forest Green Summary Metrics & Banners)
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 12),
+                child: Column(
+                  children: [
+                    Row(
                       children: [
-                        InkWell(
-                          onTap: () => OnlineDonationModal.show(context),
-                          borderRadius: BorderRadius.circular(16),
+                        // Total Sadaqah Card
+                        Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
+                              gradient: LinearGradient(
                                 colors: [
-                                  Color(0xFF2A531D),
-                                  Color(0xFF458133),
+                                  const Color(0xFF16A34A).withValues(alpha: 0.92),
+                                  const Color(0xFF15803D).withValues(alpha: 0.92),
                                 ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
-                              ),
+                              borderRadius: BorderRadius.circular(18),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
+                                  color: Colors.black.withValues(alpha: 0.15),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
                                 ),
                               ],
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
-                                    const Icon(
-                                      Icons.payment_rounded,
+                                    Icon(
+                                      Icons.volunteer_activism_rounded,
                                       color: Colors.white,
-                                      size: 20,
+                                      size: 16,
                                     ),
-                                    const SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Online Donation',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Support App & Sadqa via Razorpay',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.white.withValues(alpha: 0.85),
-                                          ),
-                                        ),
-                                      ],
+                                    SizedBox(width: 6),
+                                    Text(
+                                      'Total Sadaqah',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white70,
+                                      ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(width: 28),
+                                const SizedBox(height: 6),
+                                Text(
+                                  _formatMoney(totalSadaqah),
+                                  style: GoogleFonts.oxanium(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: _dismissDonationBanner,
-                              child: Padding(
-                                padding: const EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.close_rounded,
-                                  size: 16,
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                ),
+                        const SizedBox(width: 10),
+
+                        // Total Zakat Paid Card
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  const Color(0xFFEAB308).withValues(alpha: 0.92),
+                                  const Color(0xFFD1820E).withValues(alpha: 0.92),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.15),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.account_balance_wallet_rounded,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      'Zakat Paid',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  _formatMoney(totalZakat),
+                                  style: GoogleFonts.oxanium(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10),
+
+                    // Quick Zakat Banner / Action Button
+                    InkWell(
+                      onTap: () => _openCalculatorModal(context),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 9,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.calculate_rounded,
+                                  color: Color(0xFFFACC15),
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Zakat Payable:',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                    Text(
+                                      zakatModel.isNisabReached
+                                          ? '${_formatMoney(zakatModel.zakatPayable)} (2.5%)'
+                                          : 'Calculate Wealth Zakat',
+                                      style: GoogleFonts.oxanium(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFFFACC15),
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 16,
+                              color: Colors.white30,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    if (!_isDonationBannerDismissed) ...[
+                      const SizedBox(height: 8),
+                      Stack(
+                        children: [
+                          InkWell(
+                            onTap: () => OnlineDonationModal.show(context),
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF2A531D),
+                                    Color(0xFF458133),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.25),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.payment_rounded,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Online Donation',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Support App & Sadqa via Razorpay',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.white.withValues(alpha: 0.85),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 24),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 2,
+                            right: 2,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: _dismissDonationBanner,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6),
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    size: 14,
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 12),
-
-            // Navigation Tab Bar & Quick Add Buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF16A34A),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        elevation: 0,
-                      ),
-                      icon: const Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      label: const Text(
-                        'Sadaqah',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      onPressed: () => _openAddModal(
-                        context,
-                        defaultType: CharityType.sadaqah,
-                      ),
+              // 2. Lower Half Sheet Container (Curved out with top Radius 32)
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF192520) : Colors.white,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(32),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFdfaa0a),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        elevation: 0,
-                      ),
-                      icon: const Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      label: const Text(
-                        'Zakat',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                  child: Column(
+                    children: [
+                      // 3 Centered Filter Buttons: All Logs, Sadaqah Only, Zakat Only
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 8, left: 16, right: 16),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF131D18) : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildFilterPill(
+                                  label: 'All Logs',
+                                  isSelected: _filterType == null,
+                                  activeColor: const Color(0xFF173a24),
+                                  onTap: () => setState(() => _filterType = null),
+                                  isDark: isDark,
+                                ),
+                                _buildFilterPill(
+                                  label: 'Sadaqah Only',
+                                  isSelected: _filterType == CharityType.sadaqah,
+                                  activeColor: const Color(0xFF16A34A),
+                                  onTap: () => setState(() => _filterType = CharityType.sadaqah),
+                                  isDark: isDark,
+                                ),
+                                _buildFilterPill(
+                                  label: 'Zakat Only',
+                                  isSelected: _filterType == CharityType.zakat,
+                                  activeColor: const Color(0xFFD1820E),
+                                  onTap: () => setState(() => _filterType = CharityType.zakat),
+                                  isDark: isDark,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                      onPressed: () => _openAddModal(
-                        context,
-                        defaultType: CharityType.zakat,
+
+                      // Transaction History Feed
+                      Expanded(
+                        child: filteredRecords.isEmpty
+                            ? _buildEmptyState(context, isDark)
+                            : ListView.builder(
+                                padding: const EdgeInsets.only(
+                                  left: 16,
+                                  right: 16,
+                                  top: 6,
+                                  bottom: 90,
+                                ),
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: filteredRecords.length,
+                                itemBuilder: (context, index) {
+                                  final item = filteredRecords[index];
+                                  return _buildRecordCard(context, item, isDark);
+                                },
+                              ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 4),
-
-            // Filter Chips
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  FilterChip(
-                    label: const Text('All Logs'),
-                    selected: _filterType == null,
-                    selectedColor: const Color(0xFF2A531D),
-                    checkmarkColor: Colors.white,
-                    labelStyle: TextStyle(
-                      color: _filterType == null
-                          ? Colors.white
-                          : (isDark ? Colors.white70 : const Color(0xFF2A531D)),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                    onSelected: (_) => setState(() => _filterType = null),
-                  ),
-                  const SizedBox(width: 8),
-                  FilterChip(
-                    label: const Text('Sadaqah Only'),
-                    selected: _filterType == CharityType.sadaqah,
-                    selectedColor: const Color(0xFF16A34A),
-                    checkmarkColor: Colors.white,
-                    labelStyle: TextStyle(
-                      color: _filterType == CharityType.sadaqah
-                          ? Colors.white
-                          : const Color(0xFF16A34A),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                    onSelected: (_) =>
-                        setState(() => _filterType = CharityType.sadaqah),
-                  ),
-                  const SizedBox(width: 8),
-                  FilterChip(
-                    label: const Text('Zakat Only'),
-                    selected: _filterType == CharityType.zakat,
-                    selectedColor: const Color(0xFFdfaa0a),
-                    checkmarkColor: Colors.white, 
-                    labelStyle: TextStyle(
-                      color: _filterType == CharityType.zakat
-                          ? Colors.white
-                          : const Color(0xFFD1820E),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                    onSelected: (_) =>
-                        setState(() => _filterType = CharityType.zakat),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Transaction History Feed
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF192520) : Colors.white,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(24),
+                    ],
                   ),
                 ),
-                child: filteredRecords.isEmpty
-                    ? _buildEmptyState(context, isDark)
-                    : ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: filteredRecords.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 10),
-                        itemBuilder: (context, index) {
-                          final item = filteredRecords[index];
-                          return _buildRecordCard(context, item, isDark);
-                        },
-                      ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _buildFilterPill({
+    required String label,
+    required bool isSelected,
+    required Color activeColor,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? activeColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: activeColor.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            color: isSelected
+                ? Colors.white
+                : (isDark ? Colors.white60 : const Color(0xFF64748B)),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildEmptyState(BuildContext context, bool isDark) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.volunteer_activism_rounded,
-            size: 64,
-            color: const Color(0xFF2A531D).withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'No Charity Payments Logged Yet',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white70 : const Color(0xFF2A531D),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.volunteer_activism_rounded,
+              size: 56,
+              color: const Color(0xFF2A531D).withValues(alpha: 0.3),
             ),
-          ),
-          const SizedBox(height: 6),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40),
-            child: Text(
-              'Track your voluntary Sadaqah & mandatory Zakat payments to stay organized and achieve spiritual blessings.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2A531D),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            icon: const Icon(Icons.add_rounded, color: Colors.white),
-            label: const Text(
-              'Log First Payment',
+            const SizedBox(height: 12),
+            Text(
+              'No Charity Payments Logged Yet',
               style: TextStyle(
-                color: Colors.white,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white70 : const Color(0xFF2A531D),
               ),
             ),
-            onPressed: () => _openAddModal(context),
-          ),
-        ],
+            const SizedBox(height: 6),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Track your voluntary Sadaqah & mandatory Zakat payments to stay organized and achieve spiritual blessings.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              icon: const Icon(Icons.add_rounded, color: Colors.white),
+              label: const Text(
+                'Log First Payment',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () => _openAddModal(context),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildRecordCard(BuildContext context, SadqaRecord item, bool isDark) {
+    final isExpanded = _expandedRecordIds.contains(item.id);
     final isSadaqah = item.type == CharityType.sadaqah;
-    final badgeColor = isSadaqah
-        ? const Color(0xFF16A34A)
-        : const Color(0xFFD1820E);
+    final badgeColor = isSadaqah ? const Color(0xFF16A34A) : const Color(0xFFD1820E);
+    final iconData = isSadaqah
+        ? Icons.volunteer_activism_rounded
+        : Icons.account_balance_wallet_rounded;
 
-    return InkWell(
-      onTap: () => _openAddModal(context, record: item),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: badgeColor.withValues(alpha: 0.25),
-            width: 1.2,
-          ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isDark ? const Color(0xFF2E4237) : const Color(0xFFE2E8F0),
+          width: 1.0,
         ),
-        child: Row(
-          children: [
-            // Icon
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: badgeColor.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isSadaqah
-                    ? Icons.volunteer_activism_rounded
-                    : Icons.account_balance_wallet_rounded,
-                color: badgeColor,
-                size: 20,
-              ),
+        boxShadow: [
+          if (!isDark)
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-            const SizedBox(width: 12),
-
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: badgeColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          isSadaqah ? 'SADAQAH' : 'ZAKAT',
-                          style: const TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: () {
+            setState(() {
+              if (isExpanded) {
+                _expandedRecordIds.remove(item.id);
+              } else {
+                _expandedRecordIds.add(item.id);
+              }
+            });
+          },
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Left Circular Icon
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: badgeColor.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            iconData,
+                            color: badgeColor,
+                            size: 22,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        _getCategoryTitle(item.category),
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF1F2937),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.calendar_today_rounded,
-                        size: 11,
-                        color: Colors.grey,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        DateFormat('MMM d, yyyy').format(item.date),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      if (item.recipient.isNotEmpty) ...[
-                        const Text(' • ', style: TextStyle(color: Colors.grey)),
+                        const SizedBox(width: 12),
+
+                        // 2 Centered Rows: Category & (Recipient + Date)
                         Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Row 1: Category title without Sadaqah/Zakat badge
+                              Text(
+                                _getCategoryTitle(item.category),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? Colors.white : const Color(0xFF1E293B),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+
+                              // Row 2: Recipient and Date
+                              Row(
+                                children: [
+                                  if (item.recipient.isNotEmpty) ...[
+                                    Flexible(
+                                      child: Text(
+                                        item.recipient,
+                                        style: TextStyle(
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w600,
+                                          color: badgeColor,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const Text(' • ', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                                  ],
+                                  Icon(
+                                    Icons.calendar_today_rounded,
+                                    size: 11,
+                                    color: isDark ? Colors.white54 : Colors.grey,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    DateFormat('MMM d, yyyy').format(item.date),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark ? Colors.white54 : Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        // Amount: Rightmost, sitting below the 3 dots at top-right
+                        Padding(
+                          padding: const EdgeInsets.only(top: 18, right: 2),
                           child: Text(
-                            item.recipient,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF2A531D),
-                              fontWeight: FontWeight.w600,
+                            _formatMoney(item.amount, symbol: item.currency.isNotEmpty ? item.currency : '₹'),
+                            style: GoogleFonts.oxanium(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: badgeColor,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
+                    ),
+
+                    // Description/Note row shown when card is clicked
+                    AnimatedCrossFade(
+                  firstChild: const SizedBox.shrink(),
+                  secondChild: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Divider(height: 1, color: isDark ? Colors.white12 : const Color(0xFFE2E8F0)),
+                      const SizedBox(height: 8),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.notes_rounded,
+                            size: 14,
+                            color: isDark ? Colors.white54 : Colors.grey,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              item.note.isNotEmpty ? item.note : 'No description provided.',
+                              style: GoogleFonts.lexend(
+                                fontSize: 12,
+                                fontStyle: item.note.isNotEmpty ? FontStyle.normal : FontStyle.italic,
+                                color: isDark ? Colors.white70 : const Color(0xFF475569),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  if (item.note.isNotEmpty) ...[
-                    const SizedBox(height: 3),
-                    Text(
-                      item.note,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-            // Amount & Options
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${item.currency} ${currencyFormatter.format(item.amount)}',
-                  style: GoogleFonts.oxanium(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: badgeColor,
-                  ),
-                ),
-                AppActionPopupMenu<String>(
-                  items: const [
-                    AppActionMenuItem(
-                      value: 'edit',
-                      title: 'Edit Record',
-                      icon: Icons.edit_outlined,
-                    ),
-                    AppActionMenuItem(
-                      value: 'delete',
-                      title: 'Delete Record',
-                      icon: Icons.delete_outline_rounded,
-                      isDestructive: true,
-                    ),
-                  ],
-                  onSelected: (action) {
-                    if (action == 'edit') {
-                      _openAddModal(context, record: item);
-                    } else if (action == 'delete') {
-                      ref
-                          .read(sadqaRecordsProvider.notifier)
-                          .deleteRecord(item.id);
-                    }
-                  },
+                  crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 200),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+
+          // 3 Dots at top right corner absolute (comes over the amount)
+          Positioned(
+            top: 2,
+            right: 2,
+            child: AppActionPopupMenu<String>(
+              items: const [
+                AppActionMenuItem(
+                  value: 'edit',
+                  title: 'Edit Record',
+                  icon: Icons.edit_outlined,
+                ),
+                AppActionMenuItem(
+                  value: 'delete',
+                  title: 'Delete Record',
+                  icon: Icons.delete_outline_rounded,
+                  isDestructive: true,
+                ),
+              ],
+              onSelected: (action) {
+                if (action == 'edit') {
+                  _openAddModal(context, record: item);
+                } else if (action == 'delete') {
+                  ref.read(sadqaRecordsProvider.notifier).deleteRecord(item.id);
+                }
+              },
+            ),
+          ),
+        ],
       ),
-    );
+    ),
+  ),
+);
   }
 
   String _getCategoryTitle(SadaqahCategory category) {

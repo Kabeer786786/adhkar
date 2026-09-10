@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'config/routes/app_router.dart';
+import 'core/services/adhkar_audio_handler.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/showcase_service.dart';
 import 'core/services/storage_service.dart';
@@ -13,12 +14,18 @@ import 'shared/providers/app_providers.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
 
-  // Initialize Background Audio Service
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.sprnt.adhkar.channel.audio',
-    androidNotificationChannelName: 'Adhkar Audio Playback',
-    androidNotificationOngoing: false,
-    androidStopForegroundOnPause: true,
+  // Initialize Background Audio Service (AudioService singleton with AdhkarAudioHandler)
+  final adhkarAudioHandler = await AudioService.init(
+    builder: () => AdhkarAudioHandler(),
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'com.sprnt.adhkar.channel.audio',
+      androidNotificationChannelName: 'Adhkar Audio Playback',
+      androidNotificationChannelDescription:
+          'Playback notifications for Quran recitation and Asma-ul-Husna',
+      androidNotificationIcon: 'drawable/ic_notification',
+      androidNotificationOngoing: false,
+      androidStopForegroundOnPause: false,
+    ),
   );
 
   // Initialize Local Hive Storage
@@ -44,7 +51,10 @@ void main() async {
 
   runApp(
     ProviderScope(
-      overrides: [storageServiceProvider.overrideWithValue(storageService)],
+      overrides: [
+        storageServiceProvider.overrideWithValue(storageService),
+        adhkarAudioHandlerProvider.overrideWithValue(adhkarAudioHandler),
+      ],
       child: const AdhkarApp(),
     ),
   );

@@ -92,9 +92,16 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
       );
       widget.onSave(record);
       Navigator.pop(context);
+      final isEdit = widget.initialRecord != null;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_type == CharityType.zakat ? 'Zakat added' : 'Sadaqah added'),
+          content: Text(
+            isEdit
+                ? (_type == CharityType.zakat
+                    ? 'Zakat record updated'
+                    : 'Sadaqah record updated')
+                : (_type == CharityType.zakat ? 'Zakat added' : 'Sadaqah added'),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );

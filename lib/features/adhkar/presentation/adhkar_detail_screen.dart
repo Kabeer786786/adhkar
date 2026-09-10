@@ -8,6 +8,7 @@ import '../../../shared/models/dhikr_item.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/m3_card.dart';
 import '../../../widgets/app_action_popup_menu.dart';
+import '../../quran/presentation/surah_detail_screen.dart';
 import '../repositories/adhkar_repository.dart';
 
 class AdhkarDetailScreen extends ConsumerStatefulWidget {
@@ -697,6 +698,55 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 14),
+                                ],
+
+                                // Dedicated Button to open complete Surah in Quran
+                                if (item.isSurah) ...[
+                                  Container(
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.only(bottom: 14),
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SurahDetailScreen(
+                                              surahNumber: item.surahNumber!,
+                                              surahName:
+                                                  item.surahName ?? 'Surah',
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.menu_book_rounded,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                      label: Text(
+                                        'Read ${item.surahName ?? "Surah"} in Quran',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color(0xFF2A531D),
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                        elevation: 2,
+                                      ),
+                                    ),
+                                  ),
                                 ],
 
                                 // Reference & Virtue

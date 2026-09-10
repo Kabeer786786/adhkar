@@ -151,8 +151,13 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     BuildContext context,
     bool isDark,
     Color textColor,
+    List<CustomReminder> allReminders,
+    Color primaryGreen,
   ) {
     if (_isSelectionMode) {
+      final isAllSelected = allReminders.isNotEmpty &&
+          _selectedIds.length == allReminders.length;
+
       return AppBar(
         backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
         elevation: 1,
@@ -174,6 +179,24 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              isAllSelected
+                  ? Icons.select_all_rounded
+                  : Icons.deselect_rounded,
+              color: isAllSelected ? primaryGreen : textColor,
+            ),
+            tooltip: isAllSelected ? 'Deselect All' : 'Select All',
+            onPressed: () {
+              setState(() {
+                if (isAllSelected) {
+                  _selectedIds.clear();
+                } else {
+                  _selectedIds.addAll(allReminders.map((r) => r.id));
+                }
+              });
+            },
+          ),
           IconButton(
             icon: const Icon(
               Icons.delete_outline_rounded,
@@ -209,6 +232,9 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
     final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
 
+    final isAllSelected =
+        reminders.isNotEmpty && _selectedIds.length == reminders.length;
+
     final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     final todayReminders = reminders.where((r) {
@@ -228,13 +254,75 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: _buildAppBar(context, isDark, textColor),
+      appBar: _buildAppBar(context, isDark, textColor, reminders, primaryGreen),
       body: reminders.isEmpty
           ? _buildEmptyState(context, primaryGreen, isDark, subTextColor)
           : ListView(
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 90, top: 5),
               children: [
+                if (_isSelectionMode) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 6,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'SELECT REMINDERS',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.6,
+                            color: subTextColor,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (isAllSelected) {
+                                _selectedIds.clear();
+                              } else {
+                                _selectedIds.addAll(reminders.map((r) => r.id));
+                              }
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  isAllSelected
+                                      ? Icons.check_box_rounded
+                                      : Icons.check_box_outline_blank_rounded,
+                                  size: 18,
+                                  color: primaryGreen,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  isAllSelected ? 'Deselect All' : 'Select All',
+                                  style: GoogleFonts.lexend(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryGreen,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                ],
                 if (todayReminders.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(

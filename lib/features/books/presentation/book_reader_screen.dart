@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -162,6 +163,8 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     FlutterIslamicIcons.solidQuran,
   ];
 
+  Timer? _progressDebounceTimer;
+
   @override
   void initState() {
     super.initState();
@@ -175,6 +178,20 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
   @override
   void dispose() {
+    _progressDebounceTimer?.cancel();
+    if (_scrollController.hasClients && widget.book.chapters.isNotEmpty) {
+      final total = widget.book.chapters.length;
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      if (maxScroll > 0) {
+        final progress = (_scrollController.offset / maxScroll).clamp(0.0, 1.0);
+        final estimatedChapter = (progress * total).floor().clamp(0, total - 1);
+        ref.read(userBooksProvider.notifier).updateProgress(
+              bookId: widget.book.id,
+              progress: progress,
+              currentPage: estimatedChapter + 1,
+            );
+      }
+    }
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
@@ -197,11 +214,17 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
           (progress * total).floor().clamp(0, total - 1);
       if (estimatedChapter != _selectedChapterIndex) {
         _selectedChapterIndex = estimatedChapter;
-        ref.read(userBooksProvider.notifier).updateProgress(
-              bookId: widget.book.id,
-              progress: progress,
-              currentPage: estimatedChapter + 1,
-            );
+
+        _progressDebounceTimer?.cancel();
+        _progressDebounceTimer = Timer(const Duration(milliseconds: 600), () {
+          if (mounted) {
+            ref.read(userBooksProvider.notifier).updateProgress(
+                  bookId: widget.book.id,
+                  progress: progress,
+                  currentPage: estimatedChapter + 1,
+                );
+          }
+        });
       }
     }
   }
@@ -293,7 +316,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                           final icon = _chapterIcons[
                               chapIdx % _chapterIcons.length];
 
-                          return Container(
+                          return RepaintBoundary(
                             key: chapIdx < _chapterKeys.length
                                 ? _chapterKeys[chapIdx]
                                 : null,

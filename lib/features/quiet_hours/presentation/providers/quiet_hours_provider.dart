@@ -69,6 +69,13 @@ class QuietHoursNotifier extends StateNotifier<List<QuietHours>> {
     await _saveAndSync(updatedList);
   }
 
+  Future<void> deleteMultipleSchedules(Iterable<String> ids) async {
+    final idSet = ids.toSet();
+    final updatedList = state.where((s) => !idSet.contains(s.id)).toList();
+    _sortSchedules(updatedList);
+    await _saveAndSync(updatedList);
+  }
+
   Future<void> toggleScheduleEnabled(String id, bool enabled) async {
     final updatedList = state.map((s) {
       if (s.id == id) {

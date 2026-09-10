@@ -307,5 +307,137 @@ void main() {
       expect(schedule.nextEnableTime, isNotNull);
       expect(schedule.nextDisableTime, isNotNull);
     });
+
+    test('Overnight Schedule with Custom Weekday (Monday-Only 10:00 PM to 6:00 AM)', () {
+      // 2026-08-17 is Monday (weekday = 1)
+      // 2026-08-18 is Tuesday (weekday = 2)
+      // 2026-08-19 is Wednesday (weekday = 3)
+      final mondayQuietHours = QuietHours(
+        id: 'monday_overnight',
+        startHour: 22,
+        startMinute: 0,
+        endHour: 6,
+        endMinute: 0,
+        enabled: true,
+        repeatDaily: false,
+        weekdays: const [1], // Monday only
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      );
+
+      // 1. Monday noon (inactive): next start is Monday 22:00, next end is Tuesday 06:00
+      final mondayNoon = DateTime(2026, 8, 17, 12, 0);
+      expect(mondayQuietHours.isTimeInQuietHours(mondayNoon), isFalse);
+      expect(mondayQuietHours.getNextStartOccurrence(mondayNoon), DateTime(2026, 8, 17, 22, 0));
+      expect(mondayQuietHours.getNextEndOccurrence(mondayNoon), DateTime(2026, 8, 18, 6, 0));
+
+      // 2. Monday 22:30 (active evening portion): next end is Tuesday 06:00
+      final mondayNight = DateTime(2026, 8, 17, 22, 30);
+      expect(mondayQuietHours.isTimeInQuietHours(mondayNight), isTrue);
+      expect(mondayQuietHours.getNextEndOccurrence(mondayNight), DateTime(2026, 8, 18, 6, 0));
+
+      // 3. Tuesday 02:00 (active morning spillover): next end is Tuesday 06:00
+      final tuesdayEarly = DateTime(2026, 8, 18, 2, 0);
+      expect(mondayQuietHours.isTimeInQuietHours(tuesdayEarly), isTrue);
+      expect(mondayQuietHours.getNextEndOccurrence(tuesdayEarly), DateTime(2026, 8, 18, 6, 0));
+
+      // 4. Tuesday 06:00 (end of session): inactive
+      final tuesdayEnd = DateTime(2026, 8, 18, 6, 0);
+      expect(mondayQuietHours.isTimeInQuietHours(tuesdayEnd), isFalse);
+
+      // 5. Wednesday noon (inactive): next start is NEXT Monday (2026-08-24), next end is NEXT Tuesday (2026-08-25)
+      final wednesdayNoon = DateTime(2026, 8, 19, 12, 0);
+      expect(mondayQuietHours.isTimeInQuietHours(wednesdayNoon), isFalse);
+      expect(mondayQuietHours.getNextStartOccurrence(wednesdayNoon), DateTime(2026, 8, 24, 22, 0));
+      expect(mondayQuietHours.getNextEndOccurrence(wednesdayNoon), DateTime(2026, 8, 25, 6, 0));
+    });
+
+    test('Sunday to Monday Overnight Schedule (Sunday 10:00 PM to Monday 6:00 AM)', () {
+      // 2026-08-16 is Sunday (weekday = 7)
+      // 2026-08-17 is Monday (weekday = 1)
+      final sundayQuietHours = QuietHours(
+        id: 'sunday_overnight',
+        startHour: 22,
+        startMinute: 0,
+        endHour: 6,
+        endMinute: 0,
+        enabled: true,
+        repeatDaily: false,
+        weekdays: const [7], // Sunday only
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      );
+
+      final sundayNoon = DateTime(2026, 8, 16, 12, 0);
+      expect(sundayQuietHours.isTimeInQuietHours(sundayNoon), isFalse);
+      expect(sundayQuietHours.getNextStartOccurrence(sundayNoon), DateTime(2026, 8, 16, 22, 0));
+      expect(sundayQuietHours.getNextEndOccurrence(sundayNoon), DateTime(2026, 8, 17, 6, 0));
+
+      final mondayEarly = DateTime(2026, 8, 17, 3, 0);
+      expect(sundayQuietHours.isTimeInQuietHours(mondayEarly), isTrue);
+      expect(sundayQuietHours.getNextEndOccurrence(mondayEarly), DateTime(2026, 8, 17, 6, 0));
+    });
+
+    test('Overlapping Schedules Continuous Active Window', () {
+      final scheduleA = QuietHours(
+        id: 'sched_a',
+        startHour: 22,
+        startMinute: 0,
+        endHour: 6,
+        endMinute: 0,
+        enabled: true,
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      );
+      final scheduleB = QuietHours(
+        id: 'sched_b',
+        startHour: 23,
+        startMinute: 0,
+        endHour: 5,
+        endMinute: 0,
+        enabled: true,
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      );
+
+      final schedules = [scheduleA, scheduleB];
+
+      // At 22:30: A is active, B is not
+      final at2230 = DateTime(2026, 8, 15, 22, 30);
+      expect(scheduleA.isTimeInQuietHours(at2230), isTrue);
+      expect(scheduleB.isTimeInQuietHours(at2230), isFalse);
+      expect(schedules.any((s) => s.isTimeInQuietHours(at2230)), isTrue);
+
+      // At 00:30: both A and B are active
+      final at0030 = DateTime(2026, 8, 16, 0, 30);
+      expect(scheduleA.isTimeInQuietHours(at0030), isTrue);
+      expect(scheduleB.isTimeInQuietHours(at0030), isTrue);
+      expect(schedules.any((s) => s.isTimeInQuietHours(at0030)), isTrue);
+
+      // At 05:15: B has ended, but A is still active!
+      final at0515 = DateTime(2026, 8, 16, 5, 15);
+      expect(scheduleA.isTimeInQuietHours(at0515), isTrue);
+      expect(scheduleB.isTimeInQuietHours(at0515), isFalse);
+      expect(schedules.any((s) => s.isTimeInQuietHours(at0515)), isTrue);
+
+      // At 06:05: both have ended
+      final at0605 = DateTime(2026, 8, 16, 6, 5);
+      expect(schedules.any((s) => s.isTimeInQuietHours(at0605)), isFalse);
+    });
+
+    test('Same Start and End Time is Inactive (start == end)', () {
+      final zeroWindow = QuietHours(
+        id: 'zero',
+        startHour: 10,
+        startMinute: 0,
+        endHour: 10,
+        endMinute: 0,
+        enabled: true,
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      );
+      final at1000 = DateTime(2026, 8, 15, 10, 0);
+      expect(zeroWindow.isTimeInQuietHours(at1000), isFalse);
+    });
   });
 }

@@ -11,6 +11,8 @@ class DhikrItem extends Equatable {
   final int countTarget;
   final int countCurrent;
   final String? audioUrl;
+  final int? surahNumber;
+  final String? surahName;
 
   const DhikrItem({
     required this.id,
@@ -23,7 +25,11 @@ class DhikrItem extends Equatable {
     required this.countTarget,
     this.countCurrent = 0,
     this.audioUrl,
+    this.surahNumber,
+    this.surahName,
   });
+
+  bool get isSurah => surahNumber != null && surahNumber! > 0;
 
   DhikrItem copyWith({
     String? id,
@@ -36,6 +42,8 @@ class DhikrItem extends Equatable {
     int? countTarget,
     int? countCurrent,
     String? audioUrl,
+    int? surahNumber,
+    String? surahName,
   }) {
     return DhikrItem(
       id: id ?? this.id,
@@ -48,6 +56,8 @@ class DhikrItem extends Equatable {
       countTarget: countTarget ?? this.countTarget,
       countCurrent: countCurrent ?? this.countCurrent,
       audioUrl: audioUrl ?? this.audioUrl,
+      surahNumber: surahNumber ?? this.surahNumber,
+      surahName: surahName ?? this.surahName,
     );
   }
 
@@ -62,7 +72,9 @@ class DhikrItem extends Equatable {
       'virtue': virtue,
       'countTarget': countTarget,
       'countCurrent': countCurrent,
-      'audioUrl': audioUrl,
+      if (audioUrl != null) 'audioUrl': audioUrl,
+      if (surahNumber != null) 'surahNumber': surahNumber,
+      if (surahName != null) 'surahName': surahName,
     };
   }
 
@@ -78,6 +90,8 @@ class DhikrItem extends Equatable {
       countTarget: (json['countTarget'] as num?)?.toInt() ?? 1,
       countCurrent: (json['countCurrent'] as num?)?.toInt() ?? 0,
       audioUrl: json['audioUrl'] as String?,
+      surahNumber: (json['surahNumber'] as num?)?.toInt(),
+      surahName: json['surahName'] as String?,
     );
   }
 
@@ -93,5 +107,7 @@ class DhikrItem extends Equatable {
         countTarget,
         countCurrent,
         audioUrl,
+        surahNumber,
+        surahName,
       ];
 }

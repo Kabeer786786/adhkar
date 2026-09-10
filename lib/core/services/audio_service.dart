@@ -17,7 +17,12 @@ class AudioPlaybackState {
 }
 
 class AppAudioService {
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer _player;
+  final bool _isInternalPlayer;
+
+  AppAudioService([AudioPlayer? player])
+      : _player = player ?? AudioPlayer(),
+        _isInternalPlayer = player == null;
 
   AudioPlayer get player => _player;
 
@@ -60,6 +65,10 @@ class AppAudioService {
   }
 
   Future<void> dispose() async {
-    await _player.dispose();
+    if (_isInternalPlayer) {
+      await _player.dispose();
+    } else {
+      await _player.stop();
+    }
   }
 }

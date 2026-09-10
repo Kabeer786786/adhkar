@@ -15,6 +15,8 @@ class BookContentRenderer extends StatelessWidget {
   final Color accentColor;
   final Color cardBgColor;
 
+  static final _numberingRegex = RegExp(r'^\s*(\d+[\.\-\)]|\(\d+\))\s*');
+
   const BookContentRenderer({
     super.key,
     required this.block,
@@ -199,7 +201,7 @@ class BookContentRenderer extends StatelessWidget {
           final rawItem = block.items[index];
           // Strip leading numbering from text (e.g. "1. ", "1) ", "(1) ", "1- ") if present
           final cleanItem = rawItem.replaceFirst(
-            RegExp(r'^\s*(\d+[\.\-\)]|\(\d+\))\s*'),
+            _numberingRegex,
             '',
           );
 

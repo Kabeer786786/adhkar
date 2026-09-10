@@ -393,44 +393,29 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                         ),
                         child: Stack(
                           children: [
-                            // Category Watermark Label
+                            // Radio button positioned at the right center
                             Positioned(
-                              top: 10,
-                              right: 44,
-                              child: IgnorePointer(
-                                child: Text(
-                                  dua.category.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 9.5,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 0.5,
-                                    color: gradientPreset.textColor.withValues(
-                                      alpha: 0.28,
+                              top: 0,
+                              bottom: 0,
+                              right: 12,
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: () => _toggleDua(dua),
+                                  behavior: HitTestBehavior.opaque,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    padding: const EdgeInsets.all(4),
+                                    child: Icon(
+                                      isSelected
+                                          ? Icons.radio_button_checked_rounded
+                                          : Icons.radio_button_unchecked_rounded,
+                                      size: 24,
+                                      color: isSelected
+                                          ? gradientPreset.textColor
+                                          : gradientPreset.textColor.withValues(
+                                              alpha: 0.45,
+                                            ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            // Top Right Circle Checkbox (No text button)
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: GestureDetector(
-                                onTap: () => _toggleDua(dua),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.all(2),
-                                  child: Icon(
-                                    isSelected
-                                        ? Icons.check_circle_rounded
-                                        : Icons.circle_outlined,
-                                    size: 24,
-                                    color: isSelected
-                                        ? gradientPreset.textColor
-                                        : gradientPreset.textColor.withValues(
-                                            alpha: 0.45,
-                                          ),
                                   ),
                                 ),
                               ),
@@ -439,11 +424,11 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                             // Minimized Background Illustration Image
                             Positioned(
                               bottom: 4,
-                              right: 4,
+                              right: 48,
                               child: IgnorePointer(
                                 child: Container(
-                                  width: 55,
-                                  height: 55,
+                                  width: 50,
+                                  height: 50,
                                   padding: const EdgeInsets.all(2),
                                   child: Opacity(
                                     opacity: 0.85,
@@ -459,31 +444,62 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                               ),
                             ),
 
-                            // Card Content
+                            // Card Content with right padding leaving space for the center-right radio button
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
                                 14,
                                 12,
-                                60,
+                                48,
                                 12,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    dua.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 14.5,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: -0.2,
-                                      color: gradientPreset.textColor,
-                                      height: 1.2,
-                                    ),
+                                  // Top Row: Title on the left (max 1 line, stops before category badge), Category at the top right corner
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          dua.title,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 14.5,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: -0.2,
+                                            color: gradientPreset.textColor,
+                                            height: 1.2,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 7,
+                                          vertical: 2.5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: gradientPreset.textColor
+                                              .withValues(alpha: 0.12),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          dua.category.toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 9.5,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.4,
+                                            color: gradientPreset.textColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 10),
 
                                   Text(
                                     dua.arabic,
@@ -494,14 +510,14 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                                     style: AppTypography.arabicHeader(
                                       fontSize: 16.5,
                                       color: const Color(0xFF1B3512),
-                                      height: 1.8,
+                                      height: 1.6,
                                     ),
                                   ),
                                   const SizedBox(height: 5),
 
                                   Text(
                                     dua.translation,
-                                    maxLines: 2,
+                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.lexend(
                                       fontSize: 12,

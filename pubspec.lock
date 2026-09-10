@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "2.13.1"
   audio_service:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: audio_service
       sha256: "95f3267f3449eb5cf71c8fcf1d556f57af1e898e2dc5815fb168d1843653edb7"
@@ -792,14 +792,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.46"
-  just_audio_background:
-    dependency: "direct main"
-    description:
-      name: just_audio_background
-      sha256: "3900825701164577db65337792bc122b66f9eb1245ee47e7ae8244ae5ceb8030"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1-beta.17"
   just_audio_platform_interface:
     dependency: transitive
     description:

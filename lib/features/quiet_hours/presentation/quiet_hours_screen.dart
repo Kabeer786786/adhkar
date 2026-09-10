@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/quiet_hours_model.dart';
+import '../services/quiet_hours_service.dart';
 import 'providers/quiet_hours_provider.dart';
 import 'widgets/quiet_hours_library_modal.dart';
 import 'widgets/quiet_hours_modal.dart';
@@ -25,6 +26,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   bool _isAutoStartSupported = false;
   String _deviceManufacturer = '';
   Timer? _timer;
+  bool _isSelectionMode = false;
+  final Set<String> _selectedIds = <String>{};
 
   @override
   void initState() {
@@ -103,12 +106,10 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     }
   }
 
-  void _confirmDelete(
-    BuildContext context,
-    WidgetRef ref,
-    QuietHours schedule,
-  ) {
+  void _confirmDeleteSelected(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final count = _selectedIds.length;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -118,7 +119,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
-            'Delete Timing?',
+            'Delete Timing${count > 1 ? 's' : ''}?',
             style: GoogleFonts.outfit(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -126,7 +127,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
             ),
           ),
           content: Text(
-            'This Quiet Hours timing "${schedule.title}" will be removed.',
+            'Are you sure you want to delete $count selected Quiet Hours timing${count > 1 ? 's' : ''}?',
             style: GoogleFonts.lexend(
               fontSize: 13,
               color: isDark ? Colors.white70 : const Color(0xFF64748B),
@@ -146,9 +147,16 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               onPressed: () {
                 ref
                     .read(quietHoursProvider.notifier)
-                    .deleteSchedule(schedule.id);
+                    .deleteMultipleSchedules(_selectedIds);
+                setState(() {
+                  _selectedIds.clear();
+                  _isSelectionMode = false;
+                });
                 Navigator.pop(context);
-                _showDeleteToast(context, 'Timing deleted');
+                _showDeleteToast(
+                  context,
+                  '$count timing${count > 1 ? 's' : ''} deleted',
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDC2626),
@@ -167,6 +175,19 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
         );
       },
     );
+  }
+
+  void _toggleSelection(String id) {
+    setState(() {
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
+        if (_selectedIds.isEmpty) {
+          _isSelectionMode = false;
+        }
+      } else {
+        _selectedIds.add(id);
+      }
+    });
   }
 
   void _showToast(
@@ -225,6 +246,136 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     AppFloatingToast.showRemoved(context, message: message);
   }
 
+  PreferredSizeWidget _buildAppBar(
+    BuildContext context,
+    bool isDark,
+    Color textColor,
+    List<QuietHours> allSchedules,
+    Color primaryGreen,
+    bool isSupported,
+    QuietHoursService service,
+  ) {
+    if (_isSelectionMode) {
+      final isAllSelected = allSchedules.isNotEmpty &&
+          _selectedIds.length == allSchedules.length;
+
+      return AppBar(
+        backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+        elevation: 1,
+        leading: IconButton(
+          icon: Icon(Icons.close_rounded, color: textColor),
+          onPressed: () {
+            setState(() {
+              _isSelectionMode = false;
+              _selectedIds.clear();
+            });
+          },
+        ),
+        title: Text(
+          '${_selectedIds.length} Selected',
+          style: GoogleFonts.outfit(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isAllSelected
+                  ? Icons.select_all_rounded
+                  : Icons.deselect_rounded,
+              color: isAllSelected ? primaryGreen : textColor,
+            ),
+            tooltip: isAllSelected ? 'Deselect All' : 'Select All',
+            onPressed: () {
+              setState(() {
+                if (isAllSelected) {
+                  _selectedIds.clear();
+                } else {
+                  _selectedIds.addAll(allSchedules.map((s) => s.id));
+                }
+              });
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              color: Color(0xFFEF4444),
+            ),
+            onPressed: _selectedIds.isEmpty
+                ? null
+                : () => _confirmDeleteSelected(context),
+            tooltip: 'Delete Selected',
+          ),
+          const SizedBox(width: 8),
+        ],
+      );
+    }
+
+    return AppHeaderBar(
+      title: 'QUIET HOURS',
+      showBackButton: true,
+      actions: [
+        if (isSupported)
+          Padding(
+            padding: const EdgeInsets.only(right: 14),
+            child: Center(
+              child: GestureDetector(
+                onTap: _hasDndPermission
+                    ? null
+                    : () => service.openDndPermissionSettings(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _hasDndPermission
+                        ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                        : const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: _hasDndPermission
+                          ? const Color(0xFF10B981).withValues(alpha: 0.35)
+                          : const Color(0xFFF59E0B).withValues(alpha: 0.4),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _hasDndPermission
+                            ? Icons.check_circle_rounded
+                            : Icons.info_outline_rounded,
+                        size: 13,
+                        color: _hasDndPermission
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFD97706),
+                      ),
+                      const SizedBox(width: 4.5),
+                      Text(
+                        _hasDndPermission ? 'Granted' : 'Not Granted',
+                        style: GoogleFonts.lexend(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: _hasDndPermission
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFFD97706),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        const SizedBox(width: 4),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final rawSchedules = ref.watch(quietHoursProvider);
@@ -248,67 +399,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppHeaderBar(
-        title: 'QUIET HOURS',
-        showBackButton: true,
-        actions: [
-          if (isSupported)
-            Padding(
-              padding: const EdgeInsets.only(right: 14),
-              child: Center(
-                child: GestureDetector(
-                  onTap: _hasDndPermission
-                      ? null
-                      : () => service.openDndPermissionSettings(),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 9,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _hasDndPermission
-                          ? const Color(0xFF10B981).withValues(alpha: 0.12)
-                          : const Color(0xFFF59E0B).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: _hasDndPermission
-                            ? const Color(0xFF10B981).withValues(alpha: 0.35)
-                            : const Color(0xFFF59E0B).withValues(alpha: 0.4),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _hasDndPermission
-                              ? Icons.check_circle_rounded
-                              : Icons.info_outline_rounded,
-                          size: 13,
-                          color: _hasDndPermission
-                              ? const Color(0xFF10B981)
-                              : const Color(0xFFD97706),
-                        ),
-                        const SizedBox(width: 4.5),
-                        Text(
-                          _hasDndPermission ? 'Granted' : 'Not Granted',
-                          style: GoogleFonts.lexend(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: _hasDndPermission
-                                ? const Color(0xFF10B981)
-                                : const Color(0xFFD97706),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          const SizedBox(width: 4),
-        ],
-      ),
+      appBar: _buildAppBar(context, isDark, textColor, schedules, primaryGreen, isSupported, service),
       body: schedules.isEmpty
           ? _buildEmptyState(context, ref, primaryGreen, isDark, subTextColor)
           : ListView(
@@ -616,14 +707,64 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                     top: 0,
                     bottom: 6,
                   ),
-                  child: Text(
-                    'ALL QUIET TIMINGS',
-                    style: GoogleFonts.lexend(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.6,
-                      color: subTextColor,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'ALL QUIET TIMINGS',
+                        style: GoogleFonts.lexend(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.6,
+                          color: subTextColor,
+                        ),
+                      ),
+                      if (_isSelectionMode)
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (schedules.isNotEmpty &&
+                                  _selectedIds.length == schedules.length) {
+                                _selectedIds.clear();
+                              } else {
+                                _selectedIds.addAll(schedules.map((s) => s.id));
+                              }
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  schedules.isNotEmpty &&
+                                          _selectedIds.length == schedules.length
+                                      ? Icons.check_box_rounded
+                                      : Icons.check_box_outline_blank_rounded,
+                                  size: 18,
+                                  color: primaryGreen,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  schedules.isNotEmpty &&
+                                          _selectedIds.length == schedules.length
+                                      ? 'Deselect All'
+                                      : 'Select All',
+                                  style: GoogleFonts.lexend(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryGreen,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 ...schedules.map(
@@ -641,7 +782,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 ),
               ],
             ),
-      floatingActionButton: schedules.isEmpty
+      floatingActionButton: (schedules.isEmpty || _isSelectionMode)
           ? null
           : FloatingActionButton.extended(
               onPressed: () {
@@ -756,15 +897,23 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       6: 'Sat',
       7: 'Sun',
     };
+    final isSelected = _selectedIds.contains(schedule.id);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: cardBg,
+        color: isSelected
+            ? (isDark
+                ? primaryGreen.withValues(alpha: 0.15)
+                : const Color(0xFFE8F5E9))
+            : cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: cardBorder, width: 1),
+        border: Border.all(
+          color: isSelected ? primaryGreen : cardBorder,
+          width: isSelected ? 2 : 1,
+        ),
         boxShadow: [
-          if (!isDark)
+          if (!isDark && !isSelected)
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 8,
@@ -778,21 +927,34 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
           onTap: () {
-            QuietHoursModal.show(
-              context: context,
-              initialSchedule: schedule,
-              onSave: (updated) {
-                ref.read(quietHoursProvider.notifier).updateSchedule(updated);
-              },
-              onDelete: () {
-                ref
-                    .read(quietHoursProvider.notifier)
-                    .deleteSchedule(schedule.id);
-                _showDeleteToast(context, 'Timing deleted');
-              },
-            );
+            if (_isSelectionMode) {
+              _toggleSelection(schedule.id);
+            } else {
+              QuietHoursModal.show(
+                context: context,
+                initialSchedule: schedule,
+                onSave: (updated) {
+                  ref.read(quietHoursProvider.notifier).updateSchedule(updated);
+                },
+                onDelete: () {
+                  ref
+                      .read(quietHoursProvider.notifier)
+                      .deleteSchedule(schedule.id);
+                  _showDeleteToast(context, 'Timing deleted');
+                },
+              );
+            }
           },
-          onLongPress: () => _confirmDelete(context, ref, schedule),
+          onLongPress: () {
+            if (!_isSelectionMode) {
+              setState(() {
+                _isSelectionMode = true;
+                _selectedIds.add(schedule.id);
+              });
+            } else {
+              _toggleSelection(schedule.id);
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.only(
               left: 16,
@@ -803,10 +965,37 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1st ROW: Title, Subtitle, and right-side Switch
+                // 1st ROW: Title, Subtitle, and right-side Switch / Selection Checkbox
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    if (_isSelectionMode) ...[
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 24,
+                        height: 24,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isSelected ? primaryGreen : Colors.transparent,
+                          border: Border.all(
+                            color: isSelected
+                                ? primaryGreen
+                                : (isDark
+                                    ? Colors.white38
+                                    : Colors.grey.shade400),
+                            width: 2,
+                          ),
+                        ),
+                        child: isSelected
+                            ? const Icon(
+                                Icons.check,
+                                size: 16,
+                                color: Colors.white,
+                              )
+                            : null,
+                      ),
+                    ],
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -842,22 +1031,25 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Transform.scale(
-                      scale: 0.82,
-                      child: Switch(
-                        value: schedule.enabled,
-                        activeTrackColor: primaryGreen,
-                        onChanged: (val) {
-                          ref
-                              .read(quietHoursProvider.notifier)
-                              .toggleScheduleEnabled(schedule.id, val);
-                          _showToast(
-                            context,
-                            val ? 'Activated' : 'Deactivated',
-                            val,
-                            isDark,
-                          );
-                        },
+                    IgnorePointer(
+                      ignoring: _isSelectionMode,
+                      child: Transform.scale(
+                        scale: 0.82,
+                        child: Switch(
+                          value: schedule.enabled,
+                          activeTrackColor: primaryGreen,
+                          onChanged: (val) {
+                            ref
+                                .read(quietHoursProvider.notifier)
+                                .toggleScheduleEnabled(schedule.id, val);
+                            _showToast(
+                              context,
+                              val ? 'Activated' : 'Deactivated',
+                              val,
+                              isDark,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],

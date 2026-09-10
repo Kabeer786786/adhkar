@@ -1,18 +1,23 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+import '../../../core/services/adhkar_audio_handler.dart';
 import '../../../core/services/media_download_service.dart';
+import '../../../shared/providers/app_providers.dart';
 import '../data/surah_model.dart';
 
 class QuranAudioController extends ChangeNotifier {
-  final AudioPlayer _player = AudioPlayer();
+  final AdhkarAudioHandler _audioHandler;
+  AudioPlayer get _player => _audioHandler.player;
+
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<int?>? _currentIndexSubscription;
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<Duration?>? _durationSubscription;
+  StreamSubscription<SequenceState?>? _sequenceSubscription;
 
   ConcatenatingAudioSource? _playlistSource;
   List<AyahModel> _playlist = [];
@@ -53,7 +58,7 @@ class QuranAudioController extends ChangeNotifier {
 
   AudioPlayer get player => _player;
 
-  QuranAudioController() {
+  QuranAudioController(this._audioHandler) {
     _initAudio();
   }
 
@@ -93,6 +98,20 @@ class QuranAudioController extends ChangeNotifier {
     _durationSubscription = _player.durationStream.listen((dur) {
       _duration = dur ?? Duration.zero;
       notifyListeners();
+    });
+
+    _sequenceSubscription = _player.sequenceStateStream.listen((seqState) {
+      if (seqState == null) return;
+      final currentTag = seqState.currentSource?.tag;
+      if (currentTag is MediaItem) {
+        if (currentTag.extras?['type'] != 'quran') {
+          if (_currentIndex != -1) {
+            _currentIndex = -1;
+            _isPlaying = false;
+            notifyListeners();
+          }
+        }
+      }
     });
   }
 
@@ -269,7 +288,7 @@ class QuranAudioController extends ChangeNotifier {
   }
 
   Future<void> stop() async {
-    await _player.stop();
+    await _audioHandler.stop();
     _currentIndex = -1;
     _isPlaying = false;
     notifyListeners();
@@ -281,14 +300,15 @@ class QuranAudioController extends ChangeNotifier {
     _currentIndexSubscription?.cancel();
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
-    _player.dispose();
+    _sequenceSubscription?.cancel();
     super.dispose();
   }
 }
 
 /// Riverpod provider for QuranAudioController
 final quranAudioProvider = ChangeNotifierProvider<QuranAudioController>((ref) {
-  final controller = QuranAudioController();
+  final audioHandler = ref.watch(adhkarAudioHandlerProvider);
+  final controller = QuranAudioController(audioHandler);
   ref.onDispose(() => controller.dispose());
   return controller;
 });

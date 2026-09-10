@@ -182,6 +182,20 @@ class AdhkarRepository {
           'Whoever recites it three times in the evening will not be harmed by any creature during that night.',
       countTarget: 3,
     ),
+    DhikrItem(
+      id: 'e_waqiah',
+      category: 'evening',
+      arabicText: 'سُورَةُ الْوَاقِعَةِ',
+      transliteration: 'Surah Al-Waqi\'ah (Chapter 56)',
+      translation:
+          'Recitation of Surah Al-Waqi\'ah in the evening brings spiritual richness and protection from poverty.',
+      reference: 'Bayhaqi (Shu\'ab al-Iman 2269)',
+      virtue:
+          'Whoever recites Surah Al-Waqi\'ah every night will never be afflicted by poverty.',
+      countTarget: 1,
+      surahNumber: 56,
+      surahName: 'Al-Waqi\'ah',
+    ),
   ];
 
   static const List<DhikrItem> _afterSalahAdhkar = [
@@ -227,6 +241,33 @@ class AdhkarRepository {
       reference: 'Bukhari 11/126',
       virtue: 'Angel protection while sleeping.',
       countTarget: 1,
+    ),
+    DhikrItem(
+      id: 'sl_mulk',
+      category: 'sleep',
+      arabicText: 'سُورَةُ الْمُلْكِ',
+      transliteration: 'Surah Al-Mulk (Chapter 67)',
+      translation:
+          'Recitation of Surah Al-Mulk (Tabarak) before sleep protects from the punishment of the grave.',
+      reference: 'At-Tirmidhi (2891), Sahih',
+      virtue:
+          'Intercedes for its reciter until he is forgiven and shields from the trials of the grave.',
+      countTarget: 1,
+      surahNumber: 67,
+      surahName: 'Al-Mulk',
+    ),
+    DhikrItem(
+      id: 'sl_sajdah',
+      category: 'sleep',
+      arabicText: 'سُورَةُ السَّجْدَةِ',
+      transliteration: 'Surah As-Sajdah (Chapter 32)',
+      translation:
+          'The Prophet (ﷺ) would not sleep until he recited Surah As-Sajdah and Surah Al-Mulk.',
+      reference: 'At-Tirmidhi (2892), Ahmad',
+      virtue: 'Prophetic sunnah for night protection and reflection.',
+      countTarget: 1,
+      surahNumber: 32,
+      surahName: 'As-Sajdah',
     ),
   ];
 

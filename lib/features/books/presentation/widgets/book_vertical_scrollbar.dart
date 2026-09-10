@@ -52,12 +52,13 @@ class _BookVerticalScrollbarState extends State<BookVerticalScrollbar> {
     if (!_isVisibleNotifier.value) {
       _isVisibleNotifier.value = true;
     }
-    _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted && !_isDragging) {
-        _isVisibleNotifier.value = false;
-      }
-    });
+    if (_hideTimer == null || !_hideTimer!.isActive) {
+      _hideTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted && !_isDragging) {
+          _isVisibleNotifier.value = false;
+        }
+      });
+    }
   }
 
   void _onScroll() {
@@ -162,39 +163,44 @@ class _BookVerticalScrollbarState extends State<BookVerticalScrollbar> {
                                 .clamp(0.0, availableTravel);
 
                             return Positioned(
-                              top: thumbTop,
+                              top: 0,
                               right: 0,
-                              child: IgnorePointer(
-                                child: Container(
-                                  height: thumbHeight,
-                                  width: 30,
-                                  decoration: BoxDecoration(
-                                    color: widget.isDark
-                                        ? const Color(0xFF18181B)
-                                        : Colors.white,
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(13),
-                                      bottomLeft: Radius.circular(13),
-                                      topRight: Radius.zero,
-                                      bottomRight: Radius.zero,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: widget.isDark ? 0.35 : 0.12,
+                              child: Transform.translate(
+                                offset: Offset(0, thumbTop),
+                                child: RepaintBoundary(
+                                  child: IgnorePointer(
+                                    child: Container(
+                                      height: thumbHeight,
+                                      width: 30,
+                                      decoration: BoxDecoration(
+                                        color: widget.isDark
+                                            ? const Color(0xFF18181B)
+                                            : Colors.white,
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(13),
+                                          bottomLeft: Radius.circular(13),
+                                          topRight: Radius.zero,
+                                          bottomRight: Radius.zero,
                                         ),
-                                        blurRadius: 4,
-                                        offset: const Offset(-1, 1),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(
+                                              alpha: widget.isDark ? 0.35 : 0.12,
+                                            ),
+                                            blurRadius: 4,
+                                            offset: const Offset(-1, 1),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.unfold_more_rounded,
-                                      color: widget.isDark
-                                          ? const Color(0xFFA3E635)
-                                          : const Color(0xFF2A531D),
-                                      size: 22,
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.unfold_more_rounded,
+                                          color: widget.isDark
+                                              ? const Color(0xFFA3E635)
+                                              : const Color(0xFF2A531D),
+                                          size: 22,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),

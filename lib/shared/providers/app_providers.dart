@@ -9,8 +9,14 @@ import '../../features/prayer/presentation/providers/aladhan_providers.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../core/services/adhkar_audio_handler.dart';
+
 final storageServiceProvider = Provider<StorageService>((ref) {
   throw UnimplementedError('StorageService must be initialized in main');
+});
+
+final adhkarAudioHandlerProvider = Provider<AdhkarAudioHandler>((ref) {
+  throw UnimplementedError('AdhkarAudioHandler must be initialized in main');
 });
 
 final locationServiceProvider = Provider<LocationService>((ref) {
@@ -18,7 +24,8 @@ final locationServiceProvider = Provider<LocationService>((ref) {
 });
 
 final audioServiceProvider = Provider<AppAudioService>((ref) {
-  final service = AppAudioService();
+  final handler = ref.watch(adhkarAudioHandlerProvider);
+  final service = AppAudioService(handler.player);
   ref.onDispose(() => service.dispose());
   return service;
 });

@@ -104,7 +104,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- audio_service / just_audio_background service & receiver -->
+        <!-- audio_service foreground service & media button receiver -->
         <service android:name="com.ryanheise.audioservice.AudioService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true" tools:ignore="Instantiatable">

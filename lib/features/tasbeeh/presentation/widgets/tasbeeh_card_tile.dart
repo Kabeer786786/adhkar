@@ -9,6 +9,8 @@ class TasbeehCardTile extends StatelessWidget {
   final int currentCount;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
+  final bool isSelectionMode;
+  final bool isSelected;
 
   const TasbeehCardTile({
     super.key,
@@ -16,6 +18,8 @@ class TasbeehCardTile extends StatelessWidget {
     required this.currentCount,
     required this.onTap,
     this.onLongPress,
+    this.isSelectionMode = false,
+    this.isSelected = false,
   });
 
   @override
@@ -25,20 +29,29 @@ class TasbeehCardTile extends StatelessWidget {
         : 0.0;
     final isCompleted = currentCount >= item.targetGoal;
 
-    final cardBgColor = context.isDarkMode
-        ? const Color(0xFF1E2923)
-        : const Color(0xFFF9F9F9);
+    final cardBgColor = isSelected
+        ? (context.isDarkMode
+            ? const Color(0xFF243B2C)
+            : const Color(0xFFF0FDF4))
+        : (context.isDarkMode
+            ? const Color(0xFF1E2923)
+            : const Color(0xFFF9F9F9));
 
-    final borderColor = isCompleted
-        ? item.color.withValues(alpha: 0.6)
-        : (context.isDarkMode ? Colors.white10 : const Color(0xFFE2ECE0));
+    final borderColor = isSelected
+        ? const Color(0xFF2A531D)
+        : (isCompleted
+            ? item.color.withValues(alpha: 0.6)
+            : (context.isDarkMode ? Colors.white10 : const Color(0xFFE2ECE0)));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor, width: isCompleted ? 1.5 : 1.0),
+        border: Border.all(
+          color: borderColor,
+          width: isSelected ? 2.0 : (isCompleted ? 1.5 : 1.0),
+        ),
         boxShadow: [
           BoxShadow(
             color: context.isDarkMode
@@ -61,6 +74,31 @@ class TasbeehCardTile extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                if (isSelectionMode) ...[
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: isSelected ? const Color(0xFF2A531D) : Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFF2A531D)
+                            : Colors.grey.shade400,
+                        width: 1.8,
+                      ),
+                    ),
+                    child: isSelected
+                        ? const Icon(
+                            Icons.check_rounded,
+                            size: 14,
+                            color: Colors.white,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 14),
+                ],
                 // Left Side (Whole part): Arabic & English Transliteration
                 Expanded(
                   child: Column(

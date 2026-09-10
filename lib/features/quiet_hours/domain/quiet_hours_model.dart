@@ -105,29 +105,51 @@ class QuietHours {
 
   /// Calculates the next [DateTime] when Quiet Hours end should trigger from [from].
   DateTime getNextEndOccurrence(DateTime from) {
-    DateTime candidate = DateTime(
-      from.year,
-      from.month,
-      from.day,
-      endHour,
-      endMinute,
-    );
+    final currentlyInside = isTimeInQuietHours(from);
+    if (currentlyInside) {
+      final candidate = DateTime(
+        from.year,
+        from.month,
+        from.day,
+        endHour,
+        endMinute,
+      );
 
-    if (!isOvernight) {
-      if (candidate.isBefore(from) || candidate.isAtSameMomentAs(from)) {
-        candidate = candidate.add(const Duration(days: 1));
+      if (!isOvernight) {
+        return candidate;
+      } else {
+        final nowMinutes = from.hour * 60 + from.minute;
+        final startMinutes = startHour * 60 + startMinute;
+        if (nowMinutes >= startMinutes) {
+          // Evening portion of active overnight session: ends tomorrow morning
+          return candidate.add(const Duration(days: 1));
+        } else {
+          // Morning spillover portion: ends this morning
+          return candidate;
+        }
       }
     } else {
-      final nowMinutes = from.hour * 60 + from.minute;
-      final startMinutes = startHour * 60 + startMinute;
-      if (nowMinutes >= startMinutes) {
-        candidate = candidate.add(const Duration(days: 1));
-      } else if (candidate.isBefore(from) || candidate.isAtSameMomentAs(from)) {
-        candidate = candidate.add(const Duration(days: 1));
+      // Inactive: calculate next start occurrence and pair its corresponding end
+      final nextStart = getNextStartOccurrence(from);
+      if (!isOvernight) {
+        return DateTime(
+          nextStart.year,
+          nextStart.month,
+          nextStart.day,
+          endHour,
+          endMinute,
+        );
+      } else {
+        final nextEndDay = nextStart.add(const Duration(days: 1));
+        return DateTime(
+          nextEndDay.year,
+          nextEndDay.month,
+          nextEndDay.day,
+          endHour,
+          endMinute,
+        );
       }
     }
-
-    return candidate;
   }
 
   QuietHours copyWith({
