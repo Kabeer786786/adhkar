@@ -155,9 +155,6 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     Color primaryGreen,
   ) {
     if (_isSelectionMode) {
-      final isAllSelected = allReminders.isNotEmpty &&
-          _selectedIds.length == allReminders.length;
-
       return AppBar(
         backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
         elevation: 1,

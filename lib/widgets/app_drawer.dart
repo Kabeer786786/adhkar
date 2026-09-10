@@ -66,6 +66,8 @@ class AppDrawer extends ConsumerWidget {
                             width: 40,
                             height: 40,
                             fit: BoxFit.cover,
+                            cacheWidth: 120,
+                            cacheHeight: 120,
                             errorBuilder: (context, error, stackTrace) =>
                                 const Icon(
                                   FlutterIslamicIcons.solidMosque,

@@ -192,6 +192,8 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
       return Image.asset(
         imagePath,
         fit: BoxFit.contain,
+        cacheWidth: 300,
+        cacheHeight: 300,
         alignment: Alignment.bottomRight,
         errorBuilder: (context, error, stackTrace) => const Icon(
           Icons.auto_awesome_rounded,

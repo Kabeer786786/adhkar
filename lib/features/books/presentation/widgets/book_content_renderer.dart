@@ -549,11 +549,12 @@ class BookContentRenderer extends StatelessWidget {
                     aspectRatio: block.aspectRatio ?? 16 / 9,
                     child: isLocal
                         ? (imgUrl.startsWith('assets/')
-                            ? Image.asset(imgUrl, fit: BoxFit.cover) 
+                            ? Image.asset(imgUrl, fit: BoxFit.cover, cacheWidth: 1080) 
                             : Image.file(File(imgUrl), fit: BoxFit.cover))
                         : CachedNetworkImage(
                             imageUrl: imgUrl,
                             fit: BoxFit.cover,
+                            memCacheWidth: 1080,
                             placeholder: (context, url) => Container(
                               color: isDark ? Colors.white10 : Colors.grey.shade200,
                               child: const Center(
@@ -628,11 +629,12 @@ class BookContentRenderer extends StatelessWidget {
                 maxScale: 4.0,
                 child: isLocal
                     ? (imgUrl.startsWith('assets/')
-                        ? Image.asset(imgUrl, fit: BoxFit.contain)
+                        ? Image.asset(imgUrl, fit: BoxFit.contain, cacheWidth: 1200)
                         : Image.file(File(imgUrl), fit: BoxFit.contain))
                     : CachedNetworkImage(
                         imageUrl: imgUrl,
                         fit: BoxFit.contain,
+                        memCacheWidth: 1200,
                         placeholder: (context, url) => const Center(
                           child: CircularProgressIndicator(color: Colors.white),
                         ),
@@ -728,6 +730,7 @@ class BookContentRenderer extends StatelessWidget {
                         ? CachedNetworkImage(
                             imageUrl: block.thumbnailUrl!,
                             fit: BoxFit.cover,
+                            memCacheWidth: 1080,
                             errorWidget: (context, url, error) => Container(
                               color: isDark ? const Color(0xFF1E293B) : const Color(0xFF334155),
                             ),

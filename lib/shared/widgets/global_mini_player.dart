@@ -146,6 +146,8 @@ class GlobalMiniPlayer extends ConsumerWidget {
                         child: Image.asset(
                           'assets/logo.png',
                           fit: BoxFit.cover,
+                          cacheWidth: 150,
+                          cacheHeight: 150,
                           errorBuilder: (context, error, stackTrace) => Icon(
                             Icons.music_note_rounded,
                             color: isDark ? accentGreen : primaryColor,

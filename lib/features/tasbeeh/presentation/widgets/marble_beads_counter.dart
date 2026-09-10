@@ -293,6 +293,8 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
                         child: Image.asset(
                           widget.marbleAsset,
                           fit: BoxFit.contain,
+                          cacheWidth: 260,
+                          cacheHeight: 260,
                           errorBuilder: (context, error, stackTrace) => Container(
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,

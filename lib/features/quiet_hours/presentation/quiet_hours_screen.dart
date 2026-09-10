@@ -256,9 +256,6 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     QuietHoursService service,
   ) {
     if (_isSelectionMode) {
-      final isAllSelected = allSchedules.isNotEmpty &&
-          _selectedIds.length == allSchedules.length;
-
       return AppBar(
         backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
         elevation: 1,

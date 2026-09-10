@@ -172,7 +172,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       setState(() => _isBackButtonVisible = true);
     }
     _backButtonFadeTimer?.cancel();
-    _backButtonFadeTimer = Timer(const Duration(milliseconds: 2800), () {
+    _backButtonFadeTimer = Timer(const Duration(seconds: 3), () {
       if (mounted && _isBackButtonVisible) {
         setState(() => _isBackButtonVisible = false);
       }
@@ -497,15 +497,6 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                           ? const Color(0xFF18181B)
                           : const Color(0xFF2A531D),
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: isDark
-                              ? Colors.black.withValues(alpha: 0.5)
-                              : const Color(0xFF2A531D).withValues(alpha: 0.35),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
                     ),
                     child: Material(
                       color: Colors.transparent,
@@ -542,26 +533,23 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
               ),
             ),
 
-            // Floating Back Button (White background, black arrow, visible on scroll / touch)
+            // Floating Back Button (White translucent 0.5, black arrow, visible on scroll / touch, hides after 3s)
             Positioned(
               top: topInset + 10,
               left: 16,
               child: AnimatedOpacity(
                 opacity: _isBackButtonVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 220),
+                duration: const Duration(milliseconds: 240),
                 child: IgnorePointer(
                   ignoring: !_isBackButtonVisible,
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.18),
-                          blurRadius: 12,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+                      color: Colors.white.withValues(alpha: 0.5),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.35),
+                        width: 1.0,
+                      ),
                     ),
                     child: Material(
                       color: Colors.transparent,
@@ -713,13 +701,6 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
         decoration: BoxDecoration(
           color: bgColor,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Material(
           color: Colors.transparent,

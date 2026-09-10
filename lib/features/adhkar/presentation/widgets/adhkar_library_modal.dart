@@ -187,6 +187,8 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
       return Image.asset(
         imagePath,
         fit: BoxFit.contain,
+        cacheWidth: 200,
+        cacheHeight: 200,
         alignment: Alignment.bottomRight,
         errorBuilder: (context, error, stackTrace) => const Icon(
           Icons.auto_awesome_rounded,

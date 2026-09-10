@@ -131,8 +131,38 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
   @override
   void initState() {
     super.initState();
+    _initDuasSynchronously();
     _loadDuas();
     _searchController.addListener(_filterDuas);
+  }
+
+  void _initDuasSynchronously() {
+    final storage = ref.read(storageServiceProvider);
+
+    // 1. Synchronously load saved language
+    final savedLangs = storage.getGenericData('dua_selected_languages');
+    if (savedLangs is List && savedLangs.isNotEmpty) {
+      _selectedLanguages =
+          Set<String>.from(savedLangs.map((e) => e.toString()));
+      _primaryLanguage = _selectedLanguages.first;
+    } else {
+      final savedPrimary = storage.getGenericData('dua_primary_language');
+      if (savedPrimary is String && savedPrimary.isNotEmpty) {
+        _primaryLanguage = savedPrimary;
+        _selectedLanguages = {savedPrimary};
+      }
+    }
+
+    // 2. Synchronously load cached Duas (Zero-latency, zero-flicker)
+    final savedItemMaps = storage.getSavedDuaItems();
+    if (savedItemMaps != null && savedItemMaps.isNotEmpty) {
+      _allDuas = savedItemMaps.map((m) => DuaItem.fromJson(m)).toList();
+    } else {
+      // First time user: show top 10 important Duas immediately
+      _allDuas = _repository.getDefaultDuas().take(10).toList();
+      _persistDuas();
+    }
+    _filterDuas();
   }
 
   @override
@@ -144,46 +174,36 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
   Future<void> _loadDuas() async {
     final storage = ref.read(storageServiceProvider);
 
-    // 1. Load Language Preferences
-    final savedLangs = storage.getGenericData('dua_selected_languages');
-    if (savedLangs is List && savedLangs.isNotEmpty) {
-      _selectedLanguages =
-          Set<String>.from(savedLangs.map((e) => e.toString()));
-      _primaryLanguage = _selectedLanguages.first;
-    } else {
-      final savedPrimary = storage.getGenericData('dua_primary_language');
-      if (savedPrimary is String && savedPrimary.isNotEmpty) {
-        _primaryLanguage = savedPrimary;
-        _selectedLanguages = {savedPrimary};
-      } else {
-        try {
-          final prefs = await SharedPreferences.getInstance();
-          final prefLang = prefs.getString('dua_primary_language');
-          if (prefLang != null && prefLang.isNotEmpty) {
+    // 1. SharedPreferences backup for language
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final prefLang = prefs.getString('dua_primary_language');
+      if (prefLang != null &&
+          prefLang.isNotEmpty &&
+          prefLang != _primaryLanguage) {
+        if (mounted) {
+          setState(() {
             _primaryLanguage = prefLang;
             _selectedLanguages = {prefLang};
-          }
-        } catch (_) {}
+          });
+          _filterDuas();
+        }
       }
-    }
+    } catch (_) {}
 
-    // 2. Load Duas
-    // Top 10 duas in the feed of the user initially, since user can add more from library
+    // 2. Pre-cache all 197 Duas in memory for the Dua Library modal
     final allJsonDuas = await _repository.loadAllDuas();
-    final hasInitializedFeedV2 =
-        storage.getGenericData('dua_feed_v2_initialized') == true;
+
+    // 3. If storage was empty, initialize with top 10 important Duas
     final savedItemMaps = storage.getSavedDuaItems();
-
-    if (hasInitializedFeedV2 && savedItemMaps != null && savedItemMaps.isNotEmpty) {
-      _allDuas = savedItemMaps.map((m) => DuaItem.fromJson(m)).toList();
-    } else {
-      _allDuas = allJsonDuas.take(10).toList();
-      _persistDuas();
-      storage.saveGenericData('dua_feed_v2_initialized', true);
-    }
-
-    if (mounted) {
-      _filterDuas();
+    if (savedItemMaps == null || savedItemMaps.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _allDuas = allJsonDuas.take(10).toList();
+        });
+        _persistDuas();
+        _filterDuas();
+      }
     }
   }
 
@@ -1184,6 +1204,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                           child: Image.asset(
                                             dua.imagePath,
                                             fit: BoxFit.contain,
+                                            cacheWidth: 240,
+                                            cacheHeight: 240,
                                             errorBuilder:
                                                 (context, error, stackTrace) =>
                                                     const SizedBox.shrink(),

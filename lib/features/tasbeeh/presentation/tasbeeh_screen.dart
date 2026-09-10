@@ -196,9 +196,6 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
     Color primaryGreen,
   ) {
     if (_isSelectionMode) {
-      final isAllSelected = _tasbeehItems.isNotEmpty &&
-          _selectedIds.length == _tasbeehItems.length;
-
       return AppBar(
         backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
         elevation: 1,

@@ -817,6 +817,8 @@ class SettingsScreen extends ConsumerWidget {
                           width: 44,
                           height: 44,
                           fit: BoxFit.cover,
+                          cacheWidth: 132,
+                          cacheHeight: 132,
                         ),
                       ),
                     ),

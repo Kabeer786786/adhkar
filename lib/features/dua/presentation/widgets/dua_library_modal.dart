@@ -434,6 +434,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                                     child: Image.asset(
                                       dua.imagePath,
                                       fit: BoxFit.contain,
+                                      cacheWidth: 200,
+                                      cacheHeight: 200,
                                       errorBuilder:
                                           (context, error, stackTrace) =>
                                               const SizedBox.shrink(),

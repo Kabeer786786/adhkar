@@ -245,6 +245,8 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                     width: 160,
                     height: 160,
                     fit: BoxFit.contain,
+                    cacheWidth: 480,
+                    cacheHeight: 480,
                     errorBuilder: (context, error, stackTrace) =>
                         const SizedBox.shrink(),
                   ),
@@ -478,20 +480,6 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                 color: Colors.white.withValues(alpha: _isPlaying ? 0.35 : 0.2),
                 width: 1.2,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF1B3D14).withValues(alpha: 0.35),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-                if (_isPlaying)
-                  BoxShadow(
-                    color: const Color(0xFF22C55E).withValues(alpha: 0.28),
-                    blurRadius: 16,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 2),
-                  ),
-              ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

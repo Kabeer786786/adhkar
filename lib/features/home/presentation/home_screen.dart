@@ -268,6 +268,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
+                        cacheWidth: 1080,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: const Color(0xFFF3FAF2),
                           child: const Icon(
@@ -817,6 +818,8 @@ class _FeatureTile extends StatelessWidget {
             width: width,
             height: height,
             fit: BoxFit.contain,
+            cacheWidth: (width * 3).round(),
+            cacheHeight: (height * 3).round(),
             errorBuilder: (context, error, stackTrace) => const Icon(
               Icons.grid_view_rounded,
               size: 36,

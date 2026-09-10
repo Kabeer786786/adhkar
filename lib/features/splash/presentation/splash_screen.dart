@@ -84,6 +84,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     child: Image.asset(
                       'assets/logo.png',
                       fit: BoxFit.cover,
+                      cacheWidth: 330,
+                      cacheHeight: 330,
                       errorBuilder: (context, error, stackTrace) {
                         return const Icon(
                           Icons.auto_awesome_rounded,

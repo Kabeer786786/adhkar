@@ -105,6 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Image.asset(
                           slide.imagePath,
                           fit: BoxFit.cover,
+                          cacheWidth: 1080,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               decoration: const BoxDecoration(

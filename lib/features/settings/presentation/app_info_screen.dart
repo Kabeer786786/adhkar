@@ -85,6 +85,8 @@ class AppInfoScreen extends StatelessWidget {
                         width: 72,
                         height: 72,
                         fit: BoxFit.cover,
+                        cacheWidth: 216,
+                        cacheHeight: 216,
                       ),
                     ),
                   ),

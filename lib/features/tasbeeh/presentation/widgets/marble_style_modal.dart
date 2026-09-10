@@ -139,6 +139,8 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                             child: Image.asset(
                               asset,
                               fit: BoxFit.contain,
+                              cacheWidth: 160,
+                              cacheHeight: 160,
                               errorBuilder: (context, error, stackTrace) => Container(
                                 decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
