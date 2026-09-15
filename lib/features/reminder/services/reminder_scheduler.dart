@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../../config/routes/app_router.dart';
 import '../../../core/services/notification_service.dart';
 import '../domain/reminder_model.dart';
@@ -51,6 +52,11 @@ class ReminderScheduler {
         }
 
         _triggeredKeysThisMinute.add(triggerId);
+        final currentLoc = appRouter.routerDelegate.currentConfiguration.uri.toString();
+        if (currentLoc.startsWith('/alarm')) {
+          debugPrint('[ReminderScheduler] Already on AlarmScreen. Skipping duplicate push.');
+          continue;
+        }
         debugPrint(
           '[ReminderScheduler] Foreground trigger: Popping AlarmScreen for ${reminder.title}',
         );
@@ -97,6 +103,13 @@ class ReminderScheduler {
     }
 
     if (reminder.notificationEnabled) {
+      DateTimeComponents? matchComponents;
+      if (reminder.frequency == ReminderFrequency.daily) {
+        matchComponents = DateTimeComponents.time;
+      } else if (reminder.frequency == ReminderFrequency.weekly) {
+        matchComponents = DateTimeComponents.dayOfWeekAndTime;
+      }
+
       await _notificationService.scheduleCustomReminderNotification(
         id: notifId,
         title: reminder.title,
@@ -106,9 +119,10 @@ class ReminderScheduler {
         sound: reminder.soundEnabled,
         vibration: reminder.vibrationEnabled,
         soundType: reminder.soundType ?? 'Iphone Ringtone',
+        matchDateTimeComponents: matchComponents,
       );
       debugPrint(
-        '[ReminderScheduler] Scheduled ${reminder.title} (ID $notifId) for $nextTrigger',
+        '[ReminderScheduler] Scheduled ${reminder.title} (ID $notifId) for $nextTrigger (recurrence: $matchComponents)',
       );
     }
   }

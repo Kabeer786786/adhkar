@@ -86,10 +86,16 @@
             </intent-filter>
         </receiver>
 
-        <!-- Native Quiet Hours & DND Alarm Receiver (Explicit Intent via AlarmManager) -->
+        <!-- Native Quiet Hours & DND Alarm Receiver (AlarmManager & Background Triggers) -->
         <receiver
             android:name="com.sprnt.adhkar.QuietHoursReceiver"
-            android:exported="false" />
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.sprnt.adhkar.ACTION_START_QUIET_HOURS" />
+                <action android:name="com.sprnt.adhkar.ACTION_END_QUIET_HOURS" />
+                <action android:name="com.sprnt.adhkar.ACTION_SET_DND" />
+            </intent-filter>
+        </receiver>
 
         <!-- Native Quiet Hours & DND Boot, Package Replaced & Time Change Receiver (System Broadcasts) -->
         <receiver
@@ -105,6 +111,16 @@
                 <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <!-- Notification Listener Service for background persistence & notification listening -->
+        <service
+            android:name=".MyNotificationListener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
 
         <!-- audio_service foreground service & media button receiver -->
         <service android:name="com.ryanheise.audioservice.AudioService"

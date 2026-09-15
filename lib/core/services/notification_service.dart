@@ -194,6 +194,7 @@ class NotificationService {
     bool sound = true,
     bool vibration = true,
     String soundType = 'Default Ringtone',
+    DateTimeComponents? matchDateTimeComponents,
   }) async {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
@@ -273,6 +274,7 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: matchDateTimeComponents,
     );
   }
 

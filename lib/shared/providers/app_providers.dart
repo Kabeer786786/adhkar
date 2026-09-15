@@ -25,7 +25,7 @@ final locationServiceProvider = Provider<LocationService>((ref) {
 
 final audioServiceProvider = Provider<AppAudioService>((ref) {
   final handler = ref.watch(adhkarAudioHandlerProvider);
-  final service = AppAudioService(handler.player);
+  final service = AppAudioService(handler.player, handler);
   ref.onDispose(() => service.dispose());
   return service;
 });

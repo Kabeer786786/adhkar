@@ -33,13 +33,19 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
     );
 
     _player.playerStateStream.listen(
-      (_) => _broadcastState(),
+      (state) {
+        if (state.processingState == ProcessingState.completed) {
+          stop();
+        } else {
+          _broadcastState();
+        }
+      },
       onError: (Object e, StackTrace st) {
         debugPrint('[AdhkarAudioHandler] Player state error: $e');
       },
     );
 
-    // 2. Sync active media item and queue from player's sequence state
+    // 2. Sync active media item from player's sequence state
     _player.sequenceStateStream.listen((sequenceState) {
       if (sequenceState == null) return;
 
@@ -49,12 +55,14 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
         mediaItem.add(currentMediaItem);
       }
 
+      // Safeguard: Only add queue if it's small (<= 20) to strictly prevent
+      // Android Binder TransactionTooLargeException crashes for 200+ item playlists
       final items = sequenceState.effectiveSequence
           .map((source) => source.tag)
           .whereType<MediaItem>()
           .toList();
 
-      if (items.isNotEmpty) {
+      if (items.isNotEmpty && items.length <= 20) {
         queue.add(items);
       }
 
@@ -125,6 +133,17 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() async {
     await _player.stop();
+    mediaItem.add(null);
+    playbackState.add(
+      PlaybackState(
+        controls: const [],
+        processingState: AudioProcessingState.idle,
+        playing: false,
+        updatePosition: Duration.zero,
+        bufferedPosition: Duration.zero,
+        speed: 1.0,
+      ),
+    );
     await super.stop();
   }
 

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:just_audio/just_audio.dart';
 import '../../../core/config/reminder_audio_config.dart';
+import '../../../core/services/alarm_audio_service.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
@@ -47,6 +48,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   Timer? _clockTimer;
   DateTime _currentTime = DateTime.now();
   String _activeSoundName = 'Default Ringtone';
+  bool _isDismissed = false;
 
   @override
   void initState() {
@@ -98,6 +100,8 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   }
 
   Future<void> _initAudioAndVibration() async {
+    if (_isDismissed) return;
+
     final reminders = ref.read(remindersProvider);
     final customReminder = widget.reminderId != null
         ? reminders.where((r) => r.id == widget.reminderId).firstOrNull
@@ -110,13 +114,17 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
             ? ReminderAudioConfig.defaultSound
             : ReminderAudioConfig.defaultRingtone);
 
-    setState(() {
-      _activeSoundName = effectiveSoundType;
-    });
+    if (mounted) {
+      setState(() {
+        _activeSoundName = effectiveSoundType;
+      });
+    }
 
     final quietHours = ref.read(quietHoursProvider);
     final quietHoursService = ref.read(quietHoursServiceProvider);
     final isQuietActive = await quietHoursService.isQuietHoursCurrentlyActive(quietHours);
+
+    if (_isDismissed) return;
 
     final soundEnabled = !isQuietActive && (customReminder?.soundEnabled ?? true);
     final vibrationEnabled = !isQuietActive && (customReminder?.vibrationEnabled ?? true);
@@ -125,10 +133,10 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     // Auto-dismiss timer based on user specified reminder duration
     _autoDismissTimer?.cancel();
     _autoDismissTimer = Timer(Duration(seconds: durationSeconds), () {
-      if (mounted) _dismissAlarm();
+      if (mounted && !_isDismissed) _dismissAlarm();
     });
 
-    if (soundEnabled) {
+    if (soundEnabled && !_isDismissed) {
       final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
       try {
         final mediaItem = MediaItem(
@@ -139,6 +147,10 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         await _audioPlayer.setAudioSource(
           AudioSource.asset(assetPath, tag: mediaItem),
         );
+        if (_isDismissed) {
+          await _audioPlayer.stop();
+          return;
+        }
         await _audioPlayer.setLoopMode(LoopMode.one);
         await _audioPlayer.play();
       } catch (e) {
@@ -146,9 +158,13 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       }
     }
 
-    if (vibrationEnabled) {
+    if (vibrationEnabled && !_isDismissed) {
       // Continuous rhythmic haptic vibration
       _vibrationTimer = Timer.periodic(const Duration(milliseconds: 650), (_) {
+        if (_isDismissed) {
+          _vibrationTimer?.cancel();
+          return;
+        }
         HapticFeedback.heavyImpact();
       });
     }
@@ -156,22 +172,38 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
 
   @override
   void dispose() {
+    _isDismissed = true;
     HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
     _pulseController.dispose();
     _rotateController.dispose();
     _autoDismissTimer?.cancel();
     _vibrationTimer?.cancel();
     _clockTimer?.cancel();
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
+    try {
+      _audioPlayer.stop();
+      _audioPlayer.dispose();
+    } catch (_) {}
+    try {
+      AlarmAudioService().stopAlarm();
+    } catch (_) {}
     super.dispose();
   }
 
   Future<void> _dismissAlarm() async {
+    if (_isDismissed) return;
+    _isDismissed = true;
+
+    // 1. Immediate tactile and audio silence
+    HapticFeedback.mediumImpact();
     _vibrationTimer?.cancel();
     _autoDismissTimer?.cancel();
     _clockTimer?.cancel();
-    await _audioPlayer.stop();
+    try {
+      _audioPlayer.stop();
+    } catch (_) {}
+    try {
+      AlarmAudioService().stopAlarm();
+    } catch (_) {}
 
     final reminders = ref.read(remindersProvider);
     final customReminder = widget.reminderId != null
@@ -182,22 +214,28 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         ? '${widget.prayerName} Prayer'
         : (widget.title ?? customReminder?.title ?? 'Adhkar Reminder');
 
-    // 1. If one-time reminder, deactivate it
+    // 2. If one-time reminder, deactivate it
     if (customReminder != null &&
         customReminder.frequency == ReminderFrequency.once) {
       ref.read(remindersProvider.notifier).toggleEnable(customReminder.id);
     }
 
-    // 2. Cancel active notification and post dismissed notification
-    if (widget.reminderId != null) {
-      final notifId = widget.reminderId.hashCode.abs() % 100000000;
-      await NotificationService().cancel(notifId);
-      await NotificationService().showDismissedNotification(
-        id: notifId,
-        title: '$notifTitle - Alarm Turned Off',
-        body: 'Your scheduled reminder has been turned off and dismissed.',
-      );
-    }
+    // 3. Cancel active notification for reminder or prayer
+    try {
+      if (widget.reminderId != null) {
+        final notifId = widget.reminderId.hashCode.abs() % 100000000;
+        await NotificationService().cancel(notifId);
+        await NotificationService().showDismissedNotification(
+          id: notifId,
+          title: '$notifTitle - Alarm Turned Off',
+          body: 'Your scheduled reminder has been turned off and dismissed.',
+        );
+      }
+      if (widget.prayerName != null) {
+        final prayerId = widget.prayerName.hashCode.abs() % 100000000;
+        await NotificationService().cancel(prayerId);
+      }
+    } catch (_) {}
 
     if (mounted) {
       AppFloatingToast.showAdded(

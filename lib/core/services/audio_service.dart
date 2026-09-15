@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:just_audio/just_audio.dart';
+import 'package:audio_service/audio_service.dart';
+import 'adhkar_audio_handler.dart';
 
 class AudioPlaybackState {
   final bool isPlaying;
@@ -21,16 +23,21 @@ class AudioPlaybackState {
 
 class AppAudioService {
   final AudioPlayer _player;
+  final AdhkarAudioHandler? audioHandler;
   final bool _isInternalPlayer;
   StreamSubscription<PlayerState>? _completionSub;
 
-  AppAudioService([AudioPlayer? player])
+  AppAudioService([AudioPlayer? player, this.audioHandler])
       : _player = player ?? AudioPlayer(),
         _isInternalPlayer = player == null {
     _completionSub = _player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
-        _player.pause();
-        _player.seek(Duration.zero);
+        if (audioHandler != null) {
+          audioHandler!.stop();
+        } else {
+          _player.pause();
+          _player.seek(Duration.zero);
+        }
       }
     });
   }
@@ -55,16 +62,32 @@ class AppAudioService {
     });
   }
 
-  Future<void> playUrl(String url) async {
+  Future<void> playUrl(String url, {MediaItem? mediaItem}) async {
     try {
-      await _player.setUrl(url);
+      if (audioHandler != null && mediaItem != null) {
+        audioHandler!.mediaItem.add(mediaItem);
+        await _player.setAudioSource(
+          AudioSource.uri(Uri.parse(url), tag: mediaItem),
+          preload: false,
+        );
+      } else {
+        await _player.setUrl(url);
+      }
       await _player.play();
     } catch (_) {}
   }
 
-  Future<void> playAsset(String assetPath) async {
+  Future<void> playAsset(String assetPath, {MediaItem? mediaItem}) async {
     try {
-      await _player.setAsset(assetPath);
+      if (audioHandler != null && mediaItem != null) {
+        audioHandler!.mediaItem.add(mediaItem);
+        await _player.setAudioSource(
+          AudioSource.asset(assetPath, tag: mediaItem),
+          preload: false,
+        );
+      } else {
+        await _player.setAsset(assetPath);
+      }
       await _player.play();
     } catch (_) {}
   }
@@ -78,7 +101,11 @@ class AppAudioService {
   }
 
   Future<void> stop() async {
-    await _player.stop();
+    if (audioHandler != null) {
+      await audioHandler!.stop();
+    } else {
+      await _player.stop();
+    }
   }
 
   Future<void> dispose() async {

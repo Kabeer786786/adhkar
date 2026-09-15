@@ -101,6 +101,16 @@ class DndService {
     }
   }
 
+  /// Android Interruption Filter constants:
+  /// 1 = INTERRUPTION_FILTER_ALL (Normal mode, DND OFF)
+  /// 2 = INTERRUPTION_FILTER_PRIORITY (Priority only, DND ON)
+  /// 3 = INTERRUPTION_FILTER_NONE (Total silence, DND ON)
+  /// 4 = INTERRUPTION_FILTER_ALARMS (Alarms only, DND ON)
+  static const int filterAll = 1;
+  static const int filterPriority = 2;
+  static const int filterNone = 3;
+  static const int filterAlarms = 4;
+
   /// Opens the system Notification Policy Access settings screen.
   Future<bool> openDndAccessSettings() async {
     if (!isSupported) return false;
@@ -109,6 +119,65 @@ class DndService {
       return opened ?? false;
     } on PlatformException catch (e) {
       debugPrint('Error opening DND settings: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Checks if Notification Listener Access is enabled for MyNotificationListener.
+  Future<bool> isNotificationAccessGranted() async {
+    if (!isSupported) return false;
+    try {
+      final granted = await _channel.invokeMethod<bool>('isNotificationAccessGranted');
+      return granted ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('Error checking notification access: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Opens the system Notification Listener Access settings screen.
+  Future<bool> openNotificationAccessSettings() async {
+    if (!isSupported) return false;
+    try {
+      final opened = await _channel.invokeMethod<bool>('openNotificationAccessSettings');
+      return opened ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('Error opening notification access settings: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Programmatically toggles DND mode ON or OFF.
+  /// [enable]: true activates DND (using [filter] or priority filter by default).
+  /// [enable]: false turns OFF DND (restoring INTERRUPTION_FILTER_ALL).
+  Future<bool> setDndMode(bool enable, {int? filter}) async {
+    if (!isSupported) return false;
+    try {
+      final success = await _channel.invokeMethod<bool>('setDndMode', {
+        'enable': enable,
+        'filter': ?filter,
+      });
+      return success ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('Error setting DND mode: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Sets the system interruption filter directly:
+  /// - [filterAll] (1): DND OFF
+  /// - [filterPriority] (2): DND ON (Priority)
+  /// - [filterNone] (3): DND ON (Total Silence)
+  /// - [filterAlarms] (4): DND ON (Alarms only)
+  Future<bool> setInterruptionFilter(int filter) async {
+    if (!isSupported) return false;
+    try {
+      final success = await _channel.invokeMethod<bool>('setInterruptionFilter', {
+        'filter': filter,
+      });
+      return success ?? false;
+    } on PlatformException catch (e) {
+      debugPrint('Error setting interruption filter: ${e.message}');
       return false;
     }
   }

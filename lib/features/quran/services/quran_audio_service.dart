@@ -216,7 +216,7 @@ class QuranAudioController extends ChangeNotifier {
         _playlistSource!,
         initialIndex: startIndex,
         initialPosition: Duration.zero,
-        preload: true,
+        preload: false,
       );
       await _player.setSpeed(_speed);
       await _player.setLoopMode(_isLoopSingle ? LoopMode.one : LoopMode.off);

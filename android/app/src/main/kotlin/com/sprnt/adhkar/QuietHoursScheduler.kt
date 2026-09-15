@@ -32,6 +32,7 @@ object QuietHoursScheduler {
 
     const val ACTION_START_QUIET_HOURS = "com.sprnt.adhkar.ACTION_START_QUIET_HOURS"
     const val ACTION_END_QUIET_HOURS = "com.sprnt.adhkar.ACTION_END_QUIET_HOURS"
+    const val ACTION_SET_DND = "com.sprnt.adhkar.ACTION_SET_DND"
     const val EXTRA_SCHEDULE_ID = "extra_schedule_id"
     const val EXTRA_SCHEDULE_TITLE = "extra_schedule_title"
 
@@ -105,8 +106,8 @@ object QuietHoursScheduler {
     /**
      * Enable or disable Do Not Disturb mode directly via DndScheduler.
      */
-    fun applyDndMode(context: Context, enable: Boolean) {
-        DndScheduler.applyDndMode(context, enable)
+    fun applyDndMode(context: Context, enable: Boolean, customFilter: Int? = null) {
+        DndScheduler.applyDndMode(context, enable, customFilter)
     }
 
     // =========================================================================

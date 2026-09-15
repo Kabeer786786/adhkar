@@ -61,6 +61,13 @@ class QuietHoursReceiver : BroadcastReceiver() {
                     }
                 }
 
+                QuietHoursScheduler.ACTION_SET_DND -> {
+                    val enable = intent.getBooleanExtra("enable", false)
+                    val filter = if (intent.hasExtra("filter")) intent.getIntExtra("filter", -1) else null
+                    Log.i(TAG, "Executing ACTION_SET_DND: enable=$enable, filter=$filter")
+                    QuietHoursScheduler.applyDndMode(context, enable, if (filter != -1) filter else null)
+                }
+
                 else -> {
                     Log.w(TAG, "Unrecognized action received in QuietHoursReceiver: $action")
                 }

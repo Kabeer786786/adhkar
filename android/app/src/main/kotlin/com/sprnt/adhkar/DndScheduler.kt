@@ -55,7 +55,7 @@ object DndScheduler {
      * Applies DND mode respecting user ownership semantics.
      */
     @Synchronized
-    fun applyDndMode(context: Context, enable: Boolean) {
+    fun applyDndMode(context: Context, enable: Boolean, customFilter: Int? = null) {
         if (!hasDndPermission(context)) {
             Log.w(TAG, "Notification Policy Access unavailable. Cannot change DND state.")
             return
@@ -65,36 +65,17 @@ object DndScheduler {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
 
         try {
-            val currentFilter = nm.currentInterruptionFilter
-            val isAlreadyDnd = currentFilter != NotificationManager.INTERRUPTION_FILTER_ALL
-            val ownsDnd = QuietHoursScheduler.getAdhkarOwnsDnd(context)
-
             if (enable) {
-                if (isAlreadyDnd) {
-                    if (ownsDnd) {
-                        Log.i(TAG, "DND already active under Adhkar ownership. Keeping ownership active.")
-                    } else {
-                        Log.i(TAG, "DND was enabled by user outside Adhkar (filter=$currentFilter). Preserving user state; Adhkar will NOT take ownership.")
-                        QuietHoursScheduler.setAdhkarOwnsDnd(context, false)
-                        QuietHoursScheduler.setSavedDndFilter(context, currentFilter)
-                    }
-                } else {
-                    Log.i(TAG, "DND is currently OFF. Adhkar enabling DND (PRIORITY) and claiming ownership.")
-                    QuietHoursScheduler.setSavedDndFilter(context, currentFilter)
-                    QuietHoursScheduler.setAdhkarOwnsDnd(context, true)
-                    nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
-                    Log.i(TAG, "DND successfully enabled by Adhkar.")
-                }
+                val currentFilter = nm.currentInterruptionFilter
+                QuietHoursScheduler.setSavedDndFilter(context, currentFilter)
+                QuietHoursScheduler.setAdhkarOwnsDnd(context, true)
+                val targetFilter = customFilter ?: NotificationManager.INTERRUPTION_FILTER_PRIORITY
+                nm.setInterruptionFilter(targetFilter)
+                Log.i(TAG, "DND successfully enabled by Adhkar (filter=$targetFilter).")
             } else {
-                if (ownsDnd) {
-                    val savedFilter = QuietHoursScheduler.getSavedDndFilter(context)
-                    Log.i(TAG, "Disabling DND. Adhkar owned DND; restoring prior filter ($savedFilter).")
-                    nm.setInterruptionFilter(savedFilter)
-                    QuietHoursScheduler.setAdhkarOwnsDnd(context, false)
-                    Log.i(TAG, "DND successfully restored.")
-                } else {
-                    Log.i(TAG, "Schedule ended, but Adhkar does not own DND (user enabled it manually). Preserving current DND state.")
-                }
+                nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+                QuietHoursScheduler.setAdhkarOwnsDnd(context, false)
+                Log.i(TAG, "DND successfully disabled by Adhkar (ALL filter - normal mode restored).")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in applyDndMode(enable=$enable): ${e.message}", e)

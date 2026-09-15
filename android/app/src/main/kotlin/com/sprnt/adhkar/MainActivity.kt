@@ -41,6 +41,52 @@ class MainActivity : AudioServiceActivity() {
                     }
                 }
 
+                "isNotificationAccessGranted" -> {
+                    result.success(MyNotificationListener.isNotificationListenerAccessGranted(this))
+                }
+
+                "openNotificationAccess", "openNotificationAccessSettings" -> {
+                    try {
+                        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        startActivity(intent)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("NOTIFICATION_ACCESS_ERROR", e.message, null)
+                    }
+                }
+
+                "setDndMode" -> {
+                    try {
+                        val enable = call.argument<Boolean>("enable") ?: false
+                        val filter = call.argument<Int>("filter")
+                        QuietHoursScheduler.applyDndMode(this, enable, filter)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("SET_DND_ERROR", e.message, null)
+                    }
+                }
+
+                "setInterruptionFilter" -> {
+                    try {
+                        val filter = call.argument<Int>("filter") ?: NotificationManager.INTERRUPTION_FILTER_ALL
+                        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
+                            if (nm.isNotificationPolicyAccessGranted) {
+                                nm.setInterruptionFilter(filter)
+                                result.success(true)
+                            } else {
+                                result.error("PERMISSION_DENIED", "Notification Policy Access not granted", null)
+                            }
+                        } else {
+                            result.success(false)
+                        }
+                    } catch (e: Exception) {
+                        result.error("SET_FILTER_ERROR", e.message, null)
+                    }
+                }
+
                 "scheduleDnd" -> {
                     try {
                         val startHour = call.argument<Int>("startHour") ?: 22
@@ -234,9 +280,33 @@ class MainActivity : AudioServiceActivity() {
                     }
 
                     "setDndMode" -> {
-                        val enable = call.argument<Boolean>("enable") ?: false
-                        QuietHoursScheduler.applyDndMode(this, enable)
-                        result.success(true)
+                        try {
+                            val enable = call.argument<Boolean>("enable") ?: false
+                            val filter = call.argument<Int>("filter")
+                            QuietHoursScheduler.applyDndMode(this, enable, filter)
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("SET_DND_ERROR", e.message, null)
+                        }
+                    }
+
+                    "setInterruptionFilter" -> {
+                        try {
+                            val filter = call.argument<Int>("filter") ?: NotificationManager.INTERRUPTION_FILTER_ALL
+                            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
+                                if (nm.isNotificationPolicyAccessGranted) {
+                                    nm.setInterruptionFilter(filter)
+                                    result.success(true)
+                                } else {
+                                    result.error("PERMISSION_DENIED", "Notification Policy Access not granted", null)
+                                }
+                            } else {
+                                result.success(false)
+                            }
+                        } catch (e: Exception) {
+                            result.error("SET_FILTER_ERROR", e.message, null)
+                        }
                     }
 
                     "isQuietHoursActive" -> {
@@ -313,5 +383,26 @@ class MainActivity : AudioServiceActivity() {
                     else -> result.notImplemented()
                 }
             }
+
+        // Generic / Example settings channel handler
+        MethodChannel(messenger, "com.example/settings").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "openNotificationAccess", "openNotificationAccessSettings" -> {
+                    try {
+                        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        startActivity(intent)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("NOTIFICATION_ACCESS_ERROR", e.message, null)
+                    }
+                }
+                "isNotificationAccessGranted" -> {
+                    result.success(MyNotificationListener.isNotificationListenerAccessGranted(this))
+                }
+                else -> result.notImplemented()
+            }
+        }
     }
 }

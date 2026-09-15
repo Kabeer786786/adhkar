@@ -109,7 +109,6 @@ class AsmaAudioController extends ChangeNotifier {
           album: 'Asma ul Husna - 99 Names of Allah',
           title: '${item.number}. ${item.name} (${item.transliteration})',
           artist: '${item.meaning} • (${item.number}/99)',
-          artUri: Uri.parse('asset:///assets/logo.png'),
           extras: {
             'type': 'asma',
             'route': '/asma-ul-husna',
@@ -125,7 +124,11 @@ class AsmaAudioController extends ChangeNotifier {
 
       _playlistSource = ConcatenatingAudioSource(children: children);
     }
-    await _player.setAudioSource(_playlistSource!, preload: false);
+    try {
+      await _player.setAudioSource(_playlistSource!, preload: false);
+    } catch (e) {
+      debugPrint('[AsmaAudioController] setAudioSource error: $e');
+    }
   }
 
   void _onAudioCompleted() {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -95,7 +96,17 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
 
       setState(() => _isBuffering = true);
       try {
-        await audioService.playUrl(_dua.audioUrl!);
+        final mediaItem = MediaItem(
+          id: 'dua_${_dua.id}',
+          album: 'Duaeen • Hisn al-Muslim',
+          title: _dua.title,
+          artist: 'Dua Recitation',
+          extras: {
+            'type': 'dua',
+            'route': '/dua',
+          },
+        );
+        await audioService.playUrl(_dua.audioUrl!, mediaItem: mediaItem);
       } catch (_) {
         if (mounted) {
           setState(() {

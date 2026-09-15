@@ -173,10 +173,13 @@ class QuietHoursService {
   }
 
   /// Enable or disable DND mode silently
-  Future<bool> setDndMode(bool enable) async {
+  Future<bool> setDndMode(bool enable, {int? filter}) async {
     if (!isSupported) return false;
     try {
-      final success = await _channel.invokeMethod<bool>('setDndMode', {'enable': enable});
+      final success = await _channel.invokeMethod<bool>('setDndMode', {
+        'enable': enable,
+        'filter': ?filter,
+      });
       return success ?? false;
     } catch (e) {
       debugPrint('Error setting native DND mode: $e');
