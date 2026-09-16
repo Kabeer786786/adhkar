@@ -15,15 +15,21 @@ class MediaDownloadService {
   /// Default Cloudflare R2 base URL for audio assets.
   String baseUrl = 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev';
 
+  Directory? _cachedAudioDir;
+
   /// Get the root directory for storing downloaded audio assets.
-  Future<Directory> get _audioDirectory async {
+  Future<Directory> get audioDirectory async {
+    if (_cachedAudioDir != null) return _cachedAudioDir!;
     final docsDir = await getApplicationDocumentsDirectory();
     final audioDir = Directory('${docsDir.path}/audios');
     if (!await audioDir.exists()) {
       await audioDir.create(recursive: true);
     }
+    _cachedAudioDir = audioDir;
     return audioDir;
   }
+
+  Future<Directory> get _audioDirectory => audioDirectory;
 
   /// Get the local File object for a given subpath (e.g. 'asma_ul_husna/1.mp3' or 'quran/1.mp3').
   Future<File> getLocalFile(String relativePath) async {

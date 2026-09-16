@@ -13,7 +13,9 @@ import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/quiet_hours/domain/quiet_hours_model.dart';
 import 'features/quiet_hours/services/quiet_hours_service.dart';
+import 'features/reminder/presentation/providers/reminder_provider.dart';
 import 'shared/providers/app_providers.dart';
+import 'shared/widgets/update_bottom_sheet.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -76,8 +78,8 @@ void main() async {
     debugPrint('[main] Quiet Hours init sync error: $e');
   }
 
-  // Check for Google Play In-App Updates in background
-  AppUpdateService().checkForUpdate();
+  // Note: App update check is now done inside AdhkarApp widget
+  // so we have a valid BuildContext for the custom bottom sheet.
 
   // Initialize Supabase Service
   await SupabaseService().init();
@@ -93,11 +95,44 @@ void main() async {
   );
 }
 
-class AdhkarApp extends ConsumerWidget {
+class AdhkarApp extends ConsumerStatefulWidget {
   const AdhkarApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AdhkarApp> createState() => _AdhkarAppState();
+}
+
+class _AdhkarAppState extends ConsumerState<AdhkarApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Check for Google Play updates after the first frame so we have
+    // a valid navigator context for the custom bottom sheet.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForAppUpdate();
+    });
+  }
+
+  Future<void> _checkForAppUpdate() async {
+    final updateInfo = await AppUpdateService().checkForUpdate();
+    if (updateInfo != null && mounted) {
+      // Wait a moment for the app to settle before showing the sheet
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        final navContext = appRouter.routerDelegate.navigatorKey.currentContext;
+        if (navContext != null && navContext.mounted) {
+          UpdateBottomSheet.show(navContext);
+        }
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Eagerly initialize reminders so that rescheduleAll() runs on every app
+    // start, ensuring background notification alarms survive app kill / reboot.
+    ref.read(remindersProvider);
+
     return MaterialApp.router(
       title: 'Adhkar - Islamic Companion',
       debugShowCheckedModeBanner: false,

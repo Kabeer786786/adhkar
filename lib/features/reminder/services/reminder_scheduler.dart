@@ -17,6 +17,8 @@ class ReminderScheduler {
   List<CustomReminder> _cachedReminders = [];
   final Set<String> _triggeredKeysThisMinute = <String>{};
 
+  /// Secondary in-app UI trigger: pushes AlarmScreen when app is in foreground.
+  /// Background notifications are the PRIMARY trigger mechanism.
   void _startForegroundWatcher() {
     _foregroundTimer?.cancel();
     _foregroundTimer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -49,6 +51,9 @@ class ReminderScheduler {
         } else if (reminder.frequency == ReminderFrequency.custom ||
             reminder.frequency == ReminderFrequency.weekly) {
           if (!reminder.customDays.contains(now.weekday)) continue;
+        } else if (reminder.frequency == ReminderFrequency.monthly) {
+          final targetDay = reminder.startDate?.day ?? now.day;
+          if (now.day != targetDay) continue;
         }
 
         _triggeredKeysThisMinute.add(triggerId);
@@ -71,15 +76,24 @@ class ReminderScheduler {
     }
   }
 
+  /// Generates a unique notification ID from a reminder ID string.
   int generateNotificationId(String reminderId) {
     return reminderId.hashCode.abs() % 100000000;
+  }
+
+  /// Generates a unique per-weekday notification ID by offsetting the base ID.
+  /// weekday: 1=Mon ... 7=Sun
+  int _generateWeekdayNotificationId(String reminderId, int weekday) {
+    final base = generateNotificationId(reminderId);
+    // Use high bits to avoid collision: base + (weekday * 100000)
+    return (base + weekday * 100000) % 100000000;
   }
 
   Future<void> scheduleReminder(CustomReminder reminder) async {
     final notifId = generateNotificationId(reminder.id);
 
-    // Always cancel existing schedule first for idempotency
-    await _notificationService.cancel(notifId);
+    // Cancel all existing notifications for this reminder (base + per-weekday)
+    await _cancelAllNotificationsForReminder(reminder.id);
 
     // Update cache
     _cachedReminders.removeWhere((r) => r.id == reminder.id);
@@ -94,6 +108,13 @@ class ReminderScheduler {
       return;
     }
 
+    if (!reminder.notificationEnabled) {
+      debugPrint(
+        '[ReminderScheduler] Reminder ${reminder.id} notification disabled. Skipping schedule.',
+      );
+      return;
+    }
+
     final nextTrigger = reminder.calculateNextOccurrence(DateTime.now());
     if (nextTrigger == null) {
       debugPrint(
@@ -102,13 +123,36 @@ class ReminderScheduler {
       return;
     }
 
-    if (reminder.notificationEnabled) {
+    if (reminder.frequency == ReminderFrequency.custom) {
+      // Schedule a SEPARATE notification for EACH custom weekday.
+      // Each uses DateTimeComponents.dayOfWeekAndTime so it repeats weekly on that day.
+      await _scheduleCustomDayNotifications(reminder);
+    } else if (reminder.frequency == ReminderFrequency.monthly) {
+      // Monthly: schedule a one-shot notification for the next monthly occurrence.
+      // It will be re-scheduled on app startup and on trigger.
+      await _notificationService.scheduleCustomReminderNotification(
+        id: notifId,
+        title: reminder.title,
+        body: reminder.description ?? 'It\'s time for your scheduled reminder.',
+        scheduledTime: nextTrigger,
+        reminderId: reminder.id,
+        sound: reminder.soundEnabled,
+        vibration: reminder.vibrationEnabled,
+        soundType: reminder.soundType ?? 'Iphone Ringtone',
+        matchDateTimeComponents: null, // One-shot, re-scheduled on app restart
+      );
+      debugPrint(
+        '[ReminderScheduler] Scheduled monthly ${reminder.title} (ID $notifId) for $nextTrigger',
+      );
+    } else {
+      // Once, Daily, Weekly
       DateTimeComponents? matchComponents;
       if (reminder.frequency == ReminderFrequency.daily) {
         matchComponents = DateTimeComponents.time;
       } else if (reminder.frequency == ReminderFrequency.weekly) {
         matchComponents = DateTimeComponents.dayOfWeekAndTime;
       }
+      // once: matchComponents = null (fires once, never repeats)
 
       await _notificationService.scheduleCustomReminderNotification(
         id: notifId,
@@ -127,15 +171,61 @@ class ReminderScheduler {
     }
   }
 
+  /// Schedules one background notification per weekday in [reminder.customDays].
+  /// Each notification repeats weekly on its assigned day via DateTimeComponents.dayOfWeekAndTime.
+  Future<void> _scheduleCustomDayNotifications(CustomReminder reminder) async {
+    final now = DateTime.now();
+
+    for (final weekday in reminder.customDays) {
+      final perDayId = _generateWeekdayNotificationId(reminder.id, weekday);
+
+      // Calculate the next occurrence of this specific weekday
+      DateTime candidate = DateTime(now.year, now.month, now.day, reminder.hour, reminder.minute);
+      if (candidate.isBefore(now) || candidate.isAtSameMomentAs(now)) {
+        candidate = candidate.add(const Duration(days: 1));
+      }
+      while (candidate.weekday != weekday) {
+        candidate = candidate.add(const Duration(days: 1));
+      }
+
+      await _notificationService.scheduleCustomReminderNotification(
+        id: perDayId,
+        title: reminder.title,
+        body: reminder.description ?? 'It\'s time for your scheduled reminder.',
+        scheduledTime: candidate,
+        reminderId: reminder.id,
+        sound: reminder.soundEnabled,
+        vibration: reminder.vibrationEnabled,
+        soundType: reminder.soundType ?? 'Iphone Ringtone',
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      );
+      debugPrint(
+        '[ReminderScheduler] Scheduled custom-day ${reminder.title} (ID $perDayId) for weekday $weekday at $candidate',
+      );
+    }
+  }
+
+  /// Cancels all notifications for a reminder: the base ID plus all 7 possible per-weekday IDs.
+  Future<void> _cancelAllNotificationsForReminder(String reminderId) async {
+    final baseId = generateNotificationId(reminderId);
+    final allIds = <int>[
+      baseId,
+      for (int weekday = 1; weekday <= 7; weekday++)
+        _generateWeekdayNotificationId(reminderId, weekday),
+    ];
+    await _notificationService.cancelMultiple(allIds);
+  }
+
   Future<void> cancelReminder(String id) async {
     _cachedReminders.removeWhere((r) => r.id == id);
-    final notifId = generateNotificationId(id);
-    await _notificationService.cancel(notifId);
+    await _cancelAllNotificationsForReminder(id);
     debugPrint(
-      '[ReminderScheduler] Cancelled notification ID $notifId for reminder $id',
+      '[ReminderScheduler] Cancelled all notifications for reminder $id',
     );
   }
 
+  /// Re-schedules all reminders. Called on app startup and boot to ensure
+  /// background notifications survive app kill, reboot, and updates.
   Future<void> rescheduleAll(List<CustomReminder> reminders) async {
     _cachedReminders = List<CustomReminder>.from(reminders);
     debugPrint(

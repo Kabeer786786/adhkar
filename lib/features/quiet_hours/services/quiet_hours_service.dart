@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:do_not_disturb/do_not_disturb.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -16,12 +15,11 @@ class QuietHoursService {
   static const MethodChannel _channel = MethodChannel('com.sprnt.adhkar/quiet_hours');
   static const int baseLegacyNotificationId = 8880;
 
-  final DoNotDisturbPlugin _dnd = DoNotDisturbPlugin();
-
   /// Check if the current platform supports system-level DND manipulation
   bool get isSupported => !kIsWeb && Platform.isAndroid;
 
-  /// Check whether Android Notification Policy Access (DND permission) is granted
+  /// Check whether Android Notification Policy Access (DND permission) is granted.
+  /// Uses native MethodChannel only — no plugin fallback.
   Future<bool> isDndPermissionGranted() async {
     if (!isSupported) return false;
     try {
@@ -29,12 +27,13 @@ class QuietHoursService {
       if (granted != null) return granted;
     } catch (_) {}
 
+    // Fallback to permission_handler check only (no do_not_disturb plugin)
     try {
-      return await _dnd.isNotificationPolicyAccessGranted();
-    } catch (e) {
-      debugPrint('Error checking DND permission: $e');
       final status = await Permission.accessNotificationPolicy.status;
       return status.isGranted;
+    } catch (e) {
+      debugPrint('Error checking DND permission: $e');
+      return false;
     }
   }
 
@@ -46,11 +45,11 @@ class QuietHoursService {
       if (opened == true) return;
     } catch (_) {}
 
+    // Fallback to generic app settings
     try {
-      await _dnd.openNotificationPolicyAccessSettings();
+      await openAppSettings();
     } catch (e) {
       debugPrint('Error opening DND settings: $e');
-      await openAppSettings();
     }
   }
 
@@ -141,50 +140,33 @@ class QuietHoursService {
     }
   }
 
-  /// Get current system interruption filter (1=all, 2=priority, 3=none, 4=alarms)
+  /// Get current system interruption filter (1=all, 2=priority, 3=none, 4=alarms).
+  /// Uses native MethodChannel only.
   Future<int?> getCurrentDndFilter() async {
     if (!isSupported) return null;
     try {
       final filter = await _channel.invokeMethod<int>('getDndFilter');
-      if (filter != null) return filter;
-    } catch (_) {}
-
-    try {
-      final filter = await _dnd.getDNDStatus();
-      return filter.index;
+      return filter;
     } catch (e) {
       debugPrint('Error getting current DND filter: $e');
       return null;
     }
   }
 
-  /// Set system interruption filter using DND policy directly
-  Future<bool> setDndFilter(InterruptionFilter filter) async {
-    if (!isSupported) return false;
-    try {
-      final granted = await isDndPermissionGranted();
-      if (!granted) return false;
-      await _dnd.setInterruptionFilter(filter);
-      return true;
-    } catch (e) {
-      debugPrint('Error setting DND filter: $e');
-      return false;
-    }
-  }
-
-  /// Enable or disable DND mode silently
+  /// Enable or disable DND mode via native MethodChannel.
+  /// This works through the native AlarmManager/BroadcastReceiver even when app is closed.
   Future<bool> setDndMode(bool enable, {int? filter}) async {
     if (!isSupported) return false;
     try {
-      final success = await _channel.invokeMethod<bool>('setDndMode', {
-        'enable': enable,
-        'filter': ?filter,
-      });
+      final Map<String, dynamic> args = {'enable': enable};
+      if (filter != null) {
+        args['filter'] = filter;
+      }
+      final success = await _channel.invokeMethod<bool>('setDndMode', args);
       return success ?? false;
     } catch (e) {
       debugPrint('Error setting native DND mode: $e');
-      final target = enable ? InterruptionFilter.priority : InterruptionFilter.all;
-      return await setDndFilter(target);
+      return false;
     }
   }
 

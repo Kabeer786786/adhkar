@@ -39,17 +39,6 @@ class DailyAyahCard extends ConsumerWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF3FAF2),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFFE2EFE0),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF2A531D).withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,

@@ -305,4 +305,11 @@ class NotificationService {
   Future<void> cancel(int id) async {
     await _notificationsPlugin.cancel(id);
   }
+
+  /// Cancels multiple notifications by their IDs.
+  Future<void> cancelMultiple(Iterable<int> ids) async {
+    for (final id in ids) {
+      await _notificationsPlugin.cancel(id);
+    }
+  }
 }

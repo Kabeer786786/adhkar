@@ -24,6 +24,7 @@ class QuranAudioController extends ChangeNotifier {
   int _currentIndex = -1; // -1 means player inactive
   String _title = '';
   int? _surahNumber;
+  bool _isSettingUpSource = false;
 
   bool _isPlaying = false;
   bool _isBuffering = false;
@@ -101,13 +102,17 @@ class QuranAudioController extends ChangeNotifier {
     });
 
     _sequenceSubscription = _player.sequenceStateStream.listen((seqState) {
+      if (_isSettingUpSource) return;
       if (seqState == null) return;
       final currentTag = seqState.currentSource?.tag;
       if (currentTag is MediaItem) {
         if (currentTag.extras?['type'] != 'quran') {
-          if (_currentIndex != -1) {
+          if (_currentIndex != -1 || _playlistSource != null) {
             _currentIndex = -1;
             _isPlaying = false;
+            // Invalidate stale playlist so it gets rebuilt next time
+            _playlistSource = null;
+            _playlist = [];
             notifyListeners();
           }
         }
@@ -157,61 +162,69 @@ class QuranAudioController extends ChangeNotifier {
     _surahNumber = targetSurahNumber;
     _errorMessage = null;
 
-    if (isSamePlaylist && _playlistSource != null) {
+    // Only reuse if same playlist AND player still has our source active
+    if (isSamePlaylist && _playlistSource != null && _player.audioSource == _playlistSource) {
       _currentIndex = startIndex;
+      _isPlaying = true;
       notifyListeners();
       try {
         await _player.seek(Duration.zero, index: startIndex);
         await _player.setSpeed(_speed);
         await _player.play();
         _preloadNextItems(startIndex);
+        return;
       } catch (e) {
         debugPrint('Error seeking in existing playlist: $e');
+        // Playlist was invalidated externally, fall through to rebuild
+        _playlistSource = null;
       }
-      return;
     }
 
+    _isSettingUpSource = true;
     _playlist = List.from(ayahs);
     _currentIndex = startIndex;
+    _isPlaying = true;
     notifyListeners();
 
-    final surahTitle = _title.isNotEmpty ? _title : 'Surah $targetSurahNumber';
-    final List<AudioSource> sources = [];
-
-    for (int i = 0; i < ayahs.length; i++) {
-      final ayah = ayahs[i];
-      final mediaItem = MediaItem(
-        id: 'quran_${targetSurahNumber}_${ayah.numberInSurah}',
-        album: '$surahTitle (The Noble Qur\'an)',
-        title: '$surahTitle • Verse ${ayah.numberInSurah}',
-        artist: 'The Noble Qur\'an Recitation',
-        extras: {
-          'type': 'quran',
-          'surahNumber': targetSurahNumber,
-          'surahName': surahTitle,
-          'route':
-              '/quran/surah?num=$targetSurahNumber&name=${Uri.encodeComponent(surahTitle)}',
-        },
-      );
-
-      final File localFile =
-          await MediaDownloadService.instance.getLocalFile(ayah.localRelativePath);
-      final bool isLocal =
-          await localFile.exists() && (await localFile.length()) > 0;
-
-      if (isLocal) {
-        sources.add(AudioSource.file(localFile.path, tag: mediaItem));
-      } else {
-        final url = ayah.remoteUrl.isNotEmpty
-            ? ayah.remoteUrl
-            : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/${ayah.number}.mp3';
-        sources.add(AudioSource.uri(Uri.parse(url), tag: mediaItem));
-      }
-    }
-
-    _playlistSource = ConcatenatingAudioSource(children: sources);
-
     try {
+      // Cleanly stop any ongoing playback from other audio features
+      await _player.stop();
+
+      final surahTitle = _title.isNotEmpty ? _title : 'Surah $targetSurahNumber';
+      final List<AudioSource> sources = [];
+      final audioDir = await MediaDownloadService.instance.audioDirectory;
+
+      for (int i = 0; i < ayahs.length; i++) {
+        final ayah = ayahs[i];
+        final mediaItem = MediaItem(
+          id: 'quran_${targetSurahNumber}_${ayah.numberInSurah}',
+          album: '$surahTitle (The Noble Qur\'an)',
+          title: '$surahTitle • Verse ${ayah.numberInSurah}',
+          artist: 'The Noble Qur\'an Recitation',
+          extras: {
+            'type': 'quran',
+            'surahNumber': targetSurahNumber,
+            'surahName': surahTitle,
+            'route':
+                '/quran/surah?num=$targetSurahNumber&name=${Uri.encodeComponent(surahTitle)}',
+          },
+        );
+
+        final localFile = File('${audioDir.path}/${ayah.localRelativePath}');
+        final bool isLocal = localFile.existsSync() && localFile.lengthSync() > 0;
+
+        if (isLocal) {
+          sources.add(AudioSource.file(localFile.path, tag: mediaItem));
+        } else {
+          final url = ayah.remoteUrl.isNotEmpty
+              ? ayah.remoteUrl
+              : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/quran-verses/${ayah.number}.mp3';
+          sources.add(AudioSource.uri(Uri.parse(url), tag: mediaItem));
+        }
+      }
+
+      _playlistSource = ConcatenatingAudioSource(children: sources);
+
       await _player.setAudioSource(
         _playlistSource!,
         initialIndex: startIndex,
@@ -226,7 +239,10 @@ class QuranAudioController extends ChangeNotifier {
       debugPrint('Error playing playlist: $e');
       _errorMessage = 'Unable to play audio. Check internet connection.';
       _isPlaying = false;
+      _playlistSource = null;
       notifyListeners();
+    } finally {
+      _isSettingUpSource = false;
     }
   }
 
@@ -262,7 +278,8 @@ class QuranAudioController extends ChangeNotifier {
     if (index >= 0 && index < _playlist.length) {
       _currentIndex = index;
       notifyListeners();
-      if (_playlistSource != null) {
+      // Only seek if our playlist is still the active source
+      if (_playlistSource != null && _player.audioSource == _playlistSource) {
         try {
           await _player.seek(Duration.zero, index: index);
           await _player.setSpeed(_speed);
@@ -270,8 +287,11 @@ class QuranAudioController extends ChangeNotifier {
           _preloadNextItems(index);
         } catch (e) {
           debugPrint('Error seeking to index $index: $e');
+          _playlistSource = null;
+          await playPlaylist(_playlist, index, title: _title, surahNumber: _surahNumber);
         }
       } else {
+        _playlistSource = null;
         await playPlaylist(_playlist, index, title: _title, surahNumber: _surahNumber);
       }
     }

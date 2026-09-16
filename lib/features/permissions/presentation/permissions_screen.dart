@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../widgets/app_header_bar.dart';
+import '../../quiet_hours/services/quiet_hours_service.dart';
 
 class PermissionsScreen extends StatefulWidget {
   const PermissionsScreen({super.key});
@@ -42,7 +43,8 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     final notification = await Permission.notification.status;
     final location = await Permission.locationWhenInUse.status;
     final alarm = await Permission.scheduleExactAlarm.status;
-    final dnd = await Permission.accessNotificationPolicy.status;
+    final dndGranted = await QuietHoursService().isDndPermissionGranted();
+    final dnd = dndGranted ? PermissionStatus.granted : PermissionStatus.denied;
     final battery = await Permission.ignoreBatteryOptimizations.status;
 
     if (mounted) {
@@ -60,6 +62,18 @@ class _PermissionsScreenState extends State<PermissionsScreen>
   }
 
   Future<void> _requestPermission(Permission permission, String key) async {
+    if (key == 'dnd') {
+      await QuietHoursService().openDndPermissionSettings();
+      final isGranted = await QuietHoursService().isDndPermissionGranted();
+      if (mounted) {
+        setState(() {
+          _permissionStatuses[key] =
+              isGranted ? PermissionStatus.granted : PermissionStatus.denied;
+        });
+      }
+      return;
+    }
+
     final currentStatus = _permissionStatuses[key];
 
     if (currentStatus?.isGranted == true) {

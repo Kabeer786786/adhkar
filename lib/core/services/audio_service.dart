@@ -64,6 +64,11 @@ class AppAudioService {
 
   Future<void> playUrl(String url, {MediaItem? mediaItem}) async {
     try {
+      // Stop any ongoing playback cleanly before replacing the source.
+      // This prevents stale sequence-state events from reaching other
+      // controllers (Asma, Quran) that share the same player instance.
+      await _player.stop();
+
       if (audioHandler != null && mediaItem != null) {
         audioHandler!.mediaItem.add(mediaItem);
         await _player.setAudioSource(
@@ -79,6 +84,9 @@ class AppAudioService {
 
   Future<void> playAsset(String assetPath, {MediaItem? mediaItem}) async {
     try {
+      // Stop any ongoing playback cleanly before replacing the source.
+      await _player.stop();
+
       if (audioHandler != null && mediaItem != null) {
         audioHandler!.mediaItem.add(mediaItem);
         await _player.setAudioSource(

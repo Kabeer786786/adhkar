@@ -235,7 +235,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         Scrollable.ensureVisible(
           currentCtx,
           alignment: 0.0,
-          duration: const Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 600),
           curve: Curves.easeInOutCubic,
         );
       } else {
@@ -247,7 +247,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         _scrollController
             .animateTo(
               estimatedTarget.clamp(0.0, maxExtent),
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 350),
               curve: Curves.easeOutCubic,
             )
             .then((_) {
@@ -259,7 +259,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   Scrollable.ensureVisible(
                     retryCtx,
                     alignment: 0.0,
-                    duration: const Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 400),
                     curve: Curves.easeInOutCubic,
                   );
                 }
@@ -1312,7 +1312,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                   currentSurah,
                                   storage,
                                 ),
-                                SizedBox(height: isPlayerActive ? 140 : 24),
+                                SizedBox(height: isPlayerActive ? 180 : 24),
                               ],
                             )
                           : ListView.builder(
@@ -1323,7 +1323,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                 16,
                                 14,
                                 16,
-                                isPlayerActive ? 140 : 24,
+                                isPlayerActive ? 180 : 24,
                               ),
                               itemCount: ayahs.length + 1,
                               itemBuilder: (context, index) {
@@ -1402,7 +1402,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   Positioned(
                     right: 0,
                     top: 4,
-                    bottom: isPlayerActive ? 140 : 16,
+                    bottom: isPlayerActive ? 180 : 16,
                     child: FloatingDraggableScrollbar(
                       scrollController: _scrollController,
                       itemCount: ayahs.length,
@@ -1513,13 +1513,24 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
               ],
             ),
           ),
-          if (isPlayerActive)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _buildStickyAudioPlayerBar(quranAudio, effectiveIsDark),
+          // Floating Bottom Audio Player (visible borders & content scrolling behind)
+          Positioned(
+            left: 14,
+            right: 14,
+            bottom: MediaQuery.of(context).padding.bottom + 12,
+            child: AnimatedSlide(
+              offset: isPlayerActive ? Offset.zero : const Offset(0, 1.4),
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutCubic,
+              child: AnimatedOpacity(
+                opacity: isPlayerActive ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 250),
+                child: isPlayerActive
+                    ? _buildStickyAudioPlayerBar(quranAudio, effectiveIsDark)
+                    : const SizedBox.shrink(),
+              ),
             ),
+          ),
           const Align(
             alignment: Alignment.bottomCenter,
             child: FloatingDownloadBar(),

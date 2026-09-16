@@ -67,10 +67,32 @@ class AyahVerseCard extends StatelessWidget {
         ayah.rub > 0 && index > 0 && ayah.rub != allAyahs[index - 1].rub;
 
     final cardBgColor = isSelected
-        ? (isDark ? const Color(0xFF27272A) : const Color(0xFFE2F6DB))
+        ? null
         : (isResumeHighlight
             ? (isDark ? const Color(0xFF27272A) : const Color(0xFFFEF9C3))
             : (isDark ? const Color(0xFF1E1E1E) : Colors.white));
+
+    final cardGradient = isSelected
+        ? (isDark
+            ? const LinearGradient(
+                colors: [
+                  Color(0xFF1B2E21),
+                  Color(0xFF203726),
+                  Color(0xFF16281B),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(
+                colors: [
+                  Color(0xFFE8F5E9),
+                  Color(0xFFFEF9C3),
+                  Color(0xFFDCFCE7),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ))
+        : null;
 
     final borderColor = isResumeHighlight
         ? const Color(0xFFF59E0B)
@@ -79,7 +101,7 @@ class AyahVerseCard extends StatelessWidget {
             : (isSelected
                 ? (isDark
                     ? const Color(0xFFA3E635)
-                    : const Color(0xFF1E3A1A).withValues(alpha: 0.45))
+                    : const Color(0xFF16A34A))
                 : (isDark
                     ? const Color(0xFF2E2E32)
                     : const Color(0xFF2A531D).withValues(alpha: 0.12))));
@@ -92,29 +114,45 @@ class AyahVerseCard extends StatelessWidget {
       key: cardKey,
       margin: const EdgeInsets.only(bottom: 12),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
         decoration: BoxDecoration(
           color: cardBgColor,
+          gradient: cardGradient,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSajda ? const Color(0xFF22C55E) : borderColor,
-            width: isResumeHighlight || isMarkedStopPoint
-                ? 1.5
-                : (isSelected ? 1.0 : 0.8),
+            width: isSelected
+                ? 2.2
+                : (isResumeHighlight || isMarkedStopPoint ? 1.5 : 0.8),
           ),
-          boxShadow: isSelected || isMarkedStopPoint || isResumeHighlight
+          boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: isResumeHighlight || isMarkedStopPoint
-                        ? const Color(0xFFF59E0B).withValues(alpha: 0.25)
-                        : const Color(0xFF2A531D)
-                            .withValues(alpha: isDark ? 0.35 : 0.2),
-                    blurRadius: 14,
+                    color: (isDark
+                            ? const Color(0xFFA3E635)
+                            : const Color(0xFF16A34A))
+                        .withValues(alpha: isDark ? 0.30 : 0.35),
+                    blurRadius: 18,
+                    spreadRadius: 1.5,
                     offset: const Offset(0, 4),
                   ),
+                  BoxShadow(
+                    color: const Color(0xFFD4AF37).withValues(alpha: 0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 2),
+                  ),
                 ]
-              : null,
+              : (isResumeHighlight || isMarkedStopPoint
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.25),
+                        blurRadius: 14,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -131,7 +169,9 @@ class AyahVerseCard extends StatelessWidget {
                     color: isResumeHighlight || isMarkedStopPoint
                         ? const Color(0xFFD97706)
                         : (isSelected
-                            ? const Color(0xFF2A531D)
+                            ? (isDark
+                                ? const Color(0xFFA3E635)
+                                : const Color(0xFF16A34A))
                             : (isDark
                                 ? const Color(0xFF1E3A2B)
                                 : const Color(0xFFE8F5E9))),
@@ -140,26 +180,50 @@ class AyahVerseCard extends StatelessWidget {
                       color: isResumeHighlight || isMarkedStopPoint
                           ? const Color(0xFFF59E0B)
                           : (isSelected
-                              ? const Color(0xFFA3E635)
+                              ? (isDark
+                                  ? const Color(0xFFD9F99D)
+                                  : const Color(0xFF4ADE80))
                               : const Color(0xFF2A531D).withValues(alpha: 0.2)),
-                      width: 1.2,
+                      width: isSelected ? 1.8 : 1.2,
                     ),
+                    boxShadow: isSelected && isPlaying
+                        ? [
+                            BoxShadow(
+                              color: (isDark
+                                      ? const Color(0xFFA3E635)
+                                      : const Color(0xFF16A34A))
+                                  .withValues(alpha: 0.45),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Center(
-                    child: Text(
-                      '${ayah.numberInSurah}',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.bold,
-                        color: (isSelected ||
-                                isResumeHighlight ||
-                                isMarkedStopPoint)
-                            ? Colors.white
-                            : (isDark
-                                ? const Color(0xFFA3E635)
-                                : const Color(0xFF2A531D)),
-                      ),
-                    ),
+                    child: isSelected && isPlaying
+                        ? Icon(
+                            Icons.graphic_eq_rounded,
+                            size: 16,
+                            color: isDark
+                                ? const Color(0xFF0F172A)
+                                : Colors.white,
+                          )
+                        : Text(
+                            '${ayah.numberInSurah}',
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.bold,
+                              color: (isSelected ||
+                                      isResumeHighlight ||
+                                      isMarkedStopPoint)
+                                  ? (isSelected && isDark
+                                      ? const Color(0xFF0F172A)
+                                      : Colors.white)
+                                  : (isDark
+                                      ? const Color(0xFFA3E635)
+                                      : const Color(0xFF2A531D)),
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(width: 6),

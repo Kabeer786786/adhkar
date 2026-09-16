@@ -51,7 +51,11 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
 
       final currentSource = sequenceState.currentSource;
       if (currentSource?.tag is MediaItem) {
-        final currentMediaItem = currentSource!.tag as MediaItem;
+        var currentMediaItem = currentSource!.tag as MediaItem;
+        if (_player.duration != null && _player.duration! > Duration.zero) {
+          currentMediaItem =
+              currentMediaItem.copyWith(duration: _player.duration);
+        }
         mediaItem.add(currentMediaItem);
       }
 
@@ -69,7 +73,18 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
       _broadcastState();
     });
 
-    // 3. Emit initial state immediately
+    // 3. Sync audio duration to MediaItem so Android notification displays seekable progress bar
+    _player.durationStream.listen((duration) {
+      if (duration != null && duration > Duration.zero) {
+        final current = mediaItem.value;
+        if (current != null && current.duration != duration) {
+          mediaItem.add(current.copyWith(duration: duration));
+        }
+        _broadcastState();
+      }
+    });
+
+    // 4. Emit initial state immediately
     _broadcastState();
   }
 

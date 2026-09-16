@@ -87,9 +87,11 @@ class AsmaAudioController extends ChangeNotifier {
       final currentTag = seqState.currentSource?.tag;
       if (currentTag is MediaItem) {
         if (currentTag.extras?['type'] != 'asma') {
-          if (_currentIndex != -1) {
+          if (_currentIndex != -1 || _playlistSource != null) {
             _currentIndex = -1;
             _isPlaying = false;
+            // Invalidate stale playlist so it gets rebuilt next time
+            _playlistSource = null;
             notifyListeners();
           }
         }
@@ -98,36 +100,39 @@ class AsmaAudioController extends ChangeNotifier {
   }
 
   Future<void> _ensurePlaylistInitialized() async {
+    // If our playlist is still the active source on the shared player, skip
     if (_playlistSource != null && _player.audioSource == _playlistSource) return;
 
-    if (_playlistSource == null) {
-      final children = <AudioSource>[];
-      for (int i = 0; i < asmaUlHusnaList.length; i++) {
-        final item = asmaUlHusnaList[i];
-        final mediaItem = MediaItem(
-          id: 'asma_${item.number}',
-          album: 'Asma ul Husna - 99 Names of Allah',
-          title: '${item.number}. ${item.name} (${item.transliteration})',
-          artist: '${item.meaning} • (${item.number}/99)',
-          extras: {
-            'type': 'asma',
-            'route': '/asma-ul-husna',
-          },
-        );
+    // Always rebuild the playlist to avoid stale references after another
+    // audio feature (Dua, Quran) has hijacked the shared player
+    final children = <AudioSource>[];
+    for (int i = 0; i < asmaUlHusnaList.length; i++) {
+      final item = asmaUlHusnaList[i];
+      final mediaItem = MediaItem(
+        id: 'asma_${item.number}',
+        album: 'Asma ul Husna - 99 Names of Allah',
+        title: '${item.number}. ${item.name} (${item.transliteration})',
+        artist: '${item.meaning} • (${item.number}/99)',
+        extras: {
+          'type': 'asma',
+          'route': '/asma-ul-husna',
+        },
+      );
 
-        final remoteUrl = item.remoteUrl.isNotEmpty
-            ? item.remoteUrl
-            : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
+      final remoteUrl = item.remoteUrl.isNotEmpty
+          ? item.remoteUrl
+          : 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev/asma-ul-husna/${item.number}.mp3';
 
-        children.add(AudioSource.uri(Uri.parse(remoteUrl), tag: mediaItem));
-      }
-
-      _playlistSource = ConcatenatingAudioSource(children: children);
+      children.add(AudioSource.uri(Uri.parse(remoteUrl), tag: mediaItem));
     }
+
+    _playlistSource = ConcatenatingAudioSource(children: children);
+
     try {
       await _player.setAudioSource(_playlistSource!, preload: false);
     } catch (e) {
       debugPrint('[AsmaAudioController] setAudioSource error: $e');
+      _playlistSource = null;
     }
   }
 
@@ -158,6 +163,8 @@ class AsmaAudioController extends ChangeNotifier {
       return true;
     } catch (e) {
       debugPrint('Error playing audio for Asma-ul-Husna index $index: $e');
+      // Invalidate playlist so next attempt rebuilds it fresh
+      _playlistSource = null;
       return false;
     }
   }

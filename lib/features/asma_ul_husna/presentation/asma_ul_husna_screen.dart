@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,8 @@ class AsmaUlHusnaScreen extends ConsumerStatefulWidget {
 class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<double> _titleOpacity = ValueNotifier<double>(0.0);
+  final GlobalKey _headerKey = GlobalKey();
+  final Map<int, GlobalKey> _itemKeys = {};
   bool _isGridView = true; // True for boxes/grid, False for list view
   bool _isAllDownloaded = false;
   bool _hasCheckedDownloadStatus = false;
@@ -60,31 +63,66 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
     }
   }
 
+  /// Smoothly scrolls so that the item at [index] is brought right to the top
+  /// of the viewport in both Grid and List views with beautiful animation.
   void _scrollToIndex(int index) {
     if (!_scrollController.hasClients) return;
+    if (index < 0 || index >= asmaUlHusnaList.length) return;
 
-    double targetOffset = 0;
-    if (_isGridView) {
-      final screenWidth = MediaQuery.of(context).size.width;
-      final crossAxisCount = screenWidth > 600 ? 5 : 3;
-      final rowIndex = index ~/ crossAxisCount;
-      final itemWidth =
-          (screenWidth - 32 - ((crossAxisCount - 1) * 10)) / crossAxisCount;
-      final itemHeight = (itemWidth / 0.92) + 10;
-      targetOffset = (rowIndex * itemHeight) + 110.0;
+    final key = _itemKeys[index];
+    final currentCtx = key?.currentContext;
+
+    if (currentCtx != null) {
+      Scrollable.ensureVisible(
+        currentCtx,
+        alignment: 0.0,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOutCubic,
+      );
     } else {
-      const itemHeight = 86.0;
-      targetOffset = (index * itemHeight) + 110.0;
+      final headerBox =
+          _headerKey.currentContext?.findRenderObject() as RenderBox?;
+      final double headerCardHeight = headerBox?.size.height ?? 148.0;
+      // 8px top padding + header card + 16px bottom padding
+      final double headerTotalOffset = 8.0 + headerCardHeight + 16.0;
+
+      double estimatedTarget = 0;
+      if (_isGridView) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final crossAxisCount = screenWidth > 600 ? 5 : 3;
+        final rowIndex = index ~/ crossAxisCount;
+        final itemWidth =
+            (screenWidth - 32 - ((crossAxisCount - 1) * 10)) / crossAxisCount;
+        final itemHeight = itemWidth / 0.92;
+        estimatedTarget = headerTotalOffset + (rowIndex * (itemHeight + 10.0));
+      } else {
+        const itemTotalHeight = 86.0; // 76 card + 10 margin
+        estimatedTarget = headerTotalOffset + (index * itemTotalHeight);
+      }
+
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      _scrollController
+          .animateTo(
+            estimatedTarget.clamp(0.0, maxScroll),
+            duration: const Duration(milliseconds: 380),
+            curve: Curves.easeOutCubic,
+          )
+          .then((_) {
+            if (!mounted) return;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              final retryCtx = _itemKeys[index]?.currentContext;
+              if (retryCtx != null) {
+                Scrollable.ensureVisible(
+                  retryCtx,
+                  alignment: 0.0,
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeInOutCubic,
+                );
+              }
+            });
+          });
     }
-
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final clampedOffset = targetOffset.clamp(0.0, maxScroll);
-
-    _scrollController.animateTo(
-      clampedOffset,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOutCubic,
-    );
   }
 
   @override
@@ -185,7 +223,15 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   color: const Color(0xFF1A3512),
                   size: 22,
                 ),
-                onPressed: () => setState(() => _isGridView = !_isGridView),
+                onPressed: () {
+                  _itemKeys.clear();
+                  setState(() => _isGridView = !_isGridView);
+                  if (_audioController.currentIndex >= 0) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToIndex(_audioController.currentIndex);
+                    });
+                  }
+                },
                 tooltip: _isGridView
                     ? 'Switch to List View'
                     : 'Switch to Grid View',
@@ -198,6 +244,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
               Expanded(
                 child: CustomScrollView(
                   controller: _scrollController,
+                  cacheExtent: 1500.0,
                   physics: const BouncingScrollPhysics(),
                   slivers: [
                     SliverToBoxAdapter(
@@ -240,14 +287,31 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                             ),
                     ),
                     SliverToBoxAdapter(
-                      child: SizedBox(height: isPlayerActive ? 120 : 40),
+                      child: SizedBox(height: isPlayerActive ? 180 : 40),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          bottomSheet: isPlayerActive ? _buildBottomAudioPlayerBar() : null,
+        ),
+        // Floating Bottom Audio Player (visible borders & content scrolling behind)
+        Positioned(
+          left: 14,
+          right: 14,
+          bottom: MediaQuery.of(context).padding.bottom + 12,
+          child: AnimatedSlide(
+            offset: isPlayerActive ? Offset.zero : const Offset(0, 1.4),
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
+            child: AnimatedOpacity(
+              opacity: isPlayerActive ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 250),
+              child: isPlayerActive
+                  ? _buildBottomAudioPlayerBar()
+                  : const SizedBox.shrink(),
+            ),
+          ),
         ),
         const Align(
           alignment: Alignment.bottomCenter,
@@ -261,6 +325,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
     final isPlayingAny = _audioController.isPlaying;
 
     return Container(
+      key: _headerKey,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -369,13 +434,14 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
   Widget _buildGridCard(AsmaUlHusna item, int index, bool isSelected) {
     return GestureDetector(
+      key: _itemKeys.putIfAbsent(index, () => GlobalKey()),
       onTap: () {
         AsmaDetailModal.show(
           context,
           item: item,
           onPlayContinuous: () =>
               _audioController.playIndex(index, context: context, ref: ref),
-        );
+        ); 
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 350),
@@ -385,9 +451,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
           gradient: isSelected
               ? const LinearGradient(
                   colors: [
+                    Color(0xFFE8F5E9),
+                    Color(0xFFFEF9C3),
                     Color(0xFFDCFCE7),
-                    Color(0xFFFEF3C7),
-                    Color(0xFFE8F4E5),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -399,34 +465,55 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
             color: isSelected ? const Color(0xFF16A34A) : Colors.transparent,
             width: isSelected ? 2.5 : 0.0,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF16A34A).withValues(alpha: 0.12),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Stack(
           children: [
             Positioned(
-              top: 0,
-              right: 0,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (isSelected) ...[
-                    const Icon(
-                      Icons.graphic_eq_rounded,
-                      size: 14,
-                      color: Color(0xFF16A34A),
+              top: 2,
+              right: 2,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                padding: isSelected
+                    ? const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.5)
+                    : const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                decoration: isSelected
+                    ? BoxDecoration(
+                        color: const Color(0xFF16A34A),
+                        borderRadius: BorderRadius.circular(6),
+                      )
+                    : null,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (isSelected) ...[
+                      const Icon(
+                        Icons.graphic_eq_rounded,
+                        size: 9.5,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 2),
+                    ],
+                    Text(
+                      '${item.number}',
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                        color: isSelected ? Colors.white : Colors.grey.shade400,
+                        height: 1.1,
+                      ),
                     ),
-                    const SizedBox(width: 4),
                   ],
-                  Text(
-                    '${item.number}',
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w800,
-                      color: isSelected
-                          ? const Color(0xFF16A34A)
-                          : Colors.grey.shade500,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
             Center(
@@ -441,7 +528,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                       textAlign: TextAlign.center,
                       textDirection: TextDirection.rtl,
                       style: AppTypography.arabicHeader(
-                        fontSize: isSelected ? 32 : 26,
+                        fontSize: isSelected ? 34 : 26,
                         color: isSelected
                             ? const Color(0xFF15803D)
                             : const Color(0xFF1A3512),
@@ -457,9 +544,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.w600,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                       color: isSelected
                           ? const Color(0xFF15803D)
                           : const Color(0xFF6B533E),
@@ -476,6 +561,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
   Widget _buildListCard(AsmaUlHusna item, int index, bool isSelected) {
     return Padding(
+      key: _itemKeys.putIfAbsent(index, () => GlobalKey()),
       padding: const EdgeInsets.only(bottom: 10),
       child: GestureDetector(
         onTap: () {
@@ -495,9 +581,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
             gradient: isSelected
                 ? const LinearGradient(
                     colors: [
+                      Color(0xFFE8F5E9),
+                      Color(0xFFFEF9C3),
                       Color(0xFFDCFCE7),
-                      Color(0xFFFEF3C7),
-                      Color(0xFFE8F4E5),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -509,15 +595,30 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
               color: isSelected ? const Color(0xFF16A34A) : Colors.transparent,
               width: isSelected ? 2.5 : 0.0,
             ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFF16A34A).withValues(alpha: 0.12),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             children: [
-              Container(
-                width: 34,
-                height: 34,
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
+                  gradient: isSelected
+                      ? const LinearGradient(
+                          colors: [Color(0xFF22C55E), Color(0xFF15803D)],
+                        )
+                      : null,
                   color: isSelected
-                      ? const Color(0xFF16A34A)
+                      ? null
                       : const Color(0xFF2A531D).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
@@ -525,7 +626,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                 child: isSelected
                     ? const Icon(
                         Icons.graphic_eq_rounded,
-                        size: 16,
+                        size: 18,
                         color: Colors.white,
                       )
                     : Text(
@@ -581,7 +682,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   textAlign: TextAlign.right,
                   textDirection: TextDirection.rtl,
                   style: AppTypography.arabicHeader(
-                    fontSize: isSelected ? 32 : 26,
+                    fontSize: isSelected ? 34 : 26,
                     color: isSelected
                         ? const Color(0xFF15803D)
                         : const Color(0xFF1A3512),
@@ -599,201 +700,203 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
     final currentItem = _audioController.currentName;
     if (currentItem == null) return const SizedBox.shrink();
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 14,
-        right: 14,
-        bottom: MediaQuery.of(context).padding.bottom + 16,
-      ),
+    return Material(
+      color: Colors.transparent,
+      type: MaterialType.transparency,
       child: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1E3A1A), Color(0xFF0F230D)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: const Color(0xFF4ADE80).withValues(alpha: 0.35),
-            width: 1.2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 20,
-              spreadRadius: 1,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(24),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 4, 4),
-              child: Row(
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF22C55E), Color(0xFF15803D)],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF142E10).withValues(alpha: 0.93),
+                    const Color(0xFF0C1F0A).withValues(alpha: 0.96),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: const Color(0xFF4ADE80).withValues(alpha: 0.45),
+                  width: 1.4,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 4, 4),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF22C55E), Color(0xFF15803D)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      child: Text(
+                        '${currentItem.number}',
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
-                    child: Text(
-                      '${currentItem.number}',
-                      style: GoogleFonts.outfit(
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            currentItem.transliteration,
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            currentItem.shortMeaning,
+                            style: GoogleFonts.outfit(
+                              color: Colors.white70,
+                              fontSize: 11.5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      currentItem.name,
+                      textDirection: TextDirection.rtl,
+                      style: AppTypography.arabicHeader(
+                        color: const Color(0xFF4ADE80),
+                        fontSize: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white60,
+                      ),
+                      onPressed: _audioController.stop,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SliderTheme(
+                        data: SliderThemeData(
+                          trackHeight: 5,
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 5,
+                          ),
+                          overlayShape: const RoundSliderOverlayShape(
+                            overlayRadius: 10,
+                          ),
+                          activeTrackColor: const Color(0xFF4ADE80),
+                          inactiveTrackColor: Colors.white24,
+                          thumbColor: Colors.white,
+                        ),
+                        child: Slider(
+                          value: (currentItem.number).toDouble().clamp(1.0, 99.0),
+                          min: 1.0,
+                          max: 99.0,
+                          divisions: 98,
+                          onChanged: (val) {
+                            final targetIndex = val.toInt() - 1;
+                            if (targetIndex != _audioController.currentIndex) {
+                              _audioController.playIndex(
+                                targetIndex,
+                                context: context,
+                                ref: ref,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.skip_previous_rounded,
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        size: 28,
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          currentItem.transliteration,
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.5,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          currentItem.shortMeaning,
-                          style: GoogleFonts.outfit(
-                            color: Colors.white70,
-                            fontSize: 11.5,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    currentItem.name,
-                    textDirection: TextDirection.rtl,
-                    style: AppTypography.arabicHeader(
-                      color: const Color(0xFF4ADE80),
-                      fontSize: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.close_rounded,
-                      color: Colors.white60,
-                    ),
-                    onPressed: _audioController.stop,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SliderTheme(
-                      data: SliderThemeData(
-                        trackHeight: 5,
-                        thumbShape: const RoundSliderThumbShape(
-                          enabledThumbRadius: 5,
-                        ),
-                        overlayShape: const RoundSliderOverlayShape(
-                          overlayRadius: 10,
-                        ),
-                        activeTrackColor: const Color(0xFF4ADE80),
-                        inactiveTrackColor: Colors.white24,
-                        thumbColor: Colors.white,
-                      ),
-                      child: Slider(
-                        value: (currentItem.number).toDouble().clamp(1.0, 99.0),
-                        min: 1.0,
-                        max: 99.0,
-                        divisions: 98,
-                        onChanged: (val) {
-                          final targetIndex = val.toInt() - 1;
-                          if (targetIndex != _audioController.currentIndex) {
-                            _audioController.playIndex(
-                              targetIndex,
-                              context: context,
-                              ref: ref,
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.skip_previous_rounded,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                    onPressed: () => _audioController.playPrevious(
-                      context: context,
-                      ref: ref,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => _audioController.togglePlayPause(
+                      onPressed: () => _audioController.playPrevious(
                         context: context,
                         ref: ref,
                       ),
-                      borderRadius: BorderRadius.circular(20),
-                      child: SizedBox(
-                        width: 42,
-                        height: 42,
-                        child: Icon(
-                          _audioController.isPlaying
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                          color: const Color(0xFF4ADE80),
-                          size: 32,
+                    ),
+                    const SizedBox(width: 10),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => _audioController.togglePlayPause(
+                          context: context,
+                          ref: ref,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        child: SizedBox(
+                          width: 42,
+                          height: 42,
+                          child: Icon(
+                            _audioController.isPlaying
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                            color: const Color(0xFF4ADE80),
+                            size: 32,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.skip_next_rounded,
-                      color: Colors.white,
-                      size: 28,
+                    const SizedBox(width: 10),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.skip_next_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      onPressed: () =>
+                          _audioController.playNext(context: context, ref: ref),
                     ),
-                    onPressed: () =>
-                        _audioController.playNext(context: context, ref: ref),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
+    ),
+  ),
+);
   }
 }
