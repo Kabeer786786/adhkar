@@ -1463,7 +1463,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
           ),
           const Align(
             alignment: Alignment.bottomCenter,
-            child: FloatingDownloadBar(),
+            child: FloatingDownloadBar(category: MediaDownloadCategory.quran),
           ),
         ],
       ),

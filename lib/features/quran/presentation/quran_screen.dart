@@ -1287,7 +1287,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
           ),
           const Align(
             alignment: Alignment.bottomCenter,
-            child: FloatingDownloadBar(),
+            child: FloatingDownloadBar(category: MediaDownloadCategory.quran),
           ),
         ],
       ),

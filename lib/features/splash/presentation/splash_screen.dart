@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../config/routes/app_router.dart';
 import '../../../shared/providers/user_profile_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -29,8 +30,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
     final hasSkipped = prefs.getBool('has_skipped_registration') ?? false;
 
+    // If an alarm is already showing, do not navigate away
+    final initialLoc =
+        appRouter.routerDelegate.currentConfiguration.uri.toString();
+    if (initialLoc.startsWith('/alarm')) {
+      return;
+    }
+
     await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
+
+    // Check again after delay
+    final currentLoc =
+        appRouter.routerDelegate.currentConfiguration.uri.toString();
+    if (currentLoc.startsWith('/alarm')) {
+      return;
+    }
 
     final userProfile = ref.read(userProfileProvider);
     final canAccessApp = isRegCompletedPref ||
@@ -43,7 +58,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     } else {
       context.go('/onboarding');
     }
-
   }
 
   @override

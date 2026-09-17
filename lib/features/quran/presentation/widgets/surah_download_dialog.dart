@@ -130,7 +130,7 @@ class SurahDownloadDialog extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    ref.read(mediaDownloadProvider.notifier).startBatchDownload(
+                    ref.read(quranDownloadProvider.notifier).startBatchDownload(
                           taskTitle: 'Downloading $title Audios',
                           items: items,
                         );

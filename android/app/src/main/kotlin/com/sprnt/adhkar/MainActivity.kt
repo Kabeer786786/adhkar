@@ -13,17 +13,42 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : AudioServiceActivity() {
+    companion object {
+        var pendingAlarmData: Map<String, Any?>? = null
+        var alarmMethodChannel: MethodChannel? = null
+    }
+
     private val CHANNEL_DND_SCHEDULER = "com.sprnt.adhkar/dnd_scheduler"
     private val CHANNEL_QUIET_HOURS = "com.sprnt.adhkar/quiet_hours"
+    private val CHANNEL_ALARM_SCHEDULER = "com.sprnt.adhkar/alarm_scheduler"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showOverLockscreen()
+        handleAlarmIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         showOverLockscreen()
+        handleAlarmIntent(intent)
+    }
+
+    private fun handleAlarmIntent(intent: Intent?) {
+        if (intent == null) return
+        val reminderId = intent.getStringExtra("reminder_id")
+        val prayerName = intent.getStringExtra("prayer_name")
+        if (!reminderId.isNullOrEmpty() || !prayerName.isNullOrEmpty()) {
+            val data = mapOf(
+                "reminder_id" to reminderId,
+                "prayer_name" to prayerName,
+                "alarm_title" to intent.getStringExtra("alarm_title"),
+                "alarm_body" to intent.getStringExtra("alarm_body"),
+                "sound_type" to intent.getStringExtra("sound_type")
+            )
+            pendingAlarmData = data
+            alarmMethodChannel?.invokeMethod("onAlarmTriggered", data)
+        }
     }
 
     private fun showOverLockscreen() {
@@ -47,6 +72,41 @@ class MainActivity : AudioServiceActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         val messenger = flutterEngine.dartExecutor.binaryMessenger
+
+        // Dedicated Native Alarm Scheduler MethodChannel
+        val alarmChannel = MethodChannel(messenger, CHANNEL_ALARM_SCHEDULER)
+        alarmMethodChannel = alarmChannel
+        alarmChannel.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "scheduleAlarm" -> {
+                    val id = call.argument<String>("id") ?: ""
+                    val title = call.argument<String>("title") ?: "Reminder"
+                    val body = call.argument<String>("body") ?: ""
+                    val triggerAtMillis = (call.argument<Number>("triggerAtMillis"))?.toLong() ?: 0L
+                    val sound = call.argument<Boolean>("sound") ?: true
+                    val vibration = call.argument<Boolean>("vibration") ?: true
+                    val soundType = call.argument<String>("soundType") ?: "Default Ringtone"
+                    val prayerName = call.argument<String>("prayerName")
+                    AlarmScheduler.scheduleAlarm(this, id, title, body, triggerAtMillis, sound, vibration, soundType, prayerName)
+                    result.success(true)
+                }
+                "cancelAlarm" -> {
+                    val id = call.argument<String>("id") ?: ""
+                    AlarmScheduler.cancelAlarm(this, id)
+                    result.success(true)
+                }
+                "cancelAllAlarms" -> {
+                    AlarmScheduler.cancelAllAlarms(this)
+                    result.success(true)
+                }
+                "getPendingAlarm" -> {
+                    val pending = pendingAlarmData
+                    pendingAlarmData = null
+                    result.success(pending)
+                }
+                else -> result.notImplemented()
+            }
+        }
 
         // Dedicated DND Scheduler MethodChannel (Requirement 13)
         MethodChannel(messenger, CHANNEL_DND_SCHEDULER).setMethodCallHandler { call, result ->

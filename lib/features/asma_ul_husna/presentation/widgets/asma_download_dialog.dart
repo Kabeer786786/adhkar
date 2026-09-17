@@ -137,7 +137,7 @@ class AsmaDownloadDialog extends ConsumerWidget {
                   onPressed: () async {
                     await _markPromptDismissed();
                     if (context.mounted) Navigator.pop(context);
-                    ref.read(mediaDownloadProvider.notifier).startBatchDownload(
+                    ref.read(asmaDownloadProvider.notifier).startBatchDownload(
                           taskTitle: 'Downloading 99 Asma-ul-Husna Audios',
                           items: items,
                         );

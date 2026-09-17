@@ -35,6 +35,8 @@
     <!-- Audio & Background permissions for reliable alarm sound, media playback & wake -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
@@ -100,6 +102,31 @@
         <!-- Native Quiet Hours & DND Boot, Package Replaced & Time Change Receiver (System Broadcasts) -->
         <receiver
             android:name="com.sprnt.adhkar.QuietHoursBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Native Alarm Receiver for Background / Killed Alarm Screen Display -->
+        <receiver
+            android:name="com.sprnt.adhkar.AlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.sprnt.adhkar.ACTION_ALARM_TRIGGER" />
+                <action android:name="com.sprnt.adhkar.ACTION_DISMISS_ALARM" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Native Alarm Boot, Package Replaced & Time Change Receiver -->
+        <receiver
+            android:name="com.sprnt.adhkar.AlarmBootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

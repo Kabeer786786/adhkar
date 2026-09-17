@@ -40,6 +40,10 @@ final appRouter = GoRouter(
   initialLocation: '/splash',
   redirect: (context, state) async {
     final location = state.uri.toString();
+    if (location.startsWith('/alarm')) {
+      return null;
+    }
+
     final isAuthRoute = location == '/splash' ||
         location == '/onboarding' ||
         location == '/auth' ||

@@ -693,15 +693,6 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                               ),
                               width: 1.5,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.white.withValues(
-                                  alpha: 0.2 * _glowAnimation.value,
-                                ),
-                                blurRadius: 18 * _scaleAnimation.value,
-                                spreadRadius: 2,
-                              ),
-                            ],
                           ),
                           child: Center(
                             child: Transform.scale(

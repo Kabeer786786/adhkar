@@ -3,6 +3,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// Categories of background media downloads
+enum MediaDownloadCategory {
+  quran,
+  asmaUlHusna,
+}
+
 /// Service responsible for managing background downloading and local caching
 /// of audio files from GitHub Releases or custom CDN sources.
 class MediaDownloadService {
@@ -10,7 +16,7 @@ class MediaDownloadService {
   MediaDownloadService._internal();
 
   final Dio _dio = Dio();
-  CancelToken? _cancelToken;
+  final Map<MediaDownloadCategory, CancelToken> _cancelTokens = {};
 
   /// Default Cloudflare R2 base URL for audio assets.
   String baseUrl = 'https://pub-25ef4bcbbacc4eaebd26c9c4f3e19216.r2.dev';
@@ -119,13 +125,15 @@ class MediaDownloadService {
     required List<MediaDownloadItem> items,
     required Function(int completedCount, int totalCount, double progress, String currentItem) onBatchProgress,
     Function(String error)? onError,
+    MediaDownloadCategory category = MediaDownloadCategory.quran,
   }) async {
-    _cancelToken = CancelToken();
+    final cancelToken = CancelToken();
+    _cancelTokens[category] = cancelToken;
     final total = items.length;
     int completed = 0;
 
     for (final item in items) {
-      if (_cancelToken?.isCancelled ?? false) break;
+      if (cancelToken.isCancelled) break;
 
       final isAlreadyDownloaded = await isFileDownloaded(item.relativePath);
       if (isAlreadyDownloaded) {
@@ -142,25 +150,36 @@ class MediaDownloadService {
         await downloadFile(
           relativePath: item.relativePath,
           remoteUrl: url,
-          cancelToken: _cancelToken,
+          cancelToken: cancelToken,
         );
 
         completed++;
         onBatchProgress(completed, total, completed / total, item.title);
       } catch (e) {
-        if (CancelToken.isCancel(e as DioException)) {
+        if (e is DioException && CancelToken.isCancel(e)) {
           break;
         }
         onError?.call('Failed downloading ${item.title}: $e');
         // Continue downloading next files in batch
       }
     }
+
+    if (_cancelTokens[category] == cancelToken) {
+      _cancelTokens.remove(category);
+    }
   }
 
-  /// Cancel any ongoing background batch download.
-  void cancelDownload() {
-    _cancelToken?.cancel('User cancelled download');
-    _cancelToken = null;
+  /// Cancel ongoing background batch download for a specific category, or all if null.
+  void cancelDownload([MediaDownloadCategory? category]) {
+    if (category != null) {
+      _cancelTokens[category]?.cancel('User cancelled download');
+      _cancelTokens.remove(category);
+    } else {
+      for (final token in _cancelTokens.values) {
+        token.cancel('User cancelled download');
+      }
+      _cancelTokens.clear();
+    }
   }
 
   /// Cache management method to ensure local storage doesn't grow infinitely.

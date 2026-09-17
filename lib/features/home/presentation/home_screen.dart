@@ -60,24 +60,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _checkAndPromptCompleteProfile() async {
+    final userProfile = ref.read(userProfileProvider);
+    final isFilled = userProfile.registrationCompleted || userProfile.name.trim().isNotEmpty;
+    // If user filled it, never ask again
+    if (isFilled) return;
+
+    // If already prompted in this app session or unmounted, return
     if (_hasPromptedProfileInSession || !mounted) return;
 
     final hasSeenShowcase = await ShowcaseService.hasSeenHomeShowcase();
-    final justSkipped = await UserProfileNotifier.wasJustSkippedInThisSession();
+    if (!hasSeenShowcase) return;
 
-    if (!mounted) return;
-    // Do not show popup if showcase tour is running / hasn't been completed yet, or if user just skipped registration in this session
-    if (!hasSeenShowcase || justSkipped) return;
-
-    final userProfile = ref.read(userProfileProvider);
-    if (!userProfile.registrationCompleted) {
-      _hasPromptedProfileInSession = true;
-      Future.delayed(const Duration(milliseconds: 600), () {
-        if (mounted) {
+    _hasPromptedProfileInSession = true;
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        final currentProfile = ref.read(userProfileProvider);
+        final stillFilled = currentProfile.registrationCompleted || currentProfile.name.trim().isNotEmpty;
+        if (!stillFilled) {
           CompleteProfileModal.show(context);
         }
-      });
-    }
+      }
+    });
   }
 
   void _toggleShowSeconds() {

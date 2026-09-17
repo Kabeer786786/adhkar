@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/country_code.dart';
 import '../../core/services/location_service.dart';
-import '../../core/utils/error_formatter.dart';
 import '../../features/auth/presentation/widgets/country_code_picker_modal.dart';
 import '../providers/app_providers.dart';
 import '../providers/user_profile_provider.dart';
@@ -140,10 +139,19 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
         );
       }
     } catch (e) {
+      // Even if remote sync fails, persist locally so user is never asked again once filled
+      await ref.read(userProfileProvider.notifier).saveProfile(
+            name: name,
+            email: email,
+            phone: fullPhone,
+            location: location,
+            registrationCompleted: true,
+          );
       if (mounted) {
-        AppFloatingToast.showError(
+        Navigator.pop(context);
+        AppFloatingToast.showSuccess(
           context,
-          message: ErrorFormatter.format(e),
+          message: 'Profile saved successfully',
         );
       }
     } finally {

@@ -3,6 +3,7 @@ import '../services/media_download_service.dart';
 
 /// State model for background media download progress.
 class MediaDownloadState {
+  final MediaDownloadCategory category;
   final bool isDownloading;
   final bool isCompleted;
   final bool isMinimized;
@@ -14,6 +15,7 @@ class MediaDownloadState {
   final String? errorMessage;
 
   const MediaDownloadState({
+    this.category = MediaDownloadCategory.quran,
     this.isDownloading = false,
     this.isCompleted = false,
     this.isMinimized = false,
@@ -26,6 +28,7 @@ class MediaDownloadState {
   });
 
   MediaDownloadState copyWith({
+    MediaDownloadCategory? category,
     bool? isDownloading,
     bool? isCompleted,
     bool? isMinimized,
@@ -37,6 +40,7 @@ class MediaDownloadState {
     String? errorMessage,
   }) {
     return MediaDownloadState(
+      category: category ?? this.category,
       isDownloading: isDownloading ?? this.isDownloading,
       isCompleted: isCompleted ?? this.isCompleted,
       isMinimized: isMinimized ?? this.isMinimized,
@@ -52,7 +56,10 @@ class MediaDownloadState {
 
 /// Notifier class managing the background media downloader state.
 class MediaDownloadNotifier extends StateNotifier<MediaDownloadState> {
-  MediaDownloadNotifier() : super(const MediaDownloadState());
+  final MediaDownloadCategory category;
+
+  MediaDownloadNotifier({this.category = MediaDownloadCategory.quran})
+      : super(MediaDownloadState(category: category));
 
   /// Start a background download task.
   Future<void> startBatchDownload({
@@ -62,6 +69,7 @@ class MediaDownloadNotifier extends StateNotifier<MediaDownloadState> {
     if (state.isDownloading) return; // Prevent duplicate tasks
 
     state = MediaDownloadState(
+      category: category,
       isDownloading: true,
       isCompleted: false,
       isMinimized: false,
@@ -73,6 +81,7 @@ class MediaDownloadNotifier extends StateNotifier<MediaDownloadState> {
     );
 
     await MediaDownloadService.instance.downloadBatch(
+      category: category,
       items: items,
       onBatchProgress: (completed, total, progress, currentItem) {
         state = state.copyWith(
@@ -97,13 +106,22 @@ class MediaDownloadNotifier extends StateNotifier<MediaDownloadState> {
 
   /// Dismiss or cancel the current download task.
   void dismiss() {
-    MediaDownloadService.instance.cancelDownload();
-    state = const MediaDownloadState();
+    MediaDownloadService.instance.cancelDownload(category);
+    state = MediaDownloadState(category: category);
   }
 }
 
-/// Riverpod Provider exposing the media download notifier state.
-final mediaDownloadProvider =
+/// Dedicated provider for Quran audio downloads
+final quranDownloadProvider =
     StateNotifierProvider<MediaDownloadNotifier, MediaDownloadState>((ref) {
-  return MediaDownloadNotifier();
+  return MediaDownloadNotifier(category: MediaDownloadCategory.quran);
 });
+
+/// Dedicated provider for Asma-ul-Husna audio downloads
+final asmaDownloadProvider =
+    StateNotifierProvider<MediaDownloadNotifier, MediaDownloadState>((ref) {
+  return MediaDownloadNotifier(category: MediaDownloadCategory.asmaUlHusna);
+});
+
+/// Riverpod Provider exposing the media download notifier state (defaults to Quran for backwards compatibility).
+final mediaDownloadProvider = quranDownloadProvider;

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../../config/routes/app_router.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../core/services/native_alarm_service.dart';
 import '../domain/reminder_model.dart';
 
 class ReminderScheduler {
@@ -169,6 +170,17 @@ class ReminderScheduler {
         '[ReminderScheduler] Scheduled ${reminder.title} (ID $notifId) for $nextTrigger (recurrence: $matchComponents)',
       );
     }
+
+    // Also schedule exact native Android AlarmManager alarm so alarm screen pops even when app is killed
+    await NativeAlarmService.instance.scheduleAlarm(
+      id: reminder.id,
+      title: reminder.title,
+      body: reminder.description ?? 'It\'s time for your scheduled reminder.',
+      scheduledTime: nextTrigger,
+      sound: reminder.soundEnabled,
+      vibration: reminder.vibrationEnabled,
+      soundType: reminder.soundType ?? 'Iphone Ringtone',
+    );
   }
 
   /// Schedules one background notification per weekday in [reminder.customDays].
@@ -199,6 +211,17 @@ class ReminderScheduler {
         soundType: reminder.soundType ?? 'Iphone Ringtone',
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       );
+
+      await NativeAlarmService.instance.scheduleAlarm(
+        id: '${reminder.id}_$weekday',
+        title: reminder.title,
+        body: reminder.description ?? 'It\'s time for your scheduled reminder.',
+        scheduledTime: candidate,
+        sound: reminder.soundEnabled,
+        vibration: reminder.vibrationEnabled,
+        soundType: reminder.soundType ?? 'Iphone Ringtone',
+      );
+
       debugPrint(
         '[ReminderScheduler] Scheduled custom-day ${reminder.title} (ID $perDayId) for weekday $weekday at $candidate',
       );
@@ -214,6 +237,12 @@ class ReminderScheduler {
         _generateWeekdayNotificationId(reminderId, weekday),
     ];
     await _notificationService.cancelMultiple(allIds);
+
+    // Cancel native alarms
+    await NativeAlarmService.instance.cancelAlarm(reminderId);
+    for (int weekday = 1; weekday <= 7; weekday++) {
+      await NativeAlarmService.instance.cancelAlarm('${reminderId}_$weekday');
+    }
   }
 
   Future<void> cancelReminder(String id) async {

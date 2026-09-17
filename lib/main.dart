@@ -6,6 +6,7 @@ import 'config/routes/app_router.dart';
 import 'core/services/adhkar_audio_handler.dart';
 import 'core/services/alarm_audio_service.dart';
 import 'core/services/app_update_service.dart';
+import 'core/services/native_alarm_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/showcase_service.dart';
 import 'core/services/storage_service.dart';
@@ -15,7 +16,6 @@ import 'features/quiet_hours/domain/quiet_hours_model.dart';
 import 'features/quiet_hours/services/quiet_hours_service.dart';
 import 'features/reminder/presentation/providers/reminder_provider.dart';
 import 'shared/providers/app_providers.dart';
-import 'shared/widgets/update_bottom_sheet.dart';
 
 void _handleAlarmPayloadNavigation(String payload) {
   if (payload.startsWith('dismiss:')) {
@@ -39,8 +39,8 @@ void _handleAlarmPayloadNavigation(String payload) {
     return;
   }
 
-  // If at root, use go to cleanly transition, otherwise push
-  if (currentLoc == '/' || currentLoc.isEmpty) {
+  // If at root or splash, use go to cleanly transition, otherwise push
+  if (currentLoc == '/' || currentLoc.isEmpty || currentLoc == '/splash') {
     appRouter.go(targetUrl);
   } else {
     appRouter.push(targetUrl);
@@ -120,28 +120,37 @@ class _AdhkarAppState extends ConsumerState<AdhkarApp> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 1. If cold-started from full-screen alarm notification, navigate immediately
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // 1. If cold-started from native Android alarm receiver, navigate immediately
+      final pendingNative = await NativeAlarmService.instance.getPendingAlarm();
+      if (pendingNative != null) {
+        final remId = pendingNative['reminder_id'] as String?;
+        final prayer = pendingNative['prayer_name'] as String?;
+        if (remId != null && remId.isNotEmpty) {
+          _handleAlarmPayloadNavigation('reminder_id:$remId');
+          return;
+        } else if (prayer != null && prayer.isNotEmpty) {
+          _handleAlarmPayloadNavigation('prayer:$prayer');
+          return;
+        }
+      }
+
+      // 2. If cold-started from full-screen alarm notification, navigate immediately
       final pendingPayload = NotificationService.consumePendingAlarmPayload();
       if (pendingPayload != null && pendingPayload.isNotEmpty) {
         _handleAlarmPayloadNavigation(pendingPayload);
+        return;
       }
-      // 2. Check for Google Play updates
+      // 3. Check for Google Play updates
       _checkForAppUpdate();
     });
   }
 
   Future<void> _checkForAppUpdate() async {
-    final updateInfo = await AppUpdateService().checkForUpdate();
-    if (updateInfo != null && mounted) {
-      // Wait a moment for the app to settle before showing the sheet
-      await Future.delayed(const Duration(seconds: 2));
-      if (mounted) {
-        final navContext = appRouter.routerDelegate.navigatorKey.currentContext;
-        if (navContext != null && navContext.mounted) {
-          UpdateBottomSheet.show(navContext);
-        }
-      }
+    // Wait a moment for the app UI to settle after startup
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      await AppUpdateService().checkAndShowGooglePlayUpdate();
     }
   }
 

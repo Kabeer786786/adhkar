@@ -2,15 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/media_download_provider.dart';
+import '../../core/services/media_download_service.dart';
+
+export '../../core/services/media_download_service.dart' show MediaDownloadCategory;
 
 /// A floating, non-blocking bottom progress bar widget that displays
 /// real-time background audio download progress.
 class FloatingDownloadBar extends ConsumerWidget {
-  const FloatingDownloadBar({super.key});
+  final MediaDownloadCategory category;
+
+  const FloatingDownloadBar({
+    super.key,
+    this.category = MediaDownloadCategory.quran,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final downloadState = ref.watch(mediaDownloadProvider);
+    final provider = category == MediaDownloadCategory.asmaUlHusna
+        ? asmaDownloadProvider
+        : quranDownloadProvider;
+    final downloadState = ref.watch(provider);
 
     if (!downloadState.isDownloading && !downloadState.isCompleted) {
       return const SizedBox.shrink();
@@ -27,8 +38,8 @@ class FloatingDownloadBar extends ConsumerWidget {
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             child: downloadState.isMinimized
-                ? _buildMinimizedPill(context, ref, downloadState, percentage)
-                : _buildExpandedCard(context, ref, downloadState, percentage),
+                ? _buildMinimizedPill(context, ref, provider, downloadState, percentage)
+                : _buildExpandedCard(context, ref, provider, downloadState, percentage),
           ),
         ), 
       ),
@@ -39,11 +50,12 @@ class FloatingDownloadBar extends ConsumerWidget {
   Widget _buildMinimizedPill(
     BuildContext context,
     WidgetRef ref,
+    StateNotifierProvider<MediaDownloadNotifier, MediaDownloadState> provider,
     MediaDownloadState state,
     int percentage,
   ) {
     return GestureDetector(
-      onTap: () => ref.read(mediaDownloadProvider.notifier).toggleMinimize(),
+      onTap: () => ref.read(provider.notifier).toggleMinimize(),
       child: Container(
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -94,6 +106,7 @@ class FloatingDownloadBar extends ConsumerWidget {
   Widget _buildExpandedCard(
     BuildContext context,
     WidgetRef ref,
+    StateNotifierProvider<MediaDownloadNotifier, MediaDownloadState> provider,
     MediaDownloadState state,
     int percentage,
   ) {
@@ -176,7 +189,7 @@ class FloatingDownloadBar extends ConsumerWidget {
                   const SizedBox(width: 2),
                   IconButton(
                     icon: const Icon(Icons.expand_more_rounded, color: Colors.white70, size: 20),
-                    onPressed: () => ref.read(mediaDownloadProvider.notifier).toggleMinimize(),
+                    onPressed: () => ref.read(provider.notifier).toggleMinimize(),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     tooltip: 'Minimize',
@@ -202,7 +215,7 @@ class FloatingDownloadBar extends ConsumerWidget {
           top: 6,
           right: 6,
           child: InkWell(
-            onTap: () => ref.read(mediaDownloadProvider.notifier).dismiss(),
+            onTap: () => ref.read(provider.notifier).dismiss(),
             borderRadius: BorderRadius.circular(12),
             child: const Padding(
               padding: EdgeInsets.all(4),

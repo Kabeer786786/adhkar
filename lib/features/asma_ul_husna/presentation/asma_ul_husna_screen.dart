@@ -145,7 +145,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
       }
     });
 
-    ref.listen(mediaDownloadProvider, (prev, next) {
+    ref.listen(asmaDownloadProvider, (prev, next) {
       if (next.isCompleted) {
         _checkDownloadStatus();
       }
@@ -315,7 +315,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
         ),
         const Align(
           alignment: Alignment.bottomCenter,
-          child: FloatingDownloadBar(),
+          child: FloatingDownloadBar(category: MediaDownloadCategory.asmaUlHusna),
         ),
       ],
     );

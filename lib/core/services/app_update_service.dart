@@ -4,8 +4,8 @@ import 'package:in_app_update/in_app_update.dart';
 
 /// Service responsible for managing Google Play In-App Updates.
 ///
-/// Returns update availability info so the UI can show a custom bottom sheet
-/// instead of Google Play's native full-screen modal.
+/// Directly triggers Google Play's official native in-app update dialog
+/// (flexible or immediate) when an update is available.
 class AppUpdateService {
   static final AppUpdateService _instance = AppUpdateService._internal();
   factory AppUpdateService() => _instance;
@@ -43,11 +43,46 @@ class AppUpdateService {
     }
   }
 
+  /// Checks for updates and immediately shows Google Play's official native update modal.
+  Future<void> checkAndShowGooglePlayUpdate() async {
+    if (kIsWeb || !Platform.isAndroid) return;
+    if (_isChecking) return;
+
+    _isChecking = true;
+
+    try {
+      final updateInfo = await InAppUpdate.checkForUpdate();
+
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        debugPrint(
+          '[AppUpdateService] New update found (version ${updateInfo.availableVersionCode}). Triggering Google Play native modal...',
+        );
+
+        if (updateInfo.flexibleUpdateAllowed) {
+          final result = await InAppUpdate.startFlexibleUpdate();
+          if (result == AppUpdateResult.success) {
+            await InAppUpdate.completeFlexibleUpdate();
+          }
+        } else if (updateInfo.immediateUpdateAllowed) {
+          await InAppUpdate.performImmediateUpdate();
+        }
+      } else {
+        debugPrint('[AppUpdateService] App is up to date with Google Play Store.');
+      }
+    } catch (e) {
+      debugPrint('[AppUpdateService] Google Play native update check skipped or failed: $e');
+    } finally {
+      _isChecking = false;
+    }
+  }
+
   /// Starts Google Play's flexible update flow.
   Future<void> startFlexibleUpdate() async {
     try {
-      await InAppUpdate.startFlexibleUpdate();
-      await InAppUpdate.completeFlexibleUpdate();
+      final result = await InAppUpdate.startFlexibleUpdate();
+      if (result == AppUpdateResult.success) {
+        await InAppUpdate.completeFlexibleUpdate();
+      }
     } catch (e) {
       debugPrint('[AppUpdateService] Flexible update failed: $e');
     }
