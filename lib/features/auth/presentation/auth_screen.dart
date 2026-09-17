@@ -6,6 +6,7 @@ import '../../../../core/models/country_code.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../shared/providers/user_profile_provider.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../../../core/utils/error_formatter.dart';
 import 'widgets/country_code_picker_modal.dart';
 
@@ -124,22 +125,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Welcome to Adhkar, $name! Profile created successfully.'),
-            backgroundColor: const Color(0xFF2A531D),
-            duration: const Duration(seconds: 3),
-          ),
+        AppFloatingToast.showSuccess(
+          context,
+          message: 'Welcome to Adhkar, $name!',
         );
         context.go('/');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(ErrorFormatter.format(e)),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppFloatingToast.showError(
+          context,
+          message: ErrorFormatter.format(e),
         );
       }
     }

@@ -11,6 +11,7 @@ import '../../../core/services/media_download_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/typography/arabic_font.dart';
 import '../../../shared/providers/app_providers.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../shared/widgets/floating_download_bar.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../data/juz_model.dart';
@@ -443,35 +444,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFF1E293B),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            content: Row(
-              children: [
-                const Icon(
-                  Icons.outlined_flag_rounded,
-                  color: Color(0xFFF59E0B),
-                  size: 22,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Stop point on Ayah ${ayah.numberInSurah} removed.',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 2),
-          ),
+        AppFloatingToast.showRemoved(
+          context,
+          message: 'Stop point on Ayah ${ayah.numberInSurah} removed',
+          icon: Icons.outlined_flag_rounded,
         );
       }
       return;
@@ -521,35 +497,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: const Color(0xFF2A531D),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          content: Row(
-            children: [
-              const Icon(
-                Icons.flag_rounded,
-                color: Color(0xFFA3E635),
-                size: 22,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Ayah ${ayah.numberInSurah} marked as stop point! Resume will start from Ayah $resumeAyah.',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          duration: const Duration(seconds: 3),
-        ),
+      AppFloatingToast.showAdded(
+        context,
+        message: 'Stop point set at Ayah $resumeAyah',
+        icon: Icons.flag_rounded,
       );
     }
   }
@@ -568,35 +519,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       await storage.removeQuranAyahBookmark(id);
       setState(() {});
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFF1E293B),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            content: Row(
-              children: [
-                const Icon(
-                  Icons.bookmark_border_rounded,
-                  color: Color(0xFFF59E0B),
-                  size: 22,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Ayah ${ayah.numberInSurah} removed from bookmarks.',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 2),
-          ),
+        AppFloatingToast.showRemoved(
+          context,
+          message: 'Ayah ${ayah.numberInSurah} removed from bookmarks',
+          icon: Icons.bookmark_border_rounded,
         );
       }
     } else {
@@ -613,35 +539,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       );
       setState(() {});
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFF2A531D),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            content: Row(
-              children: [
-                const Icon(
-                  Icons.bookmark_added_rounded,
-                  color: Color(0xFFA3E635),
-                  size: 22,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Ayah ${ayah.numberInSurah} of ${currentSurah.nameEnglish} saved to bookmarks!',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 2),
-          ),
+        AppFloatingToast.showAdded(
+          context,
+          message: 'Ayah ${ayah.numberInSurah} saved to bookmarks',
+          icon: Icons.bookmark_added_rounded,
         );
       }
     }
@@ -2164,20 +2065,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       _scrollToActiveAyah(ayahs);
     }
 
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Jumped to Stop Point • Ayah $spAyahNum',
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFFD97706),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
+    AppFloatingToast.showInfo(
+      context,
+      message: 'Jumped to Stop Point • Ayah $spAyahNum',
+      icon: Icons.flag_rounded,
     );
   }
 }

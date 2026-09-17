@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/services/razorpay_donation_service.dart';
 import '../../../../shared/providers/user_profile_provider.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../domain/models/sadqa_record.dart';
 import '../providers/sadqa_provider.dart';
 
@@ -111,20 +112,15 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
     final amount = double.tryParse(amountText) ?? 0.0;
 
     if (amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid donation amount.')),
-      );
+      AppFloatingToast.showError(context, message: 'Please enter a valid donation amount.');
       return;
     }
 
     if (amount > _maxDonationAmount) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Maximum allowed donation amount is ${_selectedCurrency == 'INR' ? '₹' : '\$'}${_maxDonationAmount.toStringAsFixed(0)}',
-          ),
-          backgroundColor: Colors.redAccent,
-        ),
+      AppFloatingToast.showError(
+        context,
+        message:
+            'Maximum allowed is ${_selectedCurrency == 'INR' ? '₹' : '\$'}${_maxDonationAmount.toStringAsFixed(0)}',
       );
       return;
     }
@@ -134,11 +130,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
     final phone = _phoneController.text.trim();
 
     if (name.isEmpty || email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your name and email address.'),
-        ),
-      );
+      AppFloatingToast.showError(context, message: 'Please enter your name and email address.');
       return;
     }
 
@@ -207,11 +199,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
           _isLoading = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Donation Error: $errorMessage'),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppFloatingToast.showError(
+          context,
+          message: 'Donation Error: $errorMessage',
         );
       },
     );
@@ -523,11 +513,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                                 ClipboardData(text: _successPaymentId),
                               );
                               HapticFeedback.lightImpact();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Transaction ID copied!'),
-                                  duration: Duration(seconds: 2),
-                                ),
+                              AppFloatingToast.showSuccess(
+                                context,
+                                message: 'Transaction ID copied!',
+                                icon: Icons.copy_rounded,
                               );
                             },
                           ),

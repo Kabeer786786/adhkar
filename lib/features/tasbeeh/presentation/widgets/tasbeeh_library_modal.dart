@@ -149,10 +149,9 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
     final desc = _formDescController.text.trim();
 
     if (ar.isEmpty || en.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter Arabic text and English title.'),
-        ),
+      AppFloatingToast.showError(
+        context,
+        message: 'Please enter Arabic text and English title.',
       );
       return;
     }

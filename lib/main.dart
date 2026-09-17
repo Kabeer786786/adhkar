@@ -17,6 +17,36 @@ import 'features/reminder/presentation/providers/reminder_provider.dart';
 import 'shared/providers/app_providers.dart';
 import 'shared/widgets/update_bottom_sheet.dart';
 
+void _handleAlarmPayloadNavigation(String payload) {
+  if (payload.startsWith('dismiss:')) {
+    AlarmAudioService().stopAlarm();
+    return;
+  }
+
+  String targetUrl = '';
+  if (payload.startsWith('reminder_id:')) {
+    final remId = payload.substring('reminder_id:'.length);
+    targetUrl = '/alarm?id=$remId';
+  } else if (payload.startsWith('prayer:')) {
+    final prayer = payload.substring('prayer:'.length);
+    targetUrl = '/alarm?prayer=$prayer';
+  }
+
+  if (targetUrl.isEmpty) return;
+
+  final currentLoc = appRouter.routerDelegate.currentConfiguration.uri.toString();
+  if (currentLoc == targetUrl || currentLoc.startsWith('/alarm')) {
+    return;
+  }
+
+  // If at root, use go to cleanly transition, otherwise push
+  if (currentLoc == '/' || currentLoc.isEmpty) {
+    appRouter.go(targetUrl);
+  } else {
+    appRouter.push(targetUrl);
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
 
@@ -42,23 +72,7 @@ void main() async {
   final notificationService = NotificationService();
   notificationService.onNotificationSelected.listen((payload) {
     if (payload != null && payload.isNotEmpty) {
-      if (payload.startsWith('dismiss:')) {
-        AlarmAudioService().stopAlarm();
-        return;
-      }
-
-      final currentLoc = appRouter.routerDelegate.currentConfiguration.uri.toString();
-      if (currentLoc.startsWith('/alarm')) {
-        return;
-      }
-
-      if (payload.startsWith('reminder_id:')) {
-        final remId = payload.substring('reminder_id:'.length);
-        appRouter.push('/alarm?id=$remId');
-      } else if (payload.startsWith('prayer:')) {
-        final prayer = payload.substring('prayer:'.length);
-        appRouter.push('/alarm?prayer=$prayer');
-      }
+      _handleAlarmPayloadNavigation(payload);
     }
   });
   await notificationService.init();
@@ -106,9 +120,13 @@ class _AdhkarAppState extends ConsumerState<AdhkarApp> {
   @override
   void initState() {
     super.initState();
-    // Check for Google Play updates after the first frame so we have
-    // a valid navigator context for the custom bottom sheet.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 1. If cold-started from full-screen alarm notification, navigate immediately
+      final pendingPayload = NotificationService.consumePendingAlarmPayload();
+      if (pendingPayload != null && pendingPayload.isNotEmpty) {
+        _handleAlarmPayloadNavigation(pendingPayload);
+      }
+      // 2. Check for Google Play updates
       _checkForAppUpdate();
     });
   }

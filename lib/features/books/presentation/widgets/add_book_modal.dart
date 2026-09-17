@@ -113,8 +113,9 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking document: $e')),
+        AppFloatingToast.showError(
+          context,
+          message: 'Error picking document: $e',
         );
       }
     }
@@ -147,15 +148,11 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
         isAdded: true,
       );
 
-      final messenger = ScaffoldMessenger.of(context);
       ref.read(userBooksProvider.notifier).addBook(newBook);
       Navigator.pop(context);
-      messenger.showSnackBar( 
-        SnackBar(
-          content: Text('Added "${newBook.title}" to bookshelf!'),
-          backgroundColor: const Color(0xFF2A531D),
-          duration: const Duration(seconds: 2),
-        ),
+      AppFloatingToast.showAdded(
+        context,
+        message: 'Added "${newBook.title}" to bookshelf',
       );
     }
   }

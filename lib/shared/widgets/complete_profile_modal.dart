@@ -7,6 +7,7 @@ import '../../core/utils/error_formatter.dart';
 import '../../features/auth/presentation/widgets/country_code_picker_modal.dart';
 import '../providers/app_providers.dart';
 import '../providers/user_profile_provider.dart';
+import '../widgets/app_floating_toast.dart';
 
 class CompleteProfileModal extends ConsumerStatefulWidget {
   const CompleteProfileModal({super.key});
@@ -133,21 +134,16 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile saved successfully!'),
-            backgroundColor: Color(0xFF2A531D),
-            duration: Duration(seconds: 3),
-          ),
+        AppFloatingToast.showSuccess(
+          context,
+          message: 'Profile saved successfully',
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(ErrorFormatter.format(e)),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppFloatingToast.showError(
+          context,
+          message: ErrorFormatter.format(e),
         );
       }
     } finally {

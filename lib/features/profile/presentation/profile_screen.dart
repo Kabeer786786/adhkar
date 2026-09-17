@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/providers/user_profile_provider.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../widgets/app_header_bar.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -96,18 +97,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       .updateName(newName);
                   if (context.mounted) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Name updated successfully!',
-                          style: GoogleFonts.lexend(fontSize: 13),
-                        ),
-                        backgroundColor: primaryGreen,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                    AppFloatingToast.showSuccess(
+                      context,
+                      message: 'Name updated successfully',
                     );
                   }
                 }

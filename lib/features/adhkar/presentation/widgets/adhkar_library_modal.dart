@@ -155,8 +155,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
   void _submitForm() {
     final title = _formTitleController.text.trim();
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter an Adhkar title.')),
+      AppFloatingToast.showError(
+        context,
+        message: 'Please enter an Adhkar title.',
       );
       return;
     }

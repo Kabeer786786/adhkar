@@ -6,6 +6,7 @@ import '../../../core/services/location_service.dart';
 import '../../../core/utils/error_formatter.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../../../shared/providers/user_profile_provider.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -94,12 +95,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Welcome $name! Registration completed.'),
-            backgroundColor: const Color(0xFF2A531D),
-            duration: const Duration(seconds: 2),
-          ),
+        AppFloatingToast.showSuccess(
+          context,
+          message: 'Welcome $name! Registration completed.',
         );
 
         // Smoothly navigate to Home Screen
@@ -107,11 +105,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(ErrorFormatter.format(e)),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppFloatingToast.showError(
+          context,
+          message: ErrorFormatter.format(e),
         );
       }
     } finally {

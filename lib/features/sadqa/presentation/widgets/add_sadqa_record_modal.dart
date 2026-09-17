@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../shared/providers/app_providers.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../../../shared/providers/user_profile_provider.dart';
 import '../../../../widgets/app_dropdown.dart';
 import '../../domain/models/sadqa_record.dart';
@@ -93,18 +94,12 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
       widget.onSave(record);
       Navigator.pop(context);
       final isEdit = widget.initialRecord != null;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isEdit
-                ? (_type == CharityType.zakat
-                    ? 'Zakat record updated'
-                    : 'Sadaqah record updated')
-                : (_type == CharityType.zakat ? 'Zakat added' : 'Sadaqah added'),
-          ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      final msg = isEdit
+          ? (_type == CharityType.zakat
+              ? 'Zakat record updated'
+              : 'Sadaqah record updated')
+          : (_type == CharityType.zakat ? 'Zakat added' : 'Sadaqah added');
+      AppFloatingToast.showSuccess(context, message: msg);
     }
   }
 
@@ -317,8 +312,9 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                       }
                     });
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Added custom category: $newCatName')),
+                      AppFloatingToast.showAdded(
+                        context,
+                        message: 'Added custom category: $newCatName',
                       );
                     }
                   }

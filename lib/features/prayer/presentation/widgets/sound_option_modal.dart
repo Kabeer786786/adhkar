@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../../../widgets/app_dropdown.dart';
 import '../../domain/prayer_models.dart';
 
@@ -105,11 +106,9 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
     final url = PrayerNotificationConfig.soundAudioUrls[_soundType];
     if (url == null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Preview sound relies on system default audio ringtone.'),
-            behavior: SnackBarBehavior.floating,
-          ),
+        AppFloatingToast.showInfo(
+          context,
+          message: 'Preview sound relies on system default audio ringtone.',
         );
       }
       return;
@@ -138,11 +137,9 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
           _isLoadingPreview = false;
           _isPlayingPreview = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not play preview audio: $e'),
-            behavior: SnackBarBehavior.floating,
-          ),
+        AppFloatingToast.showError(
+          context,
+          message: 'Could not play preview audio: $e',
         );
       }
     }

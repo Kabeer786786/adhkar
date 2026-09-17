@@ -5,6 +5,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../widgets/app_dropdown.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../domain/dua_item.dart';
 
 class AddDuaModal extends ConsumerStatefulWidget {
@@ -93,10 +94,9 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
     final arabic = _arabicController.text.trim();
 
     if (title.isEmpty || arabic.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter at least a title and Arabic text.'),
-        ),
+      AppFloatingToast.showError(
+        context,
+        message: 'Please enter at least a title and Arabic text.',
       );
       return;
     }

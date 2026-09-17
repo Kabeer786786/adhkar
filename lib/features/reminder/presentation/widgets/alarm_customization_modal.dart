@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../shared/providers/app_providers.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../alarm_screen.dart';
 
 class AlarmBackgroundConfig {
@@ -120,16 +121,9 @@ class _AlarmCustomizationModalState
 
     if (mounted) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF15803D),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          content: Text(
-            'Alarm screen appearance updated',
-            style: GoogleFonts.lexend(fontSize: 13, color: Colors.white),
-          ),
-        ),
+      AppFloatingToast.showSuccess(
+        context,
+        message: 'Alarm appearance updated',
       );
     }
   }

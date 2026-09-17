@@ -12,6 +12,7 @@ import '../../../core/calendar/providers/calendar_providers.dart';
 import '../../../core/utils/hijri_date.dart';
 import '../../../core/utils/hijri_date_helper.dart';
 import '../../../shared/providers/app_providers.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../shared/widgets/hijri_disclaimer_chip.dart';
 import '../domain/prayer_models.dart';
 import 'widgets/prayer_detail_modal.dart'; 
@@ -403,12 +404,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                         ? null
                         : () {
                             if (isFuture) {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Upcoming prayer cannot be marked as completed before its time.'),
-                                  duration: Duration(seconds: 2),
-                                ),
+                              AppFloatingToast.showInfo(
+                                context,
+                                message: 'Upcoming prayer cannot be marked as completed yet',
                               );
                             } else {
                               _openPrayerDetail(

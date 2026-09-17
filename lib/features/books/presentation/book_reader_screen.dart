@@ -6,6 +6,7 @@ import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../shared/widgets/app_floating_toast.dart';
 import '../data/books_provider.dart';
 import '../domain/book_model.dart';
 import 'widgets/book_content_renderer.dart';
@@ -45,10 +46,9 @@ class BookReaderScreen extends ConsumerStatefulWidget {
   static Future<void> openExternal(BuildContext context, String? path) async {
     if (path == null || path.trim().isEmpty) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No external document or link available for this book.'),
-          ),
+        AppFloatingToast.showInfo(
+          context,
+          message: 'No external document or link available for this book',
         );
       }
       return;
@@ -60,27 +60,26 @@ class BookReaderScreen extends ConsumerStatefulWidget {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not launch URL: $trimmed')),
+        AppFloatingToast.showError(
+          context,
+          message: 'Could not launch URL: $trimmed',
         );
       }
     } else if (File(trimmed).existsSync() || isDocumentFile(trimmed)) {
       final result = await OpenFilex.open(trimmed);
       if (result.type != ResultType.done && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              result.message.isNotEmpty && result.message != 'done'
-                  ? 'Opening document: ${result.message}'
-                  : 'Opening document in external app...',
-            ),
-          ),
+        AppFloatingToast.showInfo(
+          context,
+          message: result.message.isNotEmpty && result.message != 'done'
+              ? 'Opening document: ${result.message}'
+              : 'Opening document in external app...',
         );
       }
     } else if (context.mounted) {
-      ScaffoldMessenger.of(
+      AppFloatingToast.showError(
         context,
-      ).showSnackBar(SnackBar(content: Text('File not found: $trimmed')));
+        message: 'File not found: $trimmed',
+      );
     }
   }
 

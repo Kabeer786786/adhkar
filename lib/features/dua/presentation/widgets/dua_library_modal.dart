@@ -202,10 +202,9 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
     final arabic = _formArabicController.text.trim();
 
     if (title.isEmpty || arabic.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter at least a title and Arabic text.'),
-        ),
+      AppFloatingToast.showError(
+        context,
+        message: 'Please enter at least a title and Arabic text.',
       );
       return;
     }

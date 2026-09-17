@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/tasbeeh_item.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 
 class AddTasbeehModal extends StatefulWidget {
   final TasbeehItem? existingItem;
@@ -91,10 +92,9 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
     final desc = _descController.text.trim();
 
     if (ar.isEmpty || en.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter Arabic text and English title.'),
-        ),
+      AppFloatingToast.showError(
+        context,
+        message: 'Please enter Arabic text and English title.',
       );
       return;
     }

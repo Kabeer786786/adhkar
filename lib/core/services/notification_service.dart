@@ -11,6 +11,15 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
+  /// Holds an alarm payload if the app was launched from closed state via full-screen notification
+  static String? pendingAlarmPayload;
+
+  static String? consumePendingAlarmPayload() {
+    final payload = pendingAlarmPayload;
+    pendingAlarmPayload = null;
+    return payload;
+  }
+
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -54,6 +63,7 @@ class NotificationService {
     if (androidImplementation != null) { 
       await androidImplementation.requestNotificationsPermission();
       await androidImplementation.requestExactAlarmsPermission();
+      await _precreateAlarmChannels(androidImplementation);
     }
 
     final launchDetails =
@@ -63,8 +73,9 @@ class NotificationService {
         launchDetails.notificationResponse?.payload != null) {
       final payload = launchDetails.notificationResponse!.payload;
       if (payload != null && payload.isNotEmpty) {
-        // Small delay to ensure listeners are bound
-        Future.delayed(const Duration(milliseconds: 500), () {
+        pendingAlarmPayload = payload;
+        // Also emit to controller as fallback
+        Future.delayed(const Duration(milliseconds: 300), () {
           _notificationSelectController.add(payload);
         });
       }
@@ -93,6 +104,56 @@ class NotificationService {
     } catch (_) {
       // Fallback safeguard
     }
+  }
+
+  Future<void> _precreateAlarmChannels(
+    AndroidFlutterLocalNotificationsPlugin androidImplementation,
+  ) async {
+    try {
+      // Prayer Alert Channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'adhkar_prayer_channel_v6',
+          'Prayer Alerts',
+          description: 'Adhan and Prayer Time Reminders',
+          importance: Importance.max,
+          playSound: true,
+          sound: RawResourceAndroidNotificationSound('madina_azaan'),
+          enableVibration: true,
+          audioAttributesUsage: AudioAttributesUsage.alarm,
+        ),
+      );
+
+      // Silent Reminders Channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'adhkar_reminder_silent_channel_v7',
+          'Silent Reminders',
+          description: 'Custom Alarm and Adhkar Reminders',
+          importance: Importance.max,
+          playSound: false,
+          enableVibration: true,
+          audioAttributesUsage: AudioAttributesUsage.alarm,
+        ),
+      );
+
+      // Sound Reminder Channels
+      for (final soundName in ReminderAudioConfig.soundOptions) {
+        final rawName = ReminderAudioConfig.getRawResourceName(soundName);
+        await androidImplementation.createNotificationChannel(
+          AndroidNotificationChannel(
+            'adhkar_reminder_${rawName}_channel_v7',
+            '$soundName Reminders',
+            description: 'Custom Alarm and Adhkar Reminders',
+            importance: Importance.max,
+            playSound: true,
+            sound: RawResourceAndroidNotificationSound(rawName),
+            enableVibration: true,
+            audioAttributesUsage: AudioAttributesUsage.alarm,
+          ),
+        );
+      }
+    } catch (_) {}
   }
 
   static Int64List _create30SecondVibrationPattern() {
@@ -215,8 +276,8 @@ class NotificationService {
 
     final bigTextStyleInformation = BigTextStyleInformation(
       body.isNotEmpty
-          ? '$body\n\n⏰ Scheduled Adhkar Alert Active'
-          : 'It\'s time for your scheduled reminder & adhkar.\n\n⏰ Scheduled Adhkar Alert Active',
+          ? '$body\n\nScheduled Adhkar Alert Active'
+          : 'It\'s time for your scheduled reminder & adhkar.\n\nScheduled Adhkar Alert Active',
       contentTitle: title,
       summaryText: 'Scheduled Reminder',
     );
@@ -240,7 +301,7 @@ class NotificationService {
       actions: const <AndroidNotificationAction>[
         AndroidNotificationAction(
           'turn_off_reminder',
-          '⏹ Turn Off Reminder',
+          'Turn Off Reminder',
           showsUserInterface: false,
           cancelNotification: true,
         ),

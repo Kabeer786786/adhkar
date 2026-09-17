@@ -98,50 +98,11 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     bool isActivated,
     bool isDark,
   ) {
-    final toastBg = isActivated
-        ? const Color(0xFF2A531D)
-        : (isDark ? const Color(0xFF1E2D24) : const Color(0xFF1E293B));
-    final borderColor = isActivated
-        ? const Color(0xFF4ADE80).withValues(alpha: 0.6)
-        : const Color(0xFF2A531D).withValues(alpha: 0.4);
-
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        duration: const Duration(milliseconds: 1400),
-        margin: const EdgeInsets.only(bottom: 20, left: 100, right: 100),
-        content: Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: toastBg,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: borderColor, width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Text(
-              message,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.lexend(
-                color: Colors.white,
-                fontSize: 11.5,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+    if (isActivated) {
+      AppFloatingToast.showEnabled(context, message: message);
+    } else {
+      AppFloatingToast.showDisabled(context, message: message);
+    }
   }
 
   void _showDeleteToast(BuildContext context, [String message = 'Removed']) {

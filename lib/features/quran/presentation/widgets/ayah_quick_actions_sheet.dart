@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../data/surah_model.dart';
 import '../../services/quran_audio_service.dart';
 
@@ -400,16 +401,10 @@ class AyahQuickActionsSheet extends StatelessWidget {
                               '${ayah.displayArabicText}\n\n[English]: ${ayah.englishTranslation}\n\n[Urdu]: ${ayah.translationUrdu}';
                           Clipboard.setData(ClipboardData(text: textToCopy));
                           Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Ayah ${ayah.numberInSurah} copied to clipboard!',
-                              ),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
+                          AppFloatingToast.showSuccess(
+                            context,
+                            message: 'Ayah ${ayah.numberInSurah} copied to clipboard',
+                            icon: Icons.copy_rounded,
                           );
                         },
                         icon: const Icon(Icons.copy_rounded, size: 17),
