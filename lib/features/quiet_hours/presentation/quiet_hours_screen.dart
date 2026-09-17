@@ -23,8 +23,6 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   bool _hasDndPermission = true;
   bool _isBatteryOptIgnored = true;
   bool _canScheduleExactAlarms = true;
-  bool _isAutoStartSupported = false;
-  String _deviceManufacturer = '';
   Timer? _timer;
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = <String>{};
@@ -66,15 +64,11 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     final granted = await service.isDndPermissionGranted();
     final batteryIgnored = await service.isBatteryOptimizationIgnored();
     final canAlarms = await service.canScheduleExactAlarms();
-    final autoStartSupported = await service.isAutoStartSupported();
-    final manufacturer = await service.getDeviceManufacturer();
     if (mounted) {
       setState(() {
         _hasDndPermission = granted;
         _isBatteryOptIgnored = batteryIgnored;
         _canScheduleExactAlarms = canAlarms;
-        _isAutoStartSupported = autoStartSupported;
-        _deviceManufacturer = manufacturer;
       });
     }
   }
@@ -385,72 +379,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 90, top: 12),
               children: [
-                // DND Permission Alert Card if permission missing on Android
-                if (isSupported && !_hasDndPermission) ...[
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF382315)
-                          : const Color(0xFFFEF3C7),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0xFFF59E0B).withValues(alpha: 0.5),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Allow Quiet Hours Access',
-                          style: GoogleFonts.outfit(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFFB45309),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Grant Do Not Disturb policy access to silence interruptions during scheduled times.',
-                          style: GoogleFonts.lexend(
-                            fontSize: 12,
-                            color: isDark
-                                ? Colors.white70
-                                : const Color(0xFF78350F),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFB45309),
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: () =>
-                                service.openDndPermissionSettings(),
-                            child: Text(
-                              'Grant Access',
-                              style: GoogleFonts.lexend(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
+
 
                 // Battery Saver / Optimization Warning Card
                 if (isSupported && !_isBatteryOptIgnored) ...[
@@ -524,84 +453,101 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 6),
                 ],
 
-                // OEM Autostart / Protected App Card (Xiaomi, Oppo, Vivo, Realme, OnePlus, Samsung, etc.)
-                if (isSupported && _isAutoStartSupported) ...[
+                // Notification Access Policy Note
+                if (isSupported && !_hasDndPermission) ...[
                   Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 6,
                     ),
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF1B2836)
+                          ? const Color(0xFF14231A)
                           : const Color(0xFFF0FDF4),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: const Color(0xFF16A34A).withValues(alpha: 0.4),
+                        color: isDark
+                            ? const Color(0xFF22C55E).withValues(alpha: 0.35)
+                            : const Color(0xFF16A34A).withValues(alpha: 0.3),
+                        width: 1.2,
                       ),
                     ),
-                    child: Column(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.rocket_launch_rounded,
-                              color: Color(0xFF16A34A),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Enable Autostart (${_deviceManufacturer.toUpperCase()})',
-                              style: GoogleFonts.outfit(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF15803D),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'On ${_deviceManufacturer.isNotEmpty ? _deviceManufacturer[0].toUpperCase() + _deviceManufacturer.substring(1) : "OEM"} devices, swiping the app from recents revokes background alarms. Enable Autostart so Quiet Hours always triggers on schedule.',
-                          style: GoogleFonts.lexend(
-                            fontSize: 12,
-                            color: isDark
-                                ? Colors.white70
-                                : const Color(0xFF14532D),
-                            height: 1.35,
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF16A34A).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.verified_user_rounded,
+                            color: Color(0xFF16A34A),
+                            size: 22,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF16A34A),
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Notification Access Policy',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF14532D),
+                                ),
                               ),
-                            ),
-                            onPressed: () => service.openAutoStartSettings(),
-                            child: Text(
-                              'Allow Autostart / Background Run',
-                              style: GoogleFonts.lexend(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                              const SizedBox(height: 5),
+                              Text(
+                                'To ensure Quiet Hours can automate Do Not Disturb mode reliably, please enable Adhkar under Notification Access Policy in your device\'s Settings.',
+                                style: GoogleFonts.lexend(
+                                  fontSize: 12.5,
+                                  height: 1.45,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : const Color(0xFF334155),
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF16A34A),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () => service.openDndPermissionSettings(),
+                                  icon: const Icon(Icons.settings_suggest_rounded, size: 18),
+                                  label: Text(
+                                    'Open Notification Policy Settings',
+                                    style: GoogleFonts.lexend(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 6),
                 ],
 
                 // Exact Alarms Permission Card on Android 12+
@@ -676,7 +622,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 6),
                 ],
 
                 Padding(

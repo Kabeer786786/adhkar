@@ -594,4 +594,32 @@ class StorageService {
   Future<void> saveQuietHoursList(List<Map<String, dynamic>> items) async {
     await _settingsBox.put('quiet_hours_list_v2', items);
   }
+
+  // --- Alarm Screen Customization ---
+  String getAlarmBgType() {
+    return _settingsBox.get('alarm_bg_type', defaultValue: 'image') as String;
+  }
+
+  Future<void> setAlarmBgType(String type) async {
+    await _settingsBox.put('alarm_bg_type', type);
+  }
+
+  String getAlarmBgValue() {
+    return _settingsBox.get(
+      'alarm_bg_value',
+      defaultValue: 'assets/images/alarm-bgs/bg1.jpg',
+    ) as String;
+  }
+
+  Future<void> setAlarmBgValue(String value) async {
+    await _settingsBox.put('alarm_bg_value', value);
+  }
+
+  bool getAlarmShowWaves() {
+    return _settingsBox.get('alarm_show_waves', defaultValue: false) as bool;
+  }
+
+  Future<void> setAlarmShowWaves(bool show) async {
+    await _settingsBox.put('alarm_show_waves', show);
+  }
 }

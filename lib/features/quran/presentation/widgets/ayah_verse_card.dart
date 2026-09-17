@@ -76,18 +76,16 @@ class AyahVerseCard extends StatelessWidget {
         ? (isDark
             ? const LinearGradient(
                 colors: [
-                  Color(0xFF1B2E21),
-                  Color(0xFF203726),
-                  Color(0xFF16281B),
+                  Color(0xFF19281F),
+                  Color(0xFF14221A),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
             : const LinearGradient(
                 colors: [
-                  Color(0xFFE8F5E9),
-                  Color(0xFFFEF9C3),
-                  Color(0xFFDCFCE7),
+                  Color(0xFFF2FBF5),
+                  Color(0xFFEAF7EE),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -100,8 +98,8 @@ class AyahVerseCard extends StatelessWidget {
             ? const Color(0xFFD97706)
             : (isSelected
                 ? (isDark
-                    ? const Color(0xFFA3E635)
-                    : const Color(0xFF16A34A))
+                    ? const Color(0xFF22C55E).withValues(alpha: 0.7)
+                    : const Color(0xFF16A34A).withValues(alpha: 0.65))
                 : (isDark
                     ? const Color(0xFF2E2E32)
                     : const Color(0xFF2A531D).withValues(alpha: 0.12))));
@@ -114,7 +112,7 @@ class AyahVerseCard extends StatelessWidget {
       key: cardKey,
       margin: const EdgeInsets.only(bottom: 12),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 350),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
         decoration: BoxDecoration(
@@ -124,35 +122,18 @@ class AyahVerseCard extends StatelessWidget {
           border: Border.all(
             color: isSajda ? const Color(0xFF22C55E) : borderColor,
             width: isSelected
-                ? 2.2
-                : (isResumeHighlight || isMarkedStopPoint ? 1.5 : 0.8),
+                ? 1.4
+                : (isResumeHighlight || isMarkedStopPoint ? 1.4 : 0.8),
           ),
-          boxShadow: isSelected
+          boxShadow: isResumeHighlight || isMarkedStopPoint
               ? [
                   BoxShadow(
-                    color: (isDark
-                            ? const Color(0xFFA3E635)
-                            : const Color(0xFF16A34A))
-                        .withValues(alpha: isDark ? 0.30 : 0.35),
-                    blurRadius: 18,
-                    spreadRadius: 1.5,
-                    offset: const Offset(0, 4),
-                  ),
-                  BoxShadow(
-                    color: const Color(0xFFD4AF37).withValues(alpha: 0.2),
-                    blurRadius: 12,
-                    offset: const Offset(0, 2),
+                    color: const Color(0xFFF59E0B).withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
                   ),
                 ]
-              : (isResumeHighlight || isMarkedStopPoint
-                  ? [
-                      BoxShadow(
-                        color: const Color(0xFFF59E0B).withValues(alpha: 0.25),
-                        blurRadius: 14,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : null),
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -170,7 +151,7 @@ class AyahVerseCard extends StatelessWidget {
                         ? const Color(0xFFD97706)
                         : (isSelected
                             ? (isDark
-                                ? const Color(0xFFA3E635)
+                                ? const Color(0xFF166534)
                                 : const Color(0xFF16A34A))
                             : (isDark
                                 ? const Color(0xFF1E3A2B)
@@ -181,23 +162,11 @@ class AyahVerseCard extends StatelessWidget {
                           ? const Color(0xFFF59E0B)
                           : (isSelected
                               ? (isDark
-                                  ? const Color(0xFFD9F99D)
-                                  : const Color(0xFF4ADE80))
+                                  ? const Color(0xFF4ADE80)
+                                  : const Color(0xFF22C55E))
                               : const Color(0xFF2A531D).withValues(alpha: 0.2)),
-                      width: isSelected ? 1.8 : 1.2,
+                      width: isSelected ? 1.4 : 1.2,
                     ),
-                    boxShadow: isSelected && isPlaying
-                        ? [
-                            BoxShadow(
-                              color: (isDark
-                                      ? const Color(0xFFA3E635)
-                                      : const Color(0xFF16A34A))
-                                  .withValues(alpha: 0.45),
-                              blurRadius: 8,
-                              spreadRadius: 1,
-                            ),
-                          ]
-                        : null,
                   ),
                   child: Center(
                     child: isSelected && isPlaying

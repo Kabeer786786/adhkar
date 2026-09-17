@@ -6,6 +6,7 @@ import '../../../widgets/app_header_bar.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/reminder_model.dart';
 import 'providers/reminder_provider.dart';
+import 'widgets/alarm_customization_modal.dart';
 import 'widgets/reminder_library_modal.dart';
 import 'widgets/reminder_modal.dart';
 
@@ -191,7 +192,17 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
       );
     }
 
-    return const AppHeaderBar(title: 'REMINDERS', showBackButton: true);
+    return AppHeaderBar(
+      title: 'REMINDERS',
+      showBackButton: true,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.palette_outlined, size: 22),
+          tooltip: 'Alarm Screen Theme',
+          onPressed: () => AlarmCustomizationModal.show(context),
+        ),
+      ],
+    );
   }
 
   @override

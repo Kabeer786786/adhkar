@@ -226,7 +226,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     if (_activeAyahIndex < 0 || _activeAyahIndex >= ayahs.length) return;
 
     if (_selectedMode == 0) {
-      // Verse-by-Verse list mode: Position active verse card smoothly at the top of the viewport
+      // Verse-by-Verse list mode: Position active verse card smoothly and stick to top
       if (!_scrollController.hasClients) return;
       final key = _ayahKeys[_activeAyahIndex];
       final currentCtx = key?.currentContext;
@@ -235,19 +235,19 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         Scrollable.ensureVisible(
           currentCtx,
           alignment: 0.0,
-          duration: const Duration(milliseconds: 600),
+          duration: const Duration(milliseconds: 450),
           curve: Curves.easeInOutCubic,
         );
       } else {
-        const double headerEstimatedHeight = 360.0;
-        const double avgVerseHeight = 220.0;
+        const double headerEstimatedHeight = 320.0;
+        const double avgVerseHeight = 240.0;
         final double estimatedTarget =
             headerEstimatedHeight + (_activeAyahIndex * avgVerseHeight);
         final maxExtent = _scrollController.position.maxScrollExtent;
         _scrollController
             .animateTo(
               estimatedTarget.clamp(0.0, maxExtent),
-              duration: const Duration(milliseconds: 350),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
             )
             .then((_) {
@@ -259,12 +259,41 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   Scrollable.ensureVisible(
                     retryCtx,
                     alignment: 0.0,
-                    duration: const Duration(milliseconds: 400),
+                    duration: const Duration(milliseconds: 350),
                     curve: Curves.easeInOutCubic,
                   );
                 }
               });
             });
+      }
+    } else if (_selectedMode == 1) {
+      // Page-wise Mushaf mode: Automatically flip to the page containing active playing ayah
+      final mushafPages =
+          _lastComputedMushafPages ?? _paginateCurrentMushaf(context, ayahs);
+      final pageIdx = mushafPages.indexWhere(
+        (p) => p.containsMasterAyahIndex(_activeAyahIndex),
+      );
+      if (pageIdx >= 0 && pageIdx != _currentPageIndex) {
+        _currentPageIndex = pageIdx;
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            pageIdx,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutCubic,
+          );
+        }
+      }
+    } else if (_selectedMode == 2) {
+      // Continuous Mushaf mode: Smoothly glide to the active verse position
+      if (_scrollController.hasClients && ayahs.isNotEmpty) {
+        final double progress = _activeAyahIndex / ayahs.length;
+        final double target =
+            progress * _scrollController.position.maxScrollExtent;
+        _scrollController.animateTo(
+          target.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+        );
       }
     }
   }

@@ -14,7 +14,11 @@ import '../../../core/services/notification_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../../quiet_hours/presentation/providers/quiet_hours_provider.dart';
+import '../../../core/services/storage_service.dart';
+import '../../../shared/providers/app_providers.dart';
 import '../domain/reminder_model.dart';
+import 'widgets/alarm_customization_modal.dart';
+import 'widgets/ambient_wave_background.dart';
 import 'providers/reminder_provider.dart';
 
 class AlarmScreen extends ConsumerStatefulWidget {
@@ -125,6 +129,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     final isQuietActive = await quietHoursService.isQuietHoursCurrentlyActive(quietHours);
 
     if (_isDismissed) return;
+    if (widget.soundType == 'preview_silent') return;
 
     final soundEnabled = !isQuietActive && (customReminder?.soundEnabled ?? true);
     final vibrationEnabled = !isQuietActive && (customReminder?.vibrationEnabled ?? true);
@@ -474,6 +479,75 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     return Icons.alarm_on_rounded;
   }
 
+  Widget _buildBackground(StorageService storage) {
+    final bgType = storage.getAlarmBgType();
+    final bgValue = storage.getAlarmBgValue();
+    final showWaves = storage.getAlarmShowWaves();
+
+    Widget base;
+    if (bgType == 'image') {
+      base = Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            bgValue,
+            fit: BoxFit.cover,
+            errorBuilder: (c, e, s) => Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF0C171F), Color(0xFF192A38)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ),
+          // Subtle scrim overlay to ensure 100% legibility
+          Container(
+            color: Colors.black.withValues(alpha: 0.22),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black.withValues(alpha: 0.35),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.55),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.0, 0.45, 1.0],
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      final colors = AlarmBackgroundConfig.getGradientColors(bgValue);
+      base = Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+      );
+    }
+
+    if (showWaves) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          base,
+          const AmbientWaveBackground(),
+        ],
+      );
+    }
+
+    return base;
+  }
+
   @override
   Widget build(BuildContext context) {
     final reminders = ref.watch(remindersProvider);
@@ -481,256 +555,315 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         ? reminders.where((r) => r.id == widget.reminderId).firstOrNull
         : null;
 
+    final storage = ref.watch(storageServiceProvider);
     final isPrayer = widget.prayerName != null;
     final alarmTitle = isPrayer
         ? 'TIME FOR ${widget.prayerName!.toUpperCase()} PRAYER'
-        : widget.title ?? customReminder?.title ?? 'SCHEDULED REMINDER';
+        : widget.title ?? customReminder?.title ?? "It's time !";
 
     final alarmSubtitle = isPrayer
         ? (widget.prayerName!.toLowerCase() == 'fajr'
-              ? 'الصلاة خير من النوم'
+              ? 'الصلاة خير من النوم • Prayer is better than sleep'
               : 'حي على الصلاة • Come to Success')
         : (customReminder?.description ??
-              'Time for your scheduled reminder & adhkar.');
+              'Time for your scheduled reminder.');
 
-    final timeStr = DateFormat('hh:mm a').format(_currentTime);
-    final dateStr = DateFormat('EEEE, d MMMM yyyy').format(_currentTime);
+    final dateStr = DateFormat('EEEE, MMMM d').format(_currentTime);
+    final timeStr = DateFormat('h:mm').format(_currentTime);
+    final amPmStr = DateFormat('a').format(_currentTime);
     final iconData = _getIconForReminder(alarmTitle, isPrayer);
 
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF06140D),
-                Color(0xFF0C2417),
-                Color(0xFF163E26),
-                Color(0xFF1F5234),
-              ],
-              stops: [0.0, 0.35, 0.75, 1.0],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                children: [
-                  const SizedBox(height: 24),
-                  const Spacer(flex: 1),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 1. Configured Background (Wallpapers from alarm-bgs / Gradients / Ambient Waves)
+            _buildBackground(storage),
 
-                  // Animated Concentric Pulsing Center Avatar
-                  AnimatedBuilder(
-                    animation: _pulseController,
-                    builder: (context, child) {
-                      return ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: Container(
-                          width: 150,
-                          height: 150,
+            // 2. Alarm UI Content (matching reference image structure)
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: Column(
+                  children: [
+                    // Top header: subtle 'Alarm' status label
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 4, top: 4),
+                        child: Text(
+                          'Alarm',
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withValues(alpha: 0.8),
+                            letterSpacing: 0.4,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black45,
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const Spacer(flex: 2),
+
+                    // Date Header: "Saturday, January 21"
+                    Text(
+                      dateStr,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lexend(
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withValues(alpha: 0.95),
+                        letterSpacing: 0.2,
+                        shadows: const [
+                          Shadow(
+                            color: Colors.black54,
+                            blurRadius: 8,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 2),
+
+                    // Large Digital Clock Display: "2:43"
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          timeStr,
+                          style: GoogleFonts.outfit(
+                            fontSize: 76,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            letterSpacing: -1.5,
+                            height: 1.1,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black54,
+                                blurRadius: 16,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          amPmStr,
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withValues(alpha: 0.8),
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black54,
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // Animated Reminder Icon with pulsing glow rings
+                    AnimatedBuilder(
+                      animation: _pulseController,
+                      builder: (context, child) {
+                        return Container(
+                          width: 58,
+                          height: 58,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(
-                              0xFF1E492B,
-                            ).withValues(alpha: 0.4),
+                            color: Colors.black.withValues(alpha: 0.25),
                             border: Border.all(
-                              color: const Color(
-                                0xFF4ADE80,
-                              ).withValues(alpha: _glowAnimation.value),
-                              width: 3.5,
+                              color: Colors.white.withValues(
+                                alpha: 0.45 * _glowAnimation.value,
+                              ),
+                              width: 1.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF22C55E).withValues(
-                                  alpha: 0.35 * _glowAnimation.value,
+                                color: Colors.white.withValues(
+                                  alpha: 0.2 * _glowAnimation.value,
                                 ),
-                                blurRadius: 40,
-                                spreadRadius: 10,
+                                blurRadius: 18 * _scaleAnimation.value,
+                                spreadRadius: 2,
                               ),
                             ],
                           ),
                           child: Center(
-                            child: Icon(
-                              iconData,
-                              size: 70,
-                              color: Colors.white,
+                            child: Transform.scale(
+                              scale: _scaleAnimation.value,
+                              child: Icon(
+                                iconData,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 28),
-
-                  // Digital Clock Display
-                  Text(
-                    timeStr,
-                    style: GoogleFonts.outfit(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1.0,
+                        );
+                      },
                     ),
-                  ),
 
-                  const SizedBox(height: 4),
+                    const Spacer(flex: 3),
 
-                  // Date String
-                  Text(
-                    dateStr,
-                    style: GoogleFonts.lexend(
-                      fontSize: 13.5,
-                      color: const Color(0xFF86EFAC),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Main Title Card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 18,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        width: 1.2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          alarmTitle,
-                          style: GoogleFonts.outfit(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 0.3,
+                    // Title: "It's time !"
+                    Text(
+                      alarmTitle,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.3,
+                        shadows: const [
+                          Shadow(
+                            color: Colors.black87,
+                            blurRadius: 10,
+                            offset: Offset(0, 2),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          alarmSubtitle,
-                          style: GoogleFonts.lexend(
-                            fontSize: 13.5,
-                            color: Colors.white.withValues(alpha: 0.85),
-                            height: 1.4,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(flex: 2),
-
-                  // Dua After Azaan Quick Button (For Prayer)
-                  if (isPrayer) ...[
-                    TextButton.icon(
-                      onPressed: _showDuaAfterAzaan,
-                      icon: const Icon(
-                        Icons.menu_book_rounded,
-                        color: Color(0xFF86EFAC),
-                        size: 18,
+                        ],
                       ),
-                      label: Text(
-                        'Read Dua After Azaan',
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // Description: "Don't forget your pills."
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        alarmSubtitle,
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.lexend(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF86EFAC),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white.withValues(alpha: 0.9),
+                          height: 1.35,
+                          shadows: const [
+                            Shadow(
+                              color: Colors.black87,
+                              blurRadius: 8,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                  ],
 
-                  // Action Buttons: Snooze & Dismiss
-                  Row(
-                    children: [
-                      // Snooze Button
-                      Expanded(
-                        flex: 1,
-                        child: OutlinedButton.icon(
-                          onPressed: _showSnoozeOptions,
-                          icon: const Icon(Icons.snooze_rounded, size: 20),
-                          label: const Text('Snooze'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            side: BorderSide(
-                              color: Colors.white.withValues(alpha: 0.4),
-                              width: 1.5,
+                    const SizedBox(height: 32),
+
+                    // STOP Pill Button (Dark capsule button)
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _dismissAlarm,
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          width: 160,
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF222226).withValues(alpha: 0.92),
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                              width: 1.0,
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.4),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'STOP',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lexend(
+                              color: Colors.white,
+                              fontSize: 15.5,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
                             ),
-                            textStyle: GoogleFonts.lexend(
-                              fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // Snooze Pill Button (White capsule button)
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _showSnoozeOptions,
+                        borderRadius: BorderRadius.circular(22),
+                        child: Container(
+                          width: 105,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.96),
+                            borderRadius: BorderRadius.circular(22),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.25),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'Snooze',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lexend(
+                              color: const Color(0xFF1E293B),
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
+                    ),
 
-                      const SizedBox(width: 12),
-
-                      // Dismiss Alarm Button
-                      Expanded(
-                        flex: 2,
-                        child: ElevatedButton.icon(
-                          onPressed: _dismissAlarm,
-                          icon: const Icon(
-                            Icons.alarm_off_rounded,
-                            size: 22,
-                            color: Color(0xFF0C2417),
-                          ),
-                          label: const Text('Turn Off & Dismiss'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF0C2417),
-                            elevation: 8,
-                            shadowColor: const Color(
-                              0xFF4ADE80,
-                            ).withValues(alpha: 0.5),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            textStyle: GoogleFonts.lexend(
-                              fontSize: 15.5,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    // Optional Dua After Azaan button for prayer alarms
+                    if (isPrayer) ...[
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        onPressed: _showDuaAfterAzaan,
+                        icon: const Icon(
+                          Icons.menu_book_rounded,
+                          color: Colors.white70,
+                          size: 16,
+                        ),
+                        label: Text(
+                          'Read Dua After Azaan',
+                          style: GoogleFonts.lexend(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white70,
                           ),
                         ),
                       ),
                     ],
-                  ),
 
-                  const SizedBox(height: 10),
-                ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
