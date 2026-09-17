@@ -27,6 +27,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   bool _isGridView = true; // True for boxes/grid, False for list view
   bool _isAllDownloaded = false;
   bool _hasCheckedDownloadStatus = false;
+  int _lastAsmaAudioIndex = -1;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        AsmaDownloadDialog.showIfFirstTime(context, ref);
+        AsmaDownloadDialog.showIfFirstTime(context, ref); 
         _checkDownloadStatus();
       }
     });
@@ -63,65 +64,56 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
     }
   }
 
+  double _measuredHeaderHeight = 156.0;
+
+  /// Calculates the exact card/row height and computes the precise target scroll offset
+  /// so the playing name sticks directly at the top of the viewport for both Grid and List views.
+  double _calculateTargetOffset(int index) {
+    if (index < 0 || index >= asmaUlHusnaList.length) return 0.0;
+
+    final headerBox =
+        _headerKey.currentContext?.findRenderObject() as RenderBox?;
+    if (headerBox != null && headerBox.hasSize) {
+      _measuredHeaderHeight = headerBox.size.height;
+    }
+    // 8px top padding + header card + 16px bottom padding in SliverToBoxAdapter
+    final double headerTotalOffset = 8.0 + _measuredHeaderHeight + 16.0;
+
+    if (_isGridView) {
+      final screenWidth = MediaQuery.of(context).size.width;
+      final crossAxisCount = screenWidth > 600 ? 5 : 3;
+      final rowIndex = index ~/ crossAxisCount;
+      // In SliverPadding(horizontal: 16), crossAxisSpacing = 10, mainAxisSpacing = 10, childAspectRatio = 0.92
+      final itemWidth =
+          (screenWidth - 32.0 - ((crossAxisCount - 1) * 10.0)) / crossAxisCount;
+      final itemHeight = itemWidth / 0.92;
+      final rowTotalHeight = itemHeight + 10.0;
+      return headerTotalOffset + (rowIndex * rowTotalHeight);
+    } else {
+      // In SliverList, each item has height: 76 and bottom margin: 10 = 86.0
+      const double itemTotalHeight = 86.0;
+      return headerTotalOffset + (index * itemTotalHeight);
+    }
+  }
+
   /// Smoothly scrolls so that the item at [index] is brought right to the top
-  /// of the viewport in both Grid and List views with beautiful animation.
-  void _scrollToIndex(int index) {
+  /// of the viewport in both Grid and List views with continuous animation.
+  void _scrollToIndex(int index, {bool smooth = true}) {
     if (!_scrollController.hasClients) return;
     if (index < 0 || index >= asmaUlHusnaList.length) return;
 
-    final key = _itemKeys[index];
-    final currentCtx = key?.currentContext;
+    final double targetOffset = _calculateTargetOffset(index);
+    final double maxScroll = _scrollController.position.maxScrollExtent;
+    final double clampedTarget = targetOffset.clamp(0.0, maxScroll);
 
-    if (currentCtx != null) {
-      Scrollable.ensureVisible(
-        currentCtx,
-        alignment: 0.0,
-        duration: const Duration(milliseconds: 600),
+    if (smooth) {
+      _scrollController.animateTo(
+        clampedTarget,
+        duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOutCubic,
       );
     } else {
-      final headerBox =
-          _headerKey.currentContext?.findRenderObject() as RenderBox?;
-      final double headerCardHeight = headerBox?.size.height ?? 148.0;
-      // 8px top padding + header card + 16px bottom padding
-      final double headerTotalOffset = 8.0 + headerCardHeight + 16.0;
-
-      double estimatedTarget = 0;
-      if (_isGridView) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final crossAxisCount = screenWidth > 600 ? 5 : 3;
-        final rowIndex = index ~/ crossAxisCount;
-        final itemWidth =
-            (screenWidth - 32 - ((crossAxisCount - 1) * 10)) / crossAxisCount;
-        final itemHeight = itemWidth / 0.92;
-        estimatedTarget = headerTotalOffset + (rowIndex * (itemHeight + 10.0));
-      } else {
-        const itemTotalHeight = 86.0; // 76 card + 10 margin
-        estimatedTarget = headerTotalOffset + (index * itemTotalHeight);
-      }
-
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      _scrollController
-          .animateTo(
-            estimatedTarget.clamp(0.0, maxScroll),
-            duration: const Duration(milliseconds: 380),
-            curve: Curves.easeOutCubic,
-          )
-          .then((_) {
-            if (!mounted) return;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-              final retryCtx = _itemKeys[index]?.currentContext;
-              if (retryCtx != null) {
-                Scrollable.ensureVisible(
-                  retryCtx,
-                  alignment: 0.0,
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeInOutCubic,
-                );
-              }
-            });
-          });
+      _scrollController.jumpTo(clampedTarget);
     }
   }
 
@@ -139,9 +131,16 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   Widget build(BuildContext context) {
     final audioController = ref.watch(asmaAudioProvider);
 
-    ref.listen(asmaAudioProvider, (prev, next) {
-      if (next.currentIndex >= 0 && next.currentIndex != prev?.currentIndex) {
-        _scrollToIndex(next.currentIndex);
+    ref.listen(asmaAudioProvider, (_, next) {
+      if (next.currentIndex >= 0 && next.currentIndex != _lastAsmaAudioIndex) {
+        _lastAsmaAudioIndex = next.currentIndex;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _scrollToIndex(next.currentIndex, smooth: true);
+          }
+        });
+      } else if (next.currentIndex < 0) {
+        _lastAsmaAudioIndex = -1;
       }
     });
 
@@ -228,7 +227,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   setState(() => _isGridView = !_isGridView);
                   if (_audioController.currentIndex >= 0) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scrollToIndex(_audioController.currentIndex);
+                      _scrollToIndex(_audioController.currentIndex, smooth: true);
                     });
                   }
                 },
@@ -731,61 +730,84 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                 mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(14, 14, 4, 4),
+                padding: const EdgeInsets.fromLTRB(14, 10, 4, 4),
                 child: Row(
                   children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF22C55E), Color(0xFF15803D)],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${currentItem.number}',
-                        style: GoogleFonts.outfit(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            currentItem.transliteration,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.5,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      child: InkWell(
+                        onTap: () {
+                          if (_audioController.currentIndex >= 0) {
+                            _scrollToIndex(
+                              _audioController.currentIndex,
+                              smooth: true,
+                            );
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
                           ),
-                          Text(
-                            currentItem.shortMeaning,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white70,
-                              fontSize: 11.5,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF22C55E), Color(0xFF15803D)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${currentItem.number}',
+                                  style: GoogleFonts.outfit(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      currentItem.transliteration,
+                                      style: GoogleFonts.outfit(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.5,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      currentItem.shortMeaning,
+                                      style: GoogleFonts.outfit(
+                                        color: Colors.white70,
+                                        fontSize: 11.5,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                currentItem.name,
+                                textDirection: TextDirection.rtl,
+                                style: AppTypography.arabicHeader(
+                                  color: const Color(0xFF4ADE80),
+                                  fontSize: 24,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      currentItem.name,
-                      textDirection: TextDirection.rtl,
-                      style: AppTypography.arabicHeader(
-                        color: const Color(0xFF4ADE80),
-                        fontSize: 24,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),

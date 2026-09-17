@@ -70,6 +70,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   int? _selectedAyahForHighlight;
   bool _isNavigatingToTargetAyah = false;
   int? _targetAyahDisplayNumber;
+  int _lastAudioAyahIndex = -1;
 
   // On-screen typography & dedicated reading theme controls
   double _arabicFontSize = 24.0; 
@@ -172,16 +173,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     SurahModel? currentSurah,
   }) {
     final mediaQuery = MediaQuery.of(context);
-    final isPlayerActive = ref.read(quranAudioProvider).currentIndex >= 0;
     final double bottomInset = mediaQuery.padding.bottom;
-    final double bottomSpace = isPlayerActive
-        ? (bottomInset + 100.0)
-        : (bottomInset + 8.0);
     final double cardWidth = (mediaQuery.size.width - 16.0).clamp(
       100.0,
       1200.0,
     );
-    final double cardHeight = (mediaQuery.size.height - 8.0 - bottomSpace)
+    final double cardHeight = (mediaQuery.size.height - 16.0 - (bottomInset + 10.0))
         .clamp(100.0, 3000.0);
     final double availableWidth = (cardWidth - 32.0).clamp(80.0, 1160.0);
     final double availableHeight = (cardHeight - 24.0).clamp(80.0, 2960.0);
@@ -374,11 +371,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       final renderBox = key?.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox != null && renderBox.hasSize) {
         final viewport = RenderAbstractViewport.of(renderBox);
-        final revealedOffset = viewport.getOffsetToReveal(renderBox, 0.05);
+        final revealedOffset = viewport.getOffsetToReveal(renderBox, 0.0);
+        final targetOffset = revealedOffset.offset - 10.0;
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(
-            revealedOffset.offset.clamp(
-              0.0,
+            targetOffset.clamp(
+              0.0, 
               _scrollController.position.maxScrollExtent,
             ),
           );
@@ -917,18 +915,20 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         ? storage.getFavoriteJuz().contains(widget.juzNumber)
         : storage.getFavoriteSurahs().contains(widget.surahNumber);
 
-    // Reactively scroll / sync page when audio changes
-    ref.listen(quranAudioProvider, (previous, next) {
-      if (next.currentIndex >= 0 &&
-          next.currentIndex != previous?.currentIndex) {
+    // Reactively bring playing verse to top when audio starts or advances after each verse
+    ref.listen(quranAudioProvider, (_, next) {
+      if (next.currentIndex >= 0 && next.currentIndex != _lastAudioAyahIndex) {
+        _lastAudioAyahIndex = next.currentIndex;
         setState(() {
           _activeAyahIndex = next.currentIndex;
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            _scrollToActiveAyah(ayahs);
+            _bringCurrentPlayingAyahToTop(ayahs, next.currentIndex);
           }
         });
+      } else if (next.currentIndex < 0) {
+        _lastAudioAyahIndex = -1;
       }
     });
 
@@ -1346,7 +1346,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                     left: 0,
                     right: 0,
                     bottom: isPlayerActive
-                        ? 120
+                        ? (MediaQuery.of(context).padding.bottom + 142)
                         : (MediaQuery.of(context).padding.bottom > 0
                               ? MediaQuery.of(context).padding.bottom + 2
                               : 8),
@@ -1456,7 +1456,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                 opacity: isPlayerActive ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 250),
                 child: isPlayerActive
-                    ? _buildStickyAudioPlayerBar(quranAudio, effectiveIsDark)
+                    ? _buildStickyAudioPlayerBar(
+                        quranAudio,
+                        effectiveIsDark,
+                        ayahs,
+                      )
                     : const SizedBox.shrink(),
               ),
             ),
@@ -1677,30 +1681,31 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     AyahModel? playingAyah,
     bool isPlayerActive,
     dynamic storage,
-    List<AyahModel> allAyahs,
+    List<AyahModel> allAyahs, 
     List<SurahModel> allSurahs,
     ArabicFont? arabicFont,
   ) {
     final double bottomInset = MediaQuery.of(context).padding.bottom;
-    final double bottomSpace = isPlayerActive
-        ? (bottomInset + 100.0)
-        : (bottomInset + 8.0);
+    // When audio player is active, reserve space so the diminished card sits just above it
+    final double playerReservedBottom =
+        isPlayerActive ? (bottomInset + 144.0) : (bottomInset + 10.0);
 
     return Container(
       color: isDark ? const Color(0xFF121212) : const Color(0xFFE9ECEF),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // Calculate exact physical text canvas bounds available inside the card container
-          final double cardWidth = (constraints.maxWidth - 16.0).clamp(
+          // Standard physical text canvas bounds (fixed so pagination structure is preserved)
+          final double standardCardWidth = (constraints.maxWidth - 16.0).clamp(
             100.0,
             1200.0,
           );
-          final double cardHeight = (constraints.maxHeight - 8.0 - bottomSpace)
-              .clamp(100.0, 3000.0);
+          final double standardCardHeight =
+              (constraints.maxHeight - 16.0 - (bottomInset + 10.0))
+                  .clamp(100.0, 3000.0);
 
-          // Minus card internal padding (16px horizontal, 12px vertical on top & bottom)
-          final double textWidth = (cardWidth - 32.0).clamp(80.0, 1160.0);
-          final double textHeight = (cardHeight - 24.0).clamp(80.0, 2960.0);
+          // Card internal padding (16px horizontal, 12px vertical on top & bottom)
+          final double textWidth = (standardCardWidth - 32.0).clamp(80.0, 1160.0);
+          final double textHeight = (standardCardHeight - 24.0).clamp(80.0, 2960.0);
 
           final mushafPages = MushafPaginationEngine.paginate(
             ayahs: allAyahs,
@@ -1742,42 +1747,54 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
             itemBuilder: (context, pageIndex) {
               final page = mushafPages[pageIndex];
 
-              return Padding(
-                padding: EdgeInsets.fromLTRB(6, 6, 6, bottomSpace),
-                child: MushafPageWidget(
-                  page: page,
-                  currentSurah: currentSurah,
-                  playingAyah: playingAyah,
-                  isDark: isDark,
-                  storage: storage,
-                  arabicFontSize: 24.0,
-                  arabicFont: arabicFont,
-                  juzNumber: widget.juzNumber,
-                  highlightResumeAyahNumber: _highlightResumeAyahNumber,
-                  selectedAyahIndex: _selectedAyahForHighlight,
-                  allAyahs: allAyahs,
-                  allSurahs: allSurahs,
-                  onAyahTap: (ayah, masterIndex) {
-                    setState(() {
-                      _selectedAyahForHighlight = masterIndex;
-                    });
-                    _showAyahQuickActionsSheet(
-                      context: context,
-                      ayah: ayah,
-                      totalAyahs: allAyahs.length,
-                      currentSurah: currentSurah,
-                      isDark: isDark,
-                      quranAudio: ref.read(quranAudioProvider),
-                      allAyahs: allAyahs,
-                      ayahIndex: masterIndex,
-                    ).then((_) {
-                      if (mounted) {
-                        setState(() {
-                          _selectedAyahForHighlight = null;
-                        });
-                      }
-                    });
-                  },
+              return AnimatedPadding(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                padding: EdgeInsets.fromLTRB(6, 6, 6, playerReservedBottom),
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: standardCardWidth,
+                      height: standardCardHeight,
+                      child: MushafPageWidget(
+                        page: page,
+                        currentSurah: currentSurah,
+                        playingAyah: playingAyah,
+                        isDark: isDark,
+                        storage: storage,
+                        arabicFontSize: 24.0,
+                        arabicFont: arabicFont,
+                        juzNumber: widget.juzNumber,
+                        highlightResumeAyahNumber: _highlightResumeAyahNumber,
+                        selectedAyahIndex: _selectedAyahForHighlight,
+                        allAyahs: allAyahs,
+                        allSurahs: allSurahs,
+                        onAyahTap: (ayah, masterIndex) {
+                          setState(() {
+                            _selectedAyahForHighlight = masterIndex;
+                          });
+                          _showAyahQuickActionsSheet(
+                            context: context,
+                            ayah: ayah,
+                            totalAyahs: allAyahs.length,
+                            currentSurah: currentSurah,
+                            isDark: isDark,
+                            quranAudio: ref.read(quranAudioProvider),
+                            allAyahs: allAyahs,
+                            ayahIndex: masterIndex,
+                          ).then((_) {
+                            if (mounted) {
+                              setState(() {
+                                _selectedAyahForHighlight = null;
+                              });
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               );
             },
@@ -2016,17 +2033,103 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
             textAlign: TextAlign.justify,
             textDirection: TextDirection.rtl,
           );
-        }).toList(),
-      ),
+        }).toList(), 
+      ), 
     );
+  }
+
+  /// Scroll / bring the current playing verse card directly to the top
+  void _bringCurrentPlayingAyahToTop([List<AyahModel>? ayahsList, int? forceIndex]) {
+    final ayahs =
+        ayahsList ??
+        (widget.juzNumber != null
+            ? _repository.getAyahsForJuz(widget.juzNumber!)
+            : _repository.getAyahsForSurah(widget.surahNumber));
+    final quranAudio = ref.read(quranAudioProvider);
+    final playingAyah = quranAudio.currentAyah;
+
+    int targetIdx = forceIndex ?? -1;
+    if (targetIdx < 0 && playingAyah != null) {
+      targetIdx = ayahs.indexWhere(
+        (a) =>
+            a.numberInSurah == playingAyah.numberInSurah &&
+            (widget.juzNumber == null ||
+                a.surahNumber == null ||
+                playingAyah.surahNumber == null ||
+                a.surahNumber == playingAyah.surahNumber),
+      );
+    }
+
+    if (targetIdx < 0 &&
+        quranAudio.currentIndex >= 0 &&
+        quranAudio.currentIndex < ayahs.length) {
+      targetIdx = quranAudio.currentIndex;
+    }
+
+    if (targetIdx < 0 || targetIdx >= ayahs.length) return;
+
+    setState(() {
+      _activeAyahIndex = targetIdx;
+    });
+
+    if (_selectedMode == 0) {
+      // Verse-by-verse list mode: Position active playing verse smoothly 10px below the appbar
+      final key = _ayahKeys[targetIdx];
+      final renderBox = key?.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null && renderBox.hasSize && _scrollController.hasClients) {
+        final exactOffset = RenderAbstractViewport.of(renderBox)
+            .getOffsetToReveal(renderBox, 0.0)
+            .offset - 10.0;
+        _scrollController.animateTo(
+          exactOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOutCubic,
+        );
+      } else {
+        // Fast convergent scroll to top like stop point
+        _scrollToTargetAyahWithLoading(targetIdx, ayahs);
+      }
+    } else if (_selectedMode == 1) {
+      // Page-wise Mushaf mode: flip to page containing active playing ayah
+      final mushafPages =
+          _lastComputedMushafPages ?? _paginateCurrentMushaf(context, ayahs);
+      final pageIdx = mushafPages.indexWhere(
+        (p) => p.containsMasterAyahIndex(targetIdx),
+      );
+      if (pageIdx >= 0 && _pageController.hasClients && pageIdx != _currentPageIndex) {
+        _currentPageIndex = pageIdx;
+        _pageController.animateToPage(
+          pageIdx,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    } else if (_selectedMode == 2) {
+      // Continuous Mushaf mode: Smoothly glide to the active verse position
+      if (_scrollController.hasClients && ayahs.isNotEmpty) {
+        final double progress = targetIdx / ayahs.length;
+        final double target =
+            progress * _scrollController.position.maxScrollExtent;
+        _scrollController.animateTo(
+          target.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    }
   }
 
   /// 4. Sticky Audio Player Bar
   Widget _buildStickyAudioPlayerBar(
     QuranAudioController quranAudio,
     bool isDark,
+    List<AyahModel> ayahs,
   ) {
-    return QuranAudioPlayerBar(quranAudio: quranAudio, isDark: isDark);
+    return QuranAudioPlayerBar(
+      quranAudio: quranAudio,
+      isDark: isDark,
+      onTap: () => _bringCurrentPlayingAyahToTop(ayahs),
+    );
   }
 
   /// 5. Navigate directly to marked Stop Point in the current reading mode

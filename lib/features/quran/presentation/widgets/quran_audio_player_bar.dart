@@ -8,11 +8,13 @@ import '../../services/quran_audio_service.dart';
 class QuranAudioPlayerBar extends StatelessWidget {
   final QuranAudioController quranAudio;
   final bool isDark;
+  final VoidCallback? onTap;
 
   const QuranAudioPlayerBar({
     super.key,
     required this.quranAudio,
     required this.isDark,
+    this.onTap,
   });
 
   @override
@@ -59,76 +61,92 @@ class QuranAudioPlayerBar extends StatelessWidget {
             children: [
               // Top row: Ayah Number Badge + Title / Subtitle + Arabic Text snippet + Close
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 8, 0),
+                padding: const EdgeInsets.fromLTRB(10, 8, 8, 0),
                 child: Row(
                   children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFA3E635), Color(0xFF65A30D)],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${ayah?.numberInSurah ?? currentAyahNumber}',
-                        style: GoogleFonts.outfit(
-                          color: const Color(0xFF14290F),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            ayah != null
-                                ? 'Ayah ${ayah.numberInSurah} of $totalAyahs'
-                                : quranAudio.title,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13.5,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      child: InkWell(
+                        onTap: onTap,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 3,
                           ),
-                          Text(
-                            quranAudio.title,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white70,
-                              fontSize: 11,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFA3E635), Color(0xFF65A30D)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '${ayah?.numberInSurah ?? currentAyahNumber}',
+                                  style: GoogleFonts.outfit(
+                                    color: const Color(0xFF14290F),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      ayah != null
+                                          ? 'Ayah ${ayah.numberInSurah} of $totalAyahs'
+                                          : quranAudio.title,
+                                      style: GoogleFonts.outfit(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13.5,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      quranAudio.title,
+                                      style: GoogleFonts.outfit(
+                                        color: Colors.white70,
+                                        fontSize: 11,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              if (ayah != null && ayah.displayArabicText.isNotEmpty)
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(maxWidth: 100),
+                                  child: Text(
+                                    ayah.displayArabicText,
+                                    textDirection: TextDirection.rtl,
+                                    textAlign: TextAlign.right,
+                                    style: AppTypography.arabicHeader(
+                                      color: const Color(0xFFA3E635),
+                                      fontSize: 18,
+                                      height: 1.2,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    if (ayah != null && ayah.displayArabicText.isNotEmpty)
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 100),
-                        child: Text(
-                          ayah.displayArabicText,
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.right,
-                          style: AppTypography.arabicHeader(
-                            color: const Color(0xFFA3E635),
-                            fontSize: 18,
-                            height: 1.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    const SizedBox(width: 6),
+                    ),
+                    const SizedBox(width: 4),
                     IconButton(
                       icon: const Icon(
                         Icons.close_rounded,
