@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../core/extensions/context_extensions.dart';
+import '../../../shared/widgets/section_header.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../quiet_hours/services/quiet_hours_service.dart';
-
 import '../../../core/services/native_alarm_service.dart';
 
 class PermissionsScreen extends StatefulWidget {
@@ -50,6 +48,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     final battery = await Permission.ignoreBatteryOptimizations.status;
     final fsiGranted = await NativeAlarmService.instance.canUseFullScreenIntent();
     final fsi = fsiGranted ? PermissionStatus.granted : PermissionStatus.denied;
+    final overlay = await Permission.systemAlertWindow.status;
 
     if (mounted) {
       setState(() {
@@ -60,6 +59,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
           'dnd': dnd,
           'battery': battery,
           'fullScreenIntent': fsi,
+          'systemAlertWindow': overlay,
         };
         _isLoading = false;
       });
@@ -111,348 +111,224 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     }
   }
 
-  int get _grantedCount {
-    return _permissionStatuses.values.where((status) => status.isGranted).length;
-  }
-
-  int get _totalCount => 6;
-
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkMode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     const primaryGreen = Color(0xFF2A531D);
-    final cardBg = isDark ? const Color(0xFF192520) : Colors.white;
-    final borderColor = isDark ? Colors.white10 : const Color(0xFFE2E8F0);
-    final textColor = isDark ? Colors.white : const Color(0xFF1F2937);
+    final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF2B3F33) : const Color(0xFFE2E8F0);
+    final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
     final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
-      child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF17241E) : const Color(0xFFF8FAFC),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: AppHeaderBar(
-            title: 'APP PERMISSIONS',
-            showBackButton: true,
-            systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
-            backgroundColor: cardBg,
-            iconColor: isDark ? Colors.white : primaryGreen,
-            titleWidget: Text(
-              'APP PERMISSIONS',
-              style: GoogleFonts.outfit(
-                color: isDark ? Colors.white : primaryGreen,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                letterSpacing: 0.8,
-              ),
-            ),
-          ),
-        ),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: primaryGreen))
-            : ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  // Premium Overview Card
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: isDark
-                            ? [const Color(0xFF1E3A15), const Color(0xFF0F1A0E)]
-                            : [const Color(0xFF2A531D), const Color(0xFF16A34A)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: const AppHeaderBar(
+        title: 'APP PERMISSIONS',
+        showDrawerButton: false,
+        showBackButton: true,
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: primaryGreen))
+          : ListView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 36, top: 4),
+              children: [
+                // 1. Notifications & Alerts Section
+                const SectionHeader(
+                  title: 'Notifications & Alerts',
+                  subtitle: 'Required for Adhan prayer calls, Adhkar, and alarms screen',
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: cardBorder, width: 1),
+                    boxShadow: [
+                      if (!isDark)
                         BoxShadow(
-                          color: primaryGreen.withValues(alpha: 0.3),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.shield_rounded,
-                                    color: Colors.white,
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Permissions Health',
-                                      style: GoogleFonts.outfit(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      '$_grantedCount of $_totalCount Active',
-                                      style: GoogleFonts.lexend(
-                                        color: Colors.white.withValues(alpha: 0.85),
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: LinearProgressIndicator(
-                            value: _grantedCount / _totalCount,
-                            backgroundColor: Colors.white.withValues(alpha: 0.2),
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                            minHeight: 8,
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-
-                  const SizedBox(height: 24),
-
-                  // Section Header: Required App Permissions
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Text(
-                        'APP PERMISSIONS',
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.8,
-                          color: primaryGreen,
+                      _buildPermissionItem(
+                        title: 'Notification Access',
+                        subtitle:
+                            'Alerts for Adhan prayer times, morning & evening Adhkar, and scheduled reminders.',
+                        icon: Icons.notifications_active_rounded,
+                        iconColor: const Color(0xFF2563EB),
+                        status: _permissionStatuses['notification'],
+                        onTap: () => _requestPermission(
+                          Permission.notification,
+                          'notification',
                         ),
+                        textColor: textColor,
+                        subTextColor: subTextColor,
                       ),
-                      InkWell(
-                        onTap: openAppSettings,
-                        borderRadius: BorderRadius.circular(8),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.settings_rounded,
-                                size: 14,
-                                color: Color(0xFF2563EB),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'System Settings',
-                                style: GoogleFonts.lexend(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF2563EB),
-                                ),
-                              ),
-                            ],
-                          ),
+                      Divider(height: 1, color: cardBorder), 
+                      _buildPermissionItem(
+                        title: 'Alarm & Schedule Access',
+                        subtitle:
+                            'Triggers exact prayer alarms and reminders on time without OS power-saving delays.',
+                        icon: Icons.alarm_rounded,
+                        iconColor: const Color(0xFFD97724),
+                        status: _permissionStatuses['alarm'],
+                        onTap: () => _requestPermission(
+                          Permission.scheduleExactAlarm,
+                          'alarm',
                         ),
+                        textColor: textColor,
+                        subTextColor: subTextColor,
+                      ),
+                      Divider(height: 1, color: cardBorder),
+                      _buildPermissionItem(
+                        title: 'Full-Screen Access',
+                        subtitle:
+                            'Displays the full-screen alarm screen over your lock screen when an alert sounds.',
+                        icon: Icons.fullscreen_rounded,
+                        iconColor: const Color(0xFFE11D48),
+                        status: _permissionStatuses['fullScreenIntent'],
+                        onTap: () => _requestPermission(
+                          Permission.notification,
+                          'fullScreenIntent',
+                        ),
+                        textColor: textColor,
+                        subTextColor: subTextColor,
+                      ),
+                      Divider(height: 1, color: cardBorder),
+                      _buildPermissionItem(
+                        title: 'Appear on Top',
+                        subtitle:
+                            'Allows the alarm to immediately pop up full-screen over active apps even when unlocked.',
+                        icon: Icons.layers_outlined,
+                        iconColor: const Color(0xFFF59E0B),
+                        status: _permissionStatuses['systemAlertWindow'],
+                        onTap: () => _requestPermission(
+                          Permission.systemAlertWindow,
+                          'systemAlertWindow',
+                        ),
+                        textColor: textColor,
+                        subTextColor: subTextColor,
+                      ),
+                      Divider(height: 1, color: cardBorder),
+                      _buildPermissionItem(
+                        title: 'Do Not Disturb (DND)',
+                        subtitle:
+                            'Allows important prayer Adhan alarms to sound even when your phone is in Silent mode.',
+                        icon: Icons.do_not_disturb_on_rounded,
+                        iconColor: const Color(0xFF9333EA),
+                        status: _permissionStatuses['dnd'],
+                        onTap: () => _requestPermission(
+                          Permission.accessNotificationPolicy,
+                          'dnd',
+                        ),
+                        textColor: textColor,
+                        subTextColor: subTextColor,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                ),
 
-                  // Container for App Permissions
-                  Container(
-                    decoration: BoxDecoration(
-                      color: cardBg,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: borderColor),
-                      boxShadow: [
+                const _SectionDivider(),
+
+                // 2. Location & GPS Section
+                const SectionHeader(
+                  title: 'Location & GPS',
+                  subtitle: 'Coordinates used for precise local prayer calculations and Qibla compass',
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: cardBorder, width: 1),
+                    boxShadow: [
+                      if (!isDark)
                         BoxShadow(
-                          color: isDark
-                              ? Colors.black26
-                              : const Color(0xFF2A531D).withValues(alpha: 0.04),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        // 1. Notification Permission
-                        _buildPermissionItem(
-                          title: 'Notification Access',
-                          subtitle:
-                              'Required for Adhan prayer alerts, morning & evening Adhkar, and fasting reminders.',
-                          icon: Icons.notifications_active_rounded,
-                          iconColor: const Color(0xFF2563EB),
-                          status: _permissionStatuses['notification'],
-                          onTap: () => _requestPermission(
-                            Permission.notification,
-                            'notification',
-                          ),
-                          textColor: textColor,
-                          subTextColor: subTextColor,
-                        ),
-                        Divider(height: 1, indent: 58, color: borderColor),
-
-                        // 2. Location Permission
-                        _buildPermissionItem(
-                          title: 'Location Access',
-                          subtitle:
-                              'Required to calculate accurate local prayer times, city detection, and Qibla direction.',
-                          icon: Icons.location_on_rounded,
-                          iconColor: const Color(0xFF16A34A),
-                          status: _permissionStatuses['location'],
-                          onTap: () => _requestPermission(
-                            Permission.locationWhenInUse,
-                            'location',
-                          ),
-                          textColor: textColor,
-                          subTextColor: subTextColor,
-                        ),
-                        Divider(height: 1, indent: 58, color: borderColor),
-
-                        // 3. Alarm Permission
-                        _buildPermissionItem(
-                          title: 'Alarm & Schedule Access',
-                          subtitle:
-                              'Required to trigger exact prayer alarms and scheduled reminders without OS delays.',
-                          icon: Icons.alarm_rounded,
-                          iconColor: const Color(0xFFD97724),
-                          status: _permissionStatuses['alarm'],
-                          onTap: () => _requestPermission(
-                            Permission.scheduleExactAlarm,
-                            'alarm',
-                          ),
-                          textColor: textColor,
-                          subTextColor: subTextColor,
-                        ),
-                        Divider(height: 1, indent: 58, color: borderColor),
-
-                        // 4. Do Not Disturb Access
-                        _buildPermissionItem(
-                          title: 'Do Not Disturb (DND) Access',
-                          subtitle:
-                              'Allows Adhan prayer alerts to sound even when your phone is in Silent/DND mode.',
-                          icon: Icons.do_not_disturb_on_rounded,
-                          iconColor: const Color(0xFF9333EA),
-                          status: _permissionStatuses['dnd'],
-                          onTap: () => _requestPermission(
-                            Permission.accessNotificationPolicy,
-                            'dnd',
-                          ),
-                          textColor: textColor,
-                          subTextColor: subTextColor,
-                        ),
-                        Divider(height: 1, indent: 58, color: borderColor),
-
-                        // 5. Vibration & Haptics
-                        _buildToggleItem(
-                          title: 'Vibration & Haptics',
-                          subtitle:
-                              'Tactile vibration feedback for Adhkar counter taps and silent alerts.',
-                          icon: Icons.vibration_rounded,
-                          iconColor: const Color(0xFFE11D48),
-                          isEnabled: _vibrationEnabled,
-                          onChanged: (val) {
-                            setState(() => _vibrationEnabled = val);
-                          },
-                          textColor: textColor,
-                          subTextColor: subTextColor,
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-
-                  const SizedBox(height: 24),
-
-                  // Section Header: System Optimizations
-                  Text(
-                    'SYSTEM OPTIMIZATIONS',
-                    style: GoogleFonts.outfit(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.8,
-                      color: primaryGreen,
+                  child: _buildPermissionItem(
+                    title: 'Location Access',
+                    subtitle:
+                        'Calculates accurate local prayer times, sunrise/sunset, and Qibla direction for your city.',
+                    icon: Icons.location_on_rounded,
+                    iconColor: const Color(0xFF16A34A),
+                    status: _permissionStatuses['location'],
+                    onTap: () => _requestPermission(
+                      Permission.locationWhenInUse,
+                      'location',
                     ),
+                    textColor: textColor,
+                    subTextColor: subTextColor,
                   ),
-                  const SizedBox(height: 10),
+                ),
 
-                  Container(
-                    decoration: BoxDecoration(
-                      color: cardBg,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: borderColor),
-                      boxShadow: [
+                const _SectionDivider(),
+
+                // 3. System & Battery Section
+                const SectionHeader(
+                  title: 'System & Battery',
+                  subtitle: 'Optimizations to prevent Android from killing background prayer services',
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: cardBorder, width: 1),
+                    boxShadow: [
+                      if (!isDark)
                         BoxShadow(
-                          color: isDark
-                              ? Colors.black26
-                              : const Color(0xFF2A531D).withValues(alpha: 0.04),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        _buildPermissionItem(
-                          title: 'Full-Screen Alarm Access',
-                          subtitle:
-                              'Allows alarm reminders to pop up full-screen over the lock screen even when the phone is locked or screen is off.',
-                          icon: Icons.fullscreen_rounded,
-                          iconColor: const Color(0xFFE11D48),
-                          status: _permissionStatuses['fullScreenIntent'],
-                          onTap: () => _requestPermission(
-                            Permission.notification,
-                            'fullScreenIntent',
-                          ),
-                          textColor: textColor,
-                          subTextColor: subTextColor,
-                        ),
-                        Divider(height: 1, indent: 58, color: borderColor),
-                        _buildPermissionItem(
-                          title: 'Battery Optimization Exemption',
-                          subtitle:
-                              'Prevents Android OS from stopping background prayer time timers and scheduled Adhkar alarms.',
-                          icon: Icons.battery_saver_rounded,
-                          iconColor: const Color(0xFF0D9488),
-                          status: _permissionStatuses['battery'],
-                          onTap: () => _requestPermission(
-                            Permission.ignoreBatteryOptimizations,
-                            'battery',
-                          ),
-                          textColor: textColor,
-                          subTextColor: subTextColor,
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-
-                  const SizedBox(height: 28),
-                ],
-              ),
-      ),
+                  child: Column(
+                    children: [
+                      _buildPermissionItem(
+                        title: 'Battery Optimization Exemption',
+                        subtitle:
+                            'Prevents Android OS from stopping background prayer timers and scheduled Adhkar alarms.',
+                        icon: Icons.battery_saver_rounded,
+                        iconColor: const Color(0xFF0D9488),
+                        status: _permissionStatuses['battery'],
+                        onTap: () => _requestPermission(
+                          Permission.ignoreBatteryOptimizations,
+                          'battery',
+                        ),
+                        textColor: textColor,
+                        subTextColor: subTextColor,
+                      ),
+                      Divider(height: 1, color: cardBorder),
+                      _buildToggleItem( 
+                        title: 'Vibration & Haptics',
+                        subtitle:
+                            'Tactile vibration feedback for Adhkar counter taps and silent reminders.',
+                        icon: Icons.vibration_rounded,
+                        iconColor: const Color(0xFFE11D48),
+                        isEnabled: _vibrationEnabled,
+                        onChanged: (val) {
+                          setState(() => _vibrationEnabled = val);
+                        },
+                        textColor: textColor,
+                        subTextColor: subTextColor,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -468,58 +344,64 @@ class _PermissionsScreenState extends State<PermissionsScreen>
   }) {
     final isGranted = status?.isGranted ?? false;
 
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      onTap: onTap,
-      leading: Container(
-        padding: const EdgeInsets.all(9),
-        decoration: BoxDecoration(
-          color: iconColor.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: iconColor, size: 22),
-      ),
-      title: Text(
-        title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: GoogleFonts.outfit(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          height: 1.35,
-          color: textColor,
-        ),
-      ),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 3),
-        child: Text(
-          subtitle,
-          style: GoogleFonts.lexend(
-            fontSize: 12,
-            color: subTextColor,
-            height: 1.35,
-          ),
-        ),
-      ),
-      trailing: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: isGranted ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isGranted ? const Color(0xFF86EFAC) : const Color(0xFFFCA5A5),
-              width: 1.5,
+    return InkWell(
+      onTap: onTap, 
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Row 1: Icon, Title (max 2 lines), and right-side minimized toggle switch
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7.5),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 18),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Transform.scale(
+                  scale: 0.78,
+                  child: Switch(
+                    value: isGranted,
+                    onChanged: (_) => onTap(),
+                    activeTrackColor: const Color(0xFF2A531D),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ],
             ),
-          ),
-          child: Icon(
-            isGranted ? Icons.check_rounded : Icons.close_rounded,
-            size: 18,
-            color: isGranted ? const Color(0xFF15803D) : const Color(0xFFDC2626),
-          ),
+            const SizedBox(height: 8),
+            // Row 2: Total description from end to end (max 2 lines)
+            Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.lexend(
+                fontSize: 12,
+                color: subTextColor,
+                height: 1.35,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -535,60 +417,80 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     required Color textColor,
     required Color subTextColor,
   }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return InkWell(
       onTap: () => onChanged(!isEnabled),
-      leading: Container(
-        padding: const EdgeInsets.all(9),
-        decoration: BoxDecoration(
-          color: iconColor.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: iconColor, size: 22),
-      ),
-      title: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: GoogleFonts.outfit(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          height: 1.35,
-          color: textColor,
-        ),
-      ),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 3),
-        child: Text(
-          subtitle,
-          style: GoogleFonts.lexend(
-            fontSize: 12,
-            color: subTextColor,
-            height: 1.35,
-          ),
-        ),
-      ),
-      trailing: InkWell(
-        onTap: () => onChanged(!isEnabled),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: isEnabled ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isEnabled ? const Color(0xFF86EFAC) : const Color(0xFFFCA5A5),
-              width: 1.5,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Row 1: Icon, Title (max 2 lines), and minimized toggle button
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7.5),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Transform.scale(
+                  scale: 0.78,
+                  child: Switch(
+                    value: isEnabled,
+                    onChanged: onChanged,
+                    activeTrackColor: const Color(0xFF2A531D),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ],
             ),
-          ),
-          child: Icon(
-            isEnabled ? Icons.check_rounded : Icons.close_rounded,
-            size: 18,
-            color: isEnabled ? const Color(0xFF15803D) : const Color(0xFFDC2626),
-          ),
+            const SizedBox(height: 8),
+            // Row 2: Description end to end (max 2 lines)
+            Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.lexend(
+                fontSize: 12,
+                color: subTextColor,
+                height: 1.35,
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class _SectionDivider extends StatelessWidget {
+  const _SectionDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      height: 6,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      color: isDark ? const Color(0xFF18241D) : const Color(0xFFF1F5F9),
     );
   }
 }

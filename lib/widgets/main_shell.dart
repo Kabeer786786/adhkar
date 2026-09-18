@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,7 @@ import '../core/extensions/context_extensions.dart';
 import '../core/services/showcase_service.dart';
 import '../features/asma_ul_husna/services/asma_audio_service.dart';
 import '../features/quran/services/quran_audio_service.dart';
+import '../shared/widgets/app_floating_toast.dart';
 import '../shared/widgets/app_showcase.dart';
 import 'app_drawer.dart';
 
@@ -20,6 +22,9 @@ class MainShell extends ConsumerStatefulWidget {
 }
 
 class _MainShellState extends ConsumerState<MainShell> with WidgetsBindingObserver {
+  DateTime? _lastBackPressTime;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -62,14 +67,35 @@ class _MainShellState extends ConsumerState<MainShell> with WidgetsBindingObserv
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: widget.navigationShell.currentIndex == 0,
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
+
+        // 1. If drawer is open, close drawer first
+        if (_scaffoldKey.currentState?.isDrawerOpen == true) {
+          _scaffoldKey.currentState?.closeDrawer();
+          return;
+        }
+
+        // 2. If user is on another tab/branch, switch to Home tab (branch 0)
         if (widget.navigationShell.currentIndex != 0) {
           widget.navigationShell.goBranch(0);
+          return;
+        }
+
+        // 3. User is on Home screen: Require double-back press within 2000ms to exit
+        final now = DateTime.now();
+        if (_lastBackPressTime == null ||
+            now.difference(_lastBackPressTime!) > const Duration(milliseconds: 2000)) {
+          _lastBackPressTime = now;
+          HapticFeedback.lightImpact();
+          AppFloatingToast.showExitToast(context);
+        } else {
+          SystemNavigator.pop();
         }
       },
       child: Scaffold(
+        key: _scaffoldKey,
         drawer: const AppDrawer(),
         body: widget.navigationShell,
         bottomNavigationBar: Container(

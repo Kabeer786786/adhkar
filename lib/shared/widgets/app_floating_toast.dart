@@ -374,4 +374,136 @@ class AppFloatingToast {
       bottomOffset: bottomOffset,
     );
   }
+
+  /// Displays a premium bottom pill toast indicating double-tap back to exit with the round app logo.
+  static void showExitToast(
+    BuildContext context, {
+    String message = 'Press back again to exit Adhkar',
+    Duration duration = const Duration(milliseconds: 2000),
+    double? bottomOffset,
+  }) {
+    // 1. Instantly cancel active timer and remove previous overlay
+    _activeTimer?.cancel();
+    _activeTimer = null;
+    if (_activeOverlay != null) {
+      _activeOverlay?.remove();
+      _activeOverlay = null;
+    }
+
+    final overlay = Overlay.maybeOf(context, rootOverlay: true) ?? Overlay.maybeOf(context);
+    if (overlay == null) return;
+
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final targetBottom = bottomOffset ?? (bottomInset + 76.0);
+
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (ctx) => Positioned(
+        bottom: targetBottom,
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutBack,
+              builder: (context, val, child) => Transform.translate(
+                offset: Offset(0, 14 * (1 - val)),
+                child: Opacity(
+                  opacity: val.clamp(0.0, 1.0),
+                  child: child,
+                ),
+              ),
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 340),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8.5),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.94),
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(
+                    color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
+                    width: 1.1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.45),
+                      blurRadius: 20,
+                      spreadRadius: -2,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: const Color(0xFF1B4332).withValues(alpha: 0.3),
+                      blurRadius: 16,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 26,
+                      height: 26,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFFD4AF37).withValues(alpha: 0.75),
+                          width: 1.2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFD4AF37).withValues(alpha: 0.25),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/logo.png',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.spa_rounded,
+                            size: 16,
+                            color: Color(0xFFD4AF37),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        message,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.lexend(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    _activeOverlay = entry;
+    overlay.insert(entry);
+
+    _activeTimer = Timer(duration, () {
+      if (_activeOverlay == entry) {
+        entry.remove();
+        _activeOverlay = null;
+        _activeTimer = null;
+      }
+    });
+  }
 }

@@ -16,6 +16,7 @@ import '../../prayer/presentation/providers/aladhan_providers.dart';
 
 import '../../../shared/providers/user_profile_provider.dart';
 import '../../../shared/widgets/complete_profile_modal.dart';
+import '../../../shared/widgets/startup_permissions_modal.dart';
 import 'widgets/daily_ayah_card.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -51,10 +52,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _checkAndPromptCompleteProfile();
-      final hasSeen = await ShowcaseService.hasSeenHomeShowcase();
-      if (!hasSeen && mounted) {
-        ShowcaseService.startHomeShowcase(context);
+      await StartupPermissionsModal.checkAndShow(context);
+      if (mounted) {
+        _checkAndPromptCompleteProfile();
+        final hasSeen = await ShowcaseService.hasSeenHomeShowcase();
+        if (!hasSeen && mounted) {
+          ShowcaseService.startHomeShowcase(context);
+        }
       }
     });
   }

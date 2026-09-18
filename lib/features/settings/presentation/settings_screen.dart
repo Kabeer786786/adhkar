@@ -6,7 +6,6 @@ import '../../../core/services/location_service.dart';
 import '../../../core/services/showcase_service.dart';
 import '../../../core/typography/arabic_font.dart';
 import '../../../shared/providers/app_providers.dart';
-import '../../../shared/providers/user_profile_provider.dart';
 import '../../../shared/widgets/location_selection_modal.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../../core/calendar/models/calendar_type.dart';
@@ -49,104 +48,7 @@ class SettingsScreen extends ConsumerWidget {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 36, top: 8),
         children: [
-          // 1. Profile Account Section Card
-          Consumer(
-            builder: (context, ref, child) {
-              final userProfile = ref.watch(userProfileProvider);
-              final hasName = userProfile.name.isNotEmpty;
-              final displayName = hasName ? userProfile.name : 'Guest User';
-
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: cardBg,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: cardBorder, width: 1),
-                  boxShadow: [
-                    if (!isDark)
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(18),
-                  child: InkWell(
-                    onTap: () => context.push('/profile'),
-                    borderRadius: BorderRadius.circular(18),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? primaryGreen.withValues(alpha: 0.3)
-                                  : const Color(0xFFF1F5F9),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.person_outline_rounded,
-                              size: 24,
-                              color: primaryGreen,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  displayName,
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: textColor,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  userProfile.isEmailVerified
-                                      ? 'Verified Profile'
-                                      : (hasName
-                                            ? 'Unverified Profile'
-                                            : 'Tap to setup profile'),
-                                  style: GoogleFonts.lexend(
-                                    fontSize: 11.5,
-                                    color: userProfile.isEmailVerified
-                                        ? primaryGreen
-                                        : const Color(0xFFD97724),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(
-                            Icons.chevron_right_rounded,
-                            color: Color(0xFF94A3B8),
-                            size: 22,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // 6px light/dark gray divider box
-          const _SectionDivider(),
-
-          // 2. Location & GPS Section
+          // 1. Location & GPS Section
           const SectionHeader(
             title: 'Location & GPS',
             subtitle: 'Coordinates used for precise prayer calculations',
@@ -247,7 +149,7 @@ class SettingsScreen extends ConsumerWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: cardBg,
+              color: cardBg, 
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: cardBorder, width: 1),
             ),
