@@ -66,7 +66,9 @@ class ReminderScheduler {
         debugPrint(
           '[ReminderScheduler] Foreground trigger: Popping AlarmScreen for ${reminder.title}',
         );
-        appRouter.push('/alarm?id=${reminder.id}');
+        final soundParam = Uri.encodeComponent(reminder.soundType ?? 'Default Ringtone');
+        final titleParam = Uri.encodeComponent(reminder.title);
+        appRouter.push('/alarm?id=${reminder.id}&title=$titleParam&sound=$soundParam');
       }
     }
 
@@ -124,63 +126,89 @@ class ReminderScheduler {
       return;
     }
 
-    if (reminder.frequency == ReminderFrequency.custom) {
-      // Schedule a SEPARATE notification for EACH custom weekday.
-      // Each uses DateTimeComponents.dayOfWeekAndTime so it repeats weekly on that day.
-      await _scheduleCustomDayNotifications(reminder);
-    } else if (reminder.frequency == ReminderFrequency.monthly) {
-      // Monthly: schedule a one-shot notification for the next monthly occurrence.
-      // It will be re-scheduled on app startup and on trigger.
-      await _notificationService.scheduleCustomReminderNotification(
-        id: notifId,
-        title: reminder.title,
-        body: reminder.description ?? 'It\'s time for your scheduled reminder.',
-        scheduledTime: nextTrigger,
-        reminderId: reminder.id,
-        sound: reminder.soundEnabled,
-        vibration: reminder.vibrationEnabled,
-        soundType: reminder.soundType ?? 'Iphone Ringtone',
-        matchDateTimeComponents: null, // One-shot, re-scheduled on app restart
-      );
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      // Android: Native AlarmManager is the single OS-level source of truth.
+      // This prevents double notifications and duplicate sound playback.
+      if (reminder.frequency == ReminderFrequency.custom) {
+        await _scheduleCustomDayNativeAlarms(reminder);
+      } else {
+        await NativeAlarmService.instance.scheduleAlarm(
+          id: reminder.id,
+          title: reminder.title,
+          body: reminder.description ?? 'It\'s time for your scheduled reminder.',
+          scheduledTime: nextTrigger,
+          sound: reminder.soundEnabled,
+          vibration: reminder.vibrationEnabled,
+          soundType: reminder.soundType ?? 'Iphone Ringtone',
+        );
+      }
       debugPrint(
-        '[ReminderScheduler] Scheduled monthly ${reminder.title} (ID $notifId) for $nextTrigger',
+        '[ReminderScheduler] Scheduled native alarm ${reminder.title} (ID ${reminder.id}) for $nextTrigger',
       );
     } else {
-      // Once, Daily, Weekly
-      DateTimeComponents? matchComponents;
-      if (reminder.frequency == ReminderFrequency.daily) {
-        matchComponents = DateTimeComponents.time;
-      } else if (reminder.frequency == ReminderFrequency.weekly) {
-        matchComponents = DateTimeComponents.dayOfWeekAndTime;
+      // iOS / other platforms fallback to FlutterLocalNotifications
+      if (reminder.frequency == ReminderFrequency.custom) {
+        await _scheduleCustomDayNotifications(reminder);
+      } else if (reminder.frequency == ReminderFrequency.monthly) {
+        await _notificationService.scheduleCustomReminderNotification(
+          id: notifId,
+          title: reminder.title,
+          body: reminder.description ?? 'It\'s time for your scheduled reminder.',
+          scheduledTime: nextTrigger,
+          reminderId: reminder.id,
+          sound: reminder.soundEnabled,
+          vibration: reminder.vibrationEnabled,
+          soundType: reminder.soundType ?? 'Iphone Ringtone',
+          matchDateTimeComponents: null,
+        );
+      } else {
+        DateTimeComponents? matchComponents;
+        if (reminder.frequency == ReminderFrequency.daily) {
+          matchComponents = DateTimeComponents.time;
+        } else if (reminder.frequency == ReminderFrequency.weekly) {
+          matchComponents = DateTimeComponents.dayOfWeekAndTime;
+        }
+        await _notificationService.scheduleCustomReminderNotification(
+          id: notifId,
+          title: reminder.title,
+          body: reminder.description ?? 'It\'s time for your scheduled reminder.',
+          scheduledTime: nextTrigger,
+          reminderId: reminder.id,
+          sound: reminder.soundEnabled,
+          vibration: reminder.vibrationEnabled,
+          soundType: reminder.soundType ?? 'Iphone Ringtone',
+          matchDateTimeComponents: matchComponents,
+        );
       }
-      // once: matchComponents = null (fires once, never repeats)
+    }
+  }
 
-      await _notificationService.scheduleCustomReminderNotification(
-        id: notifId,
+  /// Schedules native alarms for each selected weekday on Android.
+  Future<void> _scheduleCustomDayNativeAlarms(CustomReminder reminder) async {
+    final now = DateTime.now();
+    for (final weekday in reminder.customDays) {
+      DateTime candidate = DateTime(now.year, now.month, now.day, reminder.hour, reminder.minute);
+      if (candidate.isBefore(now) || candidate.isAtSameMomentAs(now)) {
+        candidate = candidate.add(const Duration(days: 1));
+      }
+      while (candidate.weekday != weekday) {
+        candidate = candidate.add(const Duration(days: 1));
+      }
+
+      await NativeAlarmService.instance.scheduleAlarm(
+        id: '${reminder.id}_$weekday',
         title: reminder.title,
         body: reminder.description ?? 'It\'s time for your scheduled reminder.',
-        scheduledTime: nextTrigger,
-        reminderId: reminder.id,
+        scheduledTime: candidate,
         sound: reminder.soundEnabled,
         vibration: reminder.vibrationEnabled,
         soundType: reminder.soundType ?? 'Iphone Ringtone',
-        matchDateTimeComponents: matchComponents,
       );
+
       debugPrint(
-        '[ReminderScheduler] Scheduled ${reminder.title} (ID $notifId) for $nextTrigger (recurrence: $matchComponents)',
+        '[ReminderScheduler] Scheduled native custom-day ${reminder.title} for weekday $weekday at $candidate',
       );
     }
-
-    // Also schedule exact native Android AlarmManager alarm so alarm screen pops even when app is killed
-    await NativeAlarmService.instance.scheduleAlarm(
-      id: reminder.id,
-      title: reminder.title,
-      body: reminder.description ?? 'It\'s time for your scheduled reminder.',
-      scheduledTime: nextTrigger,
-      sound: reminder.soundEnabled,
-      vibration: reminder.vibrationEnabled,
-      soundType: reminder.soundType ?? 'Iphone Ringtone',
-    );
   }
 
   /// Schedules one background notification per weekday in [reminder.customDays].
@@ -210,16 +238,6 @@ class ReminderScheduler {
         vibration: reminder.vibrationEnabled,
         soundType: reminder.soundType ?? 'Iphone Ringtone',
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-      );
-
-      await NativeAlarmService.instance.scheduleAlarm(
-        id: '${reminder.id}_$weekday',
-        title: reminder.title,
-        body: reminder.description ?? 'It\'s time for your scheduled reminder.',
-        scheduledTime: candidate,
-        sound: reminder.soundEnabled,
-        vibration: reminder.vibrationEnabled,
-        soundType: reminder.soundType ?? 'Iphone Ringtone',
       );
 
       debugPrint(

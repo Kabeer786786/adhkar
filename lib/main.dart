@@ -17,7 +17,7 @@ import 'features/quiet_hours/services/quiet_hours_service.dart';
 import 'features/reminder/presentation/providers/reminder_provider.dart';
 import 'shared/providers/app_providers.dart';
 
-void _handleAlarmPayloadNavigation(String payload) {
+void _handleAlarmPayloadNavigation(String payload, {String? title, String? sound}) {
   if (payload.startsWith('dismiss:')) {
     AlarmAudioService().stopAlarm();
     return;
@@ -26,16 +26,26 @@ void _handleAlarmPayloadNavigation(String payload) {
   String targetUrl = '';
   if (payload.startsWith('reminder_id:')) {
     final remId = payload.substring('reminder_id:'.length);
-    targetUrl = '/alarm?id=$remId';
+    final params = <String, String>{'id': remId};
+    if (title != null && title.isNotEmpty) params['title'] = title;
+    if (sound != null && sound.isNotEmpty) params['sound'] = sound;
+    targetUrl = '/alarm?${Uri(queryParameters: params).query}';
   } else if (payload.startsWith('prayer:')) {
     final prayer = payload.substring('prayer:'.length);
-    targetUrl = '/alarm?prayer=$prayer';
+    final params = <String, String>{'prayer': prayer};
+    if (title != null && title.isNotEmpty) params['title'] = title;
+    if (sound != null && sound.isNotEmpty) params['sound'] = sound;
+    targetUrl = '/alarm?${Uri(queryParameters: params).query}';
   }
 
   if (targetUrl.isEmpty) return;
 
   final currentLoc = appRouter.routerDelegate.currentConfiguration.uri.toString();
-  if (currentLoc == targetUrl || currentLoc.startsWith('/alarm')) {
+  if (currentLoc == targetUrl) {
+    return;
+  }
+  if (currentLoc.startsWith('/alarm')) {
+    appRouter.go(targetUrl);
     return;
   }
 
@@ -126,11 +136,13 @@ class _AdhkarAppState extends ConsumerState<AdhkarApp> {
       if (pendingNative != null) {
         final remId = pendingNative['reminder_id'] as String?;
         final prayer = pendingNative['prayer_name'] as String?;
+        final title = pendingNative['alarm_title'] as String?;
+        final sound = pendingNative['sound_type'] as String?;
         if (remId != null && remId.isNotEmpty) {
-          _handleAlarmPayloadNavigation('reminder_id:$remId');
+          _handleAlarmPayloadNavigation('reminder_id:$remId', title: title, sound: sound);
           return;
         } else if (prayer != null && prayer.isNotEmpty) {
-          _handleAlarmPayloadNavigation('prayer:$prayer');
+          _handleAlarmPayloadNavigation('prayer:$prayer', title: title, sound: sound);
           return;
         }
       }

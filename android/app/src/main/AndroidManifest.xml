@@ -53,8 +53,8 @@
             android:launchMode="singleTop"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
+            android:showOnLockScreen="true"
             android:inheritShowWhenLocked="true"
-            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -121,6 +121,7 @@
             <intent-filter>
                 <action android:name="com.sprnt.adhkar.ACTION_ALARM_TRIGGER" />
                 <action android:name="com.sprnt.adhkar.ACTION_DISMISS_ALARM" />
+                <action android:name="com.sprnt.adhkar.ACTION_SNOOZE_ALARM" />
             </intent-filter>
         </receiver>
 

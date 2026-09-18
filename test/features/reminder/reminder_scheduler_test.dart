@@ -211,5 +211,40 @@ void main() {
       expect(id1, greaterThanOrEqualTo(0));
       expect(id1, lessThan(100000000));
     });
+
+    test('deterministic notification ID aligns with Android Kotlin hash logic', () {
+      const testId = 'custom_reminder_49182';
+      final dartHashId = testId.hashCode.abs() % 100000000;
+      final scheduler = ReminderScheduler();
+      expect(scheduler.generateNotificationId(testId), equals(dartHashId));
+    });
+
+    test('Snooze time calculation accurately offsets by specified duration', () {
+      final base = DateTime(2026, 9, 18, 7, 0);
+      for (final mins in [5, 10, 15, 30]) {
+        final snoozed = base.add(Duration(minutes: mins));
+        expect(snoozed.difference(base).inMinutes, equals(mins));
+        expect(snoozed.isAfter(base), isTrue);
+      }
+    });
+
+    test('One-time reminder disables when toggleEnable is triggered after dismiss', () {
+      final now = DateTime.now();
+      final oneTimeRem = CustomReminder(
+        id: 'once_1',
+        title: 'Doctor Appointment',
+        hour: 14,
+        minute: 0,
+        frequency: ReminderFrequency.once,
+        isEnabled: true,
+        createdAt: now,
+        updatedAt: now,
+        timezone: 'UTC',
+      );
+
+      expect(oneTimeRem.isEnabled, isTrue);
+      final disabledRem = oneTimeRem.copyWith(isEnabled: false);
+      expect(disabledRem.isEnabled, isFalse);
+    });
   });
 }

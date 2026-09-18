@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
@@ -10,6 +11,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'package:just_audio/just_audio.dart';
 import '../../../core/config/reminder_audio_config.dart';
 import '../../../core/services/alarm_audio_service.dart';
+import '../../../core/services/native_alarm_service.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
@@ -26,6 +28,7 @@ class AlarmScreen extends ConsumerStatefulWidget {
   final String? prayerName;
   final String? title;
   final String? soundType;
+  final int? notifId;
 
   const AlarmScreen({
     super.key,
@@ -33,6 +36,7 @@ class AlarmScreen extends ConsumerStatefulWidget {
     this.prayerName,
     this.title,
     this.soundType,
+    this.notifId,
   });
 
   @override
@@ -191,6 +195,11 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     try {
       AlarmAudioService().stopAlarm();
     } catch (_) {}
+    NativeAlarmService.instance.cancelNotification(
+      reminderId: widget.reminderId,
+      prayerName: widget.prayerName,
+      notifId: widget.notifId,
+    );
     super.dispose();
   }
 
@@ -225,16 +234,18 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       ref.read(remindersProvider.notifier).toggleEnable(customReminder.id);
     }
 
-    // 3. Cancel active notification for reminder or prayer
+    // 3. Cancel active notification and native alarm for reminder or prayer
     try {
+      await NativeAlarmService.instance.cancelNotification(
+        reminderId: widget.reminderId,
+        prayerName: widget.prayerName,
+        notifId: widget.notifId,
+      );
       if (widget.reminderId != null) {
         final notifId = widget.reminderId.hashCode.abs() % 100000000;
         await NotificationService().cancel(notifId);
-        await NotificationService().showDismissedNotification(
-          id: notifId,
-          title: '$notifTitle - Alarm Turned Off',
-          body: 'Your scheduled reminder has been turned off and dismissed.',
-        );
+        await NativeAlarmService.instance.cancelAlarm(widget.reminderId!);
+        await NativeAlarmService.instance.cancelAlarm('${widget.reminderId!}_snooze');
       }
       if (widget.prayerName != null) {
         final prayerId = widget.prayerName.hashCode.abs() % 100000000;
@@ -247,10 +258,15 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         context,
         message: 'Alarm turned off: $notifTitle',
       );
-      if (context.canPop()) {
-        context.pop();
-      } else {
-        context.go('/');
+      final isLocked = await NativeAlarmService.instance.isDeviceLocked();
+      if (mounted) {
+        if (isLocked && !context.canPop()) {
+          SystemNavigator.pop();
+        } else if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go('/');
+        }
       }
     }
   }
@@ -261,30 +277,65 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     await _audioPlayer.stop();
 
     final snoozeTime = DateTime.now().add(Duration(minutes: minutes));
-    final snoozeId = (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
-
     final alarmTitle = widget.title ?? widget.prayerName ?? 'Alarm';
 
-    await NotificationService().scheduleCustomReminderNotification(
-      id: snoozeId,
-      title: 'Snoozed: $alarmTitle',
-      body: 'Snoozed alert ringing now',
-      scheduledTime: snoozeTime,
-      reminderId: widget.reminderId ?? 'snooze_alarm',
-      sound: true,
-      vibration: true,
-      soundType: _activeSoundName,
-    );
+    // Cancel current notification
+    try {
+      await NativeAlarmService.instance.cancelNotification(
+        reminderId: widget.reminderId,
+        prayerName: widget.prayerName,
+        notifId: widget.notifId,
+      );
+      if (widget.reminderId != null) {
+        final notifId = widget.reminderId.hashCode.abs() % 100000000;
+        await NotificationService().cancel(notifId);
+      }
+      if (widget.prayerName != null) {
+        final prayerId = widget.prayerName.hashCode.abs() % 100000000;
+        await NotificationService().cancel(prayerId);
+      }
+    } catch (_) {}
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      // Schedule snooze natively via AlarmManager
+      await NativeAlarmService.instance.scheduleAlarm(
+        id: '${widget.reminderId ?? "alarm"}_snooze',
+        title: 'Snoozed: $alarmTitle',
+        body: 'Snoozed alert ringing now',
+        scheduledTime: snoozeTime,
+        sound: true,
+        vibration: true,
+        soundType: _activeSoundName,
+        prayerName: widget.prayerName,
+      );
+    } else {
+      final snoozeId = (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
+      await NotificationService().scheduleCustomReminderNotification(
+        id: snoozeId,
+        title: 'Snoozed: $alarmTitle',
+        body: 'Snoozed alert ringing now',
+        scheduledTime: snoozeTime,
+        reminderId: widget.reminderId ?? 'snooze_alarm',
+        sound: true,
+        vibration: true,
+        soundType: _activeSoundName,
+      );
+    }
 
     if (mounted) {
       AppFloatingToast.showAdded(
         context,
         message: 'Snoozed for $minutes minutes',
       );
-      if (context.canPop()) {
-        context.pop();
-      } else {
-        context.go('/');
+      final isLocked = await NativeAlarmService.instance.isDeviceLocked();
+      if (mounted) {
+        if (isLocked && !context.canPop()) {
+          SystemNavigator.pop();
+        } else if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go('/');
+        }
       }
     }
   }
@@ -573,8 +624,15 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     final amPmStr = DateFormat('a').format(_currentTime);
     final iconData = _getIconForReminder(alarmTitle, isPrayer);
 
-    return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _dismissAlarm();
+        }
+      },
+      child: Scaffold(
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: Stack(
           fit: StackFit.expand,
@@ -857,6 +915,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
           ],
         ),
       ),
+    ),
     );
   }
 }

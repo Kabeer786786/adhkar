@@ -266,11 +266,14 @@ final appRouter = GoRouter(
         final prayerName = state.uri.queryParameters['prayer'];
         final title = state.uri.queryParameters['title'];
         final soundType = state.uri.queryParameters['sound'];
+        final notifIdStr = state.uri.queryParameters['notif_id'];
+        final notifId = notifIdStr != null ? int.tryParse(notifIdStr) : null;
         return AlarmScreen(
           reminderId: reminderId,
           prayerName: prayerName,
           title: title,
           soundType: soundType,
+          notifId: notifId,
         );
       },
     ),

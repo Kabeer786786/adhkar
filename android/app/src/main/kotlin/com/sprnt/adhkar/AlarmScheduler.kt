@@ -64,6 +64,18 @@ object AlarmScheduler {
             putExtra("prayer_name", prayerName)
         }
 
+        // Cancel any existing pending alarm with the same request code for idempotency
+        val existingPi = PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+        if (existingPi != null) {
+            am.cancel(existingPi)
+            existingPi.cancel()
+        }
+
         val pi = PendingIntent.getBroadcast(
             context,
             requestCode,

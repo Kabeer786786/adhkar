@@ -30,6 +30,7 @@ class MainActivity : AudioServiceActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         showOverLockscreen()
         handleAlarmIntent(intent)
     }
@@ -44,7 +45,8 @@ class MainActivity : AudioServiceActivity() {
                 "prayer_name" to prayerName,
                 "alarm_title" to intent.getStringExtra("alarm_title"),
                 "alarm_body" to intent.getStringExtra("alarm_body"),
-                "sound_type" to intent.getStringExtra("sound_type")
+                "sound_type" to intent.getStringExtra("sound_type"),
+                "notif_id" to intent.getIntExtra("notif_id", 0)
             )
             pendingAlarmData = data
             alarmMethodChannel?.invokeMethod("onAlarmTriggered", data)
@@ -55,8 +57,6 @@ class MainActivity : AudioServiceActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
-            keyguardManager?.requestDismissKeyguard(this, null)
         } else {
             @Suppress("DEPRECATION")
             window.addFlags(
@@ -65,7 +65,10 @@ class MainActivity : AudioServiceActivity() {
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
             )
         }
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+        )
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -99,10 +102,66 @@ class MainActivity : AudioServiceActivity() {
                     AlarmScheduler.cancelAllAlarms(this)
                     result.success(true)
                 }
+                "cancelNotification" -> {
+                    val reminderId = call.argument<String>("reminderId")
+                    val prayerName = call.argument<String>("prayerName")
+                    val notifId = (call.argument<Number>("notifId"))?.toInt()
+                    val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                    if (!reminderId.isNullOrEmpty()) {
+                        val id = Math.abs(reminderId.hashCode()) % 100000000
+                        nm?.cancel(id)
+                    }
+                    if (!prayerName.isNullOrEmpty()) {
+                        val id = Math.abs(prayerName.hashCode()) % 100000000
+                        nm?.cancel(id)
+                    }
+                    if (notifId != null && notifId != 0) {
+                        nm?.cancel(notifId)
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
+                        try {
+                            for (activeNotif in nm.activeNotifications) {
+                                if (activeNotif.notification.channelId == AlarmReceiver.CHANNEL_ID ||
+                                    (notifId != null && notifId != 0 && activeNotif.id == notifId)) {
+                                    nm.cancel(activeNotif.tag, activeNotif.id)
+                                }
+                            }
+                        } catch (_: Exception) {}
+                    }
+                    result.success(true)
+                }
                 "getPendingAlarm" -> {
                     val pending = pendingAlarmData
                     pendingAlarmData = null
                     result.success(pending)
+                }
+                "canUseFullScreenIntent" -> {
+                    val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && nm != null) {
+                        result.success(nm.canUseFullScreenIntent())
+                    } else {
+                        result.success(true)
+                    }
+                }
+                "openFullScreenIntentSettings" -> {
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            val settingsIntent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                                data = android.net.Uri.parse("package:$packageName")
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            startActivity(settingsIntent)
+                            result.success(true)
+                        } else {
+                            result.success(true)
+                        }
+                    } catch (e: Exception) {
+                        result.error("FULL_SCREEN_INTENT_ERROR", e.message, null)
+                    }
+                }
+                "isDeviceLocked" -> {
+                    val km = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
+                    result.success(km?.isKeyguardLocked ?: false)
                 }
                 else -> result.notImplemented()
             }

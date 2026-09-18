@@ -158,7 +158,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
       showBackButton: true,
       actions: [
         IconButton(
-          icon: const Icon(Icons.palette_outlined, size: 22),
+          icon: const Icon(Icons.image_outlined, size: 22),
           tooltip: 'Alarm Screen Theme',
           onPressed: () => AlarmCustomizationModal.show(context),
         ),

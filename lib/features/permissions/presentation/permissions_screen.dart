@@ -6,6 +6,8 @@ import '../../../core/extensions/context_extensions.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../quiet_hours/services/quiet_hours_service.dart';
 
+import '../../../core/services/native_alarm_service.dart';
+
 class PermissionsScreen extends StatefulWidget {
   const PermissionsScreen({super.key});
 
@@ -46,6 +48,8 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     final dndGranted = await QuietHoursService().isDndPermissionGranted();
     final dnd = dndGranted ? PermissionStatus.granted : PermissionStatus.denied;
     final battery = await Permission.ignoreBatteryOptimizations.status;
+    final fsiGranted = await NativeAlarmService.instance.canUseFullScreenIntent();
+    final fsi = fsiGranted ? PermissionStatus.granted : PermissionStatus.denied;
 
     if (mounted) {
       setState(() {
@@ -55,6 +59,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
           'alarm': alarm,
           'dnd': dnd,
           'battery': battery,
+          'fullScreenIntent': fsi,
         };
         _isLoading = false;
       });
@@ -65,6 +70,18 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     if (key == 'dnd') {
       await QuietHoursService().openDndPermissionSettings();
       final isGranted = await QuietHoursService().isDndPermissionGranted();
+      if (mounted) {
+        setState(() {
+          _permissionStatuses[key] =
+              isGranted ? PermissionStatus.granted : PermissionStatus.denied;
+        });
+      }
+      return;
+    }
+
+    if (key == 'fullScreenIntent') {
+      await NativeAlarmService.instance.openFullScreenIntentSettings();
+      final isGranted = await NativeAlarmService.instance.canUseFullScreenIntent();
       if (mounted) {
         setState(() {
           _permissionStatuses[key] =
@@ -98,7 +115,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     return _permissionStatuses.values.where((status) => status.isGranted).length;
   }
 
-  int get _totalCount => 5;
+  int get _totalCount => 6;
 
   @override
   Widget build(BuildContext context) {
@@ -397,19 +414,38 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                         ),
                       ],
                     ),
-                    child: _buildPermissionItem(
-                      title: 'Battery Optimization Exemption',
-                      subtitle:
-                          'Prevents Android OS from stopping background prayer time timers and scheduled Adhkar alarms.',
-                      icon: Icons.battery_saver_rounded,
-                      iconColor: const Color(0xFF0D9488),
-                      status: _permissionStatuses['battery'],
-                      onTap: () => _requestPermission(
-                        Permission.ignoreBatteryOptimizations,
-                        'battery',
-                      ),
-                      textColor: textColor,
-                      subTextColor: subTextColor,
+                    child: Column(
+                      children: [
+                        _buildPermissionItem(
+                          title: 'Full-Screen Alarm Access',
+                          subtitle:
+                              'Allows alarm reminders to pop up full-screen over the lock screen even when the phone is locked or screen is off.',
+                          icon: Icons.fullscreen_rounded,
+                          iconColor: const Color(0xFFE11D48),
+                          status: _permissionStatuses['fullScreenIntent'],
+                          onTap: () => _requestPermission(
+                            Permission.notification,
+                            'fullScreenIntent',
+                          ),
+                          textColor: textColor,
+                          subTextColor: subTextColor,
+                        ),
+                        Divider(height: 1, indent: 58, color: borderColor),
+                        _buildPermissionItem(
+                          title: 'Battery Optimization Exemption',
+                          subtitle:
+                              'Prevents Android OS from stopping background prayer time timers and scheduled Adhkar alarms.',
+                          icon: Icons.battery_saver_rounded,
+                          iconColor: const Color(0xFF0D9488),
+                          status: _permissionStatuses['battery'],
+                          onTap: () => _requestPermission(
+                            Permission.ignoreBatteryOptimizations,
+                            'battery',
+                          ),
+                          textColor: textColor,
+                          subTextColor: subTextColor,
+                        ),
+                      ],
                     ),
                   ),
 

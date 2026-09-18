@@ -6,6 +6,8 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
@@ -13,14 +15,15 @@ import androidx.core.app.NotificationCompat
 
 /**
  * BroadcastReceiver triggered directly by AlarmManager when an exact alarm fires.
- * Operates independent of Flutter lifecycle and even if the app was swiped from recent tasks.
+ * Operates independent of Flutter lifecycle and even if the app process was terminated.
  */
 class AlarmReceiver : BroadcastReceiver() {
     companion object {
         const val TAG = "AdhkarAlarmReceiver"
         const val ACTION_ALARM_TRIGGER = "com.sprnt.adhkar.ACTION_ALARM_TRIGGER"
         const val ACTION_DISMISS_ALARM = "com.sprnt.adhkar.ACTION_DISMISS_ALARM"
-        const val CHANNEL_ID = "adhkar_native_alarm_channel_v2"
+        const val ACTION_SNOOZE_ALARM = "com.sprnt.adhkar.ACTION_SNOOZE_ALARM"
+        const val CHANNEL_ID = "adhkar_native_alarm_channel_v4"
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
@@ -35,7 +38,63 @@ class AlarmReceiver : BroadcastReceiver() {
             } else {
                 nm?.cancelAll()
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
+                try {
+                    for (statusBarNotif in nm.activeNotifications) {
+                        if (statusBarNotif.notification.channelId == CHANNEL_ID ||
+                            (notifId != 0 && statusBarNotif.id == notifId)) {
+                            nm.cancel(statusBarNotif.tag, statusBarNotif.id)
+                        }
+                    }
+                } catch (_: Exception) {}
+            }
             MainActivity.alarmMethodChannel?.invokeMethod("dismissAlarm", null)
+            return
+        }
+
+        if (action == ACTION_SNOOZE_ALARM) {
+            val notifId = intent.getIntExtra("notif_id", 0)
+            val reminderId = intent.getStringExtra("reminder_id") ?: "snooze"
+            val title = intent.getStringExtra("alarm_title") ?: "Reminder"
+            val body = intent.getStringExtra("alarm_body") ?: "Snoozed reminder ringing now."
+            val soundType = intent.getStringExtra("sound_type") ?: "Default Ringtone"
+            val prayerName = intent.getStringExtra("prayer_name")
+            val sound = intent.getBooleanExtra("sound", true)
+            val vibration = intent.getBooleanExtra("vibration", true)
+
+            // Cancel active notification
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+            if (notifId != 0) {
+                nm?.cancel(notifId)
+            } else {
+                nm?.cancelAll()
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
+                try {
+                    for (statusBarNotif in nm.activeNotifications) {
+                        if (statusBarNotif.notification.channelId == CHANNEL_ID ||
+                            (notifId != 0 && statusBarNotif.id == notifId)) {
+                            nm.cancel(statusBarNotif.tag, statusBarNotif.id)
+                        }
+                    }
+                } catch (_: Exception) {}
+            }
+            MainActivity.alarmMethodChannel?.invokeMethod("dismissAlarm", null)
+
+            // Schedule snooze alarm for 10 minutes in the future
+            val snoozeTrigger = System.currentTimeMillis() + 10 * 60 * 1000L
+            AlarmScheduler.scheduleAlarm(
+                context = context,
+                id = "${reminderId}_snooze",
+                title = "Snoozed: $title",
+                body = body,
+                triggerAtMillis = snoozeTrigger,
+                sound = sound,
+                vibration = vibration,
+                soundType = soundType,
+                prayerName = prayerName
+            )
+            Log.i(TAG, "Snoozed alarm for reminderId=$reminderId for 10 minutes")
             return
         }
 
@@ -46,6 +105,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val body = intent.getStringExtra("alarm_body") ?: "It's time for your scheduled reminder."
         val soundType = intent.getStringExtra("sound_type") ?: "Default Ringtone"
         val prayerName = intent.getStringExtra("prayer_name")
+        val sound = intent.getBooleanExtra("sound", true)
         val vibration = intent.getBooleanExtra("vibration", true)
 
         Log.i(TAG, "Native Alarm triggered: reminderId=$reminderId, title=$title, soundType=$soundType")
@@ -57,7 +117,10 @@ class AlarmReceiver : BroadcastReceiver() {
             PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
             "Adhkar:AlarmWakeLock"
         )
-        wakeLock?.acquire(30 * 1000L) // 30 seconds max timeout
+        wakeLock?.acquire(25 * 1000L) // 25 seconds max timeout
+
+        // Deterministic notification ID matching Flutter's generateNotificationId
+        val notifId = Math.abs(reminderId.hashCode()) % 100000000
 
         // 2. Prepare Intent to launch MainActivity with alarm route data
         val activityIntent = Intent(context, MainActivity::class.java).apply {
@@ -67,6 +130,7 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("alarm_title", title)
             putExtra("alarm_body", body)
             putExtra("sound_type", soundType)
+            putExtra("notif_id", notifId)
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or
@@ -77,14 +141,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context,
-            reminderId.hashCode(),
+            notifId,
             activityIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notifId = (Math.abs(reminderId.hashCode()) % 1000000) + 20000
-
-        // 3. Prepare Dismiss Action Button
+        // 3. Prepare Dismiss & Snooze Action Buttons for notification
         val dismissIntent = Intent(context, AlarmReceiver::class.java).apply {
             this.action = ACTION_DISMISS_ALARM
             putExtra("notif_id", notifId)
@@ -96,9 +158,32 @@ class AlarmReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // 4. Create Notification Channel if not present
+        val snoozeIntent = Intent(context, AlarmReceiver::class.java).apply {
+            this.action = ACTION_SNOOZE_ALARM
+            putExtra("notif_id", notifId)
+            putExtra("reminder_id", reminderId)
+            putExtra("alarm_title", title)
+            putExtra("alarm_body", body)
+            putExtra("sound_type", soundType)
+            putExtra("prayer_name", prayerName)
+            putExtra("sound", sound)
+            putExtra("vibration", vibration)
+        }
+        val snoozePendingIntent = PendingIntent.getBroadcast(
+            context,
+            notifId + 1,
+            snoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // 4. Create Alarm Notification Channel
+        // Note: Sound is strictly null because audio is played exclusively by the AlarmScreen
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && nm != null) {
+            try {
+                nm.deleteNotificationChannel("adhkar_native_alarm_channel_v3")
+            } catch (_: Exception) {}
+
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Alarm Reminders",
@@ -106,6 +191,11 @@ class AlarmReceiver : BroadcastReceiver() {
             ).apply {
                 description = "Full screen alarms and Adhkar reminders"
                 enableVibration(vibration)
+                if (vibration) {
+                    vibrationPattern = longArrayOf(0, 800, 400, 800, 400, 800)
+                }
+                // Strictly SILENT: The alarm audio is played exclusively by the AlarmScreen
+                setSound(null, null)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
                 setBypassDnd(true)
             }
@@ -121,12 +211,16 @@ class AlarmReceiver : BroadcastReceiver() {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
+            .setSound(null)
             .setContentIntent(fullScreenPendingIntent)
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .addAction(0, "Turn Off", dismissPendingIntent)
+            .addAction(0, "Snooze (10m)", snoozePendingIntent)
 
         if (vibration) {
-            builder.setVibrate(longArrayOf(0, 1000, 500, 1000, 500, 1000))
+            builder.setVibrate(longArrayOf(0, 800, 400, 800, 400, 800))
+        } else {
+            builder.setVibrate(null)
         }
 
         nm?.notify(notifId, builder.build())
@@ -137,17 +231,18 @@ class AlarmReceiver : BroadcastReceiver() {
             "prayer_name" to prayerName,
             "alarm_title" to title,
             "alarm_body" to body,
-            "sound_type" to soundType
+            "sound_type" to soundType,
+            "notif_id" to notifId
         )
         MainActivity.pendingAlarmData = alarmData
         MainActivity.alarmMethodChannel?.invokeMethod("onAlarmTriggered", alarmData)
 
-        // 7. Explicitly start MainActivity to bring AlarmScreen up immediately
+        // 7. Directly launch Activity
         try {
             context.startActivity(activityIntent)
-            Log.i(TAG, "Successfully started MainActivity from AlarmReceiver")
+            Log.i(TAG, "Successfully invoked startActivity from AlarmReceiver")
         } catch (e: Exception) {
-            Log.e(TAG, "Error starting MainActivity from background: ${e.message}", e)
+            Log.d(TAG, "Background activity launch held for Full-Screen Intent: ${e.message}")
         }
     }
 }
