@@ -1,10 +1,48 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../../../config/routes/app_router.dart';
 import 'alarm_audio_service.dart';
 
-/// Service interfacing with native Android AlarmScheduler & AlarmReceiver.
-/// Ensures alarms accurately trigger the AlarmScreen even when the app is closed/killed.
+enum VolumeButtonAction {
+  stopAlarm('stopAlarm', 'Stop Alarm', 'Stop alarm sound & vibration immediately and clear active alert.'),
+  snoozeAlarm('snoozeAlarm', 'Snooze Alarm', 'Silence alarm immediately and ring again after the snooze duration.'),
+  doNothing('doNothing', 'Do Nothing', 'Keep alarm ringing and allow normal volume adjustment.');
+
+  final String value;
+  final String title;
+  final String description;
+
+  const VolumeButtonAction(this.value, this.title, this.description);
+
+  static VolumeButtonAction fromValue(String? val) {
+    return VolumeButtonAction.values.firstWhere(
+      (e) => e.value == val,
+      orElse: () => VolumeButtonAction.stopAlarm,
+    );
+  }
+}
+
+enum ScreenOffAction {
+  stopAlarm('stopAlarm', 'Stop Alarm', 'Stop sound and vibration when screen turns off or power button is pressed.'),
+  continueAlarm('continueAlarm', 'Continue Alarm', 'Keep ringing until explicitly dismissed or snoozed.');
+
+  final String value;
+  final String title;
+  final String description;
+
+  const ScreenOffAction(this.value, this.title, this.description);
+
+  static ScreenOffAction fromValue(String? val) {
+    return ScreenOffAction.values.firstWhere(
+      (e) => e.value == val,
+      orElse: () => ScreenOffAction.stopAlarm,
+    );
+  }
+}
+
+/// Service interfacing with native Android AlarmScheduler, AlarmReceiver, and AlarmStateManager.
+/// Ensures alarms accurately trigger, dismiss, and snooze with synchronized state.
 class NativeAlarmService {
   static final NativeAlarmService instance = NativeAlarmService._();
   NativeAlarmService._() {
@@ -13,6 +51,14 @@ class NativeAlarmService {
 
   static const MethodChannel _channel =
       MethodChannel('com.sprnt.adhkar/alarm_scheduler');
+
+  static final StreamController<String> _dismissAlarmController =
+      StreamController<String>.broadcast();
+  static Stream<String> get onDismissAlarm => _dismissAlarmController.stream;
+
+  static final StreamController<int> _snoozeAlarmController =
+      StreamController<int>.broadcast();
+  static Stream<int> get onSnoozeAlarm => _snoozeAlarmController.stream;
 
   Future<void> _handleMethodCall(MethodCall call) async {
     if (call.method == 'onAlarmTriggered') {
@@ -46,9 +92,26 @@ class NativeAlarmService {
         _navigateToAlarm(targetUrl);
       }
     } else if (call.method == 'dismissAlarm') {
+      final args = call.arguments as Map<dynamic, dynamic>?;
+      final reason = args?['reason'] as String? ?? 'NativeDismiss';
       try {
         AlarmAudioService().stopAlarm();
       } catch (_) {}
+      _dismissAlarmController.add(reason);
+      _closeAlarmRouteIfOpen();
+    } else if (call.method == 'onAlarmSnoozed') {
+      final args = call.arguments as Map<dynamic, dynamic>?;
+      final minutes = (args?['minutes'] as num?)?.toInt() ?? 10;
+      try {
+        AlarmAudioService().stopAlarm();
+      } catch (_) {}
+      _snoozeAlarmController.add(minutes);
+      _closeAlarmRouteIfOpen();
+    }
+  }
+
+  static void _closeAlarmRouteIfOpen() {
+    try {
       final currentLoc =
           appRouter.routerDelegate.currentConfiguration.uri.toString();
       if (currentLoc.startsWith('/alarm')) {
@@ -58,7 +121,7 @@ class NativeAlarmService {
           appRouter.go('/');
         }
       }
-    }
+    } catch (_) {}
   }
 
   static void _navigateToAlarm(String targetUrl) {
@@ -175,12 +238,136 @@ class NativeAlarmService {
     if (defaultTargetPlatform != TargetPlatform.android) return;
     try {
       await _channel.invokeMethod('cancelNotification', {
-        ?'reminderId': reminderId,
-        ?'prayerName': prayerName,
-        ?'notifId': notifId,
+        if (reminderId != null) 'reminderId': reminderId,
+        if (prayerName != null) 'prayerName': prayerName,
+        if (notifId != null) 'notifId': notifId,
       });
     } catch (e) {
       debugPrint('[NativeAlarmService] cancelNotification error: $e');
+    }
+  }
+
+  /// Retrieves persisted native interaction settings for volume button & screen-off behavior.
+  Future<Map<String, String>> getAlarmInteractionSettings() async {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return {
+        'volumeButtonAction': VolumeButtonAction.stopAlarm.value,
+        'screenOffAction': ScreenOffAction.stopAlarm.value,
+      };
+    }
+    try {
+      final res = await _channel.invokeMethod('getAlarmInteractionSettings');
+      if (res is Map) {
+        return Map<String, String>.from(res.map((k, v) => MapEntry(k.toString(), v.toString())));
+      }
+    } catch (e) {
+      debugPrint('[NativeAlarmService] getAlarmInteractionSettings error: $e');
+    }
+    return {
+      'volumeButtonAction': VolumeButtonAction.stopAlarm.value,
+      'screenOffAction': ScreenOffAction.stopAlarm.value,
+    };
+  }
+
+  /// Persists alarm interaction settings to native SharedPreferences.
+  Future<void> saveAlarmInteractionSettings({
+    required VolumeButtonAction volumeButtonAction,
+    required ScreenOffAction screenOffAction,
+  }) async {
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+    try {
+      await _channel.invokeMethod('saveAlarmInteractionSettings', {
+        'volumeButtonAction': volumeButtonAction.value,
+        'screenOffAction': screenOffAction.value,
+      });
+    } catch (e) {
+      debugPrint('[NativeAlarmService] saveAlarmInteractionSettings error: $e');
+    }
+  }
+
+  /// Centralized, idempotent stop function across Flutter & Native Android.
+  Future<bool> stopActiveAlarm({required String reason}) async {
+    try {
+      await AlarmAudioService().stopAlarm();
+    } catch (_) {}
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final bool? res = await _channel.invokeMethod<bool>('stopActiveAlarm', {
+          'reason': reason,
+        });
+        return res ?? true;
+      } catch (e) {
+        debugPrint('[NativeAlarmService] stopActiveAlarm error: $e');
+      }
+    }
+    return true;
+  }
+
+  /// Reliable snooze workflow that silences current alarm and schedules snooze.
+  Future<bool> snoozeActiveAlarm({required String reason, int minutes = 10}) async {
+    try {
+      await AlarmAudioService().stopAlarm();
+    } catch (_) {}
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        final bool? res = await _channel.invokeMethod<bool>('snoozeActiveAlarm', {
+          'reason': reason,
+          'minutes': minutes,
+        });
+        return res ?? true;
+      } catch (e) {
+        debugPrint('[NativeAlarmService] snoozeActiveAlarm error: $e');
+      }
+    }
+    return true;
+  }
+
+  /// Checks if native alarm is currently actively ringing.
+  Future<bool> isAlarmActive() async {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return AlarmAudioService().isPlaying;
+    }
+    try {
+      final bool? active = await _channel.invokeMethod<bool>('isAlarmActive');
+      return active ?? false;
+    } catch (e) {
+      debugPrint('[NativeAlarmService] isAlarmActive error: $e');
+      return false;
+    }
+  }
+
+  /// Informs native Android that an alarm has started ringing in Flutter.
+  /// Activates MediaSession volume key interception and registers ScreenOff listener.
+  Future<void> notifyAlarmStarted({
+    String? reminderId,
+    String? title,
+    String? soundType,
+    String? prayerName,
+    int? notifId,
+  }) async {
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+    try {
+      await _channel.invokeMethod('notifyAlarmStarted', {
+        'reminderId': reminderId,
+        'title': title,
+        'soundType': soundType,
+        'prayerName': prayerName,
+        'notifId': notifId,
+      });
+    } catch (e) {
+      debugPrint('[NativeAlarmService] notifyAlarmStarted error: $e');
+    }
+  }
+
+  /// Informs native Android that the active alarm was stopped or dismissed in Flutter.
+  Future<void> notifyAlarmStopped({String reason = 'FlutterAlarmStopped'}) async {
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+    try {
+      await _channel.invokeMethod('notifyAlarmStopped', {'reason': reason});
+    } catch (e) {
+      debugPrint('[NativeAlarmService] notifyAlarmStopped error: $e');
     }
   }
 }

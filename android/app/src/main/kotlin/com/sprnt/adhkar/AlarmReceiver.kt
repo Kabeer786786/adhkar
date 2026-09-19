@@ -31,70 +31,12 @@ class AlarmReceiver : BroadcastReceiver() {
         val action = intent.action ?: return
 
         if (action == ACTION_DISMISS_ALARM) {
-            val notifId = intent.getIntExtra("notif_id", 0)
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-            if (notifId != 0) {
-                nm?.cancel(notifId)
-            } else {
-                nm?.cancelAll()
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
-                try {
-                    for (statusBarNotif in nm.activeNotifications) {
-                        if (statusBarNotif.notification.channelId == CHANNEL_ID ||
-                            (notifId != 0 && statusBarNotif.id == notifId)) {
-                            nm.cancel(statusBarNotif.tag, statusBarNotif.id)
-                        }
-                    }
-                } catch (_: Exception) {}
-            }
-            MainActivity.alarmMethodChannel?.invokeMethod("dismissAlarm", null)
+            AlarmStateManager.stopActiveAlarm(context, "NotificationAction")
             return
         }
 
         if (action == ACTION_SNOOZE_ALARM) {
-            val notifId = intent.getIntExtra("notif_id", 0)
-            val reminderId = intent.getStringExtra("reminder_id") ?: "snooze"
-            val title = intent.getStringExtra("alarm_title") ?: "Reminder"
-            val body = intent.getStringExtra("alarm_body") ?: "Snoozed reminder ringing now."
-            val soundType = intent.getStringExtra("sound_type") ?: "Default Ringtone"
-            val prayerName = intent.getStringExtra("prayer_name")
-            val sound = intent.getBooleanExtra("sound", true)
-            val vibration = intent.getBooleanExtra("vibration", true)
-
-            // Cancel active notification
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-            if (notifId != 0) {
-                nm?.cancel(notifId)
-            } else {
-                nm?.cancelAll()
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
-                try {
-                    for (statusBarNotif in nm.activeNotifications) {
-                        if (statusBarNotif.notification.channelId == CHANNEL_ID ||
-                            (notifId != 0 && statusBarNotif.id == notifId)) {
-                            nm.cancel(statusBarNotif.tag, statusBarNotif.id)
-                        }
-                    }
-                } catch (_: Exception) {}
-            }
-            MainActivity.alarmMethodChannel?.invokeMethod("dismissAlarm", null)
-
-            // Schedule snooze alarm for 10 minutes in the future
-            val snoozeTrigger = System.currentTimeMillis() + 10 * 60 * 1000L
-            AlarmScheduler.scheduleAlarm(
-                context = context,
-                id = "${reminderId}_snooze",
-                title = "Snoozed: $title",
-                body = body,
-                triggerAtMillis = snoozeTrigger,
-                sound = sound,
-                vibration = vibration,
-                soundType = soundType,
-                prayerName = prayerName
-            )
-            Log.i(TAG, "Snoozed alarm for reminderId=$reminderId for 10 minutes")
+            AlarmStateManager.snoozeActiveAlarm(context, "NotificationAction", 10)
             return
         }
 
@@ -225,16 +167,19 @@ class AlarmReceiver : BroadcastReceiver() {
 
         nm?.notify(notifId, builder.build())
 
-        // 6. Store pending alarm in MainActivity companion object
+        // 6. Store pending alarm in MainActivity companion object and notify AlarmStateManager
         val alarmData = mapOf(
             "reminder_id" to reminderId,
             "prayer_name" to prayerName,
             "alarm_title" to title,
             "alarm_body" to body,
             "sound_type" to soundType,
-            "notif_id" to notifId
+            "notif_id" to notifId,
+            "sound" to sound,
+            "vibration" to vibration
         )
         MainActivity.pendingAlarmData = alarmData
+        AlarmStateManager.onAlarmStarted(context, alarmData)
         MainActivity.alarmMethodChannel?.invokeMethod("onAlarmTriggered", alarmData)
 
         // 7. Directly launch Activity

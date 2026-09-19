@@ -134,6 +134,7 @@ class _AlarmCustomizationModalState
         builder: (context) => const AlarmScreen(
           title: "It's time !",
           soundType: 'preview_silent',
+          isPreview: true,
         ),
       ),
     );

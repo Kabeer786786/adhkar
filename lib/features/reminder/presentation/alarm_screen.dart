@@ -29,6 +29,11 @@ class AlarmScreen extends ConsumerStatefulWidget {
   final String? title;
   final String? soundType;
   final int? notifId;
+  final String? initialBgType;
+  final String? initialBgValue;
+  final bool? initialShowWaves;
+
+  final bool isPreview;
 
   const AlarmScreen({
     super.key,
@@ -37,6 +42,10 @@ class AlarmScreen extends ConsumerStatefulWidget {
     this.title,
     this.soundType,
     this.notifId,
+    this.initialBgType,
+    this.initialBgValue,
+    this.initialShowWaves,
+    this.isPreview = false,
   });
 
   @override
@@ -57,6 +66,11 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   DateTime _currentTime = DateTime.now();
   String _activeSoundName = 'Default Ringtone';
   bool _isDismissed = false;
+  StreamSubscription<String>? _dismissSubscription;
+  StreamSubscription<int>? _snoozeSubscription;
+
+  bool get _isEffectivePreview =>
+      widget.isPreview || widget.soundType == 'preview_silent';
 
   @override
   void initState() {
@@ -64,6 +78,31 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
 
     // Listen to physical volume / power buttons to dismiss/silence alarm
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
+
+    if (!_isEffectivePreview) {
+      // Informs native Android coordinator that alarm is active (activates MediaSession & ScreenOff receiver)
+      NativeAlarmService.instance.notifyAlarmStarted(
+        reminderId: widget.reminderId,
+        title: widget.title,
+        prayerName: widget.prayerName,
+        soundType: widget.soundType,
+        notifId: widget.notifId,
+      );
+
+      // Listen to native dismiss events (Volume button, Screen-off, or Notification Action)
+      _dismissSubscription = NativeAlarmService.onDismissAlarm.listen((reason) {
+        if (mounted && !_isDismissed) {
+          _dismissAlarm(reason: reason);
+        }
+      });
+
+      // Listen to native snooze events
+      _snoozeSubscription = NativeAlarmService.onSnoozeAlarm.listen((minutes) {
+        if (mounted && !_isDismissed) {
+          _snoozeAlarm(minutes, reason: 'NativeSnooze');
+        }
+      });
+    }
 
     _pulseController = AnimationController(
       vsync: this,
@@ -96,12 +135,32 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   bool _handleKeyEvent(KeyEvent event) {
     if (event is KeyDownEvent) {
       final key = event.logicalKey;
+      final storage = ref.read(storageServiceProvider);
+
       if (key == LogicalKeyboardKey.audioVolumeDown ||
           key == LogicalKeyboardKey.audioVolumeUp ||
-          key == LogicalKeyboardKey.audioVolumeMute ||
-          key == LogicalKeyboardKey.power) {
-        _dismissAlarm();
-        return true;
+          key == LogicalKeyboardKey.audioVolumeMute) {
+        final volumeAction = VolumeButtonAction.fromValue(
+          storage.getVolumeButtonAction(),
+        );
+        switch (volumeAction) {
+          case VolumeButtonAction.stopAlarm:
+            _dismissAlarm(reason: 'VolumeButton');
+            return true;
+          case VolumeButtonAction.snoozeAlarm:
+            _snoozeAlarm(10, reason: 'VolumeButton');
+            return true;
+          case VolumeButtonAction.doNothing:
+            return false;
+        }
+      } else if (key == LogicalKeyboardKey.power) {
+        final screenOffAction = ScreenOffAction.fromValue(
+          storage.getScreenOffAction(),
+        );
+        if (screenOffAction == ScreenOffAction.stopAlarm) {
+          _dismissAlarm(reason: 'ScreenOff');
+          return true;
+        }
       }
     }
     return false;
@@ -130,13 +189,17 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
 
     final quietHours = ref.read(quietHoursProvider);
     final quietHoursService = ref.read(quietHoursServiceProvider);
-    final isQuietActive = await quietHoursService.isQuietHoursCurrentlyActive(quietHours);
+    final isQuietActive = await quietHoursService.isQuietHoursCurrentlyActive(
+      quietHours,
+    );
 
     if (_isDismissed) return;
-    if (widget.soundType == 'preview_silent') return;
+    if (_isEffectivePreview) return;
 
-    final soundEnabled = !isQuietActive && (customReminder?.soundEnabled ?? true);
-    final vibrationEnabled = !isQuietActive && (customReminder?.vibrationEnabled ?? true);
+    final soundEnabled =
+        !isQuietActive && (customReminder?.soundEnabled ?? true);
+    final vibrationEnabled =
+        !isQuietActive && (customReminder?.vibrationEnabled ?? true);
     final durationSeconds = customReminder?.duration.inSeconds ?? 30;
 
     // Auto-dismiss timer based on user specified reminder duration
@@ -182,6 +245,16 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   @override
   void dispose() {
     _isDismissed = true;
+    _dismissSubscription?.cancel();
+    _snoozeSubscription?.cancel();
+    if (!_isEffectivePreview) {
+      NativeAlarmService.instance.notifyAlarmStopped();
+      NativeAlarmService.instance.cancelNotification(
+        reminderId: widget.reminderId,
+        prayerName: widget.prayerName,
+        notifId: widget.notifId,
+      );
+    }
     HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
     _pulseController.dispose();
     _rotateController.dispose();
@@ -195,15 +268,10 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     try {
       AlarmAudioService().stopAlarm();
     } catch (_) {}
-    NativeAlarmService.instance.cancelNotification(
-      reminderId: widget.reminderId,
-      prayerName: widget.prayerName,
-      notifId: widget.notifId,
-    );
     super.dispose();
   }
 
-  Future<void> _dismissAlarm() async {
+  Future<void> _dismissAlarm({String reason = 'UserStop'}) async {
     if (_isDismissed) return;
     _isDismissed = true;
 
@@ -228,39 +296,50 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         ? '${widget.prayerName} Prayer'
         : (widget.title ?? customReminder?.title ?? 'Adhkar Reminder');
 
-    // 2. If one-time reminder, deactivate it
-    if (customReminder != null &&
-        customReminder.frequency == ReminderFrequency.once) {
-      ref.read(remindersProvider.notifier).toggleEnable(customReminder.id);
+    // Only apply alarm deactivation, native cancellation, and toasts for real alarms (not preview)
+    if (!_isEffectivePreview) {
+      // 2. If one-time reminder, deactivate it
+      if (customReminder != null &&
+          customReminder.frequency == ReminderFrequency.once) {
+        ref.read(remindersProvider.notifier).toggleEnable(customReminder.id);
+      }
+
+      // 3. Cancel active notification and native alarm for reminder or prayer via centralized stop
+      try {
+        await NativeAlarmService.instance.stopActiveAlarm(reason: reason);
+        await NativeAlarmService.instance.cancelNotification(
+          reminderId: widget.reminderId,
+          prayerName: widget.prayerName,
+          notifId: widget.notifId,
+        );
+        if (widget.reminderId != null) {
+          final notifId = widget.reminderId.hashCode.abs() % 100000000;
+          await NotificationService().cancel(notifId);
+          await NativeAlarmService.instance.cancelAlarm(widget.reminderId!);
+          await NativeAlarmService.instance.cancelAlarm(
+            '${widget.reminderId!}_snooze',
+          );
+        }
+        if (widget.prayerName != null) {
+          final prayerId = widget.prayerName.hashCode.abs() % 100000000;
+          await NotificationService().cancel(prayerId);
+        }
+      } catch (_) {}
+
+      if (mounted) {
+        AppFloatingToast.showAdded(
+          context,
+          message: 'Alarm turned off: $notifTitle',
+        );
+      }
     }
 
-    // 3. Cancel active notification and native alarm for reminder or prayer
-    try {
-      await NativeAlarmService.instance.cancelNotification(
-        reminderId: widget.reminderId,
-        prayerName: widget.prayerName,
-        notifId: widget.notifId,
-      );
-      if (widget.reminderId != null) {
-        final notifId = widget.reminderId.hashCode.abs() % 100000000;
-        await NotificationService().cancel(notifId);
-        await NativeAlarmService.instance.cancelAlarm(widget.reminderId!);
-        await NativeAlarmService.instance.cancelAlarm('${widget.reminderId!}_snooze');
-      }
-      if (widget.prayerName != null) {
-        final prayerId = widget.prayerName.hashCode.abs() % 100000000;
-        await NotificationService().cancel(prayerId);
-      }
-    } catch (_) {}
-
     if (mounted) {
-      AppFloatingToast.showAdded(
-        context,
-        message: 'Alarm turned off: $notifTitle',
-      );
       final isLocked = await NativeAlarmService.instance.isDeviceLocked();
       if (mounted) {
-        if (isLocked && !context.canPop()) {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else if (isLocked && !context.canPop()) {
           SystemNavigator.pop();
         } else if (context.canPop()) {
           context.pop();
@@ -271,7 +350,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     }
   }
 
-  Future<void> _snoozeAlarm(int minutes) async {
+  Future<void> _snoozeAlarm(int minutes, {String reason = 'UserSnooze'}) async {
     _vibrationTimer?.cancel();
     _autoDismissTimer?.cancel();
     await _audioPlayer.stop();
@@ -279,57 +358,66 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     final snoozeTime = DateTime.now().add(Duration(minutes: minutes));
     final alarmTitle = widget.title ?? widget.prayerName ?? 'Alarm';
 
-    // Cancel current notification
-    try {
-      await NativeAlarmService.instance.cancelNotification(
-        reminderId: widget.reminderId,
-        prayerName: widget.prayerName,
-        notifId: widget.notifId,
-      );
-      if (widget.reminderId != null) {
-        final notifId = widget.reminderId.hashCode.abs() % 100000000;
-        await NotificationService().cancel(notifId);
-      }
-      if (widget.prayerName != null) {
-        final prayerId = widget.prayerName.hashCode.abs() % 100000000;
-        await NotificationService().cancel(prayerId);
-      }
-    } catch (_) {}
+    if (!_isEffectivePreview) {
+      // Cancel current notification
+      try {
+        await NativeAlarmService.instance.cancelNotification(
+          reminderId: widget.reminderId,
+          prayerName: widget.prayerName,
+          notifId: widget.notifId,
+        );
+        if (widget.reminderId != null) {
+          final notifId = widget.reminderId.hashCode.abs() % 100000000;
+          await NotificationService().cancel(notifId);
+        }
+        if (widget.prayerName != null) {
+          final prayerId = widget.prayerName.hashCode.abs() % 100000000;
+          await NotificationService().cancel(prayerId);
+        }
+      } catch (_) {}
 
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      // Schedule snooze natively via AlarmManager
-      await NativeAlarmService.instance.scheduleAlarm(
-        id: '${widget.reminderId ?? "alarm"}_snooze',
-        title: 'Snoozed: $alarmTitle',
-        body: 'Snoozed alert ringing now',
-        scheduledTime: snoozeTime,
-        sound: true,
-        vibration: true,
-        soundType: _activeSoundName,
-        prayerName: widget.prayerName,
-      );
-    } else {
-      final snoozeId = (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
-      await NotificationService().scheduleCustomReminderNotification(
-        id: snoozeId,
-        title: 'Snoozed: $alarmTitle',
-        body: 'Snoozed alert ringing now',
-        scheduledTime: snoozeTime,
-        reminderId: widget.reminderId ?? 'snooze_alarm',
-        sound: true,
-        vibration: true,
-        soundType: _activeSoundName,
-      );
-    }
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        // Schedule snooze natively via AlarmStateManager & AlarmScheduler
+        await NativeAlarmService.instance.snoozeActiveAlarm(
+          reason: reason,
+          minutes: minutes,
+        );
+        await NativeAlarmService.instance.scheduleAlarm(
+          id: '${widget.reminderId ?? "alarm"}_snooze',
+          title: 'Snoozed: $alarmTitle',
+          body: 'Snoozed alert ringing now',
+          scheduledTime: snoozeTime,
+          sound: true,
+          vibration: true,
+          soundType: _activeSoundName,
+          prayerName: widget.prayerName,
+        );
+      } else {
+        final snoozeId =
+            (DateTime.now().millisecondsSinceEpoch % 900000) + 100000;
+        await NotificationService().scheduleCustomReminderNotification(
+          id: snoozeId,
+          title: 'Snoozed: $alarmTitle',
+          body: 'Snoozed alert ringing now',
+          scheduledTime: snoozeTime,
+          reminderId: widget.reminderId ?? 'snooze_alarm',
+          sound: true,
+          vibration: true,
+          soundType: _activeSoundName,
+        );
+      }
 
-    if (mounted) {
-      AppFloatingToast.showAdded(
-        context,
-        message: 'Snoozed for $minutes minutes',
-      );
+      if (mounted) {
+        AppFloatingToast.showAdded(
+          context,
+          message: 'Snoozed for $minutes minutes',
+        );
+      }
       final isLocked = await NativeAlarmService.instance.isDeviceLocked();
       if (mounted) {
-        if (isLocked && !context.canPop()) {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else if (isLocked && !context.canPop()) {
           SystemNavigator.pop();
         } else if (context.canPop()) {
           context.pop();
@@ -524,16 +612,30 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     if (lower.contains('water') || lower.contains('drink')) {
       return Icons.water_drop_rounded;
     }
-    if (lower.contains('namaz') || lower.contains('salah')) {
+    if (lower.contains('namaz') ||
+        lower.contains('salah') ||
+        lower.contains('prayer')) {
       return Icons.mosque_rounded;
     }
     return Icons.alarm_on_rounded;
   }
 
-  Widget _buildBackground(StorageService storage) {
-    final bgType = storage.getAlarmBgType();
-    final bgValue = storage.getAlarmBgValue();
-    final showWaves = storage.getAlarmShowWaves();
+  Widget _buildBackground(
+    StorageService storage,
+    CustomReminder? customReminder,
+  ) {
+    final bgType =
+        widget.initialBgType ??
+        customReminder?.alarmBgType ??
+        storage.getAlarmBgType();
+    final bgValue =
+        widget.initialBgValue ??
+        customReminder?.alarmBgValue ??
+        storage.getAlarmBgValue();
+    final showWaves =
+        widget.initialShowWaves ??
+        customReminder?.alarmShowWaves ??
+        storage.getAlarmShowWaves();
 
     Widget base;
     if (bgType == 'image') {
@@ -554,9 +656,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
             ),
           ),
           // Subtle scrim overlay to ensure 100% legibility
-          Container(
-            color: Colors.black.withValues(alpha: 0.22),
-          ),
+          Container(color: Colors.black.withValues(alpha: 0.22)),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -589,10 +689,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     if (showWaves) {
       return Stack(
         fit: StackFit.expand,
-        children: [
-          base,
-          const AmbientWaveBackground(),
-        ],
+        children: [base, const AmbientWaveBackground()],
       );
     }
 
@@ -616,8 +713,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         ? (widget.prayerName!.toLowerCase() == 'fajr'
               ? 'الصلاة خير من النوم • Prayer is better than sleep'
               : 'حي على الصلاة • Come to Success')
-        : (customReminder?.description ??
-              'Time for your scheduled reminder.');
+        : (customReminder?.description ?? 'Time for your scheduled reminder.');
 
     final dateStr = DateFormat('EEEE, MMMM d').format(_currentTime);
     final timeStr = DateFormat('h:mm').format(_currentTime);
@@ -633,289 +729,356 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
       },
       child: Scaffold(
         body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // 1. Configured Background (Wallpapers from alarm-bgs / Gradients / Ambient Waves)
-            _buildBackground(storage),
+          value: SystemUiOverlayStyle.light,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // 1. Configured Background (Wallpapers from alarm-bgs / Gradients / Ambient Waves)
+              _buildBackground(storage, customReminder),
 
-            // 2. Alarm UI Content (matching reference image structure)
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                child: Column(
-                  children: [
-                    // Top header: subtle 'Alarm' status label
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 4, top: 4),
-                        child: Text(
-                          'Alarm',
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withValues(alpha: 0.8),
-                            letterSpacing: 0.4,
-                            shadows: const [
-                              Shadow(
-                                color: Colors.black45,
-                                blurRadius: 6,
+              // 2. Alarm UI Content (matching reference image structure)
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  child: Column(
+                    children: [
+                      // Top header: In preview -> only back button; In real alarm -> Adhkar with logo
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: _isEffectivePreview
+                            ? Material(
+                                color: Colors.black.withValues(alpha: 0.35),
+                                shape: const CircleBorder(),
+                                clipBehavior: Clip.antiAlias,
+                                child: InkWell(
+                                  onTap: () {
+                                    _dismissAlarm(reason: 'PreviewBack');
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.25,
+                                        ),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.arrow_back_rounded,
+                                      color: Colors.white,
+                                      size: 22,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 28,
+                                    height: 28,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        'assets/logo.png',
+                                        width: 28,
+                                        height: 28,
+                                        fit: BoxFit.cover,
+                                        cacheWidth: 84,
+                                        cacheHeight: 84,
+                                        errorBuilder: (context, error, stackTrace) =>
+                                            const Icon(
+                                              FlutterIslamicIcons.solidMosque,
+                                              color: Color(0xFF2A531D),
+                                              size: 16,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Adhkar',
+                                    style: GoogleFonts.lexend(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      letterSpacing: 0.3,
+                                      shadows: const [
+                                        Shadow(
+                                          color: Colors.black54,
+                                          blurRadius: 6,
+                                          offset: Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
                       ),
-                    ),
 
-                    const Spacer(flex: 2),
+                      const Spacer(flex: 2),
+                      
 
-                    // Date Header: "Saturday, January 21"
-                    Text(
-                      dateStr,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.lexend(
-                        fontSize: 16.5,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withValues(alpha: 0.95),
-                        letterSpacing: 0.2,
-                        shadows: const [
-                          Shadow(
-                            color: Colors.black54,
-                            blurRadius: 8,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 2),
-
-                    // Large Digital Clock Display: "2:43"
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          timeStr,
-                          style: GoogleFonts.outfit(
-                            fontSize: 76,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            letterSpacing: -1.5,
-                            height: 1.1,
-                            shadows: const [
-                              Shadow(
-                                color: Colors.black54,
-                                blurRadius: 16,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          amPmStr,
-                          style: GoogleFonts.outfit(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white.withValues(alpha: 0.8),
-                            shadows: const [
-                              Shadow(
-                                color: Colors.black54,
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // Animated Reminder Icon with pulsing glow rings
-                    AnimatedBuilder(
-                      animation: _pulseController,
-                      builder: (context, child) {
-                        return Container(
-                          width: 58,
-                          height: 58,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black.withValues(alpha: 0.25),
-                            border: Border.all(
-                              color: Colors.white.withValues(
-                                alpha: 0.45 * _glowAnimation.value,
-                              ),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Transform.scale(
-                              scale: _scaleAnimation.value,
-                              child: Icon(
-                                iconData,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-
-                    const Spacer(flex: 3),
-
-                    // Title: "It's time !"
-                    Text(
-                      alarmTitle,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.outfit(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 0.3,
-                        shadows: const [
-                          Shadow(
-                            color: Colors.black87,
-                            blurRadius: 10,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    // Description: "Don't forget your pills."
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        alarmSubtitle,
+                      // Date Header: "Saturday, January 21"
+                      Text(
+                        dateStr,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.lexend(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white.withValues(alpha: 0.9),
-                          height: 1.35,
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white.withValues(alpha: 0.95),
+                          letterSpacing: 0.2,
                           shadows: const [
                             Shadow(
-                              color: Colors.black87,
+                              color: Colors.black54,
                               blurRadius: 8,
                               offset: Offset(0, 1),
                             ),
                           ],
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 32),
+                      const SizedBox(height: 2),
 
-                    // STOP Pill Button (Dark capsule button)
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: _dismissAlarm,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          width: 160,
-                          padding: const EdgeInsets.symmetric(vertical: 13),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF222226).withValues(alpha: 0.92),
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.18),
-                              width: 1.0,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.4),
-                                blurRadius: 14,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            'STOP',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.lexend(
+                      // Large Digital Clock Display: "2:43"
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            timeStr,
+                            style: GoogleFonts.outfit(
+                              fontSize: 76,
+                              fontWeight: FontWeight.w700,
                               color: Colors.white,
-                              fontSize: 15.5,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
+                              letterSpacing: -1.5,
+                              height: 1.1,
+                              shadows: const [
+                                Shadow(
+                                  color: Colors.black54,
+                                  blurRadius: 16,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(width: 6),
+                          Text(
+                            amPmStr,
+                            style: GoogleFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white.withValues(alpha: 0.8),
+                              shadows: const [
+                                Shadow(color: Colors.black54, blurRadius: 8),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Animated Reminder Icon with pulsing glow rings
+                      AnimatedBuilder(
+                        animation: _pulseController,
+                        builder: (context, child) {
+                          return Container(
+                            width: 58,
+                            height: 58,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withValues(alpha: 0.25),
+                              border: Border.all(
+                                color: Colors.white.withValues(
+                                  alpha: 0.45 * _glowAnimation.value,
+                                ), 
+                                width: 1.5, 
+                              ),
+                            ),
+                            child: Center(
+                              child: Transform.scale(
+                                scale: _scaleAnimation.value,
+                                child: Icon(
+                                  iconData,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      const Spacer(flex: 6),
+
+                      
+                      // Title: "It's time !"
+                      Text(
+                        alarmTitle,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.outfit(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.3,
+                          shadows: const [
+                            Shadow(
+                              color: Colors.black87,
+                              blurRadius: 10,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 14),
+                      const SizedBox(height: 6),
 
-                    // Snooze Pill Button (White capsule button)
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: _showSnoozeOptions,
-                        borderRadius: BorderRadius.circular(22),
-                        child: Container(
-                          width: 105,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.96),
-                            borderRadius: BorderRadius.circular(22),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.25),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
+                      // Description: "Don't forget your pills."
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          alarmSubtitle,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.lexend(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white.withValues(alpha: 0.9),
+                            height: 1.35,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black87,
+                                blurRadius: 8,
+                                offset: Offset(0, 1),
                               ),
                             ],
                           ),
-                          child: Text(
-                            'Snooze',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.lexend(
-                              color: const Color(0xFF1E293B),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // STOP Pill Button (Dark capsule button)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _dismissAlarm,
+                          borderRadius: BorderRadius.circular(30),
+                          child: Container(
+                            width: 160,
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF222226,
+                              ).withValues(alpha: 0.92),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.18),
+                                width: 1.0,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.4),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              'STOP',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.lexend(
+                                color: Colors.white,
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
 
-                    // Optional Dua After Azaan button for prayer alarms
-                    if (isPrayer) ...[
-                      const SizedBox(height: 12),
-                      TextButton.icon(
-                        onPressed: _showDuaAfterAzaan,
-                        icon: const Icon(
-                          Icons.menu_book_rounded,
-                          color: Colors.white70,
-                          size: 16,
-                        ),
-                        label: Text(
-                          'Read Dua After Azaan',
-                          style: GoogleFonts.lexend(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white70,
+                      const SizedBox(height: 14),
+
+                      // Snooze Pill Button (White capsule button)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _showSnoozeOptions,
+                          borderRadius: BorderRadius.circular(22),
+                          child: Container(
+                            width: 105,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.96),
+                              borderRadius: BorderRadius.circular(22),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.25),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              'Snooze',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.lexend(
+                                color: const Color(0xFF1E293B),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ],
 
-                    const SizedBox(height: 20),
-                  ],
+                      // Optional Dua After Azaan button for prayer alarms
+                      if (isPrayer) ...[
+                        const SizedBox(height: 12),
+                        TextButton.icon(
+                          onPressed: _showDuaAfterAzaan,
+                          icon: const Icon(
+                            Icons.menu_book_rounded,
+                            color: Colors.white70,
+                            size: 16,
+                          ),
+                          label: Text(
+                            'Read Dua After Azaan',
+                            style: GoogleFonts.lexend(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

@@ -426,20 +426,7 @@ class AppFloatingToast {
                     color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
                     width: 1.1,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.45),
-                      blurRadius: 20,
-                      spreadRadius: -2,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: const Color(0xFF1B4332).withValues(alpha: 0.3),
-                      blurRadius: 16,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -479,8 +466,8 @@ class AppFloatingToast {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.lexend(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                           color: Colors.white,
                           letterSpacing: 0.2,
                         ),

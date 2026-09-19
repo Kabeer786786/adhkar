@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../core/config/reminder_audio_config.dart';
 import '../../domain/reminder_model.dart';
+import '../alarm_screen.dart';
+import 'alarm_customization_modal.dart';
 
 class ReminderModal extends StatefulWidget {
   final CustomReminder? initialReminder;
@@ -49,6 +51,9 @@ class _ReminderModalState extends State<ReminderModal> {
   late String _soundType;
   late bool _vibrationEnabled;
   late bool _notificationEnabled;
+  late String _alarmBgType;
+  late String _alarmBgValue;
+  late bool _alarmShowWaves;
   String? _titleError;
 
   final List<String> _soundOptions = ReminderAudioConfig.soundOptions;
@@ -81,6 +86,9 @@ class _ReminderModalState extends State<ReminderModal> {
     _soundType = ReminderAudioConfig.canonicalSoundName(rem?.soundType);
     _vibrationEnabled = rem?.vibrationEnabled ?? true;
     _notificationEnabled = rem?.notificationEnabled ?? true;
+    _alarmBgType = rem?.alarmBgType ?? 'image';
+    _alarmBgValue = rem?.alarmBgValue ?? 'assets/images/alarm-bgs/bg1.jpg';
+    _alarmShowWaves = rem?.alarmShowWaves ?? false;
 
     _previewSubscription = _previewPlayer.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
@@ -312,6 +320,9 @@ class _ReminderModalState extends State<ReminderModal> {
       notificationEnabled: _notificationEnabled,
       isEnabled: widget.initialReminder?.isEnabled ?? true,
       turnedOffDate: widget.initialReminder?.turnedOffDate,
+      alarmBgType: _alarmBgType,
+      alarmBgValue: _alarmBgValue,
+      alarmShowWaves: _alarmShowWaves,
       createdAt: widget.initialReminder?.createdAt ?? now,
       updatedAt: now,
       timezone: now.timeZoneName,
@@ -322,10 +333,28 @@ class _ReminderModalState extends State<ReminderModal> {
     Navigator.pop(context);
   }
 
+  void _previewAlarm() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AlarmScreen(
+          title: _titleController.text.trim().isEmpty
+              ? 'Reminder Preview'
+              : _titleController.text.trim(),
+          soundType: 'preview_silent',
+          initialBgType: _alarmBgType,
+          initialBgValue: _alarmBgValue,
+          initialShowWaves: _alarmShowWaves,
+          isPreview: true,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     const primaryGreen = Color(0xFF2A531D);
+    const secondaryGreen = Color(0xFF458830);
     final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
     final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
@@ -857,38 +886,55 @@ class _ReminderModalState extends State<ReminderModal> {
 
           // Toggles: Sound, Vibration, Notification
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF16251C) : const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-              ),
+              ), 
             ),
             child: Column(
               children: [
-                SwitchListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  title: Text(
-                    'Sound',
-                    style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                InkWell(
+                  onTap: () => setState(() => _soundEnabled = !_soundEnabled),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text( 
+                          'Sound',
+                          style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                        ),
+                        Transform.scale(
+                          scale: 0.85,
+                          child: Switch(
+                            value: _soundEnabled,
+                            activeTrackColor: primaryGreen,
+                            activeThumbColor: Colors.white,
+                            onChanged: (val) => setState(() => _soundEnabled = val),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  value: _soundEnabled,
-                  activeTrackColor: primaryGreen,
-                  onChanged: (val) => setState(() => _soundEnabled = val),
                 ),
                 if (_soundEnabled) ...[
                   Padding(
                     padding: const EdgeInsets.only(
                       left: 12,
                       right: 12,
-                      bottom: 10,
+                      bottom: 12,
                     ),
                     child: Row(
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            initialValue: ReminderAudioConfig.canonicalSoundName(_soundType),
+                            initialValue:
+                                ReminderAudioConfig.canonicalSoundName(
+                                  _soundType,
+                                ),
                             dropdownColor: cardBg,
                             decoration: InputDecoration(
                               labelText: 'ALARM AUDIO / SOUND',
@@ -967,69 +1013,373 @@ class _ReminderModalState extends State<ReminderModal> {
                   height: 1,
                   color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
                 ),
-                SwitchListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  title: Text(
-                    'Vibration',
-                    style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                InkWell(
+                  onTap: () => setState(() => _vibrationEnabled = !_vibrationEnabled),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Vibration',
+                          style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                        ),
+                        Transform.scale(
+                          scale: 0.85,
+                          child: Switch(
+                            value: _vibrationEnabled,
+                            activeTrackColor: primaryGreen,
+                            activeThumbColor: Colors.white,
+                            onChanged: (val) => setState(() => _vibrationEnabled = val),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  value: _vibrationEnabled,
-                  activeTrackColor: primaryGreen,
-                  onChanged: (val) => setState(() => _vibrationEnabled = val),
                 ),
                 Divider(
                   height: 1,
                   color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
                 ),
-                SwitchListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  title: Text(
-                    'Notification Alert',
-                    style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                InkWell(
+                  onTap: () => setState(() => _notificationEnabled = !_notificationEnabled),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Notification Alert',
+                          style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                        ),
+                        Transform.scale(
+                          scale: 0.85,
+                          child: Switch(
+                            value: _notificationEnabled,
+                            activeTrackColor: primaryGreen,
+                            activeThumbColor: Colors.white,
+                            onChanged: (val) =>
+                                setState(() => _notificationEnabled = val),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  value: _notificationEnabled,
-                  activeTrackColor: primaryGreen,
-                  onChanged: (val) =>
-                      setState(() => _notificationEnabled = val),
                 ),
+                Divider(
+                  height: 1,
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
+                // ALARM SCREEN THEME SECTION
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Alarm Screen Theme',
+                            style: GoogleFonts.lexend(
+                              fontSize: 15,
+                              color: textColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: _previewAlarm,
+                        icon: const Icon(Icons.visibility_outlined, size: 15),
+                        label: const Text('Preview'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: primaryGreen,
+                          side: BorderSide(
+                            color: primaryGreen.withValues(alpha: 0.5),
+                            width: 1,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          visualDensity: VisualDensity.compact,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          textStyle: GoogleFonts.lexend(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Horizontally Scrollable Wallpapers & Gradients
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: SizedBox(
+                    height: 150,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        // 1. Image Wallpapers
+                        ...AlarmBackgroundConfig.imageList.map((img) {
+                          final isSelected =
+                              _alarmBgType == 'image' && _alarmBgValue == img;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _alarmBgType = 'image';
+                                  _alarmBgValue = img;
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 95,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? secondaryGreen
+                                        : (isDark
+                                              ? Colors.white12
+                                              : const Color(0xFFE2E8F0)),
+                                    width: isSelected ? 2.5 : 1.0,
+                                  ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Image.asset(img, fit: BoxFit.cover),
+                                      if (isSelected)
+                                        Container(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(5),
+                                              decoration: const BoxDecoration(
+                                                color: secondaryGreen,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.check_rounded,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+
+                        // 2. Gradient Wallpapers (Identical rectangle dimensions at the end)
+                        ...AlarmBackgroundConfig.gradientList.map((g) {
+                          final id = g['id'] as String;
+                          final colors = (g['colors'] as List).cast<Color>();
+                          final name = g['name'] as String;
+                          final isSelected =
+                              _alarmBgType == 'gradient' && _alarmBgValue == id;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _alarmBgType = 'gradient';
+                                  _alarmBgValue = id;
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 95,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? primaryGreen
+                                        : (isDark
+                                              ? Colors.white12
+                                              : const Color(0xFFE2E8F0)),
+                                    width: isSelected ? 2.5 : 1.0,
+                                  ),
+                                  gradient: LinearGradient(
+                                    colors: colors,
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    if (isSelected)
+                                      Center(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: const BoxDecoration(
+                                            color: primaryGreen,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.check_rounded,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    Positioned(
+                                      bottom: 6,
+                                      left: 4,
+                                      right: 4,
+                                      child: Text(
+                                        name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.lexend(
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white.withValues(
+                                            alpha: 0.9,
+                                          ),
+                                          shadows: const [
+                                            Shadow(
+                                              color: Colors.black54,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ), 
+                  ),
+                ),
+                InkWell(
+                  onTap: () => setState(() => _alarmShowWaves = !_alarmShowWaves),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Ambient Wave Motion',
+                                style: GoogleFonts.lexend(
+                                  fontSize: 14.5,
+                                  color: textColor,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Subtle flowing motion over wallpaper',
+                                style: GoogleFonts.lexend(
+                                  fontSize: 11,
+                                  color: subTextColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Transform.scale(
+                          scale: 0.85,
+                          child: Switch(
+                            value: _alarmShowWaves,
+                            activeTrackColor: primaryGreen,
+                            activeThumbColor: Colors.white,
+                            onChanged: (val) => setState(() => _alarmShowWaves = val),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4)
               ],
             ),
           ),
-
-          const SizedBox(height: 16),
-
-          // Action Button: Save Reminder
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _save,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryGreen,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                widget.initialReminder == null
-                    ? 'Create Reminder'
-                    : 'Save Changes',
-                style: GoogleFonts.lexend(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
         ],
       ),
     );
 
+    final stickySaveButton = Container(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+      decoration: BoxDecoration(
+        color: cardBg,
+        border: Border(
+          top: BorderSide(
+            color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _save,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryGreen,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: Text(
+              widget.initialReminder == null
+                  ? 'Create Reminder'
+                  : 'Save Changes',
+              style: GoogleFonts.lexend(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
     if (widget.isEmbedded) {
-      return formContent;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(child: formContent),
+          stickySaveButton,
+        ],
+      );
     }
 
     return Padding(
@@ -1080,6 +1430,9 @@ class _ReminderModalState extends State<ReminderModal> {
             ),
 
             Flexible(child: formContent),
+
+            // Sticky Bottom Save Changes Button
+            stickySaveButton,
           ],
         ),
       ),

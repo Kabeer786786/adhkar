@@ -92,6 +92,9 @@ class CustomReminder {
   final bool notificationEnabled;
   final bool isEnabled;
   final String? turnedOffDate; // YYYY-MM-DD when skipped today
+  final String? alarmBgType; // 'image' or 'gradient'
+  final String? alarmBgValue; // asset path or gradient id
+  final bool? alarmShowWaves; // ambient waves motion
   final DateTime createdAt;
   final DateTime updatedAt;
   final String timezone;
@@ -112,6 +115,9 @@ class CustomReminder {
     this.notificationEnabled = true,
     this.isEnabled = true,
     this.turnedOffDate,
+    this.alarmBgType,
+    this.alarmBgValue,
+    this.alarmShowWaves,
     required this.createdAt,
     required this.updatedAt,
     required this.timezone,
@@ -248,6 +254,9 @@ class CustomReminder {
     bool? isEnabled,
     String? turnedOffDate,
     bool clearTurnedOffDate = false,
+    String? alarmBgType,
+    String? alarmBgValue,
+    bool? alarmShowWaves,
     DateTime? createdAt,
     DateTime? updatedAt,
     String? timezone,
@@ -270,6 +279,9 @@ class CustomReminder {
       turnedOffDate: clearTurnedOffDate
           ? null
           : (turnedOffDate ?? this.turnedOffDate),
+      alarmBgType: alarmBgType ?? this.alarmBgType,
+      alarmBgValue: alarmBgValue ?? this.alarmBgValue,
+      alarmShowWaves: alarmShowWaves ?? this.alarmShowWaves,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       timezone: timezone ?? this.timezone,
@@ -293,6 +305,9 @@ class CustomReminder {
       'notificationEnabled': notificationEnabled,
       'isEnabled': isEnabled,
       'turnedOffDate': turnedOffDate,
+      'alarmBgType': alarmBgType,
+      'alarmBgValue': alarmBgValue,
+      'alarmShowWaves': alarmShowWaves,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'timezone': timezone,
@@ -326,6 +341,9 @@ class CustomReminder {
       notificationEnabled: json['notificationEnabled'] as bool? ?? true,
       isEnabled: json['isEnabled'] as bool? ?? true,
       turnedOffDate: json['turnedOffDate'] as String?,
+      alarmBgType: json['alarmBgType'] as String?,
+      alarmBgValue: json['alarmBgValue'] as String?,
+      alarmShowWaves: json['alarmShowWaves'] as bool?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       timezone: json['timezone'] as String? ?? 'UTC',

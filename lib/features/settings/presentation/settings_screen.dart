@@ -11,6 +11,7 @@ import '../../../shared/widgets/section_header.dart';
 import '../../../core/calendar/models/calendar_type.dart';
 import '../../../core/calendar/providers/calendar_providers.dart';
 import '../../../widgets/app_header_bar.dart';
+import '../../reminder/presentation/widgets/alarm_interaction_settings_modal.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -672,6 +673,95 @@ class SettingsScreen extends ConsumerWidget {
                     textStyle: GoogleFonts.lexend(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 6px light/dark gray divider box
+          const _SectionDivider(),
+
+          // Alarm Interaction Section
+          const SectionHeader(
+            title: 'Alarm Interaction',
+            subtitle: 'Configure volume buttons and screen-off alarm actions',
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: cardBorder, width: 1),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(9),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF23352B)
+                            : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.touch_app_outlined,
+                        color: primaryGreen,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hardware Button Actions',
+                            style: GoogleFonts.outfit(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textColor,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Volume buttons & screen-off dismissal',
+                            style: GoogleFonts.lexend(
+                              fontSize: 11.5,
+                              color: subTextColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => AlarmInteractionSettingsModal.show(context),
+                    icon: const Icon(Icons.tune_rounded, size: 16),
+                    label: const Text('Configure Alarm Interaction'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: primaryGreen,
+                      side: BorderSide(
+                        color: primaryGreen.withValues(alpha: 0.5),
+                        width: 1,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      textStyle: GoogleFonts.lexend(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),

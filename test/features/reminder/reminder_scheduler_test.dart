@@ -1,8 +1,26 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:adhkar/features/reminder/domain/reminder_model.dart';
 import 'package:adhkar/features/reminder/services/reminder_scheduler.dart';
+import 'package:adhkar/core/services/native_alarm_service.dart';
 
 void main() {
+  group('Alarm Interaction Settings Tests', () {
+    test('VolumeButtonAction enum mapping and fallback', () {
+      expect(VolumeButtonAction.fromValue('stopAlarm'), equals(VolumeButtonAction.stopAlarm));
+      expect(VolumeButtonAction.fromValue('snoozeAlarm'), equals(VolumeButtonAction.snoozeAlarm));
+      expect(VolumeButtonAction.fromValue('doNothing'), equals(VolumeButtonAction.doNothing));
+      expect(VolumeButtonAction.fromValue('unknown_value'), equals(VolumeButtonAction.stopAlarm));
+      expect(VolumeButtonAction.fromValue(null), equals(VolumeButtonAction.stopAlarm));
+    });
+
+    test('ScreenOffAction enum mapping and fallback', () {
+      expect(ScreenOffAction.fromValue('stopAlarm'), equals(ScreenOffAction.stopAlarm));
+      expect(ScreenOffAction.fromValue('continueAlarm'), equals(ScreenOffAction.continueAlarm));
+      expect(ScreenOffAction.fromValue('unknown'), equals(ScreenOffAction.stopAlarm));
+      expect(ScreenOffAction.fromValue(null), equals(ScreenOffAction.stopAlarm));
+    });
+  });
+
   group('CustomReminder Model Tests', () {
     test('Serialization and Deserialization works correctly', () {
       final now = DateTime(2026, 8, 15, 10, 0);
@@ -42,6 +60,41 @@ void main() {
       expect(restored.notificationEnabled, isTrue);
       expect(restored.isEnabled, isTrue);
       expect(restored.turnedOffDate, isNull);
+      expect(restored.alarmBgType, isNull);
+      expect(restored.alarmBgValue, isNull);
+      expect(restored.alarmShowWaves, isNull);
+    });
+
+    test('CustomReminder per-reminder alarm background fields serialize correctly', () {
+      final now = DateTime(2026, 8, 15, 10, 0);
+      final reminder = CustomReminder(
+        id: 'test_rem_bg',
+        title: 'Bedtime Adhkar',
+        hour: 22,
+        minute: 0,
+        createdAt: now,
+        updatedAt: now,
+        timezone: 'UTC',
+        alarmBgType: 'gradient',
+        alarmBgValue: 'midnight_aurora',
+        alarmShowWaves: true,
+      );
+
+      final json = reminder.toJson();
+      final restored = CustomReminder.fromJson(json);
+
+      expect(restored.alarmBgType, equals('gradient'));
+      expect(restored.alarmBgValue, equals('midnight_aurora'));
+      expect(restored.alarmShowWaves, isTrue);
+
+      final updated = reminder.copyWith(
+        alarmBgType: 'image',
+        alarmBgValue: 'assets/images/alarm-bgs/bg5.jpg',
+        alarmShowWaves: false,
+      );
+      expect(updated.alarmBgType, equals('image'));
+      expect(updated.alarmBgValue, equals('assets/images/alarm-bgs/bg5.jpg'));
+      expect(updated.alarmShowWaves, isFalse);
     });
 
     test('Formatted days text helper formats correctly', () {

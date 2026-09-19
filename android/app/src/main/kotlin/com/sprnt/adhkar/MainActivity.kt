@@ -46,11 +46,68 @@ class MainActivity : AudioServiceActivity() {
                 "alarm_title" to intent.getStringExtra("alarm_title"),
                 "alarm_body" to intent.getStringExtra("alarm_body"),
                 "sound_type" to intent.getStringExtra("sound_type"),
-                "notif_id" to intent.getIntExtra("notif_id", 0)
+                "notif_id" to intent.getIntExtra("notif_id", 0),
+                "sound" to intent.getBooleanExtra("sound", true),
+                "vibration" to intent.getBooleanExtra("vibration", true)
             )
             pendingAlarmData = data
+            AlarmStateManager.onAlarmStarted(this, data)
             alarmMethodChannel?.invokeMethod("onAlarmTriggered", data)
         }
+    }
+
+    override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
+        if (AlarmStateManager.isAlarmActive()) {
+            when (event.keyCode) {
+                android.view.KeyEvent.KEYCODE_VOLUME_DOWN,
+                android.view.KeyEvent.KEYCODE_VOLUME_UP,
+                android.view.KeyEvent.KEYCODE_VOLUME_MUTE -> {
+                    val volumeAction = AlarmInteractionSettings.getVolumeButtonAction(this)
+                    if (volumeAction != VolumeButtonAction.DO_NOTHING) {
+                        if (event.action == android.view.KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                            when (volumeAction) {
+                                VolumeButtonAction.STOP_ALARM -> {
+                                    AlarmStateManager.stopActiveAlarm(this, "VolumeButton")
+                                }
+                                VolumeButtonAction.SNOOZE_ALARM -> {
+                                    AlarmStateManager.snoozeActiveAlarm(this, "VolumeButton")
+                                }
+                                VolumeButtonAction.DO_NOTHING -> {}
+                            }
+                        }
+                        // Consume both ACTION_DOWN and ACTION_UP to prevent volume slider UI
+                        return true
+                    }
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
+        if (AlarmStateManager.isAlarmActive()) {
+            when (keyCode) {
+                android.view.KeyEvent.KEYCODE_VOLUME_DOWN,
+                android.view.KeyEvent.KEYCODE_VOLUME_UP,
+                android.view.KeyEvent.KEYCODE_VOLUME_MUTE -> {
+                    val volumeAction = AlarmInteractionSettings.getVolumeButtonAction(this)
+                    when (volumeAction) {
+                        VolumeButtonAction.STOP_ALARM -> {
+                            AlarmStateManager.stopActiveAlarm(this, "VolumeButton")
+                            return true
+                        }
+                        VolumeButtonAction.SNOOZE_ALARM -> {
+                            AlarmStateManager.snoozeActiveAlarm(this, "VolumeButton")
+                            return true
+                        }
+                        VolumeButtonAction.DO_NOTHING -> {
+                            return super.onKeyDown(keyCode, event)
+                        }
+                    }
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun showOverLockscreen() {
@@ -162,6 +219,50 @@ class MainActivity : AudioServiceActivity() {
                 "isDeviceLocked" -> {
                     val km = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
                     result.success(km?.isKeyguardLocked ?: false)
+                }
+                "getAlarmInteractionSettings" -> {
+                    result.success(AlarmInteractionSettings.getAllSettings(this))
+                }
+                "saveAlarmInteractionSettings" -> {
+                    val volumeAction = call.argument<String>("volumeButtonAction")
+                    val screenOffAction = call.argument<String>("screenOffAction")
+                    AlarmInteractionSettings.saveAllSettings(this, volumeAction, screenOffAction)
+                    result.success(true)
+                }
+                "stopActiveAlarm" -> {
+                    val reason = call.argument<String>("reason") ?: "UserStop"
+                    val stopped = AlarmStateManager.stopActiveAlarm(this, reason)
+                    result.success(stopped)
+                }
+                "snoozeActiveAlarm" -> {
+                    val reason = call.argument<String>("reason") ?: "UserSnooze"
+                    val minutes = (call.argument<Number>("minutes"))?.toInt() ?: 10
+                    val snoozed = AlarmStateManager.snoozeActiveAlarm(this, reason, minutes)
+                    result.success(snoozed)
+                }
+                "isAlarmActive" -> {
+                    result.success(AlarmStateManager.isAlarmActive())
+                }
+                "notifyAlarmStarted" -> {
+                    val reminderId = call.argument<String>("reminderId")
+                    val title = call.argument<String>("title") ?: "Reminder"
+                    val soundType = call.argument<String>("soundType") ?: "Default Ringtone"
+                    val prayerName = call.argument<String>("prayerName")
+                    val notifId = (call.argument<Number>("notifId"))?.toInt() ?: 0
+                    val data = mapOf(
+                        "reminder_id" to reminderId,
+                        "alarm_title" to title,
+                        "sound_type" to soundType,
+                        "prayer_name" to prayerName,
+                        "notif_id" to notifId
+                    )
+                    AlarmStateManager.onAlarmStarted(this, data)
+                    result.success(true)
+                }
+                "notifyAlarmStopped" -> {
+                    val reason = call.argument<String>("reason") ?: "FlutterAlarmStopped"
+                    AlarmStateManager.stopActiveAlarm(this, reason)
+                    result.success(true)
                 }
                 else -> result.notImplemented()
             }

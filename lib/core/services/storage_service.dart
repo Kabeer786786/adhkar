@@ -622,4 +622,27 @@ class StorageService {
   Future<void> setAlarmShowWaves(bool show) async {
     await _settingsBox.put('alarm_show_waves', show);
   }
+
+  // --- Alarm Interaction Settings ---
+  String getVolumeButtonAction() {
+    return _settingsBox.get(
+      'alarm_volume_button_action',
+      defaultValue: 'stopAlarm',
+    ) as String;
+  }
+
+  Future<void> setVolumeButtonAction(String action) async {
+    await _settingsBox.put('alarm_volume_button_action', action);
+  }
+
+  String getScreenOffAction() {
+    return _settingsBox.get(
+      'alarm_screen_off_action',
+      defaultValue: 'stopAlarm',
+    ) as String;
+  }
+
+  Future<void> setScreenOffAction(String action) async {
+    await _settingsBox.put('alarm_screen_off_action', action);
+  }
 }
