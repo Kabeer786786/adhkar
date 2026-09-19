@@ -7,6 +7,7 @@ import '../core/services/hijri_service.dart';
 import '../core/utils/hijri_date.dart';
 import '../shared/providers/app_providers.dart';
 import '../features/sadqa/presentation/widgets/online_donation_modal.dart';
+import '../features/reminder/services/reminder_permission_service.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -159,9 +160,15 @@ class AppDrawer extends ConsumerWidget {
                     icon: Icons.alarm_rounded,
                     title: 'Reminders',
                     color: const Color(0xFFD97724),
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pop(context);
-                      context.push('/reminder');
+                      final hasPerms =
+                          await ReminderPermissionService.hasRequiredPermissions();
+                      if (!hasPerms && context.mounted) {
+                        context.push('/permissions?from=reminder');
+                      } else if (context.mounted) {
+                        context.push('/reminder');
+                      }
                     },
                   ),
                   _DrawerItem(

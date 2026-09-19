@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../domain/reminder_model.dart';
+import '../services/reminder_permission_service.dart';
 import 'providers/reminder_provider.dart';
 import 'widgets/alarm_interaction_settings_modal.dart';
 import 'widgets/reminder_library_modal.dart';
@@ -20,6 +22,19 @@ class ReminderScreen extends ConsumerStatefulWidget {
 class _ReminderScreenState extends ConsumerState<ReminderScreen> {
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = <String>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _checkPermissions();
+  }
+
+  Future<void> _checkPermissions() async {
+    final hasPerms = await ReminderPermissionService.hasRequiredPermissions();
+    if (!hasPerms && mounted) {
+      context.go('/permissions?from=reminder');
+    }
+  }
 
   void _confirmDeleteSelected(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;

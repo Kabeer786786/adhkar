@@ -638,7 +638,7 @@ class StorageService {
   String getScreenOffAction() {
     return _settingsBox.get(
       'alarm_screen_off_action',
-      defaultValue: 'stopAlarm',
+      defaultValue: 'continueAlarm',
     ) as String;
   }
 

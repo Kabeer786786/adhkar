@@ -54,12 +54,11 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // 1. Acquire WakeLock to turn on screen and guarantee CPU execution
         val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
-        @Suppress("DEPRECATION")
         val wakeLock = pm?.newWakeLock(
-            PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
+            PowerManager.PARTIAL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
             "Adhkar:AlarmWakeLock"
         )
-        wakeLock?.acquire(25 * 1000L) // 25 seconds max timeout
+        wakeLock?.acquire(60 * 1000L) // 60 seconds max timeout
 
         // Deterministic notification ID matching Flutter's generateNotificationId
         val notifId = Math.abs(reminderId.hashCode()) % 100000000
@@ -73,6 +72,8 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("alarm_body", body)
             putExtra("sound_type", soundType)
             putExtra("notif_id", notifId)
+            putExtra("sound", sound)
+            putExtra("vibration", vibration)
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or

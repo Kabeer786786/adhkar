@@ -16,8 +16,8 @@ void main() {
     test('ScreenOffAction enum mapping and fallback', () {
       expect(ScreenOffAction.fromValue('stopAlarm'), equals(ScreenOffAction.stopAlarm));
       expect(ScreenOffAction.fromValue('continueAlarm'), equals(ScreenOffAction.continueAlarm));
-      expect(ScreenOffAction.fromValue('unknown'), equals(ScreenOffAction.stopAlarm));
-      expect(ScreenOffAction.fromValue(null), equals(ScreenOffAction.stopAlarm));
+      expect(ScreenOffAction.fromValue('unknown'), equals(ScreenOffAction.continueAlarm));
+      expect(ScreenOffAction.fromValue(null), equals(ScreenOffAction.continueAlarm));
     });
   });
 

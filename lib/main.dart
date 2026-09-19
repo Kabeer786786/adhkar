@@ -17,7 +17,7 @@ import 'features/quiet_hours/services/quiet_hours_service.dart';
 import 'features/reminder/presentation/providers/reminder_provider.dart';
 import 'shared/providers/app_providers.dart';
 
-void _handleAlarmPayloadNavigation(String payload, {String? title, String? sound}) {
+void _handleAlarmPayloadNavigation(String payload, {String? title, String? sound, int? notifId}) {
   if (payload.startsWith('dismiss:')) {
     AlarmAudioService().stopAlarm();
     return;
@@ -29,12 +29,14 @@ void _handleAlarmPayloadNavigation(String payload, {String? title, String? sound
     final params = <String, String>{'id': remId};
     if (title != null && title.isNotEmpty) params['title'] = title;
     if (sound != null && sound.isNotEmpty) params['sound'] = sound;
+    if (notifId != null && notifId != 0) params['notif_id'] = notifId.toString();
     targetUrl = '/alarm?${Uri(queryParameters: params).query}';
   } else if (payload.startsWith('prayer:')) {
     final prayer = payload.substring('prayer:'.length);
     final params = <String, String>{'prayer': prayer};
     if (title != null && title.isNotEmpty) params['title'] = title;
     if (sound != null && sound.isNotEmpty) params['sound'] = sound;
+    if (notifId != null && notifId != 0) params['notif_id'] = notifId.toString();
     targetUrl = '/alarm?${Uri(queryParameters: params).query}';
   }
 
@@ -138,11 +140,12 @@ class _AdhkarAppState extends ConsumerState<AdhkarApp> {
         final prayer = pendingNative['prayer_name'] as String?;
         final title = pendingNative['alarm_title'] as String?;
         final sound = pendingNative['sound_type'] as String?;
+        final notifId = (pendingNative['notif_id'] as num?)?.toInt();
         if (remId != null && remId.isNotEmpty) {
-          _handleAlarmPayloadNavigation('reminder_id:$remId', title: title, sound: sound);
+          _handleAlarmPayloadNavigation('reminder_id:$remId', title: title, sound: sound, notifId: notifId);
           return;
         } else if (prayer != null && prayer.isNotEmpty) {
-          _handleAlarmPayloadNavigation('prayer:$prayer', title: title, sound: sound);
+          _handleAlarmPayloadNavigation('prayer:$prayer', title: title, sound: sound, notifId: notifId);
           return;
         }
       }

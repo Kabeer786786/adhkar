@@ -23,7 +23,7 @@ enum class ScreenOffAction(val value: String) {
     companion object {
         fun fromValue(value: String?): ScreenOffAction {
             return entries.firstOrNull { it.value.equals(value, ignoreCase = true) }
-                ?: STOP_ALARM
+                ?: CONTINUE_ALARM
         }
     }
 }
@@ -47,7 +47,7 @@ object AlarmInteractionSettings {
     }
 
     fun getScreenOffAction(context: Context): ScreenOffAction {
-        val str = getPrefs(context).getString(KEY_SCREEN_OFF_ACTION, ScreenOffAction.STOP_ALARM.value)
+        val str = getPrefs(context).getString(KEY_SCREEN_OFF_ACTION, ScreenOffAction.CONTINUE_ALARM.value)
         return ScreenOffAction.fromValue(str)
     }
 

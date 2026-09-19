@@ -108,6 +108,11 @@ object AlarmStateManager {
     }
 
     private fun registerScreenOffReceiver(context: Context) {
+        val action = AlarmInteractionSettings.getScreenOffAction(context)
+        if (action != ScreenOffAction.STOP_ALARM) {
+            Log.d(TAG, "ScreenOffAction is $action, skipping screen-off receiver registration")
+            return
+        }
         if (screenOffReceiver != null) return
 
         val receiver = object : BroadcastReceiver() {
@@ -125,7 +130,7 @@ object AlarmStateManager {
         val filter = IntentFilter(Intent.ACTION_SCREEN_OFF)
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.applicationContext.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+                context.applicationContext.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
             } else {
                 context.applicationContext.registerReceiver(receiver, filter)
             }
@@ -147,6 +152,8 @@ object AlarmStateManager {
         screenOffReceiver = null
     }
 
+    private val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
+
     /**
      * Single centralized, idempotent function to stop any active alarm.
      * Prevents duplicate cleanup and ensures no orphaned audio, vibration, or notification.
@@ -162,20 +169,20 @@ object AlarmStateManager {
         val alarmData = currentAlarmData
         currentAlarmData = null
 
-        mainHandler.post {
-            cleanupMediaSession()
-            unregisterScreenOffReceiver(context)
+        // 1. Immediately cancel the primary notification by ID
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+        val notifId = (alarmData?.get("notif_id") as? Number)?.toInt() ?: 0
+        if (notifId != 0) {
+            try {
+                nm?.cancel(notifId)
+            } catch (_: Exception) {}
         }
 
-        // Cancel notification associated with this alarm
-        try {
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-            val notifId = (alarmData?.get("notif_id") as? Number)?.toInt() ?: 0
-            if (notifId != 0) {
-                nm?.cancel(notifId)
-            } else {
-                nm?.cancelAll()
-            }
+        // 2. Offload heavy cleanup and activeNotifications IPC to background executor
+        // to prevent main-thread Binder deadlocks / ANRs during key events
+        executor.execute {
+            cleanupMediaSession()
+            unregisterScreenOffReceiver(context)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm != null) {
                 try {
                     for (statusBarNotif in nm.activeNotifications) {
@@ -186,11 +193,9 @@ object AlarmStateManager {
                     }
                 } catch (_: Exception) {}
             }
-        } catch (e: Exception) {
-            Log.w(TAG, "Error cancelling notification during stopActiveAlarm: ${e.message}")
         }
 
-        // Synchronize state with Flutter engine if connected
+        // 3. Synchronize state with Flutter engine
         mainHandler.post {
             try {
                 MainActivity.alarmMethodChannel?.invokeMethod(

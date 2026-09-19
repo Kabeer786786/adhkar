@@ -36,7 +36,7 @@ enum ScreenOffAction {
   static ScreenOffAction fromValue(String? val) {
     return ScreenOffAction.values.firstWhere(
       (e) => e.value == val,
-      orElse: () => ScreenOffAction.stopAlarm,
+      orElse: () => ScreenOffAction.continueAlarm,
     );
   }
 }
@@ -252,7 +252,7 @@ class NativeAlarmService {
     if (defaultTargetPlatform != TargetPlatform.android) {
       return {
         'volumeButtonAction': VolumeButtonAction.stopAlarm.value,
-        'screenOffAction': ScreenOffAction.stopAlarm.value,
+        'screenOffAction': ScreenOffAction.continueAlarm.value,
       };
     }
     try {
@@ -265,7 +265,7 @@ class NativeAlarmService {
     }
     return {
       'volumeButtonAction': VolumeButtonAction.stopAlarm.value,
-      'screenOffAction': ScreenOffAction.stopAlarm.value,
+      'screenOffAction': ScreenOffAction.continueAlarm.value,
     };
   }
 

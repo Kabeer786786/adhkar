@@ -195,7 +195,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/permissions',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const PermissionsScreen(),
+      builder: (context, state) {
+        final from = state.uri.queryParameters['from'];
+        return PermissionsScreen(from: from);
+      },
     ),
 
     GoRoute(

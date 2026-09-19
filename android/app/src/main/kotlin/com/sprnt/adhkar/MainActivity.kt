@@ -65,17 +65,19 @@ class MainActivity : AudioServiceActivity() {
                     val volumeAction = AlarmInteractionSettings.getVolumeButtonAction(this)
                     if (volumeAction != VolumeButtonAction.DO_NOTHING) {
                         if (event.action == android.view.KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                            when (volumeAction) {
-                                VolumeButtonAction.STOP_ALARM -> {
-                                    AlarmStateManager.stopActiveAlarm(this, "VolumeButton")
+                            window?.decorView?.post {
+                                when (volumeAction) {
+                                    VolumeButtonAction.STOP_ALARM -> {
+                                        AlarmStateManager.stopActiveAlarm(this@MainActivity, "VolumeButton")
+                                    }
+                                    VolumeButtonAction.SNOOZE_ALARM -> {
+                                        AlarmStateManager.snoozeActiveAlarm(this@MainActivity, "VolumeButton")
+                                    }
+                                    VolumeButtonAction.DO_NOTHING -> {}
                                 }
-                                VolumeButtonAction.SNOOZE_ALARM -> {
-                                    AlarmStateManager.snoozeActiveAlarm(this, "VolumeButton")
-                                }
-                                VolumeButtonAction.DO_NOTHING -> {}
                             }
                         }
-                        // Consume both ACTION_DOWN and ACTION_UP to prevent volume slider UI
+                        // Consume both ACTION_DOWN and ACTION_UP immediately to prevent system volume HUD slider
                         return true
                     }
                 }
@@ -91,18 +93,8 @@ class MainActivity : AudioServiceActivity() {
                 android.view.KeyEvent.KEYCODE_VOLUME_UP,
                 android.view.KeyEvent.KEYCODE_VOLUME_MUTE -> {
                     val volumeAction = AlarmInteractionSettings.getVolumeButtonAction(this)
-                    when (volumeAction) {
-                        VolumeButtonAction.STOP_ALARM -> {
-                            AlarmStateManager.stopActiveAlarm(this, "VolumeButton")
-                            return true
-                        }
-                        VolumeButtonAction.SNOOZE_ALARM -> {
-                            AlarmStateManager.snoozeActiveAlarm(this, "VolumeButton")
-                            return true
-                        }
-                        VolumeButtonAction.DO_NOTHING -> {
-                            return super.onKeyDown(keyCode, event)
-                        }
+                    if (volumeAction != VolumeButtonAction.DO_NOTHING) {
+                        return true
                     }
                 }
             }
@@ -110,22 +102,33 @@ class MainActivity : AudioServiceActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        showOverLockscreen()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showOverLockscreen()
+    }
+
     private fun showOverLockscreen() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-        } else {
-            @Suppress("DEPRECATION")
-            window.addFlags(
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-            )
         }
+        @Suppress("DEPRECATION")
         window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
         )
+        val km = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            km?.requestDismissKeyguard(this, null)
+        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
