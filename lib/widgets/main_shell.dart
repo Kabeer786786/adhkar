@@ -6,8 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../core/extensions/context_extensions.dart';
 import '../core/services/showcase_service.dart';
-import '../features/asma_ul_husna/services/asma_audio_service.dart';
-import '../features/quran/services/quran_audio_service.dart';
 import '../shared/widgets/app_floating_toast.dart';
 import '../shared/widgets/app_showcase.dart';
 import 'app_drawer.dart';
@@ -21,41 +19,9 @@ class MainShell extends ConsumerStatefulWidget {
   ConsumerState<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends ConsumerState<MainShell> with WidgetsBindingObserver {
+class _MainShellState extends ConsumerState<MainShell> {
   DateTime? _lastBackPressTime;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _checkAndNavigateToActiveMedia();
-    }
-  }
-
-  void _checkAndNavigateToActiveMedia() {
-    final quranAudio = ref.read(quranAudioProvider);
-    final asmaAudio = ref.read(asmaAudioProvider);
-
-    if (quranAudio.currentIndex >= 0 && quranAudio.isPlaying) {
-      final surahNum = quranAudio.surahNumber ?? 1;
-      final name = Uri.encodeComponent(quranAudio.title);
-      context.push('/quran/surah?num=$surahNum&name=$name');
-    } else if (asmaAudio.currentIndex >= 0 && asmaAudio.isPlaying) {
-      context.push('/asma-ul-husna');
-    }
-  }
 
   void _onTapIndex(int index) {
     widget.navigationShell.goBranch(

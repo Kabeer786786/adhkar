@@ -17,6 +17,7 @@ import '../../prayer/presentation/providers/aladhan_providers.dart';
 import '../../../shared/providers/user_profile_provider.dart';
 import '../../../shared/widgets/complete_profile_modal.dart';
 import '../../../shared/widgets/startup_permissions_modal.dart';
+import '../../quiet_hours/services/quiet_hours_permission_service.dart';
 import 'widgets/daily_ayah_card.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -502,13 +503,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     const Text(
                                       'REMAINING TIME',
                                       style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w700,
                                         letterSpacing: 0.8,
                                         color: Color(0xFF8C6D53),
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 4),
                                     Text(
                                       (locationAsync.isLoading ||
                                               locationAsync.isRefreshing ||
@@ -567,13 +568,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     const Text(
                                       'HIJRI & LOCATION',
                                       style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.8,
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.7,
                                         color: Color(0xFF8C6D53),
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 4),
                                     Text(
                                       hijriStr,
                                       style: const TextStyle(
@@ -767,7 +768,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: _FeatureTile(
                         title: 'Quiet Hours',
                         assetPath: 'assets/images/quiet_hours.png',
-                        onTap: () => context.push('/quiet-hours'),
+                        onTap: () async {
+                          final hasPerms =
+                              await QuietHoursPermissionService.hasRequiredPermissions();
+                          if (!hasPerms && context.mounted) {
+                            context.push('/permissions?from=quiet_hours');
+                          } else if (context.mounted) {
+                            context.push('/quiet-hours');
+                          }
+                        },
                         width: 42,
                         height: 43,
                       ),

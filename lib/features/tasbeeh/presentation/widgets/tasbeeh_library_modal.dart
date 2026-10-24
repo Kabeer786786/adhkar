@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/models/tasbeeh_item.dart';
 import '../../../../shared/widgets/app_floating_toast.dart';
+import 'add_tasbeeh_modal.dart';
 
 enum TasbeehModalView { library, details, form }
 
@@ -14,7 +16,7 @@ class TasbeehLibraryModal extends StatefulWidget {
 
   const TasbeehLibraryModal({
     super.key,
-    required this.currentItems,
+    required this.currentItems, 
     required this.onAddItem,
     required this.onRemoveItem,
     required this.onCreateCustom,
@@ -27,19 +29,22 @@ class TasbeehLibraryModal extends StatefulWidget {
     required Function(String itemId) onRemoveItem,
     required Function(TasbeehItem newItem) onCreateCustom,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) => Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.90,
-        ),
+        height: MediaQuery.of(context).size.height * 0.88,
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: TasbeehLibraryModal(
           currentItems: currentItems,
@@ -63,42 +68,15 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
   TasbeehModalView _currentView = TasbeehModalView.library;
   TasbeehItem? _selectedItemForDetails;
 
-  // Form Controllers
-  late TextEditingController _formTextArController;
-  late TextEditingController _formTextEnController;
-  late TextEditingController _formTargetController;
-  late TextEditingController _formDescController;
-  late int _formSelectedColorValue;
-
-  static const List<int> colorOptions = [
-    0xFF0284C7, // Sky Blue
-    0xFF16A34A, // Emerald Green
-    0xFFEA580C, // Orange
-    0xFF9333EA, // Purple
-    0xFF059669, // Teal
-    0xFFD97724, // Gold
-    0xFFDC2626, // Crimson
-    0xFF2563EB, // Royal Blue
-  ];
-
   @override
   void initState() {
     super.initState();
     _activeItems = List.from(widget.currentItems);
-    _formTextArController = TextEditingController();
-    _formTextEnController = TextEditingController();
-    _formTargetController = TextEditingController(text: '33');
-    _formDescController = TextEditingController();
-    _formSelectedColorValue = colorOptions.first;
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _formTextArController.dispose();
-    _formTextEnController.dispose();
-    _formTargetController.dispose();
-    _formDescController.dispose();
     super.dispose();
   }
 
@@ -124,12 +102,6 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
   }
 
   void _openFormView() {
-    _formTextArController.clear();
-    _formTextEnController.clear();
-    _formTargetController.text = '33';
-    _formDescController.clear();
-    _formSelectedColorValue = colorOptions.first;
-
     setState(() {
       _currentView = TasbeehModalView.form;
     });
@@ -142,97 +114,43 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
     });
   }
 
-  void _submitForm() {
-    final ar = _formTextArController.text.trim();
-    final en = _formTextEnController.text.trim();
-    final target = int.tryParse(_formTargetController.text.trim()) ?? 33;
-    final desc = _formDescController.text.trim();
-
-    if (ar.isEmpty || en.isEmpty) {
-      AppFloatingToast.showError(
-        context,
-        message: 'Please enter Arabic text and English title.',
-      );
-      return;
-    }
-
-    final newItem = TasbeehItem(
-      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-      textAr: ar,
-      textEn: en,
-      description: desc,
-      targetGoal: target > 0 ? target : 33,
-      colorValue: _formSelectedColorValue,
-      isCustom: true,
-    );
-
-    HapticFeedback.lightImpact();
-    widget.onCreateCustom(newItem);
-    setState(() {
-      _activeItems.add(newItem);
-      _currentView = TasbeehModalView.library;
-    });
-  }
-
-  InputDecoration _formInputDecoration(
-    String label,
-    String hint,
-    IconData icon,
-  ) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      prefixIcon: Icon(icon, color: const Color(0xFF2A531D)),
-      filled: true,
-      fillColor: const Color(0xFFF9FAFB),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF2A531D), width: 1.8),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 12),
-          // Drag Handle
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        // Drag Handle
+        Center(
+          child: Container(
+            width: 60,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 10),
+        ),
+        const SizedBox(height: 10),
 
-          // Content View Switcher
-          Flexible(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: _buildCurrentViewContent(),
-            ),
+        // Content View Switcher
+        Expanded(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            layoutBuilder:
+                (Widget? currentChild, List<Widget> previousChildren) {
+              return Stack(
+                fit: StackFit.expand,
+                alignment: Alignment.topCenter,
+                children: <Widget>[
+                  ...previousChildren,
+                  ?currentChild,
+                ],
+              );
+            },
+            child: _buildCurrentViewContent(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -243,12 +161,31 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
       case TasbeehModalView.details:
         return _buildDetailsView();
       case TasbeehModalView.form:
-        return _buildFormView();
+        return AddTasbeehModal(
+          isEmbedded: true,
+          onBack: () {
+            setState(() {
+              _currentView = TasbeehModalView.library;
+            });
+          },
+          onSave: (newItem) {
+            widget.onCreateCustom(newItem);
+            setState(() {
+              _activeItems.add(newItem);
+              _currentView = TasbeehModalView.library;
+            });
+            AppFloatingToast.showAdded(
+              context,
+              message: 'Custom Tasbeeh created successfully',
+            );
+          },
+        );
     }
   }
 
   // --- 1. LIBRARY VIEW ---
   Widget _buildLibraryView() {
+    final isDark = context.isDarkMode;
     final query = _searchController.text.trim().toLowerCase();
     final allLibraryItems = TasbeehItem.defaults;
     final filteredItems = allLibraryItems.where((item) {
@@ -262,19 +199,17 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
       key: const ValueKey('library_view'),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Header Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Tasbeeh Library',
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2A531D),
+                  color: isDark ? Colors.white : const Color(0xFF2A531D),
                 ),
               ),
               ElevatedButton.icon(
@@ -308,179 +243,299 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                 Icons.search_rounded,
                 color: Color(0xFF2A531D),
               ),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 18),
+                      color: Colors.grey.shade600,
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    )
+                  : null,
               filled: true,
-              fillColor: const Color(0xFFF9F9F9),
+              fillColor: isDark
+                  ? const Color(0xFF23322B)
+                  : const Color(0xFFF9F9F9),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 8,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: Color(0xFF2A531D),
+                  width: 1.5,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 12),
 
-          // Platform Tasbeeh Cards List (Simple Box Card Design with Right Top Checkbox & Right Bottom Target Count Badge)
-          Flexible(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: filteredItems.length,
-              itemBuilder: (context, index) {
-                final item = filteredItems[index];
-                final isPinned = _isItemPinned(item.id);
+          // Platform Tasbeeh Cards List or Empty State
+          Expanded(
+            child: filteredItems.isEmpty
+                ? _buildEmptySearchState(query, isDark)
+                : ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: filteredItems.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredItems[index];
+                      final isPinned = _isItemPinned(item.id);
 
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Material(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () => _openDetailsView(item),
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(
-                          color: item.color.withValues(alpha: 0.04),
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Material(
+                          color: Colors.transparent,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: item.color.withValues(alpha: 0.15),
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            // Top Right Circle Checkbox
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () => _toggleItem(item),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.all(2),
-                                  child: Icon(
-                                    isPinned
-                                        ? Icons.check_circle_rounded
-                                        : Icons.circle_outlined,
-                                    size: 24,
-                                    color: isPinned
-                                        ? item.color
-                                        : item.color.withValues(alpha: 0.45),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () => _openDetailsView(item),
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(
+                                color: item.color.withValues(
+                                  alpha: isDark ? 0.12 : 0.04,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: item.color.withValues(
+                                    alpha: isDark ? 0.25 : 0.15,
                                   ),
+                                  width: 1.0,
                                 ),
                               ),
-                            ),
-
-                            // Card Text Content
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                right: 66.0,
-                                bottom: 14.0,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Stack(
                                 children: [
-                                  Text(
-                                    item.textAr,
-                                    textDirection: TextDirection.rtl,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.arabicBody(
-                                      fontSize: 20,
-                                      color: const Color(0xFF1B5E20),
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    item.textEn,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: item.color,
-                                    ),
-                                  ),
-                                  if (item.effectiveTranslation.isNotEmpty) ...[
-                                    const SizedBox(height: 3),
-                                    Text(
-                                      item.effectiveTranslation,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.grey.shade700,
-                                        height: 1.3,
+                                  // Top Right Circle Checkbox
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () => _toggleItem(item),
+                                      child: AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        padding: const EdgeInsets.all(2),
+                                        child: Icon(
+                                          isPinned
+                                              ? Icons.check_circle_rounded
+                                              : Icons.circle_outlined,
+                                          size: 24,
+                                          color: isPinned
+                                              ? item.color
+                                              : item.color.withValues(
+                                                  alpha: 0.45,
+                                                ),
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                  if (item.description.isNotEmpty) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      item.description,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 11.5,
-                                        color: Colors.grey.shade700,
-                                        height: 1.3,
+                                  ),
+
+                                  // Card Text Content
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: 66.0,
+                                      bottom: 14.0,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.textAr,
+                                          textDirection: TextDirection.rtl,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppTypography.arabicBody(
+                                            fontSize: 20,
+                                            color: isDark
+                                                ? Colors.white
+                                                : const Color(0xFF1B5E20),
+                                            height: 1.4,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          item.textEn,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: item.color,
+                                          ),
+                                        ),
+                                        if (item.effectiveTranslation
+                                            .isNotEmpty) ...[
+                                          const SizedBox(height: 3),
+                                          Text(
+                                            item.effectiveTranslation,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontStyle: FontStyle.italic,
+                                              color: isDark
+                                                  ? Colors.white70
+                                                  : Colors.grey.shade700,
+                                              height: 1.3,
+                                            ),
+                                          ),
+                                        ],
+                                        if (item.description.isNotEmpty) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            item.description,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 11.5,
+                                              color: isDark
+                                                  ? Colors.white60
+                                                  : Colors.grey.shade700,
+                                              height: 1.3,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Right Bottom Corner Target Goal Badge
+                                  Positioned(
+                                    bottom: 12,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: item.color.withValues(
+                                          alpha: 0.12,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: item.color.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.flag_rounded,
+                                            size: 13,
+                                            color: item.color,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${item.targetGoal}x',
+                                            style: TextStyle(
+                                              fontSize: 11.5,
+                                              fontWeight: FontWeight.bold,
+                                              color: item.color,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ],
                               ),
                             ),
-
-                            // Right Bottom Corner Target Goal Badge
-                            Positioned(
-                              bottom: 12,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: item.color.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: item.color.withValues(alpha: 0.2),
-                                    width: 1.0,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.flag_rounded,
-                                      size: 13,
-                                      color: item.color,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${item.targetGoal}x',
-                                      style: TextStyle(
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.bold,
-                                        color: item.color,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptySearchState(String query, bool isDark) {
+    return Center(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A531D).withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 40,
+                color: Color(0xFF2A531D),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No Tasbeeh Found',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : const Color(0xFF2A531D),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              query.isNotEmpty
+                  ? 'We couldn\'t find any Tasbeeh matching "$query".\nTry checking the spelling or create your own custom Tasbeeh.'
+                  : 'No Tasbeeh available in the library.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.5,
+                color: isDark ? Colors.white70 : const Color(0xFF64748B),
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _openFormView,
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text('Create Custom Tasbeeh'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 11,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -489,290 +544,203 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
   Widget _buildDetailsView() {
     final item = _selectedItemForDetails!;
     final isPinned = _isItemPinned(item.id);
+    final isDark = context.isDarkMode;
 
-    return SingleChildScrollView(
+    return Column(
       key: const ValueKey('details_view'),
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Header with Back Button
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Color(0xFF2A531D),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _currentView = TasbeehModalView.library;
-                    });
-                  },
+      children: [
+        // Header with Back Button
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 4, 12, 4),
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Color(0xFF2A531D),
+                  size: 22,
                 ),
-                Expanded(
-                  child: Text(
-                    item.textEn,
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: item.color,
-                    ),
+                onPressed: () {
+                  setState(() {
+                    _currentView = TasbeehModalView.library;
+                  });
+                },
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  item.textEn,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.outfit(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : item.color,
                   ),
                 ),
-              ],
-            ),
-            Divider(
-              height: 1,
-              color:  Colors.grey.shade300,
-            ),
-            const SizedBox(height: 14),
+              ),
+            ],
+          ),
+        ),
+        Divider(
+          height: 1,
+          color: isDark ? Colors.white12 : Colors.grey.shade300,
+        ),
 
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Large Arabic Text
+        // Scrollable Content
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Large Arabic Text
+                Text(
+                  item.textAr,
+                  textAlign: TextAlign.center,
+                  textDirection: TextDirection.rtl,
+                  style: AppTypography.arabicBody(
+                    fontSize: 26,
+                    height: 1.7,
+                    color: isDark ? Colors.white : const Color(0xFF1B5E20),
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                if (item.effectiveTranslation.isNotEmpty) ...[
                   Text(
-                    item.textAr,
+                    item.effectiveTranslation,
                     textAlign: TextAlign.center,
-                    textDirection: TextDirection.rtl,
-                    style: AppTypography.arabicBody(
-                      fontSize: 26,
-                      height: 1.7,
-                      color: const Color(0xFF1B5E20),
+                    style: GoogleFonts.lexend(
+                      fontSize: 14,
+                      height: 1.45,
+                      fontStyle: FontStyle.italic,
+                      color: isDark ? Colors.white70 : Colors.grey.shade800,
                     ),
                   ),
                   const SizedBox(height: 14),
+                ],
 
-                  // Description / Virtues
-                  Text(
-                    item.description,
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      height: 1.4,
-                      color: Colors.grey.shade800,
+                // Description / Virtues
+                if (item.description.isNotEmpty) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF23322B)
+                          : const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white10
+                            : const Color(0xFFE2E8F0),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Virtues & Benefits',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF7E22CE),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.description,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark
+                                ? Colors.white70
+                                : Colors.grey.shade800,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 16),
+                ],
 
-                  // Target Goal Badge
-                  Row(
-                    children: [
-                      Chip(
-                        avatar: const Icon(
-                          Icons.flag_rounded,
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                        label: Text('Target Goal: ${item.targetGoal}x'),
-                        backgroundColor: item.color,
-                        labelStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
+                // Target Goal Badge
+                Row(
+                  children: [
+                    Chip(
+                      avatar: const Icon(
+                        Icons.flag_rounded,
+                        size: 15,
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Selection Action Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        _toggleItem(item);
-                        setState(() {
-                          _currentView = TasbeehModalView.library;
-                        });
-                      },
-                      icon: Icon(
-                        isPinned
-                            ? Icons.check_circle_rounded
-                            : Icons.add_circle_rounded,
-                      ),
-                      label: Text(
-                        isPinned
-                            ? 'Remove from Main Screen'
-                            : 'Add to Main Screen',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isPinned
-                            ? Colors.red.shade700
-                            : const Color(0xFF2A531D),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                      label: Text('Target Goal: ${item.targetGoal}x'),
+                      backgroundColor: item.color,
+                      labelStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- 3. FORM VIEW ---
-  Widget _buildFormView() {
-    return SingleChildScrollView(
-      key: const ValueKey('form_view'),
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Header with Back Button
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Color(0xFF2A531D),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _currentView = TasbeehModalView.library;
-                    });
-                  },
-                ),
-                const Text(
-                  'Add Custom Tasbeeh',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2A531D),
-                  ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-
-            // Arabic Text Field
-            TextField(
-              controller: _formTextArController,
-              textDirection: TextDirection.rtl,
-              style: AppTypography.arabicBody(fontSize: 18),
-              decoration: _formInputDecoration(
-                'Arabic Text *',
-                'سُبْحَانَ اللَّهِ',
-                Icons.auto_awesome_rounded,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // English Transliteration Field
-            TextField(
-              controller: _formTextEnController,
-              decoration: _formInputDecoration(
-                'English Transliteration / Title *',
-                'SubhanAllah',
-                Icons.text_fields_rounded,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Target Goal Field
-            TextField(
-              controller: _formTargetController,
-              keyboardType: TextInputType.number,
-              decoration: _formInputDecoration(
-                'Target Count (Goal)',
-                '33',
-                Icons.flag_rounded,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Description Field
-            TextField(
-              controller: _formDescController,
-              maxLines: 3,
-              decoration: _formInputDecoration(
-                'Description / Benefits',
-                'Enter virtues or why this Tasbeeh is recited...',
-                Icons.info_outline_rounded,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Color Selection Row
-            const Text(
-              'Theme Color',
-              style: TextStyle(
-                fontSize: 13.5,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2A531D),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: colorOptions.map((cVal) {
-                final isSelected = cVal == _formSelectedColorValue;
-                return GestureDetector(
-                  onTap: () => setState(() => _formSelectedColorValue = cVal),
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Color(cVal),
-                      shape: BoxShape.circle,
-                      border: isSelected
-                          ? Border.all(color: Colors.white, width: 2.5)
-                          : null,
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: Color(cVal).withValues(alpha: 0.5),
-                                blurRadius: 8,
-                                spreadRadius: 2,
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: isSelected
-                        ? const Icon(Icons.check, size: 18, color: Colors.white)
-                        : null,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-
-            // Save Button
-            ElevatedButton(
-              onPressed: _submitForm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2A531D),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 2,
-              ),
-              child: const Text(
-                'Add Custom Tasbeeh',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
+          ),
         ),
-      ),
+
+        // Fixed Footer Button
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF192520) : Colors.white,
+            border: Border(
+              top: BorderSide(
+                color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                width: 1.0,
+              ),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  _toggleItem(item);
+                  setState(() {
+                    _currentView = TasbeehModalView.library;
+                  });
+                },
+                icon: Icon(
+                  isPinned
+                      ? Icons.check_circle_rounded
+                      : Icons.add_circle_rounded,
+                  size: 20,
+                ),
+                label: Text(
+                  isPinned ? 'Remove from Main Screen' : 'Add to Main Screen',
+                  style: GoogleFonts.lexend(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isPinned
+                      ? Colors.red.shade700
+                      : const Color(0xFF2A531D),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

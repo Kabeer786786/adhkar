@@ -26,15 +26,18 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
   late AnimationController _animController;
   late Animation<double> _slideAnim;
   bool _isAnimating = false;
+  bool _isSnappingBack = false;
   double _dragProgress = 0.0; // [-1.0, 1.0] live real-time drag offset
+  double _dragDistance = 0.0;
   bool _isForward = true;
-
+  int _lastActionTimestamp = 0;
+  
   @override
   void initState() {
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 180),
     );
 
     _animController.addListener(() {
@@ -45,17 +48,28 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
 
     _animController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        if (_isForward) {
-          widget.onIncrement();
-        } else {
-          widget.onDecrement?.call();
+        if (_isSnappingBack) {
+          _animController.reset();
+          setState(() {
+            _isAnimating = false;
+            _isSnappingBack = false;
+            _dragProgress = 0.0;
+          });
+          return;
         }
-        HapticFeedback.lightImpact();
+
+        final forward = _isForward;
         _animController.reset();
         setState(() {
           _isAnimating = false;
           _dragProgress = 0.0;
         });
+        if (forward) {
+          widget.onIncrement();
+        } else {
+          widget.onDecrement?.call();
+        } 
+        HapticFeedback.lightImpact();
       }
     });
   }
@@ -67,42 +81,83 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
   }
 
   void triggerTapIncrement() {
-    if (!_isAnimating) {
-      _finishStep(forward: true);
+    final now = DateTime.now().millisecondsSinceEpoch;
+    // Debounce duplicate tap triggers within 140ms (guards against competing inner/outer gesture detectors)
+    if (now - _lastActionTimestamp < 140) return;
+    _lastActionTimestamp = now;
+
+    if (_isAnimating) {
+      _animController.stop();
+      if (!_isSnappingBack) {
+        // Finalize previous step count if interrupted by rapid tap
+        final forward = _isForward;
+        if (forward) {
+          widget.onIncrement();
+        } else {
+          widget.onDecrement?.call();
+        }
+        HapticFeedback.lightImpact();
+      }
+      _animController.reset();
+      _isAnimating = false;
+      _isSnappingBack = false;
+      _dragProgress = 0.0;
     }
+    _finishStep(forward: true);
   }
 
   void _finishStep({required bool forward}) {
     if (_isAnimating) return;
     _isForward = forward;
+    _isSnappingBack = false;
     _isAnimating = true;
 
     final target = forward ? 1.0 : -1.0;
+    final remainingDist = (target - _dragProgress).abs().clamp(0.1, 1.0);
+    final durationMs = (180 * remainingDist).round().clamp(130, 180);
+    _animController.duration = Duration(milliseconds: durationMs);
+
     _slideAnim = Tween<double>(begin: _dragProgress, end: target).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutQuad),
     );
     _animController.forward(from: 0.0);
   }
 
   void _snapBackToZero() {
     if (_isAnimating) return;
+    if (_dragProgress == 0.0) return;
     _isAnimating = true;
+    _isSnappingBack = true;
+    _animController.duration = const Duration(milliseconds: 140);
     _slideAnim = Tween<double>(begin: _dragProgress, end: 0.0).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutQuad),
     );
-    _animController.forward(from: 0.0).then((_) {
-      if (mounted) {
-        _animController.reset();
-        setState(() {
-          _isAnimating = false;
-          _dragProgress = 0.0;
-        });
+    _animController.forward(from: 0.0);
+  }
+
+  void _onHorizontalDragStart(DragStartDetails details) {
+    if (_isAnimating) {
+      _animController.stop();
+      if (!_isSnappingBack) {
+        final forward = _isForward;
+        if (forward) {
+          widget.onIncrement();
+        } else {
+          widget.onDecrement?.call();
+        }
+        HapticFeedback.lightImpact();
       }
-    });
+      _animController.reset();
+      _isAnimating = false;
+      _isSnappingBack = false;
+      _dragProgress = 0.0;
+    }
+    _dragDistance = 0.0;
   }
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     if (_isAnimating) return;
+    _dragDistance += details.delta.dx.abs();
     setState(() {
       final delta = widget.swipeLeftToRight ? details.delta.dx : -details.delta.dx;
       _dragProgress += delta / 220.0;
@@ -116,11 +171,35 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
         ? details.velocity.pixelsPerSecond.dx
         : -details.velocity.pixelsPerSecond.dx;
 
-    // Strict threshold: requires full traversal (>= 0.75 progress or fast fling >= 0.55)
-    if (_dragProgress >= 0.5 || (_dragProgress >= 0.45 && velocityX > 350)) {
+    // Check if this was an intentional drag or just a tap/click contact jitter
+    final isRealDrag = _dragDistance >= 12.0 || details.velocity.pixelsPerSecond.dx.abs() >= 120.0;
+
+    if (!isRealDrag) {
+      if (_dragProgress != 0.0) {
+        _snapBackToZero();
+      }
+      return;
+    }
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    _lastActionTimestamp = now;
+
+    // As soon as the user starts dragging, automatically move to next in that direction instead of coming back
+    if (_dragProgress > 0.04 || velocityX > 80) {
       _finishStep(forward: true);
-    } else if (_dragProgress <= -0.5 || (_dragProgress <= -0.45 && velocityX < -350)) {
+    } else if (_dragProgress < -0.04 || velocityX < -80) {
       _finishStep(forward: false);
+    } else {
+      _snapBackToZero();
+    }
+  }
+
+  void _onHorizontalDragCancel() {
+    if (_isAnimating) return;
+    if (_dragDistance >= 12.0 && _dragProgress.abs() > 0.04) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      _lastActionTimestamp = now;
+      _finishStep(forward: _dragProgress > 0);
     } else {
       _snapBackToZero();
     }
@@ -224,8 +303,10 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: triggerTapIncrement,
+      onHorizontalDragStart: _onHorizontalDragStart,
       onHorizontalDragUpdate: _onHorizontalDragUpdate,
       onHorizontalDragEnd: _onHorizontalDragEnd,
+      onHorizontalDragCancel: _onHorizontalDragCancel,
       behavior: HitTestBehavior.opaque,
       child: Container(
         height: widget.height,

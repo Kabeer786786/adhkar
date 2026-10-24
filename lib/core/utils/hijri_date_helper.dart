@@ -9,8 +9,12 @@ class HijriDateHelper {
   }
 
   /// Formats a Gregorian date into readable Hijri date string e.g. "1 Rabi' al-Awwal 1448 AH"
-  static String formatHijri(DateTime gregorian, {int? dayOffset}) {
+  static String formatHijri(DateTime gregorian, {int? dayOffset, bool includeYear = true}) {
     final hijri = convertToHijri(gregorian, dayOffset: dayOffset);
+    if (includeYear) {
+      return '${hijri.day} ${hijri.monthNameEn} ${hijri.year} AH';
+    }
     return '${hijri.day} ${hijri.monthNameEn}';
   }
 }
+ 

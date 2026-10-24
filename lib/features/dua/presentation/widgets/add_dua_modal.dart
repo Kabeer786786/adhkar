@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/providers/app_providers.dart';
@@ -11,8 +12,16 @@ import '../../domain/dua_item.dart';
 class AddDuaModal extends ConsumerStatefulWidget {
   final DuaItem? initialDua;
   final Function(DuaItem dua) onSave;
+  final VoidCallback? onBack;
+  final bool isEmbedded;
 
-  const AddDuaModal({super.key, this.initialDua, required this.onSave});
+  const AddDuaModal({
+    super.key,
+    this.initialDua,
+    required this.onSave,
+    this.onBack,
+    this.isEmbedded = false,
+  });
 
   static void show(
     BuildContext context, {
@@ -127,7 +136,11 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
 
     HapticFeedback.lightImpact();
     widget.onSave(savedDua);
-    Navigator.pop(context);
+    if (widget.onBack != null) {
+      widget.onBack!();
+    } else {
+      Navigator.pop(context);
+    }
   }
 
   InputDecoration _inputDecoration(String label, String hint, IconData icon) {
@@ -162,180 +175,247 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.initialDua != null;
+    final isDark = context.isDarkMode;
+    const primaryColor = Color(0xFF2A531D);
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: context.isDarkMode ? const Color(0xFF192520) : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        padding: const EdgeInsets.all(24),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    final formContent = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Top Drag Handle
+        if (!widget.isEmbedded)
+          Center(
+            child: Container(
+              width: 60,
+              height: 4.5,
+              margin: const EdgeInsets.only(top: 12, bottom: 12),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white24 : Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          ),
+
+        // Top Header Row with only Left Arrow and Plain Text Title
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+          child: Row(
             children: [
-              // Header Drag Handle & Title Row
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
+              IconButton(
+                icon: const Icon(Icons.arrow_back_rounded, size: 22),
+                color: primaryColor,
+                onPressed: widget.onBack ?? () => Navigator.pop(context),
               ),
-              const SizedBox(height: 16),
-
-              Text(
-                isEditing ? 'Edit Dua' : 'Create Custom Dua',
-                style: context.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2A531D),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Title
-              TextField(
-                controller: _titleController,
-                decoration: _inputDecoration(
-                  'Dua Title *',
-                  'e.g. Dua for Peace & Protection',
-                  Icons.title_rounded,
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Category Selector
-              AppDropdown<String>(
-                label: 'Category',
-                value: _selectedCategory,
-                prefixIcon: Icons.category_rounded,
-                onAddCustomCategory: () async {
-                  final newCatName =
-                      await AppDropdown.showAddCustomCategoryDialog(
-                        context,
-                        title: 'Add Custom Category',
-                        hintText: 'e.g. Travel & Protection',
-                        icon: Icons.menu_book_rounded,
-                      );
-                  if (newCatName != null && newCatName.isNotEmpty) {
-                    ref
-                        .read(storageServiceProvider)
-                        .saveCustomCategory('dua', newCatName);
-                    setState(() {
-                      if (!_categories.contains(newCatName)) {
-                        _categories.add(newCatName);
-                      }
-                      _selectedCategory = newCatName;
-                    });
-                  }
-                  return newCatName;
-                },
-                items: _categories.map((cat) {
-                  return AppDropdownItem<String>(
-                    value: cat,
-                    label: cat,
-                    icon: Icons.folder_outlined,
-                  );
-                }).toList(),
-                onChanged: (val) {
-                  if (val != null) {
-                    setState(() {
-                      _selectedCategory = val;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 14),
-
-              // Arabic Text
-              TextField(
-                controller: _arabicController,
-                textDirection: TextDirection.rtl,
-                maxLines: 2,
-                style: AppTypography.arabicBody(fontSize: 20),
-                decoration: _inputDecoration(
-                  'Arabic Text *',
-                  'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً',
-                  Icons.auto_awesome_rounded,
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Transliteration
-              TextField(
-                controller: _transliterationController,
-                decoration: _inputDecoration(
-                  'Transliteration',
-                  'e.g. Allahumma hasibni hisaban yasira',
-                  Icons.text_fields_rounded,
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Translation
-              TextField(
-                controller: _translationController,
-                maxLines: 2,
-                decoration: _inputDecoration(
-                  'English Translation',
-                  'e.g. O Allah, grant me an easy accounting.',
-                  Icons.translate_rounded,
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Hadith Reference
-              TextField(
-                controller: _referenceController,
-                decoration: _inputDecoration(
-                  'Hadith / Book Reference',
-                  'e.g. Musnad Ahmad & Sahih Ibn Hibban',
-                  Icons.menu_book_rounded,
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Benefits
-              TextField(
-                controller: _benefitsController,
-                maxLines: 2,
-                decoration: _inputDecoration(
-                  'Spiritual & Practical Benefits',
-                  'e.g. Grants ease on the Day of Judgment.',
-                  Icons.info_outline_rounded,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              ElevatedButton(
-                onPressed: _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2A531D),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 2,
-                ),
+              const SizedBox(width: 4),
+              Expanded(
                 child: Text(
-                  isEditing ? 'Save Changes' : 'Save Custom Dua',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  isEditing ? 'Edit Dua' : 'Create Custom Dua',
+                  style: GoogleFonts.outfit(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : primaryColor,
                   ),
                 ),
               ),
             ],
           ),
         ),
+            const SizedBox(height: 2),
+
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: isDark ? Colors.white12 : const Color(0xFFF1F5F9),
+            ),
+
+            // Scrollable Form Fields
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Title
+                    TextField(
+                      controller: _titleController,
+                      decoration: _inputDecoration(
+                        'Dua Title *',
+                        'e.g. Dua for Peace & Protection',
+                        Icons.title_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Category Selector (No icons for categories)
+                    AppDropdown<String>(
+                      label: 'Category',
+                      value: _selectedCategory,
+                      prefixIcon: null,
+                      onAddCustomCategory: () async {
+                        final newCatName =
+                            await AppDropdown.showAddCustomCategoryDialog(
+                          context,
+                          title: 'Add Custom Category',
+                          hintText: 'e.g. Travel & Protection',
+                          icon: Icons.menu_book_rounded,
+                        );
+                        if (newCatName != null && newCatName.isNotEmpty) {
+                          ref
+                              .read(storageServiceProvider)
+                              .saveCustomCategory('dua', newCatName);
+                          setState(() {
+                            if (!_categories.contains(newCatName)) {
+                              _categories.add(newCatName);
+                            }
+                            _selectedCategory = newCatName;
+                          });
+                        }
+                        return newCatName;
+                      },
+                      items: _categories.map((cat) {
+                        return AppDropdownItem<String>(
+                          value: cat,
+                          label: cat,
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            _selectedCategory = val;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Arabic Text
+                    TextField(
+                      controller: _arabicController,
+                      textDirection: TextDirection.rtl,
+                      maxLines: 2,
+                      style: AppTypography.arabicBody(fontSize: 20),
+                      decoration: _inputDecoration(
+                        'Arabic Text *',
+                        'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً',
+                        Icons.auto_awesome_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Transliteration
+                    TextField(
+                      controller: _transliterationController,
+                      decoration: _inputDecoration(
+                        'Transliteration',
+                        'e.g. Allahumma hasibni hisaban yasira',
+                        Icons.text_fields_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Translation
+                    TextField(
+                      controller: _translationController,
+                      maxLines: 2,
+                      decoration: _inputDecoration(
+                        'English Translation',
+                        'e.g. O Allah, grant me an easy accounting.',
+                        Icons.translate_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Hadith Reference
+                    TextField(
+                      controller: _referenceController,
+                      decoration: _inputDecoration(
+                        'Hadith / Book Reference',
+                        'e.g. Musnad Ahmad & Sahih Ibn Hibban',
+                        Icons.menu_book_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Benefits
+                    TextField(
+                      controller: _benefitsController,
+                      maxLines: 2,
+                      decoration: _inputDecoration(
+                        'Spiritual & Practical Benefits',
+                        'e.g. Grants ease on the Day of Judgment.',
+                        Icons.info_outline_rounded,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Bottom Actions Bar (Only Save Button with decreased bottom padding)
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF192520) : Colors.white,
+                border: Border(
+                  top: BorderSide(
+                    color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                    width: 1.0,
+                  ),
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _submit,
+                    icon: Icon(
+                      isEditing
+                          ? Icons.check_circle_rounded
+                          : Icons.bookmark_added_rounded,
+                      size: 19,
+                    ),
+                    label: Text(
+                      isEditing ? 'Save Changes' : 'Save Custom Dua',
+                      style: GoogleFonts.lexend(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+
+    if (widget.isEmbedded) {
+      return formContent;
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.88,
+        ),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF192520) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: formContent,
       ),
     );
   }

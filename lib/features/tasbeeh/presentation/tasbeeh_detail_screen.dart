@@ -419,12 +419,13 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
       ),
       body: SafeArea(
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
-            // Tapping anywhere on the screen triggers marble counter increment!
+            // Tapping anywhere on the screen triggers marble counter increment & slide!
             _marbleCounterKey.currentState?.triggerTapIncrement();
           },
-          behavior: HitTestBehavior.translucent,
-          child: Column(
+          child: SizedBox.expand(
+            child: Column(
             children: [
               // Top Content: Tasbeeh Card & Target Goal Chips
               Padding(
@@ -779,6 +780,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }

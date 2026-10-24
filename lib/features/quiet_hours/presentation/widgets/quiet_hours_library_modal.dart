@@ -164,7 +164,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
 
             // 2-Tab Segment
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
               decoration: BoxDecoration(
                 color: isDark
                     ? const Color(0xFF16251C)
@@ -207,7 +207,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                   ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: 14,
                       vertical: 10,
                     ),
                     itemCount: predefinedTemplates.length,
@@ -326,7 +326,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                             ? Colors.white54
                                             : Colors.grey.shade400),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (isAdded) {
                                     final existing = activeSchedules.firstWhere(
                                       (s) => s.id == id || s.title == title,
@@ -335,10 +335,17 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                         .read(quietHoursProvider.notifier)
                                         .deleteSchedule(existing.id);
                                     AppFloatingToast.showRemoved(
-                                      context,
+                                      context, 
                                       message: 'Removed',
                                     );
                                   } else {
+                                    final service = ref.read(quietHoursServiceProvider);
+                                    bool canEnable = true;
+                                    if (service.isSupported) {
+                                      final dndGranted = await service.isDndPermissionGranted();
+                                      final batteryIgnored = await service.isBatteryOptimizationIgnored();
+                                      canEnable = dndGranted && batteryIgnored;
+                                    }
                                     final now = DateTime.now();
                                     final schedule = QuietHours(
                                       id: id,
@@ -348,7 +355,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                       startMinute: startTime.minute,
                                       endHour: endTime.hour,
                                       endMinute: endTime.minute,
-                                      enabled: true,
+                                      enabled: canEnable,
                                       repeatDaily: true,
                                       weekdays: const [1, 2, 3, 4, 5, 6, 7],
                                       createdAt: now,
@@ -357,10 +364,18 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                     ref
                                         .read(quietHoursProvider.notifier)
                                         .addSchedule(schedule);
-                                    AppFloatingToast.showAdded(
-                                      context,
-                                      message: 'Added',
-                                    );
+                                    if (!canEnable) {
+                                      if (context.mounted) {
+                                        AppFloatingToast.showPermissionRequired(context);
+                                      }
+                                    } else {
+                                      if (context.mounted) {
+                                        AppFloatingToast.showAdded(
+                                          context,
+                                          message: 'Added',
+                                        );
+                                      }
+                                    }
                                   }
                                 },
                               ),
@@ -376,12 +391,26 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: _CustomQuietHoursForm(
-                        onSave: (schedule) {
+                        onSave: (schedule) async {
+                          final service = ref.read(quietHoursServiceProvider);
+                          bool canEnable = true;
+                          if (service.isSupported) {
+                            final dndGranted = await service.isDndPermissionGranted();
+                            final batteryIgnored = await service.isBatteryOptimizationIgnored();
+                            canEnable = dndGranted && batteryIgnored;
+                          }
+                          final toSave = canEnable ? schedule : schedule.copyWith(enabled: false);
                           ref
                               .read(quietHoursProvider.notifier)
-                              .addSchedule(schedule);
-                          AppFloatingToast.showAdded(context, message: 'Added');
-                          Navigator.pop(context);
+                              .addSchedule(toSave);
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            if (!canEnable) {
+                              AppFloatingToast.showPermissionRequired(context);
+                            } else {
+                              AppFloatingToast.showAdded(context, message: 'Added');
+                            }
+                          }
                         },
                       ),
                     ),

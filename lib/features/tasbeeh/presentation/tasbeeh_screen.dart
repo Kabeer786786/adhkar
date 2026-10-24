@@ -8,6 +8,7 @@ import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../widgets/app_header_bar.dart';
 import 'tasbeeh_detail_screen.dart';
+import 'free_tasbeeh_counter_screen.dart';
 import 'widgets/tasbeeh_library_modal.dart';
 import 'widgets/tasbeeh_card_tile.dart';
 import 'widgets/tasbeeh_heatmap_modal.dart';
@@ -239,6 +240,22 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
         showBackButton: true,
         showDrawerButton: false,
         actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.touch_app_rounded,
+              color: Color(0xFF2A531D),
+              size: 26,
+            ),
+            tooltip: 'Tasbeeh Counter',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FreeTasbeehCounterScreen(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(
               Icons.calendar_month_rounded,

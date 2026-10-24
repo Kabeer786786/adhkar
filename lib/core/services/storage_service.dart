@@ -221,6 +221,14 @@ class StorageService {
     await _settingsBox.put('tasbeeh_swipe_direction', direction);
   }
 
+  String getFreeTasbeehMarbleAsset() {
+    return _settingsBox.get('free_tasbeeh_marble_asset', defaultValue: 'assets/images/marble1.png') as String;
+  }
+
+  Future<void> setFreeTasbeehMarbleAsset(String asset) async {
+    await _settingsBox.put('free_tasbeeh_marble_asset', asset);
+  }
+
   int getTasbeehCount(String zikrId) {
     return _tasbeehBox.get('count_$zikrId', defaultValue: 0) as int;
   }

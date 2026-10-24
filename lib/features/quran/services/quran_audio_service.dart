@@ -28,7 +28,7 @@ class QuranAudioController extends ChangeNotifier {
 
   bool _isPlaying = false;
   bool _isBuffering = false;
-  bool _isLoopSingle = false;
+  bool _isLoopSurah = false;
   double _speed = 1.0;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
@@ -40,17 +40,20 @@ class QuranAudioController extends ChangeNotifier {
   int? get surahNumber => _surahNumber;
   bool get isPlaying => _isPlaying;
   bool get isBuffering => _isBuffering;
-  bool get isLoopSingle => _isLoopSingle;
+  bool get isLoopSurah => _isLoopSurah;
+  bool get isLoopSingle => _isLoopSurah;
   double get speed => _speed;
   Duration get position => _position;
   Duration get duration => _duration;
   String? get errorMessage => _errorMessage;
 
-  void toggleLoopSingle() {
-    _isLoopSingle = !_isLoopSingle;
-    _player.setLoopMode(_isLoopSingle ? LoopMode.one : LoopMode.off);
+  void toggleRepeatSurah() {
+    _isLoopSurah = !_isLoopSurah;
+    _player.setLoopMode(_isLoopSurah ? LoopMode.all : LoopMode.off);
     notifyListeners();
   }
+
+  void toggleLoopSingle() => toggleRepeatSurah();
 
   AyahModel? get currentAyah =>
       (_currentIndex >= 0 && _currentIndex < _playlist.length)
@@ -232,7 +235,7 @@ class QuranAudioController extends ChangeNotifier {
         preload: false,
       );
       await _player.setSpeed(_speed);
-      await _player.setLoopMode(_isLoopSingle ? LoopMode.one : LoopMode.off);
+      await _player.setLoopMode(_isLoopSurah ? LoopMode.all : LoopMode.off);
       await _player.play();
       _preloadNextItems(startIndex);
     } catch (e) {

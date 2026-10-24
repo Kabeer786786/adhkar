@@ -121,16 +121,50 @@ class HijriDate {
     );
   }
 
-  /// Exact anchor-based Hijri date calculation for South Asia (India, Pakistan, Bangladesh).
-  /// Anchor: 15 August 2026 = 1 Rabi' al-Awwal 1448 AH (Month 3, Day 1).
-  /// 14 August 2026 = 30 Safar 1448 AH (Month 2, Day 30).
-  static HijriDate _calculateSubcontinentHijri(DateTime date) {
-    final anchor = DateTime(2026, 8, 15);
-    int diffDays = DateTime(date.year, date.month, date.day).difference(anchor).inDays;
+  static DateTime? _liveAnchorDate;
+  static int? _liveAnchorDay;
+  static int? _liveAnchorMonth; 
+  static int? _liveAnchorYear;
 
-    int currentYear = 1448;
-    int currentMonth = 3; // Rabi' al-Awwal
-    int currentDay = 1;
+  /// Sets a live verified anchor (from chandkitarikh.today) for dynamic sync across the app
+  static void setLiveSubcontinentAnchor(
+    DateTime gregorianDate, {
+    required int hijriDay,
+    required int hijriMonth,
+    required int hijriYear,
+  }) {
+    _liveAnchorDate = DateTime(gregorianDate.year, gregorianDate.month, gregorianDate.day);
+    _liveAnchorDay = hijriDay;
+    _liveAnchorMonth = hijriMonth;
+    _liveAnchorYear = hijriYear;
+  }
+
+  /// Exact anchor-based Hijri date calculation for South Asia (India, Pakistan, Bangladesh).
+  /// Dynamically utilizes live verified anchor from chandkitarikh.today when available.
+  static HijriDate _calculateSubcontinentHijri(DateTime date) {
+    final targetDate = DateTime(date.year, date.month, date.day);
+    DateTime anchor = _liveAnchorDate ?? DateTime(2026, 8, 15);
+    int currentYear = _liveAnchorYear ?? 1448;
+    int currentMonth = _liveAnchorMonth ?? 3; // Rabi' al-Awwal
+    int currentDay = _liveAnchorDay ?? 1;
+
+    if (_liveAnchorDate == null && Hive.isBoxOpen('hijri_cache_box')) {
+      try {
+        final box = Hive.box('hijri_cache_box');
+        final anchorIso = box.get('hijri_anchor_date') as String?;
+        final aDay = (box.get('hijri_anchor_day') as num?)?.toInt();
+        final aMonth = (box.get('hijri_anchor_month') as num?)?.toInt();
+        final aYear = (box.get('hijri_anchor_year') as num?)?.toInt();
+        if (anchorIso != null && aDay != null && aMonth != null && aYear != null) {
+          anchor = DateTime.parse(anchorIso);
+          currentDay = aDay;
+          currentMonth = aMonth;
+          currentYear = aYear;
+        }
+      } catch (_) {}
+    }
+
+    int diffDays = targetDate.difference(anchor).inDays;
 
     if (diffDays >= 0) {
       int remaining = diffDays;
@@ -178,6 +212,6 @@ class HijriDate {
     );
   }
 
-  String formatEn() => '$day $monthNameEn';
+  String formatEn() => '$day $monthNameEn $year AH';
   String formatAr() => '$day $monthNameAr $year هـ';
 }

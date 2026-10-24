@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../widgets/app_header_bar.dart';
@@ -20,8 +22,7 @@ class QuietHoursScreen extends ConsumerStatefulWidget {
 
 class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     with WidgetsBindingObserver {
-  bool _hasDndPermission = true;
-  bool _isBatteryOptIgnored = true;
+  bool _hasDndPermission = false;
   Timer? _timer;
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = <String>{};
@@ -42,7 +43,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _timer?.cancel();
+    _timer?.cancel(); 
     super.dispose();
   }
 
@@ -54,19 +55,49 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     }
   }
 
+  bool get _arePermissionsGranted {
+    final service = ref.read(quietHoursServiceProvider);
+    if (!service.isSupported) return true;
+    return _hasDndPermission;
+  }
+
+  void _showPermissionRequiredToast(BuildContext context) {
+    AppFloatingToast.showPermissionRequired(context);
+  }
+
   Future<void> _checkPermission() async {
     final service = ref.read(quietHoursServiceProvider);
     if (!service.isSupported) {
-      if (mounted) setState(() => _hasDndPermission = false);
+      if (mounted) {
+        setState(() {
+          _hasDndPermission = true;
+        });
+      }
       return;
     }
     final granted = await service.isDndPermissionGranted();
-    final batteryIgnored = await service.isBatteryOptimizationIgnored();
+
+    if (!granted && mounted) {
+      context.go('/permissions?from=quiet_hours');
+      return;
+    }
+
     if (mounted) {
       setState(() {
         _hasDndPermission = granted;
-        _isBatteryOptIgnored = batteryIgnored;
       });
+
+      // If permissions are not granted, ensure all quiet hours are disabled
+      if (!granted) {
+        final currentSchedules = ref.read(quietHoursProvider);
+        for (final s in currentSchedules) {
+          if (s.enabled) {
+            ref
+                .read(quietHoursProvider.notifier)
+                .toggleScheduleEnabled(s.id, false);
+          }
+        }
+      }
     }
   }
 
@@ -244,66 +275,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       );
     }
 
-    return AppHeaderBar(
+    return const AppHeaderBar(
       title: 'QUIET HOURS',
       showBackButton: true,
-      actions: [
-        if (isSupported)
-          Padding(
-            padding: const EdgeInsets.only(right: 14),
-            child: Center(
-              child: GestureDetector(
-                onTap: _hasDndPermission
-                    ? null
-                    : () => service.openDndPermissionSettings(),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _hasDndPermission
-                        ? const Color(0xFF10B981).withValues(alpha: 0.12)
-                        : const Color(0xFFF59E0B).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: _hasDndPermission
-                          ? const Color(0xFF10B981).withValues(alpha: 0.35)
-                          : const Color(0xFFF59E0B).withValues(alpha: 0.4),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _hasDndPermission
-                            ? Icons.check_circle_rounded
-                            : Icons.info_outline_rounded,
-                        size: 13,
-                        color: _hasDndPermission
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFFD97706),
-                      ),
-                      const SizedBox(width: 4.5),
-                      Text(
-                        _hasDndPermission ? 'Granted' : 'Not Granted',
-                        style: GoogleFonts.lexend(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: _hasDndPermission
-                              ? const Color(0xFF10B981)
-                              : const Color(0xFFD97706),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        const SizedBox(width: 4),
-      ],
     );
   }
 
@@ -331,33 +305,17 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     return Scaffold(
       backgroundColor: bgColor,
       appBar: _buildAppBar(context, isDark, textColor, schedules, primaryGreen, isSupported, service),
-      body: schedules.isEmpty && _hasDndPermission && _isBatteryOptIgnored
+      body: schedules.isEmpty
           ? _buildEmptyState(context, ref, primaryGreen, isDark, subTextColor)
           : ListView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 90, top: 12),
+              padding: const EdgeInsets.only(bottom: 90, top: 0),
               children: [
-                // 1. Grant Do Not Disturb Mode Box
-                if (isSupported && !_hasDndPermission) ...[
-                  _buildDndPermissionCard(context, isDark, service),
-                  const SizedBox(height: 6),
-                ],
-
-                // 2. Allow Background Activity Box
-                if (isSupported && !_isBatteryOptIgnored) ...[
-                  _buildBackgroundActivityCard(context, isDark, service),
-                  const SizedBox(height: 6),
-                ],
-
-                if (schedules.isEmpty)
-                  _buildEmptyState(context, ref, primaryGreen, isDark, subTextColor)
-                else ...[
-
                 Padding(
                   padding: const EdgeInsets.only(
                     left: 20,
                     right: 20,
-                    top: 0,
+                    top: 12,
                     bottom: 6,
                   ),
                   child: Row(
@@ -422,7 +380,6 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 ),
                 ...schedules.map(
                   (s) => _buildQuietHoursCard(
-                    context,
                     ref,
                     s,
                     primaryGreen,
@@ -431,10 +388,12 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                     textColor,
                     subTextColor,
                     isDark,
+                    _arePermissionsGranted,
+                    service,
                   ),
                 ),
               ],
-            ],
+            
           ),
       floatingActionButton: (schedules.isEmpty || _isSelectionMode)
           ? null
@@ -453,178 +412,6 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 ),
               ),
             ),
-    );
-  }
-
-  Widget _buildDndPermissionCard(
-    BuildContext context,
-    bool isDark,
-    QuietHoursService service,
-  ) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF14231A) : const Color(0xFFF0FDF4),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark
-              ? const Color(0xFF22C55E).withValues(alpha: 0.35)
-              : const Color(0xFF16A34A).withValues(alpha: 0.3),
-          width: 1.2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.do_not_disturb_on_rounded,
-                color: Color(0xFF16A34A),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Grant Do not Disturb Mode',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.outfit(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF14532D),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Allow Adhkar to automatically manage Do Not Disturb during quiet hours. If Do Not Disturb is not working, please check with Notification Access Policy in your device settings.',
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.lexend(
-              fontSize: 12.5,
-              height: 1.38,
-              color: isDark ? Colors.white70 : const Color(0xFF334155),
-            ),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF16A34A),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () => service.openDndPermissionSettings(),
-              icon: const Icon(Icons.settings_suggest_rounded, size: 18),
-              label: Text(
-                'Grant Do Not Disturb Mode',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.lexend(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBackgroundActivityCard(
-    BuildContext context,
-    bool isDark,
-    QuietHoursService service,
-  ) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF261C14) : const Color(0xFFFFFBEB),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFD97706).withValues(alpha: 0.5),
-          width: 1.2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.battery_alert_rounded,
-                color: Color(0xFFD97706),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Allow Background Activity',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.outfit(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFFD97706),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Allow Adhkar to run in background so scheduled Quiet Hours trigger reliably on time. Battery optimization and power saving mode can pause schedules when the app is closed.',
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.lexend(
-              fontSize: 12.5,
-              height: 1.38,
-              color: isDark ? Colors.white70 : const Color(0xFF92400E),
-            ),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD97706),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () async {
-                await service.requestIgnoreBatteryOptimization();
-                await Future.delayed(const Duration(seconds: 1));
-                _checkPermission();
-              },
-              icon: const Icon(Icons.bolt_rounded, size: 18),
-              label: Text(
-                'Allow Background Activity',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.lexend(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -702,7 +489,6 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   }
 
   Widget _buildQuietHoursCard(
-    BuildContext context,
     WidgetRef ref,
     QuietHours schedule,
     Color primaryGreen,
@@ -711,7 +497,10 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     Color textColor,
     Color subTextColor,
     bool isDark,
+    bool arePermissionsGranted,
+    QuietHoursService service,
   ) {
+    final isTimingActive = schedule.enabled && arePermissionsGranted;
     final gridBg = isDark ? const Color(0xFF16251C) : const Color(0xFFF8FAFC);
     final gridBorder = isDark ? Colors.white12 : const Color(0xFFE2E8F0);
     final daysMap = const {
@@ -760,7 +549,14 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 context: context,
                 initialSchedule: schedule,
                 onSave: (updated) {
-                  ref.read(quietHoursProvider.notifier).updateSchedule(updated);
+                  final toSave = (!arePermissionsGranted && updated.enabled)
+                      ? updated.copyWith(enabled: false)
+                      : updated;
+                  ref.read(quietHoursProvider.notifier).updateSchedule(toSave);
+                  if (!arePermissionsGranted && updated.enabled) {
+                    _showPermissionRequiredToast(context);
+                    context.push('/permissions?from=quiet_hours');
+                  }
                 },
                 onDelete: () {
                   ref
@@ -834,7 +630,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                               fontSize: 17.5,
                               height: 1.2,
                               fontWeight: FontWeight.w500,
-                              color: schedule.enabled
+                              color: isTimingActive
                                   ? textColor
                                   : (isDark ? Colors.white38 : Colors.grey),
                             ),
@@ -862,12 +658,38 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                       child: Transform.scale(
                         scale: 0.82,
                         child: Switch(
-                          value: schedule.enabled,
+                          value: isTimingActive,
                           activeTrackColor: primaryGreen,
-                          onChanged: (val) {
+                          onChanged: (val) async {
+                            if (val) {
+                              if (!arePermissionsGranted) {
+                                HapticFeedback.lightImpact();
+                                _showPermissionRequiredToast(context);
+                                context.push('/permissions?from=quiet_hours');
+                                _checkPermission();
+                                return;
+                              }
+
+                              if (service.isSupported) {
+                                final dndGranted = await service.isDndPermissionGranted();
+                                if (!dndGranted) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _hasDndPermission = false;
+                                    });
+                                    HapticFeedback.lightImpact();
+                                    _showPermissionRequiredToast(context);
+                                    context.push('/permissions?from=quiet_hours');
+                                  }
+                                  return;
+                                }
+                              }
+                            }
+
                             ref
                                 .read(quietHoursProvider.notifier)
                                 .toggleScheduleEnabled(schedule.id, val);
+                            if (!mounted) return;
                             _showToast(
                               context,
                               val ? 'Activated' : 'Deactivated',
@@ -905,7 +727,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                 Icon(
                                   Icons.access_time_filled_rounded,
                                   size: 16,
-                                  color: schedule.enabled
+                                  color: isTimingActive
                                       ? primaryGreen
                                       : subTextColor,
                                 ),
@@ -915,7 +737,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                   style: GoogleFonts.outfit(
                                     fontSize: 16.5,
                                     fontWeight: FontWeight.bold,
-                                    color: schedule.enabled
+                                    color: isTimingActive
                                         ? primaryGreen
                                         : subTextColor,
                                   ),
@@ -956,7 +778,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? (schedule.enabled
+                                    ? (isTimingActive
                                           ? primaryGreen
                                           : (isDark
                                                 ? Colors.white24
@@ -965,7 +787,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: isSelected
-                                      ? (schedule.enabled
+                                      ? (isTimingActive
                                             ? primaryGreen
                                             : (isDark
                                                   ? Colors.white24
@@ -997,4 +819,5 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       ),
     );
   }
+
 }

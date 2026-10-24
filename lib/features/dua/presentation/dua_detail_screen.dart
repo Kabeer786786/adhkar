@@ -103,7 +103,8 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
           artist: 'Dua Recitation',
           extras: {
             'type': 'dua',
-            'route': '/dua',
+            'duaId': _dua.id,
+            'route': '/dua/detail?id=${_dua.id}&lang=$_currentLang',
           },
         );
         await audioService.playUrl(_dua.audioUrl!, mediaItem: mediaItem);
@@ -214,8 +215,8 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
         child: AppHeaderBar(
           title: _dua.getTitle(_currentLang),
           showBackButton: true,
-          centerTitle: false,
-          titleSpacing: 12,
+          centerTitle: true,
+          titleSpacing: 0,
           backgroundColor: Colors.white,
           actions: [
             // Edit Dua
@@ -389,7 +390,7 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
 
                     // Translation in Selected Language
                     SelectableText(
-                      '"${_dua.getTranslation(_currentLang)}"',
+                      _dua.getTranslation(_currentLang),
                       style: GoogleFonts.lexend(
                         fontSize: 15,
                         height: 1.45,

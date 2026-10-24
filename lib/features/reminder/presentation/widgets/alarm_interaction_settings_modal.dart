@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/services/native_alarm_service.dart';
 import '../../../../shared/providers/app_providers.dart';
 import '../../../../shared/widgets/app_floating_toast.dart';
-import '../alarm_screen.dart';
 
 class AlarmInteractionSettingsModal extends ConsumerStatefulWidget {
   const AlarmInteractionSettingsModal({super.key});
@@ -74,18 +73,6 @@ class _AlarmInteractionSettingsModalState
         message: 'Alarm interaction settings saved',
       );
     }
-  }
-
-  void _testAlarmBehavior() {
-    // Launch a safe 10-second test alarm so the user can test volume button and screen-off behavior
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const AlarmScreen(
-          title: 'Test Alarm Interaction',
-          soundType: 'Default Ringtone',
-        ),
-      ),
-    );
   }
 
   @override

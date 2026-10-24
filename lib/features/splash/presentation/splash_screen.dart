@@ -30,10 +30,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
     final hasSkipped = prefs.getBool('has_skipped_registration') ?? false;
 
-    // If an alarm is already showing, do not navigate away
+    // If an alarm or audio route is already showing, do not navigate away
     final initialLoc =
         appRouter.routerDelegate.currentConfiguration.uri.toString();
-    if (initialLoc.startsWith('/alarm')) {
+    if (initialLoc != '/splash' && initialLoc.isNotEmpty) {
       return;
     }
 
@@ -43,7 +43,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     // Check again after delay
     final currentLoc =
         appRouter.routerDelegate.currentConfiguration.uri.toString();
-    if (currentLoc.startsWith('/alarm')) {
+    if (currentLoc != '/splash' && currentLoc.isNotEmpty) {
       return;
     }
 

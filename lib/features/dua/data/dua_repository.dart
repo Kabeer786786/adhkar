@@ -37,6 +37,30 @@ class DuaRepository {
     return _curatedDefaultDuas;
   }
 
+  /// Look up a Dua by ID synchronously from cache or curated defaults.
+  static DuaItem? getDuaById(String id) {
+    if (_cachedDuas != null && _cachedDuas!.isNotEmpty) {
+      try {
+        return _cachedDuas!.firstWhere((d) => d.id == id);
+      } catch (_) {}
+    }
+    try {
+      return _curatedDefaultDuas.firstWhere((d) => d.id == id);
+    } catch (_) {}
+    return null;
+  }
+
+  /// Asynchronously look up a Dua by ID, loading all Duas if needed.
+  static Future<DuaItem?> findDuaByIdAsync(String id) async {
+    final syncItem = getDuaById(id);
+    if (syncItem != null) return syncItem;
+    final all = await DuaRepository().loadAllDuas();
+    try {
+      return all.firstWhere((d) => d.id == id);
+    } catch (_) {}
+    return null;
+  }
+
   /// Prioritizes the most essential, widely recited daily Duas at the top
   List<DuaItem> _prioritizeTopDuas(List<DuaItem> list) {
     const topIds = [

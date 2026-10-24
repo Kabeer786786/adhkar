@@ -387,8 +387,8 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             indicatorColor: const Color(0xFF2A531D),
             indicatorWeight: 3,
             labelStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
             ),
             tabs: const [
               Tab(text: 'Islamic Library'),
@@ -427,7 +427,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
       children: [
         // Search Input Bar inside library modal
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
           child: Container(
             height: 50,
             decoration: BoxDecoration(
@@ -465,7 +465,11 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
         // Library Items List
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.of(context).size.height * 0.1,
+            ),
             itemCount: filteredList.length,
             separatorBuilder: (context, index) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
@@ -503,9 +507,9 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                           // 3D Cover Thumbnail
                           ThreeDBookCoverWidget(
                             book: book,
-                            width: 58,
-                            height: 78,
-                            fontSize: 8.5,
+                            width: 90,
+                            height: 115,
+                            fontSize: 7,
                           ),
                           const SizedBox(width: 12),
 
@@ -521,7 +525,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFF0F172A),
                                   ),
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 3),
@@ -533,7 +537,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                                     color: Color(0xFF64748B),
                                     fontStyle: FontStyle.italic,
                                   ),
-                                  maxLines: 2,
+                                  maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],

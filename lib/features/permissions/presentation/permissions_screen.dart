@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../quiet_hours/services/quiet_hours_service.dart';
+import '../../quiet_hours/services/quiet_hours_permission_service.dart';
 import '../../../core/services/native_alarm_service.dart';
 import '../../reminder/services/reminder_permission_service.dart';
 import 'widgets/reminder_permissions_required_modal.dart';
+import 'widgets/quiet_hours_permissions_required_modal.dart';
 
 class PermissionsScreen extends StatefulWidget {
   final String? from;
@@ -21,10 +22,10 @@ class PermissionsScreen extends StatefulWidget {
 class _PermissionsScreenState extends State<PermissionsScreen>
     with WidgetsBindingObserver {
   Map<String, PermissionStatus> _permissionStatuses = {};
-  List<ReminderMissingPermission> _missingReminderPermissions = [];
   bool _isLoading = true;
   bool _vibrationEnabled = true;
   bool _hasPromptedReminderModal = false;
+  bool _hasPromptedQuietHoursModal = false;
 
   @override
   void initState() {
@@ -57,7 +58,8 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     final fsi = fsiGranted ? PermissionStatus.granted : PermissionStatus.denied;
     final overlay = await Permission.systemAlertWindow.status;
 
-    final missing = await ReminderPermissionService.getMissingPermissions();
+    final reminderMissing = await ReminderPermissionService.getMissingPermissions();
+    final quietHoursMissing = await QuietHoursPermissionService.getMissingPermissions();
 
     if (mounted) {
       setState(() {
@@ -70,19 +72,34 @@ class _PermissionsScreenState extends State<PermissionsScreen>
           'fullScreenIntent': fsi,
           'systemAlertWindow': overlay,
         };
-        _missingReminderPermissions = missing;
         _isLoading = false;
       });
 
+      final hasReminderCritical = reminderMissing.any((p) => p.isCritical);
       if (widget.from == 'reminder' &&
           !_hasPromptedReminderModal &&
-          missing.isNotEmpty) {
+          hasReminderCritical) {
         _hasPromptedReminderModal = true;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             ReminderPermissionsRequiredModal.show(
               context,
-              missingPermissions: missing,
+              missingPermissions: reminderMissing.where((p) => p.isCritical).toList(),
+            );
+          }
+        });
+      }
+
+      final hasQuietHoursCritical = quietHoursMissing.any((p) => p.isCritical);
+      if (widget.from == 'quiet_hours' &&
+          !_hasPromptedQuietHoursModal &&
+          hasQuietHoursCritical) {
+        _hasPromptedQuietHoursModal = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            QuietHoursPermissionsRequiredModal.show(
+              context,
+              missingPermissions: quietHoursMissing.where((p) => p.isCritical).toList(),
             );
           }
         });

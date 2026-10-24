@@ -4,10 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/providers/app_providers.dart';
-import '../../../../widgets/app_dropdown.dart';
-
 import '../../domain/dua_item.dart';
 import '../../../../shared/widgets/app_floating_toast.dart';
+import 'add_dua_modal.dart';
 
 enum DuaModalView { library, details, form }
 
@@ -35,16 +34,22 @@ class DuaLibraryModal extends ConsumerStatefulWidget {
     required Function(String duaId) onRemoveDua,
     required Function(DuaItem customDua) onCreateCustom,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (_) => Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        height: MediaQuery.of(context).size.height * 0.88,
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: DuaLibraryModal(
           currentDuas: currentDuas,
@@ -69,23 +74,7 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
   DuaModalView _currentView = DuaModalView.library;
   DuaItem? _selectedDuaForDetails;
 
-  // Form Controllers
-  final _formTitleController = TextEditingController();
-  final _formArabicController = TextEditingController();
-  final _formTransliterationController = TextEditingController();
-  final _formTranslationController = TextEditingController();
-  final _formReferenceController = TextEditingController();
-  final _formBenefitsController = TextEditingController();
-  String _formSelectedCategory = 'Daily';
-
-  final List<String> _categories = [
-    'Daily',
-    'Food',
-    'Sleep',
-    'Hygiene',
-    'Travel',
-    'Protection',
-  ];
+  String _detailLang = 'en';
 
   static ({List<Color> colors, Color textColor}) _getCategoryPreset(
     String category,
@@ -133,25 +122,23 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
   void initState() {
     super.initState();
     _activeDuas = List.from(widget.currentDuas);
-    final savedCats = ref
-        .read(storageServiceProvider)
-        .getCustomCategories('dua');
-    for (final cat in savedCats) {
-      if (!_categories.contains(cat)) {
-        _categories.add(cat);
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final savedLangs = storage.getGenericData('dua_selected_languages');
+      if (savedLangs is List && savedLangs.isNotEmpty) {
+        _detailLang = savedLangs.first.toString();
+      } else {
+        final savedPrimary = storage.getGenericData('dua_primary_language');
+        if (savedPrimary is String && savedPrimary.isNotEmpty) {
+          _detailLang = savedPrimary;
+        }
       }
-    }
+    } catch (_) {}
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _formTitleController.dispose();
-    _formArabicController.dispose();
-    _formTransliterationController.dispose();
-    _formTranslationController.dispose();
-    _formReferenceController.dispose();
-    _formBenefitsController.dispose();
     super.dispose();
   }
 
@@ -177,14 +164,6 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
   }
 
   void _openFormView() {
-    _formTitleController.clear();
-    _formArabicController.clear();
-    _formTransliterationController.clear();
-    _formTranslationController.clear();
-    _formReferenceController.clear();
-    _formBenefitsController.clear();
-    _formSelectedCategory = 'Daily';
-
     setState(() {
       _currentView = DuaModalView.form;
     });
@@ -197,79 +176,87 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
     });
   }
 
-  void _submitForm() {
-    final title = _formTitleController.text.trim();
-    final arabic = _formArabicController.text.trim();
-
-    if (title.isEmpty || arabic.isEmpty) {
-      AppFloatingToast.showError(
-        context,
-        message: 'Please enter at least a title and Arabic text.',
-      );
-      return;
-    }
-
-    final newDua = DuaItem(
-      id: 'custom_dua_${DateTime.now().millisecondsSinceEpoch}',
-      title: title,
-      category: _formSelectedCategory,
-      arabic: arabic,
-      transliteration: _formTransliterationController.text.trim().isNotEmpty
-          ? _formTransliterationController.text.trim()
-          : title,
-      translation: _formTranslationController.text.trim().isNotEmpty
-          ? _formTranslationController.text.trim()
-          : title,
-      repeatCount: 1,
-      reference: _formReferenceController.text.trim().isNotEmpty
-          ? _formReferenceController.text.trim()
-          : 'Personal Custom Supplication',
-      benefits: _formBenefitsController.text.trim().isNotEmpty
-          ? _formBenefitsController.text.trim()
-          : 'Brings peace and reward.',
-      imagePath: 'assets/images/dua.png',
-      isCustom: true,
+  Widget _buildDetailLangChip(String langCode, String label) {
+    final isSelected = _detailLang == langCode;
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: () {
+        setState(() {
+          _detailLang = langCode;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF2A531D) : const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF2A531D)
+                : const Color(0xFFE2E8F0),
+            width: 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.2,
+            color: isSelected ? Colors.white : const Color(0xFF475569),
+          ),
+        ),
+      ),
     );
-
-    widget.onCreateCustom(newDua);
-    setState(() {
-      _activeDuas.add(newDua);
-      _currentView = DuaModalView.library;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 12),
-          // Drag Handle
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        // Drag Handle
+        Center(
+          child: Container(
+            width: 60,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 10),
+        ),
+        const SizedBox(height: 10),
 
-          // Content View Switcher
-          Flexible(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: _buildCurrentViewContent(),
-            ),
+        // Content View Switcher
+        Expanded(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            layoutBuilder:
+                (Widget? currentChild, List<Widget> previousChildren) {
+              return Stack(
+                fit: StackFit.expand,
+                alignment: Alignment.topCenter,
+                children: <Widget>[
+                  ...previousChildren,
+                  ?currentChild,
+                ],
+              );
+            },
+            child: _buildCurrentViewContent(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -280,12 +267,33 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
       case DuaModalView.details:
         return _buildDetailsView();
       case DuaModalView.form:
-        return _buildFormView();
+        return AddDuaModal(
+          isEmbedded: true,
+          onBack: () {
+            setState(() {
+              _currentView = DuaModalView.library;
+            });
+          },
+          onSave: (newDua) {
+            widget.onCreateCustom(newDua);
+            setState(() {
+              if (!_activeDuas.any((d) => d.id == newDua.id)) {
+                _activeDuas.add(newDua);
+              }
+              _currentView = DuaModalView.library;
+            });
+            AppFloatingToast.showAdded(
+              context,
+              message: 'Custom Dua created successfully',
+            );
+          },
+        );
     }
   }
 
   // --- 1. LIBRARY VIEW ---
   Widget _buildLibraryView() {
+    final isDark = context.isDarkMode;
     final query = _searchController.text.trim().toLowerCase();
     final filteredLibrary = widget.defaultDuas.where((dua) {
       return query.isEmpty ||
@@ -299,19 +307,17 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
       key: const ValueKey('library_view'),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Header Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Dua Library',
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2A531D),
+                  color: isDark ? Colors.white : const Color(0xFF2A531D),
                 ),
               ),
               ElevatedButton.icon(
@@ -345,23 +351,55 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                 Icons.search_rounded,
                 color: Color(0xFF2A531D),
               ),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 18),
+                      color: Colors.grey.shade600,
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    )
+                  : null,
               filled: true,
-              fillColor: const Color(0xFFF9F9F9),
+              fillColor: isDark
+                  ? const Color(0xFF23322B)
+                  : const Color(0xFFF9F9F9),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 8,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: Color(0xFF2A531D),
+                  width: 1.5,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 12),
 
-          // Platform Duas List (Identical to Main Screen Dua Cards with Light Border)
-          Flexible(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: filteredLibrary.length,
-              itemBuilder: (context, index) {
+          // Platform Duas List (or Not Found state)
+          Expanded(
+            child: filteredLibrary.isEmpty
+                ? _buildEmptySearchState(query, isDark)
+                : ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: filteredLibrary.length,
+                    itemBuilder: (context, index) {
                 final dua = filteredLibrary[index];
                 final isSelected = _isDuaSelected(dua.id);
                 final gradientPreset = _getCategoryPreset(dua.category);
@@ -406,7 +444,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                                     child: Icon(
                                       isSelected
                                           ? Icons.radio_button_checked_rounded
-                                          : Icons.radio_button_unchecked_rounded,
+                                          : Icons
+                                                .radio_button_unchecked_rounded,
                                       size: 24,
                                       color: isSelected
                                           ? gradientPreset.textColor
@@ -422,11 +461,11 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                             // Minimized Background Illustration Image
                             Positioned(
                               bottom: 4,
-                              right: 0,
+                              right: 4,
                               child: IgnorePointer(
                                 child: Container(
-                                  width: 64,
-                                  height: 64,
+                                  width: 60,
+                                  height: 60,
                                   padding: const EdgeInsets.all(2),
                                   child: Opacity(
                                     opacity: 0.85,
@@ -448,9 +487,9 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
                                 14,
-                                12,
-                                64,
-                                12,
+                                14,
+                                68,
+                                14,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,8 +523,9 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                                         decoration: BoxDecoration(
                                           color: gradientPreset.textColor
                                               .withValues(alpha: 0.12),
-                                          borderRadius:
-                                              BorderRadius.circular(6),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
                                           dua.category.toUpperCase(),
@@ -520,7 +560,7 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.lexend(
-                                      fontSize: 12,
+                                      fontSize: 13,
                                       letterSpacing: -0.1,
                                       color: Colors.black87,
                                       height: 1.4,
@@ -543,128 +583,237 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
     );
   }
 
+  Widget _buildEmptySearchState(String query, bool isDark) {
+    return Center(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A531D).withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 40,
+                color: Color(0xFF2A531D),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No Duas Found',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : const Color(0xFF2A531D),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              query.isNotEmpty
+                  ? 'We couldn\'t find any Dua matching "$query".\nTry checking the spelling or create your own custom Dua.'
+                  : 'No supplications available in the library.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.5,
+                color: isDark ? Colors.white70 : const Color(0xFF64748B),
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _openFormView,
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text('Create Custom Dua'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 11,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // --- 2. DETAILS VIEW ---
   Widget _buildDetailsView() {
     final dua = _selectedDuaForDetails!;
     final isSelected = _isDuaSelected(dua.id);
+    final isDark = context.isDarkMode;
 
-    return SingleChildScrollView(
+    return Column(
       key: const ValueKey('details_view'),
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Header with Back Button
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
+      children: [
+        // Fixed Header with Back Button and Dynamic Title (Max 2 lines)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 4, 12, 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Color(0xFF2A531D),
+                  size: 22,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _currentView = DuaModalView.library;
+                  });
+                },
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  dua.getTitle(_detailLang),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.outfit(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF2A531D),
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  dua.category.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xFF2A531D),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _currentView = DuaModalView.library;
-                    });
-                  },
                 ),
-                Expanded(
-                  child: Text(
-                    dua.title,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2A531D),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(right: 16),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    dua.category.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2A531D),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Divider(
-              height: 1,
-              color: Colors.grey.shade300,
-            ),
-            const SizedBox(height: 14),
+              ),
+            ],
+          ),
+        ),
 
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
+        // Language Switcher Chips Row (Enables preview & adds proper spacing below 2-line title)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Translation Preview',
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white60 : Colors.grey.shade600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              Row(
                 children: [
-                  // Arabic Text
-                  Text(
-                    dua.arabic,
-                    textAlign: TextAlign.center,
-                    textDirection: TextDirection.rtl,
-                    style: AppTypography.arabicBody(
-                      fontSize: 24,
-                      height: 1.8,
-                      color: const Color(0xFF1B5E20),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
+                  _buildDetailLangChip('en', 'EN'),
+                  const SizedBox(width: 5),
+                  _buildDetailLangChip('ur', 'UR'),
+                  const SizedBox(width: 5),
+                  _buildDetailLangChip('hi', 'HI'),
+                  const SizedBox(width: 5),
+                  _buildDetailLangChip('te', 'TE'),
+                ],
+              ),
+            ],
+          ),
+        ),
 
-                  // Transliteration
+        Divider(
+          height: 1,
+          color: isDark ? Colors.white12 : Colors.grey.shade300,
+        ),
+
+        // Scrollable Content
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Arabic Text
+                Text(
+                  dua.arabic,
+                  textAlign: TextAlign.center,
+                  textDirection: TextDirection.rtl,
+                  style: AppTypography.arabicBody(
+                    fontSize: 24,
+                    height: 1.8,
+                    color: const Color(0xFF1B5E20),
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // Transliteration
+                if (dua.getTransliteration(_detailLang).isNotEmpty) ...[
                   Text(
-                    dua.transliteration,
+                    dua.getTransliteration(_detailLang),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.lexend(
                       fontSize: 13,
                       fontStyle: FontStyle.italic,
-                      color: Colors.grey.shade800,
+                      color: isDark ? Colors.white70 : Colors.grey.shade800,
                     ),
                   ),
                   const SizedBox(height: 12),
+                ],
 
-                  // Translation
-                  Text(
-                    '"${dua.translation}"',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.lexend(
-                      fontSize: 13,
-                      height: 1.4,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF1B5E20),
+                // Translation
+                Text(
+                  dua.getTranslation(_detailLang),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.lexend( 
+                    fontSize: 13.5,
+                    height: 1.45,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF1B5E20),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Reference & Benefits Card
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF23322B)
+                        : const Color(0xFFF4FAF3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
                     ),
                   ),
-                  const SizedBox(height: 16),
-
-                  // Reference & Benefits Card
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF4FAF3),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (dua.reference.isNotEmpty) ...[
                         const Text(
                           'Reference',
                           style: TextStyle(
-                            fontSize: 11.5,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFD97724),
                           ),
@@ -673,276 +822,95 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                         Text(
                           dua.reference,
                           style: TextStyle(
-                            fontSize: 12.5,
-                            color: Colors.grey.shade800,
+                            fontSize: 13,
+                            color: isDark
+                                ? Colors.white70
+                                : Colors.grey.shade800,
                           ),
                         ),
                         const SizedBox(height: 10),
+                      ],
+                      if (dua.getBenefits(_detailLang).isNotEmpty) ...[
                         const Text(
                           'Virtues & Benefits',
                           style: TextStyle(
-                            fontSize: 11.5,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF7E22CE),
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          dua.benefits,
+                          dua.getBenefits(_detailLang),
                           style: TextStyle(
-                            fontSize: 12.5,
-                            color: Colors.grey.shade800,
+                            fontSize: 13,
+                            color: isDark
+                                ? Colors.white70
+                                : Colors.grey.shade800,
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Selection Action Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        _toggleDua(dua);
-                        setState(() {
-                          _currentView = DuaModalView.library;
-                        });
-                      },
-                      icon: Icon(
-                        isSelected
-                            ? Icons.check_circle_rounded
-                            : Icons.add_circle_rounded,
-                      ),
-                      label: Text(
-                        isSelected ? 'Remove from My Duas' : 'Add to My Duas',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isSelected
-                            ? Colors.red.shade700
-                            : const Color(0xFF2A531D),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  InputDecoration _formInputDecoration(
-    String label,
-    String hint,
-    IconData icon,
-  ) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      prefixIcon: Icon(icon, color: const Color(0xFF2A531D)),
-      filled: true,
-      fillColor: context.isDarkMode
-          ? const Color(0xFF23322B)
-          : const Color(0xFFF9FAFB),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: context.isDarkMode ? Colors.white12 : const Color(0xFFE5E7EB),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: context.isDarkMode ? Colors.white12 : const Color(0xFFE5E7EB),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF2A531D), width: 1.8),
-      ),
-    );
-  }
-
-  // --- 3. FORM VIEW ---
-  Widget _buildFormView() {
-    return SingleChildScrollView(
-      key: const ValueKey('form_view'),
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Header with Back Button
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Color(0xFF2A531D),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _currentView = DuaModalView.library;
-                    });
-                  },
-                ),
-                Text(
-                  'Create Custom Dua',
-                  style: context.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2A531D),
+                    ],
                   ),
                 ),
+                const SizedBox(height: 8),
               ],
             ),
-            const SizedBox(height: 16),
-
-            // Title
-            TextField(
-              controller: _formTitleController,
-              decoration: _formInputDecoration(
-                'Dua Title *',
-                'e.g. Dua for Peace & Protection',
-                Icons.title_rounded,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Category Selector
-            AppDropdown<String>(
-              label: 'Category',
-              value: _formSelectedCategory,
-              prefixIcon: Icons.category_rounded,
-              onAddCustomCategory: () async {
-                final newCatName =
-                    await AppDropdown.showAddCustomCategoryDialog(
-                      context,
-                      title: 'Add Custom Category',
-                      hintText: 'e.g. Travel & Protection',
-                      icon: Icons.menu_book_rounded,
-                    );
-                if (newCatName != null && newCatName.isNotEmpty) {
-                  ref
-                      .read(storageServiceProvider)
-                      .saveCustomCategory('dua', newCatName);
-                  setState(() {
-                    if (!_categories.contains(newCatName)) {
-                      _categories.add(newCatName);
-                    }
-                    _formSelectedCategory = newCatName;
-                  });
-                }
-                return newCatName;
-              },
-              items: _categories.map((cat) {
-                return AppDropdownItem<String>(
-                  value: cat,
-                  label: cat,
-                  icon: Icons.folder_outlined,
-                );
-              }).toList(),
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _formSelectedCategory = val;
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 14),
-
-            // Arabic Text
-            TextField(
-              controller: _formArabicController,
-              textDirection: TextDirection.rtl,
-              maxLines: 2,
-              style: AppTypography.arabicBody(fontSize: 20),
-              decoration: _formInputDecoration(
-                'Arabic Text *',
-                'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً',
-                Icons.auto_awesome_rounded,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Transliteration
-            TextField(
-              controller: _formTransliterationController,
-              decoration: _formInputDecoration(
-                'Transliteration',
-                'e.g. Allahumma hasibni hisaban yasira',
-                Icons.text_fields_rounded,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Translation
-            TextField(
-              controller: _formTranslationController,
-              maxLines: 2,
-              decoration: _formInputDecoration(
-                'English Translation',
-                'e.g. O Allah, grant me an easy accounting.',
-                Icons.translate_rounded,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Hadith Reference
-            TextField(
-              controller: _formReferenceController,
-              decoration: _formInputDecoration(
-                'Hadith / Book Reference',
-                'e.g. Musnad Ahmad & Sahih Ibn Hibban',
-                Icons.menu_book_rounded,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Benefits
-            TextField(
-              controller: _formBenefitsController,
-              maxLines: 2,
-              decoration: _formInputDecoration(
-                'Spiritual & Practical Benefits',
-                'e.g. Grants ease on the Day of Judgment.',
-                Icons.info_outline_rounded,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            ElevatedButton(
-              onPressed: _submitForm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2A531D),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 2,
-              ),
-              child: const Text(
-                'Save Custom Dua',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
+          ),
         ),
-      ),
+
+        // Fixed Footer Button
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF192520) : Colors.white,
+            border: Border(
+              top: BorderSide(
+                color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                width: 1.0,
+              ),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  _toggleDua(dua);
+                  setState(() {
+                    _currentView = DuaModalView.library;
+                  });
+                },
+                icon: Icon(
+                  isSelected
+                      ? Icons.check_circle_rounded
+                      : Icons.add_circle_rounded,
+                  size: 20,
+                ),
+                label: Text(
+                  isSelected ? 'Remove from My Duas' : 'Add to My Duas',
+                  style: GoogleFonts.lexend(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isSelected
+                      ? Colors.red.shade700
+                      : const Color(0xFF2A531D),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

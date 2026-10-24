@@ -23,17 +23,17 @@ class FeatureIntroModal extends StatelessWidget {
   static Future<void> markAsSeen(FeatureIntroType type) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _getStorageKey(type);
-    await prefs.setBool(key, true);
+    await prefs.setBool(key, true); 
   }
 
   static String _getStorageKey(FeatureIntroType type) {
     switch (type) {
       case FeatureIntroType.namaz:
-        return 'has_seen_namaz_intro';
+        return 'has_seen_namaz_guide_intro_v2';
       case FeatureIntroType.roza:
-        return 'has_seen_roza_intro';
+        return 'has_seen_roza_guide_intro_v2';
       case FeatureIntroType.sadqa:
-        return 'has_seen_sadqa_intro';
+        return 'has_seen_sadqa_guide_intro_v2';
     }
   }
 
@@ -51,7 +51,7 @@ class FeatureIntroModal extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent, 
       builder: (context) => FeatureIntroModal(type: type, onDismiss: onDismiss),
     );
   }
@@ -185,7 +185,7 @@ class FeatureIntroModal extends StatelessWidget {
 
               const SizedBox(width: 8),
 
-              // Read Guide Primary Button
+              // Read Guide Primary Button (opens book reader directly)
               ElevatedButton.icon(
                 onPressed: () {
                   markAsSeen(type);
@@ -232,21 +232,21 @@ class FeatureIntroModal extends StatelessWidget {
           title: 'Namaz & Prayer Times Guide',
           description:
               'Learn the spiritual virtues of Salah, step-by-step prayer guidance, and how to track daily Namaz in the app.',
-          bookId: 'namaz_guide_book',
+          bookId: 'namaz_guide',
         );
       case FeatureIntroType.roza:
         return const _IntroConfig(
           title: 'The Complete Roza & Fasting Guide',
           description:
               'Understand the blessings of Sawm, rules, intentions, and how to track Ramadan & voluntary fasts in the app.',
-          bookId: 'roza_guide_book',
+          bookId: 'roza_guide',
         );
       case FeatureIntroType.sadqa:
-        return const _IntroConfig( 
+        return const _IntroConfig(
           title: 'The Sadaqah & Zakat Guide',
           description:
               'Discover Zakat Nisab calculations, the virtues of ongoing charity, and managing Sadaqah logs in the app.',
-          bookId: 'sadqa_zakat_guide_book',
+          bookId: 'zakat_guide',
         );
     }
   }

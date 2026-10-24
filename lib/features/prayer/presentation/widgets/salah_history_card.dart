@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/utils/hijri_date_helper.dart';
 import 'salah_3d_circular_progress.dart';
 
 class SalahHistoryCard extends StatelessWidget {
@@ -42,9 +41,6 @@ class SalahHistoryCard extends StatelessWidget {
       gregorianStr = _formatFullDate(date);
     }
 
-    final hijriStr =
-        hijriDate ?? HijriDateHelper.formatHijri(date);
-
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Material(
@@ -71,7 +67,7 @@ class SalahHistoryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Row: Gregorian Date Left | Hijri Date Right
+                // Header Row: Gregorian Date Only (Hijri is shown in details modal)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -79,18 +75,15 @@ class SalahHistoryCard extends StatelessWidget {
                       gregorianStr,
                       style: context.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 13,
+                        fontSize: 13.5,
                         color: context.colorScheme.onSurface,
                       ),
                     ),
-                    Text(
-                      hijriStr,
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12.5,
-                        color: context.colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.8,
-                        ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 18,
+                      color: context.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ],

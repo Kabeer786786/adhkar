@@ -298,21 +298,19 @@ class QuranAudioPlayerBar extends StatelessWidget {
                       ],
                     ),
 
-                    // Repeat Single Ayah Mode Toggle
+                    // Repeat Whole Surah Mode Toggle
                     IconButton(
                       icon: Icon(
-                        quranAudio.isLoopSingle
-                            ? Icons.repeat_one_rounded
-                            : Icons.repeat_rounded,
-                        color: quranAudio.isLoopSingle
+                        Icons.repeat_rounded,
+                        color: quranAudio.isLoopSurah
                             ? const Color(0xFFA3E635)
                             : Colors.white60,
-                        size: 20,
+                        size: 21,
                       ),
-                      onPressed: quranAudio.toggleLoopSingle,
+                      onPressed: quranAudio.toggleRepeatSurah,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                      tooltip: 'Repeat Ayah',
+                      tooltip: quranAudio.isLoopSurah ? 'Repeat Surah: ON' : 'Repeat Surah: OFF',
                     ),
                   ],
                 ),

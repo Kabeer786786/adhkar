@@ -19,14 +19,29 @@ class ReminderScreen extends ConsumerStatefulWidget {
   ConsumerState<ReminderScreen> createState() => _ReminderScreenState();
 }
 
-class _ReminderScreenState extends ConsumerState<ReminderScreen> {
+class _ReminderScreenState extends ConsumerState<ReminderScreen> 
+    with WidgetsBindingObserver {
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = <String>{};
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkPermissions();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPermissions();
+    }
   }
 
   Future<void> _checkPermissions() async {

@@ -11,12 +11,18 @@ import '../../features/quran/presentation/surah_detail_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/settings/presentation/app_info_screen.dart';
 import '../../features/tasbeeh/presentation/tasbeeh_screen.dart';
+import '../../features/tasbeeh/presentation/free_tasbeeh_counter_screen.dart';
 import '../../features/reminder/presentation/reminder_screen.dart';
 import '../../features/reminder/presentation/alarm_screen.dart';
+import '../../features/reminder/services/reminder_permission_service.dart';
 import '../../features/quiet_hours/presentation/quiet_hours_screen.dart';
+import '../../features/quiet_hours/services/quiet_hours_permission_service.dart';
 import '../../features/roza/presentation/roza_screen.dart';
 import '../../features/sci_islam/presentation/sci_islam_screen.dart';
 import '../../features/dua/presentation/dua_screen.dart';
+import '../../features/dua/presentation/dua_detail_screen.dart';
+import '../../features/dua/data/dua_repository.dart';
+import '../../features/dua/domain/dua_item.dart';
 import '../../features/sadqa/presentation/sadqa_screen.dart';
 import '../../features/books/presentation/books_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
@@ -173,6 +179,11 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const TasbeehScreen(),
     ),
+    GoRoute(
+      path: '/tasbeeh/counter',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const FreeTasbeehCounterScreen(),
+    ),
 
     GoRoute(
       path: '/settings',
@@ -252,12 +263,26 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/reminder',
       parentNavigatorKey: _rootNavigatorKey,
+      redirect: (context, state) async {
+        final hasPerms = await ReminderPermissionService.hasRequiredPermissions();
+        if (!hasPerms) {
+          return '/permissions?from=reminder';
+        }
+        return null;
+      },
       builder: (context, state) => const ReminderScreen(),
     ),
 
     GoRoute(
       path: '/quiet-hours',
       parentNavigatorKey: _rootNavigatorKey,
+      redirect: (context, state) async {
+        final hasPerms = await QuietHoursPermissionService.hasRequiredPermissions();
+        if (!hasPerms) {
+          return '/permissions?from=quiet_hours';
+        }
+        return null;
+      },
       builder: (context, state) => const QuietHoursScreen(),
     ),
 
@@ -297,6 +322,43 @@ final appRouter = GoRouter(
       path: '/dua',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const DuaScreen(),
+    ),
+
+    GoRoute(
+      path: '/dua/detail',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final id = state.uri.queryParameters['id'] ?? '';
+        final lang = state.uri.queryParameters['lang'] ?? 'en';
+        final extraDua = state.extra is DuaItem ? state.extra as DuaItem : null;
+        if (extraDua != null) {
+          return DuaDetailScreen(dua: extraDua, selectedLanguage: lang);
+        }
+
+        final syncDua = DuaRepository.getDuaById(id);
+        if (syncDua != null) {
+          return DuaDetailScreen(dua: syncDua, selectedLanguage: lang);
+        }
+
+        return FutureBuilder<DuaItem?>(
+          future: DuaRepository.findDuaByIdAsync(id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.data != null) {
+              return DuaDetailScreen(
+                  dua: snapshot.data!, selectedLanguage: lang);
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return const DuaScreen();
+          },
+        );
+      },
     ),
 
     GoRoute(

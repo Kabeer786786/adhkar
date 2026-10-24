@@ -300,37 +300,24 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'TODAY\'S HIJRI DATE',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'TODAY\'S HIJRI DATE',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.8, 
                     ),
-                    Text(
-                      todayData?.monthAr ?? currentHijriMonthMeta['nameAr']!,
-                      textDirection: TextDirection.rtl,
-                      style: AppTypography.arabicHeader(
-                        fontSize: 22,
-                        color: Colors.amber.shade200,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -338,17 +325,69 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                       ? '${todayData.day} ${todayData.monthEn} ${todayData.year} AH'
                       : '${currentHijriMonthMeta['nameEn']} $_activeHijriYear AH',
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
+                  todayData?.monthAr ?? currentHijriMonthMeta['nameAr']!,
+                  textDirection: TextDirection.rtl,
+                  style: AppTypography.arabicHeader(
+                    fontSize: 20,
+                    color: Colors.amber.shade200,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
                   DateFormat('EEEE, d MMMM yyyy').format(DateTime.now()),
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.white.withValues(alpha: 0.85),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Midnight change note banner
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? const Color(0xFF1E2E25)
+                  : const Color(0xFFF0FDF4),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF2A531D).withValues(alpha: 0.5)
+                    : const Color(0xFF86EFAC).withValues(alpha: 0.6),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 18,
+                  color: isDark
+                      ? const Color(0xFF86EFAC)
+                      : const Color(0xFF16A34A),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Note: For consistency across prayers and logs, the Hijri date changes at midnight (12:00 AM) instead of after Maghrib.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? const Color(0xFFE2E8F0)
+                          : const Color(0xFF166534),
+                    ),
                   ),
                 ),
               ],
@@ -881,22 +920,14 @@ class _GregorianToHijriModalState
                           ),
                         ),
                       ),
-                      Text(
-                        _convertedResult!.monthAr,
-                        textDirection: TextDirection.rtl,
-                        style: AppTypography.arabicHeader(
-                          fontSize: 22,
-                          color: Colors.amber.shade200,
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
 
                   Text(
-                    '${_convertedResult!.day} ${_convertedResult!.monthEn}',
+                    '${_convertedResult!.day} ${_convertedResult!.monthEn} ${_convertedResult!.year} AH',
                     style: const TextStyle(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -904,11 +935,11 @@ class _GregorianToHijriModalState
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${_convertedResult!.year} AH',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white.withValues(alpha: 0.9),
+                    _convertedResult!.monthAr,
+                    textDirection: TextDirection.rtl,
+                    style: AppTypography.arabicHeader(
+                      fontSize: 20,
+                      color: Colors.amber.shade200,
                     ),
                   ),
                   const SizedBox(height: 12),

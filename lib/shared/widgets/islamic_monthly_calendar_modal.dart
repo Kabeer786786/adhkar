@@ -167,43 +167,45 @@ class _IslamicMonthlyCalendarModalState
                   size: 28,
                 ),
               ),
-              Column(
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        currentHijriMonthMeta['nameEn']!.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF2A531D),
-                          letterSpacing: 0.8,
-                        ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      currentHijriMonthMeta['nameEn']!.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? Colors.white
+                            : const Color(0xFF2A531D),
+                        letterSpacing: 0.6,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        currentHijriMonthMeta['nameAr']!,
-                        textDirection: TextDirection.rtl,
-                        style: AppTypography.arabicHeader(
-                          fontSize: 18,
-                          color: const Color(0xFFD97724),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '$_activeHijriYear AH  •  Month ${_currentMonthIndex + 1} of 12',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Text(
+                      currentHijriMonthMeta['nameAr']!,
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.arabicHeader(
+                        fontSize: 17,
+                        color: const Color(0xFFD97724),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$_activeHijriYear AH  •  Month ${_currentMonthIndex + 1} of 12',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               IconButton(
                 onPressed: _currentMonthIndex < 11
@@ -437,8 +439,8 @@ class _IslamicMonthlyCalendarModalState
                 Expanded(
                   child: Text(
                     isSubcontinent
-                        ? 'Note: We have adjusted the Hijri dates for India, Pakistan, & Bangladesh based on local moon sighting. Hijri dates may vary by ±1 day.'
-                        : 'Note: Hijri dates follow standard global astronomical calculation. Hijri dates may vary by ±1 day based on local moon sighting.',
+                        ? 'Note: Adjusted for India, Pakistan, & Bangladesh based on local moon sighting. For consistency across prayer logs, dates advance at midnight (12:00 AM) instead of Maghrib.'
+                        : 'Note: Follows astronomical calculation. For consistency across prayer logs, dates advance at midnight (12:00 AM) instead of Maghrib.',
                     style: GoogleFonts.lexend(
                       fontSize: 11,
                       height: 1.35,

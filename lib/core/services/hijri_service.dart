@@ -181,8 +181,9 @@ class HijriService {
           );
 
   static bool isChandKiTarikhRegion(String? country) {
-    if (country == null || country.trim().isEmpty)
+    if (country == null || country.trim().isEmpty) {
       return true; // Default India/Subcontinent
+    }
     final c = country.trim().toLowerCase();
     return c.contains('india') ||
         c.contains('pakistan') ||
@@ -192,8 +193,10 @@ class HijriService {
         c == 'bd';
   }
 
-  /// Get today's Hijri Date with 12 AM daily cache rule.
-  /// Dynamically computes and updates regional day offset for IN/PK/BD vs standard math.
+  /// Get today's Hijri Date with twice-daily checking (morning & evening sessions).
+  /// Morning session (00:00 - 16:59) and evening session (17:00 - 23:59) ensure moon sighting
+  /// updates (29 vs 30 days) are fetched promptly without a 1-day lag.
+  /// For consistency with salah logs, the displayed calendar date progresses at midnight.
   Future<HijriDateData> getTodayHijriDate({
     String? country,
     double? latitude,
@@ -201,26 +204,34 @@ class HijriService {
   }) async {
     final now = DateTime.now();
     final todayKey = DateFormat('yyyy-MM-dd').format(now);
+    // Morning session: 00:00 - 16:59 | Evening session: 17:00 - 23:59
+    final session = now.hour < 17 ? 'morning' : 'evening';
+    final sessionKey = '$todayKey-$session';
     final isSubcontinent = isChandKiTarikhRegion(country);
     final targetRegionKey = isSubcontinent ? (country ?? 'India') : 'Aladhan';
 
     try {
       final box = await Hive.openBox('hijri_cache_box');
-      final cachedDateKey = box.get('hijri_today_date_key') as String?;
+      final cachedSessionKey = box.get('hijri_today_session_key') as String?;
       final cachedRegionKey = box.get('hijri_today_region_key') as String?;
       final cachedRaw = box.get('hijri_today_data');
 
-      // Daily cache hit check
-      if (cachedDateKey == todayKey &&
+      // Check if session cache is valid
+      if (cachedSessionKey == sessionKey &&
           cachedRegionKey == targetRegionKey &&
           cachedRaw != null &&
           cachedRaw is Map) {
-        return HijriDateData.fromJson(Map<String, dynamic>.from(cachedRaw));
-      }
-
-      // If new day (past 12 AM) or region changed, clear old cache & fetch fresh
-      if (cachedDateKey != todayKey || cachedRegionKey != targetRegionKey) {
-        await box.delete('hijri_today_data');
+        final cachedData =
+            HijriDateData.fromJson(Map<String, dynamic>.from(cachedRaw));
+        if (isSubcontinent) {
+          HijriDate.setLiveSubcontinentAnchor(
+            now,
+            hijriDay: cachedData.day,
+            hijriMonth: cachedData.monthNumber,
+            hijriYear: cachedData.year,
+          );
+        }
+        return cachedData;
       }
 
       HijriDateData freshData;
@@ -228,14 +239,29 @@ class HijriService {
 
       if (isSubcontinent) {
         freshData = await _fetchChandKiTarikhToday();
+        // Set live anchor immediately for unified app-wide consistency
+        HijriDate.setLiveSubcontinentAnchor(
+          now,
+          hijriDay: freshData.day,
+          hijriMonth: freshData.monthNumber,
+          hijriYear: freshData.year,
+        );
+        // Persist verified anchor to Hive
+        await box.put(
+          'hijri_anchor_date',
+          DateTime(now.year, now.month, now.day).toIso8601String(),
+        );
+        await box.put('hijri_anchor_day', freshData.day);
+        await box.put('hijri_anchor_month', freshData.monthNumber);
+        await box.put('hijri_anchor_year', freshData.year);
+
         // Compute day offset relative to standard un-offset algorithmic math for today
-        final algorithmicStandard = HijriDate.fromGregorian(now, dayOffset: 0);
+        final algorithmicStandard =
+            HijriDate.fromGregorian(now, isSubcontinent: false);
         computedOffset = freshData.day - algorithmicStandard.day;
-        // If day wrapped across month boundary (e.g. 1 vs 30), normalize offset
         if (computedOffset > 15) computedOffset -= 30;
         if (computedOffset < -15) computedOffset += 30;
-        if (computedOffset == 0)
-          computedOffset = -1; // Default -1 offset for South Asia
+        if (computedOffset == 0) computedOffset = -1;
       } else {
         freshData = await _fetchAladhanToday(
           date: now,
@@ -245,20 +271,31 @@ class HijriService {
         computedOffset = 0;
       }
 
-      // Store regional offset in cache for past history & app-wide sync
+      // Store regional offset, session cache & verified data in Hive
       await box.put('hijri_regional_day_offset', computedOffset);
+      await box.put('hijri_today_session_key', sessionKey);
       await box.put('hijri_today_date_key', todayKey);
       await box.put('hijri_today_region_key', targetRegionKey);
       await box.put('hijri_today_data', freshData.toJson());
 
       return freshData;
     } catch (e) {
-      // Return cached data if available on error, otherwise fallback to algorithmic with offset
+      // Return cached data if available on error, otherwise fallback to algorithmic
       try {
         final box = await Hive.openBox('hijri_cache_box');
         final cachedRaw = box.get('hijri_today_data');
         if (cachedRaw != null && cachedRaw is Map) {
-          return HijriDateData.fromJson(Map<String, dynamic>.from(cachedRaw));
+          final fallbackData =
+              HijriDateData.fromJson(Map<String, dynamic>.from(cachedRaw));
+          if (isSubcontinent) {
+            HijriDate.setLiveSubcontinentAnchor(
+              now,
+              hijriDay: fallbackData.day,
+              hijriMonth: fallbackData.monthNumber,
+              hijriYear: fallbackData.year,
+            );
+          }
+          return fallbackData;
         }
       } catch (_) {}
 
@@ -636,19 +673,39 @@ class HijriService {
     const monthLengths = [30, 30, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
     final totalDays = monthLengths[(month - 1) % 12];
 
-    final anchorGregorian = DateTime(2026, 8, 15);
-    int monthsDiff = month - 3 + (year - 1448) * 12;
+    DateTime anchorGregorian = DateTime(2026, 8, 15);
+    int anchorHMonth = 3;
+    int anchorHYear = 1448;
+
+    if (Hive.isBoxOpen('hijri_cache_box')) {
+      try {
+        final box = Hive.box('hijri_cache_box');
+        final anchorIso = box.get('hijri_anchor_date') as String?;
+        final aDay = (box.get('hijri_anchor_day') as num?)?.toInt();
+        final aMonth = (box.get('hijri_anchor_month') as num?)?.toInt();
+        final aYear = (box.get('hijri_anchor_year') as num?)?.toInt();
+        if (anchorIso != null && aDay != null && aMonth != null && aYear != null) {
+          final anchorDate = DateTime.parse(anchorIso);
+          // 1st day of anchor month in Gregorian
+          anchorGregorian = anchorDate.subtract(Duration(days: aDay - 1));
+          anchorHMonth = aMonth;
+          anchorHYear = aYear;
+        }
+      } catch (_) {}
+    }
+
+    int monthsDiff = month - anchorHMonth + (year - anchorHYear) * 12;
 
     DateTime firstDayGregorian = anchorGregorian;
     if (monthsDiff > 0) {
       int daysToAdd = 0;
-      for (int m = 3; m < 3 + monthsDiff; m++) {
+      for (int m = anchorHMonth; m < anchorHMonth + monthsDiff; m++) {
         daysToAdd += monthLengths[(m - 1) % 12];
       }
       firstDayGregorian = anchorGregorian.add(Duration(days: daysToAdd));
     } else if (monthsDiff < 0) {
       int daysToSub = 0;
-      for (int m = 2; m >= 3 + monthsDiff; m--) {
+      for (int m = anchorHMonth - 1; m >= anchorHMonth + monthsDiff; m--) {
         daysToSub += monthLengths[(m - 1) % 12];
       }
       firstDayGregorian = anchorGregorian.subtract(Duration(days: daysToSub));

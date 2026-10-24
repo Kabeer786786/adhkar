@@ -59,6 +59,76 @@ void _handleAlarmPayloadNavigation(String payload, {String? title, String? sound
   }
 }
 
+int _lastAudioNotifClickTime = 0;
+
+void _handleAudioNotificationClicked(AdhkarAudioHandler handler) {
+  final now = DateTime.now().millisecondsSinceEpoch;
+  // Debounce rapid duplicate click events from Android notification bar
+  if (now - _lastAudioNotifClickTime < 1000) return;
+  _lastAudioNotifClickTime = now;
+
+  final tag = handler.player.sequenceState?.currentSource?.tag;
+  final media = handler.mediaItem.value ?? (tag is MediaItem ? tag : null);
+
+  String? targetRoute = media?.extras?['route'] as String?;
+
+  if (targetRoute == null || targetRoute.isEmpty) {
+    final mediaId = media?.id ?? '';
+    final type = media?.extras?['type'] as String? ?? '';
+
+    if (type == 'quran' || mediaId.startsWith('quran_')) {
+      final parts = mediaId.split('_');
+      final surahNum = parts.length > 1 ? parts[1] : '1';
+      targetRoute = '/quran/surah?num=$surahNum&name=Surah%20$surahNum';
+    } else if (type == 'asma' ||
+        mediaId.startsWith('asma') ||
+        (media?.album?.contains('Asma') ?? false)) {
+      targetRoute = '/asma-ul-husna';
+    } else if (type == 'dua' || mediaId.startsWith('dua_')) {
+      final duaId = mediaId.startsWith('dua_') ? mediaId.substring(4) : '';
+      targetRoute = duaId.isNotEmpty ? '/dua/detail?id=$duaId' : '/dua';
+    }
+  }
+
+  if (targetRoute == null || targetRoute.isEmpty) {
+    return;
+  }
+
+  final currentLoc =
+      appRouter.routerDelegate.currentConfiguration.uri.toString();
+
+  // If user is already on this exact target screen/surah/dua, do not re-push/re-draw
+  if (currentLoc == targetRoute) {
+    return;
+  }
+  if (targetRoute.contains('?')) {
+    final targetUri = Uri.parse(targetRoute);
+    final currentUri = Uri.parse(currentLoc);
+    if (targetUri.path == currentUri.path) {
+      if (targetUri.path == '/quran/surah') {
+        if (targetUri.queryParameters['num'] ==
+            currentUri.queryParameters['num']) {
+          return;
+        }
+      } else if (targetUri.path == '/dua/detail') {
+        if (targetUri.queryParameters['id'] ==
+            currentUri.queryParameters['id']) {
+          return;
+        }
+      } else {
+        return;
+      }
+    }
+  }
+
+  // If at root or splash, use go to cleanly transition, otherwise push
+  if (currentLoc == '/' || currentLoc.isEmpty || currentLoc == '/splash') {
+    appRouter.go(targetRoute);
+  } else {
+    appRouter.push(targetRoute);
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
 
@@ -75,6 +145,13 @@ void main() async {
       androidStopForegroundOnPause: false,
     ),
   );
+
+  // Directly navigate to playing audio screen (Quran, Asma-ul-Husna, Dua) when notification is clicked
+  AudioService.notificationClicked.listen((clicked) {
+    if (clicked) {
+      _handleAudioNotificationClicked(adhkarAudioHandler);
+    }
+  });
 
   // Initialize Local Hive Storage
   final storageService = StorageService();

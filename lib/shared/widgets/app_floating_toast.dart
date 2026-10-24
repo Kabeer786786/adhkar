@@ -375,6 +375,25 @@ class AppFloatingToast {
     );
   }
 
+  /// Convenience helper for permission required notifications
+  static void showPermissionRequired(
+    BuildContext context, {
+    String message = 'Allow required permissions',
+    IconData? icon,
+    Color? iconColor,
+    Duration duration = const Duration(milliseconds: 1800),
+    double? bottomOffset,
+  }) {
+    show(
+      context,
+      message: message,
+      icon: icon ?? Icons.shield_outlined,
+      iconColor: iconColor ?? const Color(0xFFF59E0B),
+      duration: duration,
+      bottomOffset: bottomOffset,
+    );
+  }
+
   /// Displays a premium bottom pill toast indicating double-tap back to exit with the round app logo.
   static void showExitToast(
     BuildContext context, {

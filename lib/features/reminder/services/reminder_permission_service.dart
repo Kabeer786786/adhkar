@@ -84,7 +84,7 @@ class ReminderPermissionService {
       }
     } catch (_) {}
 
-    // 4. Ignore Battery Optimizations (Unrestricted Background Execution)
+    // 4. Ignore Battery Optimizations (Unrestricted Background Execution) - OPTIONAL
     try {
       final batteryStatus = await Permission.ignoreBatteryOptimizations.status;
       if (!batteryStatus.isGranted) {
@@ -93,28 +93,28 @@ class ReminderPermissionService {
             id: 'battery',
             title: 'Unrestricted Background Battery',
             description:
-                'Prevents Android from putting alarms to sleep or killing the app while in the background.',
+                'Optional: Prevents Android from putting alarms to sleep or killing the app while in deep battery savings mode.',
             icon: Icons.battery_charging_full_rounded,
             iconColor: Color(0xFF059669),
-            isCritical: true,
+            isCritical: false,
           ),
         );
       }
     } catch (_) {}
 
-    // 5. System Alert Window / Appear On Top (Needed by OEMs like Xiaomi, Oppo, Vivo, Samsung)
+    // 5. System Alert Window / Appear On Top (Required to display full-screen alarm immediately)
     try {
       final overlayStatus = await Permission.systemAlertWindow.status;
       if (!overlayStatus.isGranted) {
         missing.add(
           const ReminderMissingPermission(
             id: 'systemAlertWindow',
-            title: 'Display Over Other Apps',
+            title: 'Display Over Other Apps (Appear on Top)',
             description:
-                'Allows the full-screen alarm screen to immediately pop up when the app is in the background or closed.',
+                'Required: Allows the full-screen alarm screen to immediately pop up over active apps when an alarm rings.',
             icon: Icons.layers_outlined,
             iconColor: Color(0xFFF59E0B),
-            isCritical: false,
+            isCritical: true,
           ),
         );
       }

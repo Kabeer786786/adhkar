@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
@@ -76,10 +77,7 @@ class BookReaderScreen extends ConsumerStatefulWidget {
         );
       }
     } else if (context.mounted) {
-      AppFloatingToast.showError(
-        context,
-        message: 'File not found: $trimmed',
-      );
+      AppFloatingToast.showError(context, message: 'File not found: $trimmed');
     }
   }
 
@@ -88,10 +86,10 @@ class BookReaderScreen extends ConsumerStatefulWidget {
     return lower.endsWith('.pdf') ||
         lower.endsWith('.doc') ||
         lower.endsWith('.docx') ||
-        lower.endsWith('.txt'); 
+        lower.endsWith('.txt');
   }
 
-  @override 
+  @override
   ConsumerState<BookReaderScreen> createState() => _BookReaderScreenState();
 }
 
@@ -102,9 +100,10 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
   // Bottom Floating Dock State
   bool _isControlsOpen = false;
   int _activeTab = 0; // 0 = Contents, 1 = Theme, 2 = Text Size
- 
+
   int _selectedChapterIndex = 0;
-  int _readingTheme = 0; // 0 = Light (default), 1 = Sepia, 2 = OLED Dark, 3 = Charcoal
+  int _readingTheme =
+      0; // 0 = Light (default), 1 = Sepia, 2 = OLED Dark, 3 = Charcoal
   double _fontSize = 16.0;
 
   static const List<Color> _bgColors = [
@@ -163,20 +162,6 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
   ];
 
   Timer? _progressDebounceTimer;
-  bool _isBackButtonVisible = true;
-  Timer? _backButtonFadeTimer;
-
-  void _triggerBackButtonVisibility() {
-    if (!_isBackButtonVisible) {
-      setState(() => _isBackButtonVisible = true);
-    }
-    _backButtonFadeTimer?.cancel();
-    _backButtonFadeTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted && _isBackButtonVisible) {
-        setState(() => _isBackButtonVisible = false);
-      }
-    });
-  }
 
   @override
   void initState() {
@@ -187,12 +172,10 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     for (int i = 0; i < widget.book.chapters.length; i++) {
       _chapterKeys.add(GlobalKey());
     }
-    _triggerBackButtonVisibility();
   }
 
   @override
   void dispose() {
-    _backButtonFadeTimer?.cancel();
     _progressDebounceTimer?.cancel();
     if (_scrollController.hasClients && widget.book.chapters.isNotEmpty) {
       final total = widget.book.chapters.length;
@@ -200,7 +183,9 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       if (maxScroll > 0) {
         final progress = (_scrollController.offset / maxScroll).clamp(0.0, 1.0);
         final estimatedChapter = (progress * total).floor().clamp(0, total - 1);
-        ref.read(userBooksProvider.notifier).updateProgress(
+        ref
+            .read(userBooksProvider.notifier)
+            .updateProgress(
               bookId: widget.book.id,
               progress: progress,
               currentPage: estimatedChapter + 1,
@@ -214,7 +199,6 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-    _triggerBackButtonVisibility();
     if (_isControlsOpen) {
       setState(() {
         _isControlsOpen = false;
@@ -223,18 +207,20 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
     final total = widget.book.chapters.length;
     if (total > 0 && _scrollController.position.maxScrollExtent > 0) {
-      final progress = (_scrollController.offset /
-              _scrollController.position.maxScrollExtent)
-          .clamp(0.0, 1.0);
-      final estimatedChapter =
-          (progress * total).floor().clamp(0, total - 1);
+      final progress =
+          (_scrollController.offset /
+                  _scrollController.position.maxScrollExtent)
+              .clamp(0.0, 1.0);
+      final estimatedChapter = (progress * total).floor().clamp(0, total - 1);
       if (estimatedChapter != _selectedChapterIndex) {
         _selectedChapterIndex = estimatedChapter;
 
         _progressDebounceTimer?.cancel();
         _progressDebounceTimer = Timer(const Duration(milliseconds: 600), () {
           if (mounted) {
-            ref.read(userBooksProvider.notifier).updateProgress(
+            ref
+                .read(userBooksProvider.notifier)
+                .updateProgress(
                   bookId: widget.book.id,
                   progress: progress,
                   currentPage: estimatedChapter + 1,
@@ -259,15 +245,22 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
         if (keyContext != null) {
           final renderBox = keyContext.findRenderObject() as RenderBox?;
           if (renderBox != null) {
-            final topInset = MediaQuery.of(context).padding.top;
             final scrollPosition = _scrollController.position;
-            final scrollableBox = scrollPosition.context.notificationContext?.findRenderObject() as RenderBox?;
+            final scrollableBox =
+                scrollPosition.context.notificationContext?.findRenderObject()
+                    as RenderBox?;
 
             if (scrollableBox != null) {
-              final offsetInViewport = renderBox.localToGlobal(Offset.zero, ancestor: scrollableBox);
-              // Direct mathematically exact top-0 scroll target
-              final targetOffset = (_scrollController.offset + offsetInViewport.dy - topInset)
-                  .clamp(0.0, scrollPosition.maxScrollExtent);
+              final offsetInViewport = renderBox.localToGlobal(
+                Offset.zero,
+                ancestor: scrollableBox,
+              );
+              // Direct mathematically exact top-0 scroll target below AppBar
+              final targetOffset =
+                  (_scrollController.offset + offsetInViewport.dy).clamp(
+                    0.0,
+                    scrollPosition.maxScrollExtent,
+                  );
 
               _scrollController.animateTo(
                 targetOffset,
@@ -291,7 +284,6 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     final textColor = _textColors[_readingTheme];
     final accentColor = _accentColors[_readingTheme];
 
-    final double topInset = MediaQuery.of(context).padding.top;
     final double bottomInset = MediaQuery.of(context).padding.bottom;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -302,13 +294,45 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       ),
       child: Scaffold(
         backgroundColor: bgColor,
-        body: Listener(
-          behavior: HitTestBehavior.translucent,
-          onPointerDown: (_) => _triggerBackButtonVisibility(),
-          onPointerMove: (_) => _triggerBackButtonVisibility(),
-          child: Stack(
-            children: [
-            // Continuous Reading View (SingleChildScrollView guarantees all chapter keys are laid out for perfect top-0 scrolling)
+        appBar: AppBar(
+          backgroundColor: bgColor,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: false,
+          titleSpacing: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded, size: 24),
+            color: textColor,
+            tooltip: 'Back',
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Text(
+              widget.book.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.06),
+              height: 1,
+            ),
+          ),
+        ),
+        body: Stack(
+          children: [
+            // Continuous Reading View
             GestureDetector(
               onTap: () {
                 if (_isControlsOpen) {
@@ -320,64 +344,70 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   : SingleChildScrollView(
                       controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.fromLTRB(
-                        0,
-                        topInset, // Flush with top status bar
-                        0,
-                        bottomInset + 80, // Space for bottom dock
-                      ),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 84),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: List.generate(chapters.length, (chapIdx) {
                           final chap = chapters[chapIdx];
                           final blocks = chap.effectiveBlocks;
-                          final themeColor = _sciThemeColors[
-                              chapIdx % _sciThemeColors.length];
-                          final icon = _chapterIcons[
-                              chapIdx % _chapterIcons.length];
+                          final themeColor =
+                              _sciThemeColors[chapIdx % _sciThemeColors.length];
+                          final icon =
+                              _chapterIcons[chapIdx % _chapterIcons.length];
 
-                          return RepaintBoundary(
-                            key: chapIdx < _chapterKeys.length
-                                ? _chapterKeys[chapIdx]
-                                : null,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                // 1. Edge-to-Edge Section Divider (Only between chapters; Chapter 1 has none)
-                                if (chapIdx > 0) _buildSectionDivider(isDark),
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // 1. Edge-to-Edge Section Divider (Only between chapters; Chapter 1 has none)
+                              if (chapIdx > 0) _buildSectionDivider(isDark),
 
-                                // 2. Scientific Islam Style Hero Header Box (Flush from top/divider without vertical gap)
-                                _buildChapterHeaderBox(
-                                  chapIdx: chapIdx,
-                                  title: chap.title,
-                                  subtitle: chap.subtitle,
-                                  themeColor: themeColor,
-                                  icon: icon,
-                                ),
+                              // 2. Chapter Content starting with Hero Header Box (Key placed here so divider is above and hides on scroll)
+                              RepaintBoundary(
+                                key: chapIdx < _chapterKeys.length
+                                    ? _chapterKeys[chapIdx]
+                                    : null,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    _buildChapterHeaderBox(
+                                      chapIdx: chapIdx,
+                                      title: chap.title,
+                                      subtitle: chap.subtitle,
+                                      themeColor: themeColor,
+                                      icon: icon,
+                                    ),
 
-                                // Chapter Content with tight horizontal & vertical padding
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      // 3. Chapter Content Blocks (Justified text & minimal padding)
-                                      ...blocks.map(
-                                        (b) => BookContentRenderer(
-                                          block: b,
-                                          fontSize: _fontSize,
-                                          isDark: isDark,
-                                          textColor: textColor,
-                                          accentColor: accentColor,
-                                          cardBgColor: cardBgColor,
-                                        ),
+                                    // Chapter Content with tight horizontal & vertical padding
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        14,
+                                        12,
+                                        14,
+                                        24,
                                       ),
-                                    ],
-                                  ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          // 3. Chapter Content Blocks (Justified text & minimal padding)
+                                          ...blocks.map(
+                                            (b) => BookContentRenderer(
+                                              block: b,
+                                              fontSize: _fontSize,
+                                              isDark: isDark,
+                                              textColor: textColor,
+                                              accentColor: accentColor,
+                                              cardBgColor: cardBgColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           );
                         }),
                       ),
@@ -386,16 +416,16 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
             // Right-docked Interactive Smooth Scrollbar
             Positioned(
-              top: topInset + 20,
+              top: 10,
               right: 0,
-              bottom: bottomInset + 70,
+              bottom: bottomInset + 10,
               child: BookVerticalScrollbar(
                 scrollController: _scrollController,
                 isDark: isDark,
               ),
             ),
 
-            // Backdrop dismissal layer when bottom modal card is open
+            // Backdrop dismissal layer when modal card is open
             if (_isControlsOpen)
               Positioned.fill(
                 child: GestureDetector(
@@ -488,18 +518,23 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   ),
 
                   // Main Toggle Circular FAB (Open / Close with smooth animation)
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF18181B)
-                          : const Color(0xFF2A531D),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
+                  AnimatedOpacity(
+                    opacity: 1.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: IgnorePointer(
+                      ignoring: false,
+                      child: _buildCircularDockButton(
+                        icon: _isControlsOpen
+                            ? Icons.close_rounded
+                            : Icons.tune_rounded,
+                        tooltip: _isControlsOpen
+                            ? 'Close Controls'
+                            : 'Reading Controls',
+                        isSelected: _isControlsOpen,
+                        isDark: isDark,
+                        accentColor: accentColor,
+                        turns: _isControlsOpen ? 0.25 : 0.0,
+                        isMain: true,
                         onTap: () {
                           setState(() {
                             _isControlsOpen = !_isControlsOpen;
@@ -508,70 +543,13 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                             }
                           });
                         },
-                        borderRadius: BorderRadius.circular(24),
-                        child: Center(
-                          child: AnimatedRotation(
-                            turns: _isControlsOpen ? 0.25 : 0.0,
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOutCubic,
-                            child: Icon(
-                              _isControlsOpen
-                                  ? Icons.close_rounded
-                                  : Icons.tune_rounded,
-                              color: isDark
-                                  ? const Color(0xFFA3E635)
-                                  : Colors.white,
-                              size: 22,
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-
-            // Floating Back Button (White translucent 0.5, black arrow, visible on scroll / touch, hides after 3s)
-            Positioned(
-              top: topInset + 10,
-              left: 16,
-              child: AnimatedOpacity(
-                opacity: _isBackButtonVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 240),
-                child: IgnorePointer(
-                  ignoring: !_isBackButtonVisible,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withValues(alpha: 0.5),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.35),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      shape: const CircleBorder(),
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () => Navigator.pop(context),
-                        child: const Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Icon(
-                            Icons.arrow_back_rounded,
-                            color: Colors.black,
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
-        ),
         ),
       ),
     );
@@ -590,16 +568,11 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            themeColor,
-            themeColor.withValues(alpha: 0.85),
-          ],
+          colors: [themeColor, themeColor.withValues(alpha: 0.85)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(24),
-        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
             color: themeColor.withValues(alpha: 0.32),
@@ -614,7 +587,10 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
@@ -630,11 +606,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                 ),
               ),
               const Spacer(),
-              Icon(
-                icon,
-                color: Colors.white,
-                size: 28,
-              ),
+              Icon(icon, color: Colors.white, size: 28),
             ],
           ),
           const SizedBox(height: 12),
@@ -683,32 +655,58 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     required bool isDark,
     required Color accentColor,
     required VoidCallback onTap,
+    double? turns,
+    bool isMain = false,
   }) {
-    final bgColor = isSelected
+    final bgColor = isMain
+        ? (isDark ? const Color(0xFFA3E635) : const Color(0xFF2A531D))
+        : isSelected
         ? (isDark ? const Color(0xFFA3E635) : const Color(0xFF2A531D))
         : (isDark ? const Color(0xFF1E1E24) : Colors.white);
 
-    final fgColor = isSelected
+    final fgColor = isMain
+        ? (isDark ? Colors.black : Colors.white)
+        : isSelected
         ? (isDark ? Colors.black : Colors.white)
         : (isDark ? Colors.white70 : const Color(0xFF1A3512));
+
+    final size = isMain ? 50.0 : 44.0;
+    final iconSize = isMain ? 24.0 : 20.0;
+
+    Widget iconWidget = Icon(icon, color: fgColor, size: iconSize);
+
+    if (turns != null) {
+      iconWidget = AnimatedRotation(
+        turns: turns,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        child: iconWidget,
+      );
+    }
 
     return Tooltip(
       message: tooltip,
       child: Container(
-        width: 44,
-        height: 44,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           color: bgColor,
           shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Material(
           color: Colors.transparent,
+          shape: const CircleBorder(),
           child: InkWell(
+            customBorder: const CircleBorder(),
             onTap: onTap,
-            borderRadius: BorderRadius.circular(22),
-            child: Center(
-              child: Icon(icon, size: 20, color: fgColor),
-            ),
+            child: Center(child: iconWidget),
           ),
         ),
       ),
@@ -727,12 +725,16 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     final panelBg = isDark ? const Color(0xFF18181C) : Colors.white;
 
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: screenHeight * 0.72,
-      ),
+      constraints: BoxConstraints(maxHeight: screenHeight * 0.72),
       decoration: BoxDecoration(
         color: panelBg,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.08),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.2),
@@ -748,8 +750,8 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
           child: _activeTab == 0
               ? _buildContentsTab(isDark, textColor, accentColor, cardBgColor)
               : (_activeTab == 1
-                  ? _buildThemeTab(isDark, textColor, accentColor)
-                  : _buildTextSizeTab(isDark, textColor, accentColor)),
+                    ? _buildThemeTab(isDark, textColor, accentColor)
+                    : _buildTextSizeTab(isDark, textColor, accentColor)),
         ),
       ),
     );
@@ -769,9 +771,9 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Heading Banner: Book name & chapter count
+        // Heading Banner: Chapter count & title
         Container(
-          padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF22242A) : const Color(0xFFF1F5F9),
           ),
@@ -782,31 +784,32 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.book.title,
+                      'TABLE OF CONTENTS',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: isDark
                             ? const Color(0xFFA3E635)
                             : const Color(0xFF1A3512),
+                        letterSpacing: 0.5,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 2),
                     Text(
-                      '${chapters.length} Chapters • Table of Contents',
+                      '${chapters.length} Chapters',
                       style: TextStyle(
                         fontSize: 12,
-                        color: textColor.withValues(alpha: 0.7),
+                        color: textColor.withValues(alpha: 0.65),
                       ),
                     ),
                   ],
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close_rounded, size: 22),
+                icon: const Icon(Icons.close_rounded, size: 20),
                 color: textColor.withValues(alpha: 0.6),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
                 onPressed: () => setState(() => _isControlsOpen = false),
               ),
             ],
@@ -831,15 +834,18 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   onTap: () => _scrollToChapter(idx),
                   borderRadius: BorderRadius.circular(14),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? (isDark
-                              ? const Color(0xFF282C34)
-                              : const Color(0xFFE2E8F0))
+                                ? const Color(0xFF282C34)
+                                : const Color(0xFFE2E8F0))
                           : (isDark
-                              ? const Color(0xFF1E2026)
-                              : const Color(0xFFF8FAFC)),
+                                ? const Color(0xFF1E2026)
+                                : const Color(0xFFF8FAFC)),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
@@ -867,7 +873,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
 
                         // Chapter Name & Description
                         Expanded(
@@ -877,7 +883,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                               Text(
                                 chap.title,
                                 style: TextStyle(
-                                  fontSize: 13.5,
+                                  fontSize: 14,
                                   fontWeight: isSelected
                                       ? FontWeight.bold
                                       : FontWeight.w600,
@@ -892,7 +898,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                                 Text(
                                   chap.subtitle!,
                                   style: TextStyle(
-                                    fontSize: 11.5,
+                                    fontSize: 12,
                                     color: textColor.withValues(alpha: 0.65),
                                   ),
                                   maxLines: 1,
@@ -1016,7 +1022,10 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: isDark
                       ? Colors.white.withValues(alpha: 0.1)
@@ -1057,7 +1066,6 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   padding: const EdgeInsets.all(8),
                 ),
               ),
-              const SizedBox(width: 8),
               Expanded(
                 child: SliderTheme(
                   data: SliderThemeData(
@@ -1084,7 +1092,6 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
               IconButton(
                 onPressed: _fontSize < 32.0
                     ? () {
@@ -1128,26 +1135,12 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
           color: color,
           shape: BoxShape.circle,
           border: isSelected
-              ? Border.all(
-                  color: borderColor,
-                  width: 2.5,
-                )
+              ? Border.all(color: borderColor, width: 2.5)
               : null,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isSelected ? 0.25 : 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: isSelected
             ? Center(
-                child: Icon(
-                  Icons.check_rounded,
-                  color: checkColor,
-                  size: 22,
-                ),
+                child: Icon(Icons.check_rounded, color: checkColor, size: 22),
               )
             : null,
       ),

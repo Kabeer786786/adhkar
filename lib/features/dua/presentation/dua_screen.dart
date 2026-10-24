@@ -24,6 +24,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
   List<DuaItem> _allDuas = [];
   List<DuaItem> _filteredDuas = [];
   final Set<String> _selectedCategories = {};
+  String _sortBy = 'recentAdded'; // 'recentAdded' | 'category'
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = <String>{};
 
@@ -151,6 +152,11 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
         _primaryLanguage = savedPrimary;
         _selectedLanguages = {savedPrimary};
       }
+    }
+
+    final savedSort = storage.getGenericData('dua_sort_by');
+    if (savedSort is String && savedSort.isNotEmpty) {
+      _sortBy = savedSort;
     }
 
     // 2. Synchronously load cached Duas (Zero-latency, zero-flicker)
@@ -288,7 +294,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
   void _filterDuas() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
-      _filteredDuas = _allDuas.where((dua) {
+      final list = _allDuas.where((dua) {
         final matchesCategory = _selectedCategories.isEmpty ||
             _selectedCategories.contains(dua.category);
         final matchesQuery = query.isEmpty ||
@@ -305,6 +311,27 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
             dua.reference.toLowerCase().contains(query);
         return matchesCategory && matchesQuery;
       }).toList();
+
+      if (_sortBy == 'category') {
+        list.sort((a, b) {
+          final catComp =
+              a.category.toLowerCase().compareTo(b.category.toLowerCase());
+          if (catComp != 0) return catComp;
+          // Keep recently added at the bottom within category
+          final indexA = _allDuas.indexOf(a);
+          final indexB = _allDuas.indexOf(b);
+          return indexA.compareTo(indexB);
+        });
+      } else {
+        // 'recentAdded': preserve natural addition order (recent added at the bottom)
+        list.sort((a, b) {
+          final indexA = _allDuas.indexOf(a);
+          final indexB = _allDuas.indexOf(b);
+          return indexA.compareTo(indexB);
+        });
+      }
+
+      _filteredDuas = list;
     });
   }
 
@@ -521,11 +548,14 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
 
   void _showCategoryFilterModal() {
     final tempSelected = Set<String>.from(_selectedCategories);
+    var tempSortBy = _sortBy;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -533,6 +563,86 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             final allSelected = tempSelected.length == _categories.length;
+
+            Widget buildSortChip({
+              required String label,
+              required IconData icon,
+              required bool isSelected,
+              required VoidCallback onTap,
+            }) {
+              return Expanded(
+                child: InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(14),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFF2A531D)
+                          : (isDark
+                              ? const Color(0xFF23322B)
+                              : const Color(0xFFF8FAFC)),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFF2A531D)
+                            : (isDark
+                                ? Colors.white12
+                                : const Color(0xFFE2E8F0)),
+                        width: isSelected ? 1.5 : 1.0,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: const Color(0xFF2A531D)
+                                    .withValues(alpha: 0.22),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          icon,
+                          size: 18,
+                          color: isSelected
+                              ? Colors.white
+                              : (isDark
+                                  ? Colors.white70
+                                  : const Color(0xFF475569)),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.w600,
+                              color: isSelected
+                                  ? Colors.white
+                                  : (isDark
+                                      ? Colors.white70
+                                      : const Color(0xFF334155)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
 
             return SafeArea(
               child: Container(
@@ -549,7 +659,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
+                          color: isDark ? Colors.white24 : Colors.grey.shade300,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -558,15 +668,118 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Select Categories',
+                        Text(
+                          'Filter & Sort Duas',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2A531D),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF2A531D),
                           ),
                         ),
                         TextButton(
+                          onPressed: () {
+                            setModalState(() {
+                              tempSelected.clear();
+                              tempSortBy = 'recentAdded';
+                            });
+                          },
+                          child: const Text(
+                            'Reset',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFD97724),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Sort By Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'SORT BY',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.6,
+                            color: isDark
+                                ? Colors.white70
+                                : const Color(0xFF64748B),
+                          ),
+                        ),
+                        Text(
+                          '(Recent added at bottom)',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontStyle: FontStyle.italic,
+                            color: isDark
+                                ? Colors.white38
+                                : Colors.grey.shade500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        buildSortChip(
+                          label: 'Recent Added',
+                          icon: Icons.history_rounded,
+                          isSelected: tempSortBy == 'recentAdded',
+                          onTap: () {
+                            setModalState(() {
+                              tempSortBy = 'recentAdded';
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        buildSortChip(
+                          label: 'By Category',
+                          icon: Icons.category_rounded,
+                          isSelected: tempSortBy == 'category',
+                          onTap: () {
+                            setModalState(() {
+                              tempSortBy = 'category';
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    Divider(
+                      height: 1,
+                      color: isDark ? Colors.white12 : const Color(0xFFF1F5F9),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Categories Header Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'CATEGORIES',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.6,
+                            color: isDark
+                                ? Colors.white70
+                                : const Color(0xFF64748B),
+                          ),
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(50, 30),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                           onPressed: () {
                             setModalState(() {
                               if (allSelected) {
@@ -587,7 +800,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     Flexible(
                       child: SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
@@ -607,16 +820,22 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                     : FontWeight.w500,
                                 color: isSelected
                                     ? preset.textColor
-                                    : const Color(0xFF334155),
+                                    : (isDark
+                                        ? Colors.white70
+                                        : const Color(0xFF334155)),
                               ),
                               selected: isSelected,
                               selectedColor: preset.colors.last,
-                              backgroundColor: const Color(0xFFF8FAFC),
+                              backgroundColor: isDark
+                                  ? const Color(0xFF23322B)
+                                  : const Color(0xFFF8FAFC),
                               checkmarkColor: preset.textColor,
                               side: BorderSide(
                                 color: isSelected
                                     ? preset.textColor
-                                    : const Color(0xFFE2E8F0),
+                                    : (isDark
+                                        ? Colors.white12
+                                        : const Color(0xFFE2E8F0)),
                                 width: isSelected ? 1.5 : 1.0,
                               ),
                               shape: RoundedRectangleBorder(
@@ -642,7 +861,11 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                         setState(() {
                           _selectedCategories.clear();
                           _selectedCategories.addAll(tempSelected);
+                          _sortBy = tempSortBy;
                         });
+                        ref
+                            .read(storageServiceProvider)
+                            .saveGenericData('dua_sort_by', _sortBy);
                         _filterDuas();
                         Navigator.pop(context);
                       },
@@ -656,7 +879,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                         elevation: 0,
                       ),
                       child: const Text(
-                        'Apply Filters',
+                        'Apply Filters & Sort',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -761,10 +984,10 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: GoogleFonts.lexend(
-            fontSize: 11.5,
+            fontSize: 13,
             letterSpacing: -0.1,
             color: Colors.black87,
-            height: 1.35,
+            height: 1.4,
           ),
         ),
       ];
@@ -795,7 +1018,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
               child: Text(
                 langLabel,
                 style: const TextStyle(
-                  fontSize: 10,
+                  fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.3,
                   color: Color(0xFF2A531D),
@@ -808,10 +1031,10 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.lexend(
-                  fontSize: 11.5,
+                  fontSize: 13,
                   letterSpacing: -0.1,
                   color: Colors.black87,
-                  height: 1.35,
+                  height: 1.4,
                 ),
               ),
             ),
@@ -891,12 +1114,14 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
-                        color: _selectedCategories.isNotEmpty
+                        color: (_selectedCategories.isNotEmpty ||
+                                _sortBy != 'recentAdded')
                             ? const Color(0xFF2A531D)
                             : const Color(0xFFF9F9F9),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: _selectedCategories.isNotEmpty
+                          color: (_selectedCategories.isNotEmpty ||
+                                  _sortBy != 'recentAdded')
                               ? const Color(0xFF2A531D)
                               : const Color(0xFFE2E8F0),
                           width: 1.0,
@@ -908,7 +1133,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                           Icon(
                             Icons.tune_rounded,
                             size: 22,
-                            color: _selectedCategories.isNotEmpty
+                            color: (_selectedCategories.isNotEmpty ||
+                                    _sortBy != 'recentAdded')
                                 ? Colors.white
                                 : const Color(0xFF2A531D),
                           ),
@@ -929,6 +1155,19 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
+                                ),
+                              ),
+                            )
+                          else if (_sortBy != 'recentAdded')
+                            Positioned(
+                              top: -3,
+                              right: -3,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFD97724),
+                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ),
@@ -1160,52 +1399,27 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                       ? primaryGreen
                                       : gradientPreset.textColor
                                           .withValues(alpha: 0.15),
-                                  width: isSelected ? 2.0 : 1.0,
+                                  width: isSelected ? 1.0 : 1.0,
                                 ),
                               ),
                               child: Stack(
                                 children: [
-                                  // Category Pill
-                                  Positioned(
-                                    top: 12,
-                                    left: _isSelectionMode ? 44 : 16,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: gradientPreset.textColor
-                                            .withValues(alpha: 0.12),
-                                        borderRadius:
-                                            BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        dua.category.toUpperCase(),
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.4,
-                                          color: gradientPreset.textColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
                                   // Background Illustration Image
                                   Positioned(
-                                    bottom: 2,
-                                    right: 2,
+                                    bottom: 4,
+                                    right: 4,
                                     child: IgnorePointer(
                                       child: Container(
-                                        width: 80,
-                                        height: 80,
-                                        padding: const EdgeInsets.all(4),
+                                        width: 64,
+                                        height: 64,
+                                        padding: const EdgeInsets.all(2),
                                         child: Opacity(
                                           opacity: 0.85,
                                           child: Image.asset(
                                             dua.imagePath,
                                             fit: BoxFit.contain,
-                                            cacheWidth: 240,
-                                            cacheHeight: 240,
+                                            cacheWidth: 200,
+                                            cacheHeight: 200,
                                             errorBuilder:
                                                 (context, error, stackTrace) =>
                                                     const SizedBox.shrink(),
@@ -1219,7 +1433,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                   if (_isSelectionMode)
                                     Positioned(
                                       top: 14,
-                                      left: 14,
+                                      left: 12,
                                       child: AnimatedContainer(
                                         duration:
                                             const Duration(milliseconds: 180),
@@ -1236,7 +1450,6 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                                 : Colors.grey.shade400,
                                             width: 1.8,
                                           ),
-                                         
                                         ),
                                         child: isSelected
                                             ? const Icon(
@@ -1248,48 +1461,94 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                       ),
                                     ),
 
-                                  // Card Content Column
+                                  // Card Content Column (Same Spacing as Dua Library Cards)
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(
-                                      _isSelectionMode ? 44 : 16,
-                                      36,
-                                      82,
+                                      _isSelectionMode ? 44 : 14,
+                                      14,
+                                      14,
                                       14,
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          dua.getTitle(_primaryLanguage),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: -0.2,
-                                            color: gradientPreset.textColor,
-                                            height: 1.25,
+                                        // Top Row: Title on the left, Category pill at the rightmost corner
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                dua.getTitle(_primaryLanguage),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 15.5,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: -0.2,
+                                                  color: gradientPreset.textColor,
+                                                  height: 1.2,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 7,
+                                                vertical: 2.5,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: gradientPreset.textColor
+                                                    .withValues(alpha: 0.12),
+                                                borderRadius:
+                                                    BorderRadius.circular(7),
+                                                border: Border.all(
+                                                  color: gradientPreset.textColor
+                                                      .withValues(alpha: 0.22),
+                                                  width: 0.8,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                dua.category.toUpperCase(),
+                                                style: TextStyle(
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.w800,
+                                                  letterSpacing: 0.4,
+                                                  color: gradientPreset.textColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+
+                                        // Bottom Content with right spacing to clear the illustration
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 60),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                dua.arabic,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.right,
+                                                textDirection: TextDirection.rtl,
+                                                style: AppTypography.arabicHeader(
+                                                  fontSize: 18,
+                                                  color: const Color(0xFF1B3512),
+                                                  height: 1.5,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 6),
+
+                                              // Translations according to language preferences
+                                              ..._buildCardTranslations(dua),
+                                            ],
                                           ),
                                         ),
-                                        const SizedBox(height: 8),
-
-                                        Text(
-                                          dua.arabic,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                          textDirection: TextDirection.rtl,
-                                          style: AppTypography.arabicHeader(
-                                            fontSize: 18,
-                                            color: const Color(0xFF1B3512),
-                                            height: 1.4,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-
-                                        // Translations according to language preferences
-                                        ..._buildCardTranslations(dua),
                                       ],
                                     ),
                                   ),
