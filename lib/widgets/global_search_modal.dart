@@ -286,7 +286,6 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                 ),
               ),
               if (isCategoryFiltered) ...[
-                const SizedBox(height: 12),
                 TextButton.icon(
                   onPressed: () {
                     HapticFeedback.selectionClick();
