@@ -81,9 +81,12 @@ class _ReminderModalState extends State<ReminderModal> {
     _selectedDate = rem?.startDate ?? DateTime.now();
     _frequency = rem?.frequency ?? ReminderFrequency.daily;
     _selectedDays = Set<int>.from(rem?.customDays ?? [1, 2, 3, 4, 5, 6, 7]);
-    _duration = rem?.duration ?? AlarmDuration.seconds30;
     _soundEnabled = rem?.soundEnabled ?? true;
     _soundType = ReminderAudioConfig.canonicalSoundName(rem?.soundType);
+    _duration = rem?.duration ??
+        (ReminderAudioConfig.isAzan(_soundType)
+            ? AlarmDuration.fullRingtone
+            : AlarmDuration.seconds30);
     _vibrationEnabled = rem?.vibrationEnabled ?? true;
     _notificationEnabled = rem?.notificationEnabled ?? true;
     _alarmBgType = rem?.alarmBgType ?? 'image';
@@ -850,6 +853,7 @@ class _ReminderModalState extends State<ReminderModal> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<AlarmDuration>(
+            key: ValueKey(_duration),
             initialValue: _duration,
             dropdownColor: cardBg,
             decoration: InputDecoration(
@@ -974,7 +978,12 @@ class _ReminderModalState extends State<ReminderModal> {
                             }).toList(),
                             onChanged: (val) {
                               if (val != null) {
-                                setState(() => _soundType = val);
+                                setState(() {
+                                  _soundType = val;
+                                  if (ReminderAudioConfig.isAzan(val)) {
+                                    _duration = AlarmDuration.fullRingtone;
+                                  }
+                                });
                                 if (_isPreviewPlaying) {
                                   _playAudioPreview();
                                 }

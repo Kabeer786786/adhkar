@@ -19,6 +19,7 @@ import '../../../shared/widgets/complete_profile_modal.dart';
 import '../../../shared/widgets/startup_permissions_modal.dart';
 import '../../quiet_hours/services/quiet_hours_permission_service.dart';
 import 'widgets/daily_ayah_card.dart';
+import 'widgets/forbidden_sajda_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -66,7 +67,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _checkAndPromptCompleteProfile() async {
     final userProfile = ref.read(userProfileProvider);
-    final isFilled = userProfile.registrationCompleted || userProfile.name.trim().isNotEmpty;
+    final isFilled =
+        userProfile.registrationCompleted || userProfile.name.trim().isNotEmpty;
     // If user filled it, never ask again
     if (isFilled) return;
 
@@ -80,7 +82,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) {
         final currentProfile = ref.read(userProfileProvider);
-        final stillFilled = currentProfile.registrationCompleted || currentProfile.name.trim().isNotEmpty;
+        final stillFilled =
+            currentProfile.registrationCompleted ||
+            currentProfile.name.trim().isNotEmpty;
         if (!stillFilled) {
           CompleteProfileModal.show(context);
         }
@@ -203,7 +207,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     final prayerTimes = ref.watch(prayerTimesProvider);
     final locationAsync = ref.watch(currentLocationProvider);
+    final storage = ref.watch(storageServiceProvider);
     final now = DateTime.now();
+    final forbiddenSajdaInfo = ForbiddenSajdaService.getForbiddenSajdaInfo(
+      prayerTimes: prayerTimes,
+      now: now,
+      storage: storage,
+    );
     final todayHijriAsync = ref.watch(todayHijriProvider);
     final hijriStr =
         todayHijriAsync.value?.formatted ?? HijriDateHelper.formatHijri(now);
@@ -247,123 +257,110 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: _onRefresh,
-        color: const Color(0xFF2A531D),
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: ClampingScrollPhysics(),
-          ),
-          padding: const EdgeInsets.only(bottom: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Top Banner Section with Overlapping Grid Cards
-              SizedBox(
-                width: double.infinity,
-                height: screenWidth + 70,
-                child: Stack(
-                  children: [
-                    // Square background image starting from top
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: screenWidth,
-                      child: Image.asset(
-                        'assets/home_withoutbg.png',
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                        cacheWidth: 1080,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: const Color(0xFFF3FAF2),
-                          child: const Icon(
-                            Icons.image_not_supported_rounded,
-                            size: 48,
-                            color: Colors.grey,
+      body: Stack(
+        children: [
+          RefreshIndicator(
+            onRefresh: _onRefresh,
+            color: const Color(0xFF2A531D),
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: ClampingScrollPhysics(),
+              ),
+              padding: EdgeInsets.only(
+                bottom: forbiddenSajdaInfo != null ? 80 : 32,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Top Banner Section with Overlapping Grid Cards
+                  SizedBox(
+                    width: double.infinity,
+                    height: screenWidth + 70,
+                    child: Stack(
+                      children: [
+                        // Square background image starting from top
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: screenWidth,
+                          child: Image.asset(
+                            'assets/home_withoutbg.png',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            cacheWidth: 1080,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: const Color(0xFFF3FAF2),
+                                  child: const Icon(
+                                    Icons.image_not_supported_rounded,
+                                    size: 48,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                           ),
                         ),
-                      ),
-                    ),
 
-                    // Left-aligned Overlay Content (Time, Namaz Name + Icon, Start & End Times)
-                    Positioned(
-                      top: topPadding,
-                      left: 20,
-                      right: 20,
-                      child: AppShowcase(
-                        globalKey: ShowcaseService.keyNamazStartEnd,
-                        title: 'Namaz Start & End Times',
-                        description:
-                            'View current prayer times along with exact start and end times dynamically updated for your location.',
-                        stepIndex: 1,
-                        totalSteps: 15,
+                        // Left-aligned Overlay Content (Time, Namaz Name + Icon, Start & End Times)
+                        Positioned(
+                          top: topPadding,
+                          left: 20,
+                          right: 20,
+                          child: AppShowcase(
+                            globalKey: ShowcaseService.keyNamazStartEnd,
+                            title: 'Namaz Start & End Times',
+                            description:
+                                'View current prayer times along with exact start and end times dynamically updated for your location.',
+                            stepIndex: 1,
+                            totalSteps: 15,
 
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Large Time Digits with Tappable Interactive AM/PM & Seconds (Smooth slide & 10s auto-hide)
-                            GestureDetector(
-                              onTap: _toggleShowSeconds,
-                              behavior: HitTestBehavior.opaque,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    timeDigits,
-                                    style: GoogleFonts.oxanium(
-                                      fontSize: 60,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF2A531D),
-                                      letterSpacing: -2.5,
-                                      shadows: const [
-                                        Shadow(
-                                          color: Colors.white70,
-                                          blurRadius: 10,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  AnimatedSize(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOutCubic,
-                                    alignment: Alignment.centerLeft,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          timeAmPm,
-                                          style: GoogleFonts.oxanium(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w700,
-                                            color: const Color(0xFF4F2D12),
-                                            height: 1.1,
-                                            shadows: const [
-                                              Shadow(
-                                                color: Colors.white70,
-                                                blurRadius: 6,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        if (_showSeconds)
-                                          AnimatedOpacity(
-                                            duration: const Duration(
-                                              milliseconds: 250,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Large Time Digits with Tappable Interactive AM/PM & Seconds (Smooth slide & 10s auto-hide)
+                                GestureDetector(
+                                  onTap: _toggleShowSeconds,
+                                  behavior: HitTestBehavior.opaque,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        timeDigits,
+                                        style: GoogleFonts.oxanium(
+                                          fontSize: 60,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFF2A531D),
+                                          letterSpacing: -2.5,
+                                          shadows: const [
+                                            Shadow(
+                                              color: Colors.white70,
+                                              blurRadius: 10,
                                             ),
-                                            opacity: _showSeconds ? 1.0 : 0.0,
-                                            child: Text(
-                                              timeSeconds,
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      AnimatedSize(
+                                        duration: const Duration(
+                                          milliseconds: 300,
+                                        ),
+                                        curve: Curves.easeInOutCubic,
+                                        alignment: Alignment.centerLeft,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              timeAmPm,
                                               style: GoogleFonts.oxanium(
                                                 fontSize: 22,
                                                 fontWeight: FontWeight.w700,
-                                                color: const Color(0xFF2A531D),
+                                                color: const Color(0xFF4F2D12),
                                                 height: 1.1,
                                                 shadows: const [
                                                   Shadow(
@@ -373,425 +370,474 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                 ],
                                               ),
                                             ),
+                                            if (_showSeconds)
+                                              AnimatedOpacity(
+                                                duration: const Duration(
+                                                  milliseconds: 250,
+                                                ),
+                                                opacity: _showSeconds
+                                                    ? 1.0
+                                                    : 0.0,
+                                                child: Text(
+                                                  timeSeconds,
+                                                  style: GoogleFonts.oxanium(
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: const Color(
+                                                      0xFF2A531D,
+                                                    ),
+                                                    height: 1.1,
+                                                    shadows: const [
+                                                      Shadow(
+                                                        color: Colors.white70,
+                                                        blurRadius: 6,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Namaz Name with Icon on Left
+                                Row(
+                                  children: [
+                                    Icon(
+                                      namazInfo?.icon ??
+                                          CupertinoIcons.sun_max_fill,
+                                      size: 24,
+                                      color: const Color(0xFFD97724),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      currentNamazName,
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF2A531D),
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.white70,
+                                            blurRadius: 8,
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+
+                                // Start Time in Green
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF16A34A),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Start: $startTimeStr',
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF15803D),
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.white70,
+                                            blurRadius: 4,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+
+                                // End Time in Red
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFFDC2626),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'End: $endTimeStr',
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFFB91C1C),
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.white70,
+                                            blurRadius: 4,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // 2. Two Grid Boxes Overlapping Banner Image by 50px
+                        Positioned(
+                          top: screenWidth - 44,
+                          left: 16,
+                          right: 16,
+                          child: Row(
+                            children: [
+                              // Box 1: Remaining Time
+                              Expanded(
+                                child: AppShowcase(
+                                  globalKey: ShowcaseService.keyRemainingTime,
+                                  title: 'Prayer Countdown',
+                                  description:
+                                      'Stay mindful with a live countdown timer showing remaining time for the next upcoming prayer.',
+                                  stepIndex: 2,
+                                  totalSteps: 15,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF3FAF2),
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'REMAINING TIME',
+                                          style: TextStyle(
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.8,
+                                            color: Color(0xFF8C6D53),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          (locationAsync.isLoading ||
+                                                  locationAsync.isRefreshing ||
+                                                  nextPrayer == null)
+                                              ? '---'
+                                              : nextPrayer.name,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF2A531D),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          (locationAsync.isLoading ||
+                                                  locationAsync.isRefreshing ||
+                                                  nextPrayer == null)
+                                              ? '--:--:--'
+                                              : _formatDuration(
+                                                  nextPrayer.currentRemaining,
+                                                ),
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w900,
+                                            color: Color(0xFFD97724),
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 12),
 
-                            // Namaz Name with Icon on Left
-                            Row(
-                              children: [
-                                Icon(
-                                  namazInfo?.icon ??
-                                      CupertinoIcons.sun_max_fill,
-                                  size: 24,
-                                  color: const Color(0xFFD97724),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  currentNamazName,
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2A531D),
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.white70,
-                                        blurRadius: 8,
-                                      ),
-                                    ],
+                              // Box 2: Hijri Date & Location
+                              Expanded(
+                                child: AppShowcase(
+                                  globalKey: ShowcaseService.keyHijriLocation,
+                                  title: 'Hijri Date & Location',
+                                  description:
+                                      'Current Hijri Islamic date paired with auto-detected GPS location for accurate local prayer calculations.',
+                                  stepIndex: 3,
+                                  totalSteps: 15,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF3FAF2),
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'HIJRI & LOCATION',
+                                          style: TextStyle(
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.7,
+                                            color: Color(0xFF8C6D53),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          hijriStr,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF2A531D),
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          (locationAsync.isLoading ||
+                                                  locationAsync.isRefreshing ||
+                                                  locationAsync.value == null ||
+                                                  locationAsync
+                                                      .value!
+                                                      .city
+                                                      .isEmpty)
+                                              ? '---'
+                                              : (locationAsync
+                                                        .value!
+                                                        .country
+                                                        .isNotEmpty
+                                                    ? '${locationAsync.value!.city}, ${locationAsync.value!.country}'
+                                                    : locationAsync
+                                                          .value!
+                                                          .city),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF6B533E),
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-
-                            // Start Time in Green
-                            Row(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF16A34A),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Start: $startTimeStr',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF15803D),
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.white70,
-                                        blurRadius: 4,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-
-                            // End Time in Red
-                            Row(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFDC2626),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'End: $endTimeStr',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFFB91C1C),
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.white70,
-                                        blurRadius: 4,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
+                  ),
 
-                    // 2. Two Grid Boxes Overlapping Banner Image by 50px
-                    Positioned(
-                      top: screenWidth - 44,
-                      left: 16,
-                      right: 16,
-                      child: Row(
-                        children: [
-                          // Box 1: Remaining Time
-                          Expanded(
-                            child: AppShowcase(
-                              globalKey: ShowcaseService.keyRemainingTime,
-                              title: 'Prayer Countdown',
-                              description:
-                                  'Stay mindful with a live countdown timer showing remaining time for the next upcoming prayer.',
-                              stepIndex: 2,
-                              totalSteps: 15,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 14,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF3FAF2),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'REMAINING TIME',
-                                      style: TextStyle(
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.8,
-                                        color: Color(0xFF8C6D53),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      (locationAsync.isLoading ||
-                                              locationAsync.isRefreshing ||
-                                              nextPrayer == null)
-                                          ? '---'
-                                          : nextPrayer.name,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF2A531D),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      (locationAsync.isLoading ||
-                                              locationAsync.isRefreshing ||
-                                              nextPrayer == null)
-                                          ? '--:--:--'
-                                          : _formatDuration(
-                                              nextPrayer.currentRemaining,
-                                            ),
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w900,
-                                        color: Color(0xFFD97724),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                  // 3. Quick Action Container
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3FAF2),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: GridView.count(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 3,
+                      childAspectRatio: 1.4,
+                      mainAxisSpacing: 3,
+                      crossAxisSpacing: 0,
+                      children: [
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileNamaz,
+                          title: 'Namaz Timings',
+                          description:
+                              'View complete 5 daily prayer times, Fajr to Isha, with countdowns and notification settings.',
+                          stepIndex: 4,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Namaz',
+                            assetPath: 'assets/images/namaz.png',
+                            onTap: () => context.push('/prayer'),
+                            width: 45,
+                            height: 45,
                           ),
-                          const SizedBox(width: 12),
-
-                          // Box 2: Hijri Date & Location
-                          Expanded(
-                            child: AppShowcase(
-                              globalKey: ShowcaseService.keyHijriLocation,
-                              title: 'Hijri Date & Location',
-                              description:
-                                  'Current Hijri Islamic date paired with auto-detected GPS location for accurate local prayer calculations.',
-                              stepIndex: 3,
-                              totalSteps: 15,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 14,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF3FAF2),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'HIJRI & LOCATION',
-                                      style: TextStyle(
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.7,
-                                        color: Color(0xFF8C6D53),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      hijriStr,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF2A531D),
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      (locationAsync.isLoading ||
-                                              locationAsync.isRefreshing ||
-                                              locationAsync.value == null ||
-                                              locationAsync.value!.city.isEmpty)
-                                          ? '---'
-                                          : (locationAsync
-                                                    .value!
-                                                    .country
-                                                    .isNotEmpty
-                                                ? '${locationAsync.value!.city}, ${locationAsync.value!.country}'
-                                                : locationAsync.value!.city),
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF6B533E),
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileRoza,
+                          title: 'Roza & Fasting',
+                          description:
+                              'Track Suhoor & Iftar timings, Ramadan fasting progress, and voluntary fasts.',
+                          stepIndex: 5,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Roza',
+                            assetPath: 'assets/images/roza.png',
+                            onTap: () => context.push('/roza'),
+                            width: 50,
+                            height: 45,
                           ),
-                        ],
-                      ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileSadqa,
+                          title: 'Zakat & Sadaqah',
+                          description:
+                              'Calculate Zakat obligation accurately and track charitable Sadaqah contributions.',
+                          stepIndex: 6,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Zakat',
+                            assetPath: 'assets/images/sadqa.png',
+                            onTap: () => context.push('/sadqa'),
+                            width: 38,
+                            height: 45,
+                          ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileTasbeeh,
+                          title: 'Digital Tasbeeh',
+                          description:
+                              'Interactive digital counter with haptic feedback for daily Dhikr and Tasbeeh.',
+                          stepIndex: 7,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Tasbeeh',
+                            assetPath: 'assets/images/tasbeeh.png',
+                            onTap: () => context.push('/tasbeeh'),
+                            width: 45,
+                            height: 45,
+                          ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileAsmaUlHusna,
+                          title: '99 Names of Allah',
+                          description:
+                              'Explore 99 Beautiful Names of Allah (Asma-ul-Husna) with meanings and audio.',
+                          stepIndex: 8,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Asma-ul-Husna',
+                            assetPath: 'assets/images/asma-ul-husna.png',
+                            onTap: () => context.push('/asma-ul-husna'),
+                            width: 40,
+                            height: 44,
+                          ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileDua,
+                          title: 'Masnoon Duas',
+                          description:
+                              'Comprehensive collection of authentic Islamic supplications for all daily occasions.',
+                          stepIndex: 9,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: "Dua'een",
+                            assetPath: 'assets/images/dua.png',
+                            onTap: () => context.push('/dua'),
+                            width: 45,
+                            height: 45,
+                          ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileBooks,
+                          title: 'Islamic Books',
+                          description:
+                              'Read curated Islamic literature, Hadith collections, and spiritual guidance books.',
+                          stepIndex: 10,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Books',
+                            assetPath: 'assets/images/books.png',
+                            onTap: () => context.push('/books'),
+                            width: 48,
+                            height: 43,
+                          ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileSciIslam,
+                          title: 'Science in Islam',
+                          description:
+                              'Discover Quranic scientific revelations and historical Islamic scientific achievements.',
+                          stepIndex: 11,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Sci-Islam',
+                            assetPath: 'assets/images/scifi-islam.png',
+                            onTap: () => context.push('/sci-islam'),
+                            width: 45,
+                            height: 43,
+                          ),
+                        ),
+                        AppShowcase(
+                          globalKey: ShowcaseService.keyTileReminder,
+                          title: 'Quiet Hours',
+                          description:
+                              'Set automatic Quiet Hours to silence phone interruptions during prayers and focus time.',
+                          stepIndex: 12,
+                          totalSteps: 15,
+                          child: _FeatureTile(
+                            title: 'Quiet Hours',
+                            assetPath: 'assets/images/quiet_hours.png',
+                            onTap: () async {
+                              final hasPerms =
+                                  await QuietHoursPermissionService.hasRequiredPermissions();
+                              if (!hasPerms && context.mounted) {
+                                context.push('/permissions?from=quiet_hours');
+                              } else if (context.mounted) {
+                                context.push('/quiet-hours');
+                              }
+                            },
+                            width: 42,
+                            height: 43,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // 4. Daily Ayah Card
+                  const DailyAyahCard(),
+                ],
               ),
-
-              // 3. Quick Action Container
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 4,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3FAF2),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: GridView.count(
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 3,
-                  childAspectRatio: 1.4,
-                  mainAxisSpacing: 3,
-                  crossAxisSpacing: 0,
-                  children: [
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileNamaz,
-                      title: 'Namaz Timings',
-                      description:
-                          'View complete 5 daily prayer times, Fajr to Isha, with countdowns and notification settings.',
-                      stepIndex: 4,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Namaz',
-                        assetPath: 'assets/images/namaz.png',
-                        onTap: () => context.push('/prayer'),
-                        width: 45,
-                        height: 45,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileRoza,
-                      title: 'Roza & Fasting',
-                      description:
-                          'Track Suhoor & Iftar timings, Ramadan fasting progress, and voluntary fasts.',
-                      stepIndex: 5,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Roza',
-                        assetPath: 'assets/images/roza.png',
-                        onTap: () => context.push('/roza'),
-                        width: 50,
-                        height: 45,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileSadqa,
-                      title: 'Zakat & Sadaqah',
-                      description:
-                          'Calculate Zakat obligation accurately and track charitable Sadaqah contributions.',
-                      stepIndex: 6,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Zakat',
-                        assetPath: 'assets/images/sadqa.png',
-                        onTap: () => context.push('/sadqa'),
-                        width: 38,
-                        height: 45,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileTasbeeh,
-                      title: 'Digital Tasbeeh',
-                      description:
-                          'Interactive digital counter with haptic feedback for daily Dhikr and Tasbeeh.',
-                      stepIndex: 7,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Tasbeeh',
-                        assetPath: 'assets/images/tasbeeh.png',
-                        onTap: () => context.push('/tasbeeh'),
-                        width: 45,
-                        height: 45,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileAsmaUlHusna,
-                      title: '99 Names of Allah',
-                      description:
-                          'Explore 99 Beautiful Names of Allah (Asma-ul-Husna) with meanings and audio.',
-                      stepIndex: 8,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Asma-ul-Husna',
-                        assetPath: 'assets/images/asma-ul-husna.png',
-                        onTap: () => context.push('/asma-ul-husna'),
-                        width: 40,
-                        height: 44,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileDua,
-                      title: 'Masnoon Duas',
-                      description:
-                          'Comprehensive collection of authentic Islamic supplications for all daily occasions.',
-                      stepIndex: 9,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: "Dua'een",
-                        assetPath: 'assets/images/dua.png',
-                        onTap: () => context.push('/dua'),
-                        width: 45,
-                        height: 45,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileBooks,
-                      title: 'Islamic Books',
-                      description:
-                          'Read curated Islamic literature, Hadith collections, and spiritual guidance books.',
-                      stepIndex: 10,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Books',
-                        assetPath: 'assets/images/books.png',
-                        onTap: () => context.push('/books'),
-                        width: 48,
-                        height: 43,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileSciIslam,
-                      title: 'Science in Islam',
-                      description:
-                          'Discover Quranic scientific revelations and historical Islamic scientific achievements.',
-                      stepIndex: 11,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Sci-Islam',
-                        assetPath: 'assets/images/scifi-islam.png',
-                        onTap: () => context.push('/sci-islam'),
-                        width: 45,
-                        height: 43,
-                      ),
-                    ),
-                    AppShowcase(
-                      globalKey: ShowcaseService.keyTileReminder,
-                      title: 'Quiet Hours',
-                      description:
-                          'Set automatic Quiet Hours to silence phone interruptions during prayers and focus time.',
-                      stepIndex: 12,
-                      totalSteps: 15,
-                      child: _FeatureTile(
-                        title: 'Quiet Hours',
-                        assetPath: 'assets/images/quiet_hours.png',
-                        onTap: () async {
-                          final hasPerms =
-                              await QuietHoursPermissionService.hasRequiredPermissions();
-                          if (!hasPerms && context.mounted) {
-                            context.push('/permissions?from=quiet_hours');
-                          } else if (context.mounted) {
-                            context.push('/quiet-hours');
-                          }
-                        },
-                        width: 42,
-                        height: 43,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // 4. Daily Ayah Card
-              const DailyAyahCard(),
-            ],
+            ),
           ),
-        ),
+          if (forbiddenSajdaInfo != null)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ForbiddenSajdaBottomToast(
+                info: forbiddenSajdaInfo,
+                onTap: () {
+                  ForbiddenSajdaDetailModal.show(
+                    context: context,
+                    info: forbiddenSajdaInfo,
+                  );
+                },
+              ),
+            ),
+        ],
       ),
     );
   }

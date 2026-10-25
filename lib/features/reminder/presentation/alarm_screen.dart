@@ -200,13 +200,17 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         !isQuietActive && (customReminder?.soundEnabled ?? true);
     final vibrationEnabled =
         !isQuietActive && (customReminder?.vibrationEnabled ?? true);
+    final isFullRingtone =
+        customReminder?.duration == AlarmDuration.fullRingtone;
     final durationSeconds = customReminder?.duration.inSeconds ?? 30;
 
     // Auto-dismiss timer based on user specified reminder duration
     _autoDismissTimer?.cancel();
-    _autoDismissTimer = Timer(Duration(seconds: durationSeconds), () {
-      if (mounted && !_isDismissed) _dismissAlarm();
-    });
+    if (!isFullRingtone && durationSeconds > 0) {
+      _autoDismissTimer = Timer(Duration(seconds: durationSeconds), () {
+        if (mounted && !_isDismissed) _dismissAlarm();
+      });
+    }
 
     if (soundEnabled && !_isDismissed) {
       final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
@@ -216,18 +220,51 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
           title: widget.title ?? widget.prayerName ?? effectiveSoundType,
           album: 'Adhkar Alarm',
         );
-        await _audioPlayer.setAudioSource(
+        final loadedDuration = await _audioPlayer.setAudioSource(
           AudioSource.asset(assetPath, tag: mediaItem),
         );
         if (_isDismissed) {
           await _audioPlayer.stop();
           return;
         }
-        await _audioPlayer.setLoopMode(LoopMode.one);
+
+        if (isFullRingtone) {
+          // Play full audio track once completely through to completion
+          await _audioPlayer.setLoopMode(LoopMode.off);
+          _audioPlayer.playerStateStream.listen((state) {
+            if (state.processingState == ProcessingState.completed &&
+                mounted &&
+                !_isDismissed) {
+              _dismissAlarm();
+            }
+          });
+          // Safety timeout matching loaded track duration (+ 2 seconds) or fallback to 5 minutes
+          final safetySeconds =
+              (loadedDuration != null && loadedDuration.inSeconds > 0)
+                  ? loadedDuration.inSeconds + 2
+                  : 300;
+          _autoDismissTimer?.cancel();
+          _autoDismissTimer = Timer(Duration(seconds: safetySeconds), () {
+            if (mounted && !_isDismissed) _dismissAlarm();
+          });
+        } else {
+          await _audioPlayer.setLoopMode(LoopMode.one);
+        }
+
         await _audioPlayer.play();
       } catch (e) {
         debugPrint('[AlarmScreen] Audio playback fallback: $e');
+        if (isFullRingtone) {
+          _autoDismissTimer = Timer(const Duration(seconds: 180), () {
+            if (mounted && !_isDismissed) _dismissAlarm();
+          });
+        }
       }
+    } else if (isFullRingtone && vibrationEnabled && !_isDismissed) {
+      // If sound is disabled or muted, vibrate for 60 seconds as safety
+      _autoDismissTimer = Timer(const Duration(seconds: 60), () {
+        if (mounted && !_isDismissed) _dismissAlarm();
+      });
     }
 
     if (vibrationEnabled && !_isDismissed) {

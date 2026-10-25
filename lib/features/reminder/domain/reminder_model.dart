@@ -34,6 +34,7 @@ enum AlarmDuration {
   minute1,
   minutes2,
   minutes5,
+  fullRingtone,
 }
 
 extension AlarmDurationExtension on AlarmDuration {
@@ -53,6 +54,8 @@ extension AlarmDurationExtension on AlarmDuration {
         return 120;
       case AlarmDuration.minutes5:
         return 300;
+      case AlarmDuration.fullRingtone:
+        return 0; // Handled dynamically by full audio track duration
     }
   }
 
@@ -72,8 +75,12 @@ extension AlarmDurationExtension on AlarmDuration {
         return '2 Minutes';
       case AlarmDuration.minutes5:
         return '5 Minutes';
+      case AlarmDuration.fullRingtone:
+        return 'Full Ringtone';
     }
   }
+
+  bool get isFullRingtone => this == AlarmDuration.fullRingtone;
 }
 
 class CustomReminder {

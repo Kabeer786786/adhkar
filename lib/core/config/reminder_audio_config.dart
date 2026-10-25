@@ -38,6 +38,13 @@ class ReminderAudioConfig {
     'Gentle Chime': 'assets/audios/glassy_bell.mp3',
   };
 
+  /// Checks if a given sound option is an Azan/Azaan audio.
+  static bool isAzan(String? soundType) {
+    if (soundType == null || soundType.trim().isEmpty) return false;
+    final lower = soundType.toLowerCase();
+    return lower.contains('azaan') || lower.contains('azan') || lower.contains('adhan');
+  }
+
   /// Normalizes any given sound name / alias into one of the canonical [soundOptions].
   static String canonicalSoundName(String? soundType) {
     if (soundType == null || soundType.trim().isEmpty) {

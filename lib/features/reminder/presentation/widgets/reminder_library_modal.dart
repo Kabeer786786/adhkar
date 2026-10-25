@@ -335,7 +335,7 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                                       minute: time.minute,
                                       frequency: ReminderFrequency.daily,
                                       customDays: const [1, 2, 3, 4, 5, 6, 7],
-                                      duration: AlarmDuration.seconds30,
+                                      duration: AlarmDuration.fullRingtone,
                                       soundEnabled: true,
                                       soundType: 'Makkah Azaan',
                                       vibrationEnabled: true,
