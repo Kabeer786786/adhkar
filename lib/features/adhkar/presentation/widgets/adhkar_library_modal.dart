@@ -966,7 +966,36 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                 },
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
+
+            // Folder info notice
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDF4),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFBBF7D0)),
+              ),
+              child: const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline_rounded, color: Color(0xFF16A34A), size: 20),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'This is only to create an Adhkar folder for you. Once it is created, you can add Dhikrs, Duas, Quran Surahs, or Tasbeeh inside it.',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Color(0xFF166534),
+                        height: 1.4,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
 
             // Submit Button
             SizedBox(

@@ -22,6 +22,17 @@ class StorageService {
     _adhkarBox = await Hive.openBox(adhkarBoxName);
     _hijriBox = await Hive.openBox(hijriCacheBoxName);
   }
+
+  /// Initializer for unit testing with a local directory path
+  Future<void> initFromPath(String path) async {
+    Hive.init(path);
+    _settingsBox = await Hive.openBox(settingsBoxName);
+    _tasbeehBox = await Hive.openBox(tasbeehBoxName);
+    _bookmarksBox = await Hive.openBox(bookmarksBoxName);
+    _adhkarBox = await Hive.openBox(adhkarBoxName);
+    _hijriBox = await Hive.openBox(hijriCacheBoxName);
+  }
+
   // --- Generic Persistence Helpers ---
   dynamic getGenericData(String key) {
     return _adhkarBox.get(key);
@@ -653,4 +664,42 @@ class StorageService {
   Future<void> setScreenOffAction(String action) async {
     await _settingsBox.put('alarm_screen_off_action', action);
   }
+
+  // --- Search History (Recent 25 searches) ---
+  static const String _searchHistoryKey = 'recent_search_history_v1';
+  static const int maxSearchHistory = 25;
+
+  List<String> getSearchHistory() {
+    final raw = _settingsBox.get(_searchHistoryKey);
+    if (raw is List) {
+      return List<String>.from(raw.map((e) => e.toString()));
+    }
+    return [];
+  }
+
+  Future<void> addSearchHistory(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return;
+
+    final current = getSearchHistory();
+    current.removeWhere((item) => item.toLowerCase() == trimmed.toLowerCase());
+    current.insert(0, trimmed);
+
+    if (current.length > maxSearchHistory) {
+      current.removeRange(maxSearchHistory, current.length);
+    }
+    await _settingsBox.put(_searchHistoryKey, current);
+  }
+
+  Future<void> removeSearchHistoryItem(String query) async {
+    final trimmed = query.trim();
+    final current = getSearchHistory();
+    current.removeWhere((item) => item.toLowerCase() == trimmed.toLowerCase());
+    await _settingsBox.put(_searchHistoryKey, current);
+  }
+
+  Future<void> clearSearchHistory() async {
+    await _settingsBox.put(_searchHistoryKey, <String>[]);
+  }
 }
+

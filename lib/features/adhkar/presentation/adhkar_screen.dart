@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/models/adhkar_category.dart';
@@ -19,21 +20,50 @@ class AdhkarScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<AdhkarScreen> createState() => _AdhkarScreenState(); 
-}
+} 
 
-class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
+class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
+    with WidgetsBindingObserver {
   List<AdhkarCategory> _categories = [];
   List<DhikrItem> _allAdhkar = [];
+  Map<String, int> _dailyCounts = {};
+  late String _todayDateKey;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _todayDateKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkDateAndRefresh();
+    }
+  }
+
+  void _checkDateAndRefresh() {
+    final nowKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    if (nowKey != _todayDateKey) {
+      setState(() {
+        _todayDateKey = nowKey;
+        _loadData();
+      });
+    }
   }
 
   void _loadData() {
     final storage = ref.read(storageServiceProvider);
     final repo = AdhkarRepository();
+    _todayDateKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     // 1. Load Saved Categories or set defaults
     final savedCatMaps = storage.getSavedAdhkarCategories();
@@ -52,6 +82,9 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
       _allAdhkar = repo.getAllDefaultAdhkar();
       _persistAdhkar();
     }
+
+    // 3. Load daily counts for today
+    _dailyCounts = storage.getDailyAdhkarCounts(_todayDateKey);
   }
 
   void _persistCategories() {
@@ -477,7 +510,36 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 26),
+                    const SizedBox(height: 18),
+
+                    // Folder info notice
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF0FDF4),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFBBF7D0)),
+                      ),
+                      child: const Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline_rounded, color: Color(0xFF16A34A), size: 20),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'This is only to create an Adhkar folder for you. Once it is created, you can add Dhikrs, Duas, Quran Surahs, or Tasbeeh inside it.',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: Color(0xFF166534),
+                                height: 1.4,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
                     // Submit Button
                     SizedBox(
@@ -531,44 +593,171 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: isDark ? const Color(0xFF121B15) : const Color(0xFFF9FAFB),
       appBar: const AppHeaderBar(title: 'ADHKAR'),
       body: _categories.isEmpty
           ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.category_rounded,
-                    size: 64,
-                    color: Color(0xFF8C6D53),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'No Adhkar Found',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2A531D),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 126,
+                      height: 126,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isDark
+                            ? const Color(0xFF2A531D).withValues(alpha: 0.12)
+                            : const Color(0xFFE8F4E5).withValues(alpha: 0.6),
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDark
+                                ? const Color(0xFF2A531D).withValues(alpha: 0.25)
+                                : const Color(0xFFD4EBD0).withValues(alpha: 0.8),
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 74,
+                              height: 74,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF2A531D), Color(0xFF14532D)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF14532D).withValues(alpha: 0.35),
+                                    blurRadius: 18,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.auto_stories_rounded,
+                                size: 36,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Create your first section to organize Duas & Adhkar',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => _openAdhkarLibraryModal(),
-                    icon: const Icon(Icons.add_rounded),
-                    label: const Text('Add Adhkar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2A531D),
-                      foregroundColor: Colors.white,
+                    const SizedBox(height: 24),
+                    Text(
+                      'No Adhkar Folders Yet',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : const Color(0xFF2A531D),
+                        letterSpacing: -0.2,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Start your daily remembrance journey. Explore our curated collections of morning, evening, and daily prayers.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        height: 1.45,
+                        color: isDark ? Colors.white70 : const Color(0xFF6B7280),
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF14532D).withValues(alpha: 0.3),
+                            blurRadius: 16,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _openAdhkarLibraryModal(),
+                        icon: const Icon(Icons.add_rounded, size: 22),
+                        label: const Text(
+                          'Add Adhkar Collection',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2A531D),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.04)
+                            : const Color(0xFFF1F5F0),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.auto_awesome_rounded,
+                                size: 14,
+                                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'POPULAR SUGGESTIONS',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.6,
+                                  color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              _buildQuickSuggestionChip('Morning Adhkar', isDark),
+                              _buildQuickSuggestionChip('Evening Adhkar', isDark),
+                              _buildQuickSuggestionChip('Daily Tasbeeh', isDark),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           : ListView.builder(
@@ -604,7 +793,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
                         _loadData();
                       }, 
                       child: Container(
-                        height: 145,
+                        height: 154,
                         clipBehavior: Clip.antiAlias,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
@@ -690,13 +879,12 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
                                         color: gradientPreset.textColor,
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 5),
                                   ],
 
                                   // Category Title (1 line)
                                   SizedBox(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.65,
+                                    width: MediaQuery.of(context).size.width * 0.65,
                                     child: Text(
                                       cat.title,
                                       maxLines: 1,
@@ -709,27 +897,30 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 3),
 
-                                  // Category Subtitle (max 2 lines)
+                                  // Category Subtitle (max 1 line for clean spacing)
                                   SizedBox(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.60,
+                                    width: MediaQuery.of(context).size.width * 0.60,
                                     child: Text(
                                       cat.subtitle.isNotEmpty
                                           ? cat.subtitle
                                           : 'Tap to view Duas & Adhkar inside this category',
-                                      maxLines: 2,
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 12,
-                                        height: 1.35,
+                                        height: 1.3,
                                         fontWeight: FontWeight.w500,
                                         color: gradientPreset.textColor
                                             .withValues(alpha: 0.85),
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(height: 8),
+
+                                  // Daily Progress Indicator for this folder
+                                  _buildCategoryProgressBadge(cat, gradientPreset),
                                 ],
                               ),
                             ),
@@ -742,20 +933,88 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
               },
             ),
 
-      // Beautiful Floating Add Button at Bottom Right
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'add_category_fab',
-        onPressed: () => _openAdhkarLibraryModal(),
-        backgroundColor: const Color(0xFF2A531D),
-        foregroundColor: Colors.white,
-        elevation: 4, 
-        icon: const Icon(Icons.add_rounded, size: 24),
-        label: const Text(
-          'Add Adhkar',
+      // Floating Add Button at Bottom Right ONLY when categories exist
+      floatingActionButton: _categories.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              heroTag: 'add_category_fab',
+              onPressed: () => _openAdhkarLibraryModal(),
+              backgroundColor: const Color(0xFF2A531D),
+              foregroundColor: Colors.white,
+              elevation: 4,
+              icon: const Icon(Icons.add_rounded, size: 24),
+              label: const Text(
+                'Add Adhkar',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildCategoryProgressBadge(AdhkarCategory cat, CategoryGradientPreset preset) {
+    final catItems = _allAdhkar.where((i) => i.category == cat.id).toList();
+    final totalCount = catItems.length;
+    final completedCount = catItems.where((i) => (_dailyCounts[i.id] ?? 0) >= i.countTarget).length;
+    final isAllDone = totalCount > 0 && completedCount == totalCount;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+      decoration: BoxDecoration(
+        color: isAllDone
+            ? const Color(0xFF14532D)
+            : preset.textColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isAllDone ? Icons.check_circle_rounded : Icons.timelapse_rounded,
+            size: 12.5,
+            color: isAllDone ? Colors.white : preset.textColor,
+          ),
+          const SizedBox(width: 4.5),
+          Text(
+            totalCount == 0
+                ? 'No Dhikrs'
+                : (isAllDone
+                    ? 'Done for today ($completedCount/$totalCount)'
+                    : '$completedCount / $totalCount done today'),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: isAllDone ? Colors.white : preset.textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickSuggestionChip(String label, bool isDark) {
+    return InkWell(
+      onTap: () => _openAdhkarLibraryModal(),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? const Color(0xFF2A531D) : const Color(0xFFD4EBD0),
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.3,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : const Color(0xFF2A531D),
           ),
         ),
       ),

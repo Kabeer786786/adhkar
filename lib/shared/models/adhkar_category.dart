@@ -153,14 +153,17 @@ class AdhkarCategory extends Equatable {
   }
 
   static const List<String> availableImages = [
-    'assets/images/dua.png',
-    'assets/images/tasbeeh.png',
-    'assets/images/books.png',
-    'assets/images/reminder.png',
-    'assets/images/memorize.png',
-    'assets/images/sadqa.png',
-    'assets/logo.png',
-    'assets/logo2.png',
+    'assets/images/adhkar/morning_adhkar.png',
+    'assets/images/adhkar/evening_adhkar.png',
+    'assets/images/adhkar/after_salah_adhkar.png',
+    'assets/images/adhkar/night_adhkar.png',
+    'assets/images/adhkar/daily_duaeen.png',
+    'assets/images/adhkar/duaeen_adhkar.png',
+    'assets/images/adhkar/quranic_adhkar.png',
+    'assets/images/adhkar/ramadhan_adhkar.png',
+    'assets/images/adhkar/travelling_adhkar.png',
+    'assets/images/adhkar/health_issues_adhkar.png',
+    'assets/images/adhkar/debt_free_adhkar.png',
   ];
 
   AdhkarCategory copyWith({
@@ -201,7 +204,7 @@ class AdhkarCategory extends Equatable {
       title: json['title'] as String,
       subtitle: (json['subtitle'] as String?) ?? '',
       titleAr: (json['titleAr'] as String?) ?? '',
-      imagePath: (json['imagePath'] as String?) ?? 'assets/images/dua.png',
+      imagePath: (json['imagePath'] as String?) ?? 'assets/images/adhkar/morning_adhkar.png',
       gradientIndex: (json['gradientIndex'] as num?)?.toInt() ?? 0,
       isDefault: (json['isDefault'] as bool?) ?? false,
     );
