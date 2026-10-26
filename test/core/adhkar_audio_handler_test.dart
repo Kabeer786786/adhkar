@@ -42,5 +42,48 @@ void main() {
       handler.mediaItem.add(testItem);
       expect(handler.mediaItem.value?.id, equals('test_ayah_1'));
     });
+
+    test('stop() clears mediaItem, sets idle state with empty controls, and prevents notification revival', () async {
+      final handler = AdhkarAudioHandler();
+      addTearDown(() => handler.disposePlayer());
+
+      final testItem = const MediaItem(
+        id: 'test_ayah_1',
+        album: 'Al-Fatihah',
+        title: 'Verse 1',
+        artist: 'Adhkar Quran',
+      );
+      handler.mediaItem.add(testItem);
+      expect(handler.mediaItem.value, isNotNull);
+
+      await handler.stop();
+
+      // mediaItem must be null
+      expect(handler.mediaItem.value, isNull);
+
+      // controls must be empty and state idle
+      final stoppedState = handler.playbackState.value;
+      expect(stoppedState.controls, isEmpty);
+      expect(stoppedState.processingState, equals(AudioProcessingState.idle));
+      expect(stoppedState.playing, isFalse);
+    });
+
+    test('onTaskRemoved() calls stop when not playing', () async {
+      final handler = AdhkarAudioHandler();
+      addTearDown(() => handler.disposePlayer());
+
+      final testItem = const MediaItem(
+        id: 'test_ayah_1',
+        album: 'Al-Fatihah',
+        title: 'Verse 1',
+      );
+      handler.mediaItem.add(testItem);
+
+      await handler.onTaskRemoved();
+
+      expect(handler.mediaItem.value, isNull);
+      expect(handler.playbackState.value.controls, isEmpty);
+      expect(handler.playbackState.value.processingState, equals(AudioProcessingState.idle));
+    });
   });
 }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../config/routes/app_router.dart';
+import '../../../main.dart';
 import '../../../shared/providers/user_profile_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -52,6 +53,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         userProfile.registrationCompleted ||
         hasSeenOnboarding ||
         hasSkipped;
+
+    final pendingAudio = consumePendingAudioRoute();
+    if (pendingAudio != null && pendingAudio.isNotEmpty) {
+      if (canAccessApp) {
+        context.go(pendingAudio);
+        return;
+      }
+    }
 
     if (canAccessApp) {
       context.go('/');

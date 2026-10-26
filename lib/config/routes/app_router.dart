@@ -39,10 +39,11 @@ import '../../widgets/main_shell.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _rootNavigatorKey = rootNavigatorKey;
 
 final appRouter = GoRouter(
-  navigatorKey: _rootNavigatorKey,
+  navigatorKey: rootNavigatorKey,
   initialLocation: '/splash',
   redirect: (context, state) async {
     final location = state.uri.toString();
@@ -251,7 +252,7 @@ final appRouter = GoRouter(
         final isFromBookmark =
             state.uri.queryParameters['fromBookmark'] == 'true';
         return SurahDetailScreen(
-          surahNumber: int.parse(numStr),
+          surahNumber: int.tryParse(numStr) ?? 1,
           juzNumber: juzStr != null ? int.tryParse(juzStr) : null,
           surahName: name,
           initialAyahNumber:

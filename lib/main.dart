@@ -59,6 +59,15 @@ void _handleAlarmPayloadNavigation(String payload, {String? title, String? sound
   }
 }
 
+String? _pendingAudioRoute;
+
+/// Consume and clear any pending audio route registered before the router was mounted.
+String? consumePendingAudioRoute() {
+  final route = _pendingAudioRoute;
+  _pendingAudioRoute = null;
+  return route;
+}
+
 int _lastAudioNotifClickTime = 0;
 
 void _handleAudioNotificationClicked(AdhkarAudioHandler handler) {
@@ -67,65 +76,84 @@ void _handleAudioNotificationClicked(AdhkarAudioHandler handler) {
   if (now - _lastAudioNotifClickTime < 1000) return;
   _lastAudioNotifClickTime = now;
 
-  final tag = handler.player.sequenceState?.currentSource?.tag;
-  final media = handler.mediaItem.value ?? (tag is MediaItem ? tag : null);
+  try {
+    final tag = handler.player.sequenceState?.currentSource?.tag;
+    final media = handler.mediaItem.value ?? (tag is MediaItem ? tag : null);
 
-  String? targetRoute = media?.extras?['route'] as String?;
+    String? targetRoute = media?.extras?['route'] as String?;
 
-  if (targetRoute == null || targetRoute.isEmpty) {
-    final mediaId = media?.id ?? '';
-    final type = media?.extras?['type'] as String? ?? '';
+    if (targetRoute == null || targetRoute.isEmpty) {
+      final mediaId = media?.id ?? '';
+      final type = media?.extras?['type'] as String? ?? '';
 
-    if (type == 'quran' || mediaId.startsWith('quran_')) {
-      final parts = mediaId.split('_');
-      final surahNum = parts.length > 1 ? parts[1] : '1';
-      targetRoute = '/quran/surah?num=$surahNum&name=Surah%20$surahNum';
-    } else if (type == 'asma' ||
-        mediaId.startsWith('asma') ||
-        (media?.album?.contains('Asma') ?? false)) {
-      targetRoute = '/asma-ul-husna';
-    } else if (type == 'dua' || mediaId.startsWith('dua_')) {
-      final duaId = mediaId.startsWith('dua_') ? mediaId.substring(4) : '';
-      targetRoute = duaId.isNotEmpty ? '/dua/detail?id=$duaId' : '/dua';
-    }
-  }
-
-  if (targetRoute == null || targetRoute.isEmpty) {
-    return;
-  }
-
-  final currentLoc =
-      appRouter.routerDelegate.currentConfiguration.uri.toString();
-
-  // If user is already on this exact target screen/surah/dua, do not re-push/re-draw
-  if (currentLoc == targetRoute) {
-    return;
-  }
-  if (targetRoute.contains('?')) {
-    final targetUri = Uri.parse(targetRoute);
-    final currentUri = Uri.parse(currentLoc);
-    if (targetUri.path == currentUri.path) {
-      if (targetUri.path == '/quran/surah') {
-        if (targetUri.queryParameters['num'] ==
-            currentUri.queryParameters['num']) {
-          return;
-        }
-      } else if (targetUri.path == '/dua/detail') {
-        if (targetUri.queryParameters['id'] ==
-            currentUri.queryParameters['id']) {
-          return;
-        }
-      } else {
-        return;
+      if (type == 'quran' || mediaId.startsWith('quran_')) {
+        final parts = mediaId.split('_');
+        final surahNum = (parts.length > 1 && int.tryParse(parts[1]) != null)
+            ? parts[1]
+            : '1';
+        targetRoute = '/quran/surah?num=$surahNum&name=Surah%20$surahNum';
+      } else if (type == 'asma' ||
+          mediaId.startsWith('asma') ||
+          (media?.album?.contains('Asma') ?? false)) {
+        targetRoute = '/asma-ul-husna';
+      } else if (type == 'dua' || mediaId.startsWith('dua_')) {
+        final duaId = mediaId.startsWith('dua_') ? mediaId.substring(4) : '';
+        targetRoute = duaId.isNotEmpty ? '/dua/detail?id=$duaId' : '/dua';
       }
     }
-  }
 
-  // If at root or splash, use go to cleanly transition, otherwise push
-  if (currentLoc == '/' || currentLoc.isEmpty || currentLoc == '/splash') {
-    appRouter.go(targetRoute);
-  } else {
-    appRouter.push(targetRoute);
+    if (targetRoute == null || targetRoute.isEmpty) {
+      return;
+    }
+
+    // If the navigator / router is not yet mounted (e.g. app cold-starting from notification click),
+    // save the pending route so SplashScreen can navigate directly to it once ready.
+    final navState = rootNavigatorKey.currentState;
+    if (navState == null || !navState.mounted) {
+      _pendingAudioRoute = targetRoute;
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final currentLoc =
+            appRouter.routerDelegate.currentConfiguration.uri.toString();
+
+        if (currentLoc == targetRoute) {
+          return;
+        }
+        if (targetRoute!.contains('?')) {
+          final targetUri = Uri.parse(targetRoute);
+          final currentUri = Uri.parse(currentLoc);
+          if (targetUri.path == currentUri.path) {
+            if (targetUri.path == '/quran/surah') {
+              if (targetUri.queryParameters['num'] ==
+                  currentUri.queryParameters['num']) {
+                return;
+              }
+            } else if (targetUri.path == '/dua/detail') {
+              if (targetUri.queryParameters['id'] ==
+                  currentUri.queryParameters['id']) {
+                return;
+              }
+            } else {
+              return;
+            }
+          }
+        }
+
+        // If at root or splash, use go to cleanly transition, otherwise push
+        if (currentLoc == '/' || currentLoc.isEmpty || currentLoc == '/splash') {
+          appRouter.go(targetRoute);
+        } else {
+          appRouter.push(targetRoute);
+        }
+      } catch (e) {
+        debugPrint('[main] PostFrameCallback navigation error: $e');
+      }
+    });
+  } catch (e) {
+    debugPrint('[main] Audio notification click handling error: $e');
   }
 }
 
@@ -142,7 +170,7 @@ void main() async {
           'Playback notifications for Quran recitation and Asma-ul-Husna',
       androidNotificationIcon: 'drawable/ic_notification',
       androidNotificationOngoing: false,
-      androidStopForegroundOnPause: false,
+      androidStopForegroundOnPause: true,
     ),
   );
 

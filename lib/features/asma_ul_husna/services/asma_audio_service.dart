@@ -230,10 +230,11 @@ class AsmaAudioController extends ChangeNotifier {
   }
 
   Future<void> stop() async {
-    await _audioHandler.stop();
     _currentIndex = -1;
     _isPlaying = false;
+    _playlistSource = null;
     notifyListeners();
+    await _audioHandler.stop();
   }
 
   @override

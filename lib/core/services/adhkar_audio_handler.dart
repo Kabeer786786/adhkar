@@ -16,6 +16,7 @@ import 'package:just_audio/just_audio.dart';
 /// 3. Notification small icon uses monochrome transparent drawable `ic_notification`.
 class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
   final AudioPlayer _player = AudioPlayer();
+  bool _isStopped = false;
 
   AudioPlayer get player => _player;
 
@@ -26,7 +27,12 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
   void _initAudioHandler() {
     // 1. Sync playback state whenever player state or playback event updates
     _player.playbackEventStream.listen(
-      (_) => _broadcastState(),
+      (_) {
+        if (_player.playing) {
+          _isStopped = false;
+        }
+        _broadcastState();
+      },
       onError: (Object e, StackTrace st) {
         debugPrint('[AdhkarAudioHandler] Playback event error: $e');
       },
@@ -34,6 +40,9 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
 
     _player.playerStateStream.listen(
       (state) {
+        if (state.playing) {
+          _isStopped = false;
+        }
         if (state.processingState == ProcessingState.completed) {
           stop();
         } else {
@@ -47,7 +56,7 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
 
     // 2. Sync active media item from player's sequence state
     _player.sequenceStateStream.listen((sequenceState) {
-      if (sequenceState == null) return;
+      if (_isStopped || sequenceState == null) return;
 
       final currentSource = sequenceState.currentSource;
       if (currentSource?.tag is MediaItem) {
@@ -75,6 +84,7 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
 
     // 3. Sync audio duration to MediaItem so Android notification displays seekable progress bar
     _player.durationStream.listen((duration) {
+      if (_isStopped) return;
       if (duration != null && duration > Duration.zero) {
         final current = mediaItem.value;
         if (current != null && current.duration != duration) {
@@ -107,6 +117,20 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
   /// Broadcast current playback state to MediaSession and notification.
   /// Controls strictly limited to Previous, Play/Pause, Next (NO stop button).
   void _broadcastState() {
+    if (_isStopped) {
+      playbackState.add(
+        PlaybackState(
+          controls: const [],
+          processingState: AudioProcessingState.idle,
+          playing: false,
+          updatePosition: Duration.zero,
+          bufferedPosition: Duration.zero,
+          speed: 1.0,
+        ),
+      );
+      return;
+    }
+
     final playing = _player.playing;
     final processingState = _player.processingState;
 
@@ -137,7 +161,10 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
   // --- AudioHandler Overrides ---
 
   @override
-  Future<void> play() => _player.play();
+  Future<void> play() {
+    _isStopped = false;
+    return _player.play();
+  }
 
   @override
   Future<void> pause() => _player.pause();
@@ -147,8 +174,12 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
-    await _player.stop();
+    _isStopped = true;
+    try {
+      await _player.stop();
+    } catch (_) {}
     mediaItem.add(null);
+    queue.add([]);
     playbackState.add(
       PlaybackState(
         controls: const [],
@@ -160,6 +191,15 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
       ),
     );
     await super.stop();
+  }
+
+  @override
+  Future<void> onTaskRemoved() async {
+    // If audio is NOT playing when the user closes/swipes away the app from recent apps,
+    // cleanly stop and tear down the foreground service & notification.
+    if (!_player.playing) {
+      await stop();
+    }
   }
 
   @override
@@ -197,6 +237,7 @@ class AdhkarAudioHandler extends BaseAudioHandler with SeekHandler {
     Duration? initialPosition,
     bool preload = true,
   }) async {
+    _isStopped = false;
     await _player.setAudioSource(
       source,
       initialIndex: initialIndex,
