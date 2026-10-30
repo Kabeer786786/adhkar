@@ -1,3 +1,4 @@
+import 'package:adhkar/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
@@ -59,6 +60,28 @@ class ForbiddenSajdaInfo {
 
   int get windowDurationMinutes => endTime.difference(startTime).inMinutes;
 
+  String get shortName {
+    switch (type) {
+      case ForbiddenSajdaType.sunrise:
+        return 'Tulu';
+      case ForbiddenSajdaType.zawal:
+        return 'Zawal';
+      case ForbiddenSajdaType.ghurub:
+        return 'Ghurub';
+    }
+  }
+
+  String get conciseSubtitle {
+    switch (type) {
+      case ForbiddenSajdaType.sunrise:
+        return 'During Sunrise ($windowDurationMinutes mins)';
+      case ForbiddenSajdaType.zawal:
+        return 'Midday Zenith ($windowDurationMinutes mins)';
+      case ForbiddenSajdaType.ghurub:
+        return 'During Sunset ($windowDurationMinutes mins)';
+    }
+  }
+
   String get formattedTimeRange {
     final startStr = DateFormat('hh:mm a').format(startTime);
     final endStr = DateFormat('hh:mm a').format(endTime);
@@ -74,7 +97,7 @@ class ForbiddenSajdaService {
   static ForbiddenSajdaInfo buildSunriseInfo(DateTime start, DateTime end) {
     return ForbiddenSajdaInfo(
       type: ForbiddenSajdaType.sunrise,
-      title: 'Sunrise Prohibited Window (Tulu)',  
+      title: 'Sunrise Prohibited Window (Tulu)',
       arabicTitle: 'طُلُوعُ الشَّمْسِ',
       pillText: 'Sajda Prohibited',
       shortReason: 'Prohibited for 20 minutes after sunrise',
@@ -280,11 +303,7 @@ class ForbiddenSajdaIcon extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           // Islamic Sujood Icon
-          Icon(
-            FlutterIslamicIcons.solidKowtow,
-            size: size, 
-            color: color,
-          ),
+          Icon(FlutterIslamicIcons.solidKowtow, size: size, color: color),
           // Precision strike-off line across the figure
           CustomPaint(
             size: Size(size, size),
@@ -365,7 +384,9 @@ class ForbiddenSajdaBottomToast extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               border: Border(
                 top: BorderSide(color: borderColor, width: 1.2),
                 left: BorderSide(color: borderColor, width: 1.2),
@@ -377,30 +398,27 @@ class ForbiddenSajdaBottomToast extends StatelessWidget {
             child: Row(
               children: [
                 // Struck-off Islamic Sajda Icon in pure white
-                const ForbiddenSajdaIcon(
-                  size: 28,
-                  color: Colors.white,
-                ),
+                const ForbiddenSajdaIcon(size: 28, color: Colors.white),
                 const SizedBox(width: 12),
 
-                // Concise Title & Duration Window
+                // Concise Name & Start/End Times
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        info.pillText,
+                        '${info.shortName} - ${info.conciseSubtitle}',
                         style: const TextStyle(
-                          fontSize: 13.5,
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: textColor,
                           letterSpacing: 0.2,
                         ),
                       ),
-                      const SizedBox(height: 1),
+                      const SizedBox(height: 2),
                       Text(
-                        '${info.windowDurationMinutes}m window • ${info.formattedTimeRange}',
+                        'Start: ${DateFormat('hh:mm a').format(info.startTime)}  •  End: ${DateFormat('hh:mm a').format(info.endTime)}',
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w500,
@@ -755,11 +773,13 @@ class ForbiddenTimeCard extends StatelessWidget {
         : (isDark ? info.darkBorderColor : info.lightBorderColor);
     final textColor = isDark ? info.darkTextColor : info.lightTextColor;
 
+    final startTimeStr = DateFormat('hh:mm a').format(info.startTime);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: InkWell(
           onTap: () {
             HapticFeedback.lightImpact();
@@ -769,21 +789,25 @@ class ForbiddenTimeCard extends StatelessWidget {
               ForbiddenSajdaDetailModal.show(context: context, info: info);
             }
           },
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.only(
+              left: 20,
+              right: 24,
+              top: 14,
+              bottom: 14,
+            ),
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: borderColor,
-                width: isCurrent ? 1.8 : 1.2,
-              ),
+              border: isCurrent
+                  ? Border.all(color: borderColor, width: 1.5)
+                  : null,
               boxShadow: isCurrent
                   ? [
                       BoxShadow(
-                        color: info.primaryColor.withValues(alpha: 0.15),
-                        blurRadius: 8,
+                        color: info.primaryColor.withValues(alpha: 0.1),
+                        blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ]
@@ -791,82 +815,48 @@ class ForbiddenTimeCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                ForbiddenSajdaIcon(
-                  size: 26,
-                  color: info.primaryColor,
-                ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 4),
+                // Icon
+                ForbiddenSajdaIcon(size: 26, color: info.primaryColor),
+                const SizedBox(width: 16),
+
+                // 2-Line Content: Line 1 = Name (Duration), Line 2 = Concise Subtitle
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              info.title,
-                              style: TextStyle(
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.w700,
-                                color: textColor,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (isCurrent) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: info.primaryColor,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Text(
-                                'ACTIVE NOW',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 2),
                       Text(
-                        '${info.shortReason} • ${info.formattedTimeRange}',
+                        info.shortName,
                         style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: textColor.withValues(alpha: 0.85),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      if (info.isAsrExceptionApplicable) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          info.hasPrayedAsr
-                              ? 'Asr already prayed today'
-                              : 'Exception: unperformed Asr Farz may still be offered',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w600,
-                            color: info.primaryColor,
-                          ),
+                      Text(
+                        info.conciseSubtitle,
+                        style: context.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: textColor.withValues(alpha: 0.75),
                         ),
-                      ],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.info_outline_rounded,
-                  size: 20,
-                  color: info.primaryColor,
+
+                // Right Side Start Time (same as other prayer timings)
+                Text(
+                  startTimeStr,
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
+                    fontSize: 18,
+                  ),
                 ),
               ],
             ),
@@ -925,10 +915,7 @@ class ForbiddenHomeBanner extends StatelessWidget {
           decoration: BoxDecoration(
             color: info.lightBgColor.withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: info.lightBorderColor,
-              width: 1.5,
-            ),
+            border: Border.all(color: info.lightBorderColor, width: 1.5),
             boxShadow: [
               BoxShadow(
                 color: info.primaryColor.withValues(alpha: 0.12),
@@ -944,10 +931,7 @@ class ForbiddenHomeBanner extends StatelessWidget {
               // Header Row: Icon + Name + Prohibited Tag
               Row(
                 children: [
-                  ForbiddenSajdaIcon(
-                    size: 22,
-                    color: info.primaryColor,
-                  ),
+                  ForbiddenSajdaIcon(size: 22, color: info.primaryColor),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -962,7 +946,10 @@ class ForbiddenHomeBanner extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: info.primaryColor,
                       borderRadius: BorderRadius.circular(6),
@@ -1070,4 +1057,3 @@ class ForbiddenHomeBanner extends StatelessWidget {
     );
   }
 }
-

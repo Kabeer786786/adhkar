@@ -286,12 +286,13 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
     final double bottomInset = MediaQuery.of(context).padding.bottom;
 
+    final overlayStyle = SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+    );
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      ),
+      value: overlayStyle,
       child: Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
@@ -300,6 +301,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
           scrolledUnderElevation: 0,
           centerTitle: false,
           titleSpacing: 0,
+          systemOverlayStyle: overlayStyle,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_rounded, size: 24),
             color: textColor,
@@ -1134,9 +1136,12 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
-          border: isSelected
-              ? Border.all(color: borderColor, width: 2.5)
-              : null,
+          border: Border.all(
+            color: isSelected
+                ? borderColor
+                : const Color(0xFF64748B).withValues(alpha: 0.35),
+            width: isSelected ? 2.5 : 1.5,
+          ),
         ),
         child: isSelected
             ? Center(

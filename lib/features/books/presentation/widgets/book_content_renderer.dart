@@ -541,56 +541,67 @@ class BookContentRenderer extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () => _openFullScreenImage(context, imgUrl, isLocal, block.caption),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                children: [ 
-                  AspectRatio(
-                    aspectRatio: block.aspectRatio ?? 16 / 9,
-                    child: isLocal
-                        ? (imgUrl.startsWith('assets/')
-                            ? Image.asset(imgUrl, fit: BoxFit.cover, cacheWidth: 1080) 
-                            : Image.file(File(imgUrl), fit: BoxFit.cover))
-                        : CachedNetworkImage(
-                            imageUrl: imgUrl,
-                            fit: BoxFit.cover,
-                            memCacheWidth: 1080,
-                            placeholder: (context, url) => Container(
-                              color: isDark ? Colors.white10 : Colors.grey.shade200,
-                              child: const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.black.withValues(alpha: 0.08),
+                  width: 1,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Stack(
+                  children: [ 
+                    AspectRatio(
+                      aspectRatio: block.aspectRatio ?? 16 / 9,
+                      child: isLocal
+                          ? (imgUrl.startsWith('assets/')
+                              ? Image.asset(imgUrl, fit: BoxFit.cover, cacheWidth: 1080) 
+                              : Image.file(File(imgUrl), fit: BoxFit.cover))
+                          : CachedNetworkImage(
+                              imageUrl: imgUrl,
+                              fit: BoxFit.cover,
+                              memCacheWidth: 1080,
+                              placeholder: (context, url) => Container(
+                                color: isDark ? Colors.white10 : Colors.grey.shade200,
+                                child: const Center(
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: isDark ? Colors.white10 : Colors.grey.shade200,
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.broken_image_rounded, size: 36, color: Colors.grey),
+                                    SizedBox(height: 6),
+                                    Text('Image unavailable', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                  ],
+                                ),
                               ),
                             ),
-                            errorWidget: (context, url, error) => Container(
-                              color: isDark ? Colors.white10 : Colors.grey.shade200,
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.broken_image_rounded, size: 36, color: Colors.grey),
-                                  SizedBox(height: 6),
-                                  Text('Image unavailable', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                ],
-                              ),
-                            ),
-                          ),
-                  ),
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.65),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.fullscreen_rounded,
-                        color: Colors.white,
-                        size: 18,
+                    ),
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.65),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.fullscreen_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

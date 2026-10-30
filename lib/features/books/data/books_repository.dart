@@ -50,10 +50,10 @@ class BooksRepository {
               'Tawheed al-Uloohiyyah: Directing all acts of worship (prayer, dua, sacrifice, hope, and reliance) exclusively to Allah.',
               'Tawheed al-Asma\' was-Sifat: Believing in all of Allah\'s Divine Names and Attributes without distortion, negation, or human comparison.',
             ], isOrdered: true),
-            BookContentBlock.box(
-              text: '[Screenshot Placeholder: Home Screen & Daily Adhkar Highlights in Adhkar App]',
-              title: '📸 App Feature Screenshot',
-              boxType: BookBoxType.highlight,
+            BookContentBlock.image(
+              url: 'assets/images/screenshots/home.jpg',
+              caption: 'Adhkar App Dashboard: Daily Adhkar, Quranic Reminders & Prayer Status',
+              aspectRatio: 9 / 16,
             ),
           ],
         ),
@@ -101,10 +101,10 @@ class BooksRepository {
               'Sawm (Fasting): Fasting from dawn to sunset throughout the sacred month of Ramadan.',
               'Hajj (Pilgrimage): Journey to the Kaaba in Makkah once in a lifetime for those with the physical and financial means.',
             ], isOrdered: true),
-            BookContentBlock.box(
-              text: '[Screenshot Placeholder: Main Navigation & Islamic Companion Features in Adhkar App]',
-              title: '📸 App Feature Screenshot',
-              boxType: BookBoxType.highlight,
+            BookContentBlock.image(
+              url: 'assets/images/screenshots/adhkar1.jpg',
+              caption: 'Daily Adhkar Categories & Authentic Islamic Supplications',
+              aspectRatio: 9 / 16,
             ),
           ],
         ),
@@ -203,10 +203,10 @@ class BooksRepository {
             BookContentBlock.paragraph(
               'The Adhkar app is designed with high-precision calculation methods, GPS-based location detection, and real-time prayer countdowns to ensure you never miss a prayer.',
             ),
-            BookContentBlock.box(
-              text: '[Screenshot Placeholder: Namaz Prayer Times Screen & Next Prayer Countdown in Adhkar App]',
-              title: '📸 Namaz Screen Screenshot',
-              boxType: BookBoxType.highlight,
+            BookContentBlock.image(
+              url: 'assets/images/screenshots/namaz1.jpg',
+              caption: 'Namaz Prayer Times Schedule & Real-Time Countdown',
+              aspectRatio: 9 / 16,
             ),
             BookContentBlock.heading('Key Features in the Adhkar App Namaz Module:', level: 2),
             BookContentBlock.bulletPoints([
@@ -215,10 +215,10 @@ class BooksRepository {
               'Precision Qibla Compass: Sensor-assisted 3D compass pointing you directly toward the Kaaba in Makkah with magnetic declination correction.',
               'Daily Prayer Tracker: Check off completed prayers and track your weekly consistency and prayer habits.',
             ]),
-            BookContentBlock.box(
-              text: '[Screenshot Placeholder: 3D Qibla Compass Finder in Adhkar App]',
-              title: '📸 Qibla Finder Screenshot',
-              boxType: BookBoxType.highlight,
+            BookContentBlock.image(
+              url: 'assets/images/screenshots/qibla.jpg',
+              caption: 'Interactive 3D Sensor-Assisted Qibla Direction Finder',
+              aspectRatio: 9 / 16,
             ),
           ],
         ),
@@ -290,10 +290,10 @@ class BooksRepository {
             BookContentBlock.paragraph(
               'The Adhkar app provides a dedicated Fasting & Roza management hub designed to support both obligatory Ramadan fasts and voluntary Sunnah fasts (Mondays, Thursdays, and White Days).',
             ),
-            BookContentBlock.box(
-              text: '[Screenshot Placeholder: Roza Fasting Hub, Sehri/Iftar Times & Progress Wheel in Adhkar App]',
-              title: '📸 Fasting Hub Screenshot',
-              boxType: BookBoxType.highlight,
+            BookContentBlock.image(
+              url: 'assets/images/screenshots/namaz2.jpg',
+              caption: 'Fasting Times, Prayer Calculations & Sehri/Iftar Schedule',
+              aspectRatio: 9 / 16,
             ),
             BookContentBlock.heading('Key Features in the Adhkar App Fasting Module:', level: 2),
             BookContentBlock.bulletPoints([
@@ -372,10 +372,10 @@ class BooksRepository {
             BookContentBlock.paragraph(
               'The Adhkar app includes an intuitive, comprehensive Zakat Calculator tailored to modern financial assets, currencies, and real-time live Nisab calculations.',
             ),
-            BookContentBlock.box(
-              text: '[Screenshot Placeholder: Zakat Calculator Screen with Asset Fields & Summary in Adhkar App]',
-              title: '📸 Zakat Calculator Screenshot',
-              boxType: BookBoxType.highlight,
+            BookContentBlock.image(
+              url: 'assets/images/screenshots/scifi-islam.jpg',
+              caption: 'Academic & Financial Tools with Intuitive Breakdown',
+              aspectRatio: 9 / 16,
             ),
             BookContentBlock.heading('Key Features in the Adhkar App Zakat Module:', level: 2),
             BookContentBlock.bulletPoints([
@@ -384,10 +384,10 @@ class BooksRepository {
               'Charity & Sadaqah Manager: Record given contributions, track recurring charity goals, and keep receipts organized.',
               'Annual Hawl Reminder: Set a calendar date notification when your lunar year of holding wealth completes.',
             ]),
-            BookContentBlock.box(
-              text: '[Screenshot Placeholder: Charity History & Distribution Breakdown in Adhkar App]',
-              title: '📸 Charity Tracker Screenshot',
-              boxType: BookBoxType.highlight,
+            BookContentBlock.image(
+              url: 'assets/images/screenshots/scifi-islam2.jpg',
+              caption: 'Detailed Insights & Comprehensive Record History',
+              aspectRatio: 9 / 16,
             ),
           ],
         ),

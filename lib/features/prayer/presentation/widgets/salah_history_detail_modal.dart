@@ -293,6 +293,15 @@ class SalahHistoryDetailModal extends StatelessWidget {
 
     return [
       _PrayerGroup(
+        title: 'Tahajjud',
+        subtitle: 'Late Night',
+        icon: CupertinoIcons.moon_stars_fill,
+        iconColor: const Color(0xFF6B21A8),
+        items: getSubItems('Tahajjud', const [
+          _SubPrayerDef('tahajjud_nafeel', 'Nafeel', 4),
+        ]),
+      ),
+      _PrayerGroup(
         title: 'Fajr',
         subtitle: 'Before Sunrise',
         icon: CupertinoIcons.cloud_sun_fill,
@@ -314,7 +323,7 @@ class SalahHistoryDetailModal extends StatelessWidget {
       ),
       _PrayerGroup(
         title: isFriday ? 'Jumma' : 'Dhuhr',
-        subtitle: isFriday ? 'Friday Congregational Prayer (14 Rak\'ats)' : 'Noon',
+        subtitle: isFriday ? 'Friday Prayer' : 'Noon',
         icon: isFriday ? FlutterIslamicIcons.solidKaaba : CupertinoIcons.sun_max_fill,
         iconColor: isFriday ? const Color(0xFF047857) : const Color(0xFFD97706),
         items: isFriday
@@ -365,15 +374,6 @@ class SalahHistoryDetailModal extends StatelessWidget {
           _SubPrayerDef('isha_sunnat_2', 'Sunnat (After)', 2),
           _SubPrayerDef('isha_nafeel', 'Nafeel', 2),
           _SubPrayerDef('isha_wajib', 'Wajib (Witr)', 3),
-        ]),
-      ),
-      _PrayerGroup(
-        title: 'Tahajjud',
-        subtitle: 'Late Night',
-        icon: CupertinoIcons.moon_stars_fill,
-        iconColor: const Color(0xFF6B21A8),
-        items: getSubItems('Tahajjud', const [
-          _SubPrayerDef('tahajjud_nafeel', 'Nafeel', 4),
         ]),
       ),
     ];

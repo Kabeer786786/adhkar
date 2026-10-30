@@ -97,6 +97,7 @@ flutter:
     - assets/images/
     - assets/images/adhkar/
     - assets/images/alarm-bgs/
+    - assets/images/screenshots/
     - assets/audios/
     - assets/fonts/arabic/
     - assets/data/

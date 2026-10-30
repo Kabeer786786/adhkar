@@ -18,7 +18,7 @@ import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../shared/widgets/hijri_disclaimer_chip.dart';
 import '../domain/prayer_models.dart';
-import 'widgets/prayer_detail_modal.dart'; 
+import 'widgets/prayer_detail_modal.dart';
 import 'widgets/salah_history_card.dart';
 import 'widgets/salah_history_detail_modal.dart';
 
@@ -37,8 +37,10 @@ class PrayerScreen extends ConsumerStatefulWidget {
 }
 
 class _PrayerScreenState extends ConsumerState<PrayerScreen>
-    with SingleTickerProviderStateMixin { 
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final ScrollController _timetableScrollController = ScrollController();
+  final GlobalKey _activeCardKey = GlobalKey();
   DateTime _selectedDate = DateTime.now();
   bool _isChangingDate = false;
   Timer? _ticker;
@@ -49,6 +51,11 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.index == 0 && mounted) {
+        _triggerScrollToActive();
+      }
+    });
     _ticker = Timer.periodic(const Duration(seconds: 10), (_) {
       if (mounted) {
         setState(() {});
@@ -56,6 +63,22 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FeatureIntroModal.show(context, FeatureIntroType.namaz);
+      _triggerScrollToActive();
+    });
+  }
+
+  void _triggerScrollToActive() { 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final ctx = _activeCardKey.currentContext;
+      if (ctx != null) {
+        Scrollable.ensureVisible(
+          ctx,
+          alignment: 0.22,
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.easeInOutCubic,
+        );
+      }
     });
   }
 
@@ -63,6 +86,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
   void dispose() {
     _ticker?.cancel();
     _tabController.dispose();
+    _timetableScrollController.dispose();
     super.dispose();
   }
 
@@ -83,6 +107,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
         setState(() {
           _isChangingDate = false;
         });
+        if (DateUtils.isSameDay(picked, DateTime.now())) {
+          _triggerScrollToActive();
+        }
       }
     }
   }
@@ -166,8 +193,18 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     final sunriseEnd = times.sunrise.add(const Duration(minutes: 20));
     final zawalStart = times.dhuhr.subtract(const Duration(minutes: 15));
     final ghurubStart = times.maghrib.subtract(const Duration(minutes: 10));
+    final tahajjudTime = DateTime(
+      times.fajr.year,
+      times.fajr.month,
+      times.fajr.day,
+      times.qiyam.hour,
+      times.qiyam.minute,
+    );
 
     if (now.isBefore(times.fajr)) {
+      if (!now.isBefore(tahajjudTime)) {
+        return 'Tahajjud';
+      }
       return 'Isha';
     } else if (now.isBefore(times.sunrise)) {
       return 'Fajr';
@@ -225,11 +262,15 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     if (isToday && todayHijri != null) {
       hijriStr = todayHijri.formatted;
     } else {
-      final isSubcontinent = calPref.calendarType == CalendarType.regional &&
+      final isSubcontinent =
+          calPref.calendarType == CalendarType.regional &&
           (calPref.region == HijriRegion.india ||
               calPref.region == HijriRegion.pakistan ||
               calPref.region == HijriRegion.bangladesh);
-      final hDate = HijriDate.fromGregorian(_selectedDate, isSubcontinent: isSubcontinent);
+      final hDate = HijriDate.fromGregorian(
+        _selectedDate,
+        isSubcontinent: isSubcontinent,
+      );
       hijriStr = '${hDate.day} ${hDate.monthNameEn} ${hDate.year} AH';
     }
     final isAladhan = todayHijri?.isAladhan ?? false;
@@ -237,7 +278,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     final prayerList = _buildPrayerList(prayerTimes, isFriday: isFriday);
 
     final locationDisplayName = location.country.isNotEmpty
-        ? '${location.city}, ${location.country}' 
+        ? '${location.city}, ${location.country}'
         : location.city;
 
     return RefreshIndicator(
@@ -252,13 +293,14 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
         }
       },
       child: ListView(
+        controller: _timetableScrollController,
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         children: [
           if (isAladhan)
-            const HijriDisclaimerChip( 
+            const HijriDisclaimerChip(
               isAladhan: true,
               margin: EdgeInsets.only(bottom: 12),
             ),
@@ -267,7 +309,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: context.colorScheme.primaryContainer.withValues(alpha: 0.4),
+              color: context.colorScheme.primaryContainer.withValues(
+                alpha: 0.4,
+              ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: context.colorScheme.primary.withValues(alpha: 0.2),
@@ -311,7 +355,12 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
           ),
           // --- Top Header Card: Gregorian Date, Hijri Date, Calendar Icon ---
           Padding(
-            padding: const EdgeInsets.only(bottom: 16, top: 0, left: 5, right: 5),
+            padding: const EdgeInsets.only(
+              bottom: 16,
+              top: 0,
+              left: 5,
+              right: 5,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -412,7 +461,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
             ),
 
           // --- Prayer Cards List with Shimmer Effect ---
-          AppShimmer( 
+          AppShimmer(
             isLoading: _isChangingDate,
             child: Column(
               children: [
@@ -420,26 +469,41 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                   // 1. Prohibited Time: Sunrise (Tulu) - Between Fajr and Ishraq
                   if (prayer.key == 'Ishraq')
                     ForbiddenTimeCard(
+                      key: isToday && (currentActiveKey == 'Sunrise_Prohibited')
+                          ? _activeCardKey
+                          : null,
                       info: sunriseInfo,
-                      isCurrent: isToday && (currentActiveKey == 'Sunrise_Prohibited'),
+                      isCurrent:
+                          isToday && (currentActiveKey == 'Sunrise_Prohibited'),
                     ),
 
                   // 2. Prohibited Time: Zawal (Zenith) - Before Dhuhr / Jumma
                   if (prayer.key == 'Dhuhr')
                     ForbiddenTimeCard(
+                      key: isToday && (currentActiveKey == 'Zawal_Prohibited')
+                          ? _activeCardKey
+                          : null,
                       info: zawalInfo,
-                      isCurrent: isToday && (currentActiveKey == 'Zawal_Prohibited'),
+                      isCurrent:
+                          isToday && (currentActiveKey == 'Zawal_Prohibited'),
                     ),
 
                   // 3. Prohibited Time: Sunset (Ghurub / After Asr) - Before Maghrib
                   if (prayer.key == 'Maghrib')
                     ForbiddenTimeCard(
+                      key: isToday && (currentActiveKey == 'Ghurub_Prohibited')
+                          ? _activeCardKey
+                          : null,
                       info: ghurubInfo,
-                      isCurrent: isToday && (currentActiveKey == 'Ghurub_Prohibited'),
+                      isCurrent:
+                          isToday && (currentActiveKey == 'Ghurub_Prohibited'),
                     ),
 
                   // Normal Prayer Card
                   _buildPrayerCard(
+                    key: isToday && (currentActiveKey == prayer.key)
+                        ? _activeCardKey
+                        : null,
                     prayer: prayer,
                     isToday: isToday,
                     currentActiveKey: currentActiveKey,
@@ -458,6 +522,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
   }
 
   Widget _buildPrayerCard({
+    Key? key,
     required PrayerDetail prayer,
     required bool isToday,
     required String currentActiveKey,
@@ -470,13 +535,12 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     final timeStr = DateFormat('hh:mm a').format(prayer.time);
 
     // Get completed sub-prayers
-    final completedSubIds = storage.getSubPrayerRecords(
-      dateKey,
-      prayer.key,
-    );
+    final completedSubIds = storage.getSubPrayerRecords(dateKey, prayer.key);
 
-    final isFuture = prayer.time.isAfter(DateTime.now());
-    final isHighlight = isCurrent && !prayer.isZawal;
+    final isFuture = (isToday && prayer.key == 'Tahajjud')
+        ? false
+        : prayer.time.isAfter(DateTime.now());
+    final isHighlight = isCurrent;
 
     // Background decoration styling
     BoxDecoration cardDecoration;
@@ -492,7 +556,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
           border: Border.all(color: const Color(0xFF10B981), width: 2.0),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF10B981).withValues(alpha: 0.25),
+              color: const Color(0xFF10B981).withValues(alpha: 0.28),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -501,37 +565,19 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
       } else {
         cardDecoration = BoxDecoration(
           color: context.isDarkMode
-              ? const Color(0xFF133629)
-              : const Color(0xFFE6F4EA),
+              ? const Color(0xFF163E2E)
+              : const Color(0xFFE8F5E9),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: const Color(0xFF10B981), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 2,
-              offset: const Offset(0, 1),
+              color: const Color(0xFF10B981).withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
           ],
         );
       }
-    } else if (isFridayJumma) {
-      cardDecoration = BoxDecoration(
-        color: context.isDarkMode
-            ? const Color(0xFF133629).withValues(alpha: 0.35)
-            : const Color(0xFFF0FDF4),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF10B981).withValues(alpha: 0.6),
-          width: 1.4,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF10B981).withValues(alpha: 0.08),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      );
     } else {
       cardDecoration = BoxDecoration(
         color: context.isDarkMode
@@ -549,6 +595,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     }
 
     return Padding(
+      key: key,
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Colors.transparent,
@@ -560,7 +607,8 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                   if (isFuture) {
                     AppFloatingToast.showInfo(
                       context,
-                      message: 'Upcoming prayer cannot be marked as completed yet',
+                      message:
+                          'Upcoming prayer cannot be marked as completed yet',
                     );
                   } else {
                     _openPrayerDetail(
@@ -589,9 +637,11 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                   prayer.icon,
                   color: isHighlight
                       ? const Color(0xFF047857)
-                      : (isFridayJumma
-                          ? const Color(0xFF047857)
-                          : _getPrayerIconColor(prayer.key, context, isFriday: isFriday)),
+                      : _getPrayerIconColor(
+                          prayer.key,
+                          context,
+                          isFriday: isFriday,
+                        ),
                   size: 28,
                 ),
                 const SizedBox(width: 16),
@@ -605,63 +655,35 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                         children: [
                           Text(
                             prayer.title,
-                            style: context.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16.5,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                               color: isHighlight
                                   ? (context.isDarkMode
                                         ? Colors.white
                                         : const Color(0xFF064E3B))
-                                  : (isFridayJumma
-                                        ? (context.isDarkMode
-                                              ? const Color(0xFFA7F3D0)
-                                              : const Color(0xFF047857))
-                                        : context.colorScheme.onSurface),
+                                  : context.colorScheme.onSurface,
                             ),
                           ),
+                          
                           if (isFridayJumma) ...[
                             const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 7,
-                                vertical: 2.5,
+                                vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF047857),
-                                    Color(0xFFD97706),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF047857)
-                                        .withValues(alpha: 0.25),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ],
+                                color: const Color(0xFF047857),
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.auto_awesome,
-                                    size: 10,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 3),
-                                  Text(
-                                    'FRIDAY SPECIAL',
-                                    style: TextStyle(
-                                      fontSize: 9.5,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      letterSpacing: 0.3,
-                                    ),
-                                  ),
-                                ],
+                              child: const Text(
+                                'Friday Special',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -675,10 +697,8 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                               ? (context.isDarkMode
                                     ? const Color(0xFFA7F3D0)
                                     : const Color(0xFF047857))
-                              : (isFridayJumma
-                                    ? const Color(0xFF059669)
-                                    : context.colorScheme.onSurfaceVariant),
-                          fontWeight: isFridayJumma ? FontWeight.w600 : FontWeight.w500,
+                              : context.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -689,24 +709,15 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                 Text(
                   timeStr,
                   style: context.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
                     color: isHighlight
                         ? (context.isDarkMode
                               ? Colors.white
                               : const Color(0xFF064E3B))
-                        : (isFridayJumma
-                              ? const Color(0xFF047857)
-                              : context.colorScheme.onSurface),
+                        : context.colorScheme.onSurface,
                   ),
                 ),
-
-                if (prayer.isZawal)
-                  Icon(
-                    Icons.block_rounded,
-                    size: 20,
-                    color: context.colorScheme.outline,
-                  ),
               ],
             ),
           ),
@@ -745,7 +756,25 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     PrayerTimeResult times, {
     bool isFriday = false,
   }) {
-    return [
+    final tahajjudTime = DateTime(
+      times.fajr.year,
+      times.fajr.month,
+      times.fajr.day,
+      times.qiyam.hour,
+      times.qiyam.minute,
+    );
+
+    return [ 
+      PrayerDetail(
+        key: 'Tahajjud',
+        title: 'Tahajjud',
+        subtitle: 'Late Night',
+        icon: CupertinoIcons.moon_stars_fill,
+        time: tahajjudTime,
+        subPrayers: const [
+          SubPrayerItem(id: 'tahajjud_nafeel', title: 'Nafeel', rakats: 4),
+        ],
+      ),
       PrayerDetail(
         key: 'Fajr',
         title: 'Fajr',
@@ -772,7 +801,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
         PrayerDetail(
           key: 'Dhuhr',
           title: 'Jumma',
-          subtitle: 'Friday Congregational Prayer (14 Rak\'ats)',
+          subtitle: 'Friday Prayer',
           icon: FlutterIslamicIcons.solidKaaba,
           time: times.dhuhr,
           subPrayers: const [
@@ -865,16 +894,6 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
           ),
           SubPrayerItem(id: 'isha_nafeel', title: 'Nafeel', rakats: 2),
           SubPrayerItem(id: 'isha_wajib', title: 'Wajib (Witr)', rakats: 3),
-        ],
-      ),
-      PrayerDetail(
-        key: 'Tahajjud',
-        title: 'Tahajjud',
-        subtitle: 'Late Night',
-        icon: CupertinoIcons.moon_stars_fill,
-        time: times.qiyam,
-        subPrayers: const [
-          SubPrayerItem(id: 'tahajjud_nafeel', title: 'Nafeel', rakats: 4),
         ],
       ),
     ];
@@ -993,11 +1012,15 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
           if (isToday && todayHijri != null) {
             hijriStr = todayHijri.formatted;
           } else {
-            final isSubcontinent = calPref.calendarType == CalendarType.regional &&
+            final isSubcontinent =
+                calPref.calendarType == CalendarType.regional &&
                 (calPref.region == HijriRegion.india ||
                     calPref.region == HijriRegion.pakistan ||
                     calPref.region == HijriRegion.bangladesh);
-            final hDate = HijriDate.fromGregorian(date, isSubcontinent: isSubcontinent);
+            final hDate = HijriDate.fromGregorian(
+              date,
+              isSubcontinent: isSubcontinent,
+            );
             hijriStr = '${hDate.day} ${hDate.monthNameEn} ${hDate.year} AH';
           }
 
