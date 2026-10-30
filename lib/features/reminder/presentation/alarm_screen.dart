@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,7 @@ import '../../quiet_hours/presentation/providers/quiet_hours_provider.dart';
 import '../../../core/services/storage_service.dart';
 import '../../../shared/providers/app_providers.dart';
 import '../domain/reminder_model.dart';
-import 'widgets/alarm_customization_modal.dart';
+import '../../../core/config/alarm_background_config.dart';
 import 'widgets/ambient_wave_background.dart';
 import 'providers/reminder_provider.dart';
 
@@ -68,6 +69,8 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   bool _isDismissed = false;
   StreamSubscription<String>? _dismissSubscription;
   StreamSubscription<int>? _snoozeSubscription;
+  Widget? _memoizedBgWidget;
+  String? _memoizedBgKey;
 
   bool get _isEffectivePreview =>
       widget.isPreview || widget.soundType == 'preview_silent';
@@ -75,6 +78,10 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
   @override
   void initState() {
     super.initState();
+
+    if (_isEffectivePreview) {
+      _activeSoundName = widget.soundType ?? 'preview_silent';
+    }
 
     // Listen to physical volume / power buttons to dismiss/silence alarm
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
@@ -168,6 +175,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
 
   Future<void> _initAudioAndVibration() async {
     if (_isDismissed) return;
+    if (_isEffectivePreview) return;
 
     final reminders = ref.read(remindersProvider);
     final customReminder = widget.reminderId != null
@@ -194,7 +202,6 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     );
 
     if (_isDismissed) return;
-    if (_isEffectivePreview) return;
 
     final soundEnabled =
         !isQuietActive && (customReminder?.soundEnabled ?? true);
@@ -213,16 +220,24 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     }
 
     if (soundEnabled && !_isDismissed) {
-      final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
+      final isCustom = ReminderAudioConfig.isCustomFile(effectiveSoundType);
       try {
         final mediaItem = MediaItem(
           id: 'alarm_${widget.reminderId ?? "prayer"}_${effectiveSoundType.replaceAll(" ", "_")}',
-          title: widget.title ?? widget.prayerName ?? effectiveSoundType,
+          title: widget.title ?? widget.prayerName ?? ReminderAudioConfig.getDisplayName(effectiveSoundType),
           album: 'Adhkar Alarm',
         );
-        final loadedDuration = await _audioPlayer.setAudioSource(
-          AudioSource.asset(assetPath, tag: mediaItem),
-        );
+        Duration? loadedDuration;
+        if (isCustom) {
+          loadedDuration = await _audioPlayer.setAudioSource(
+            AudioSource.file(effectiveSoundType, tag: mediaItem),
+          );
+        } else {
+          final assetPath = ReminderAudioConfig.getAssetPath(effectiveSoundType);
+          loadedDuration = await _audioPlayer.setAudioSource(
+            AudioSource.asset(assetPath, tag: mediaItem),
+          );
+        }
         if (_isDismissed) {
           await _audioPlayer.stop();
           return;
@@ -277,6 +292,37 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
         HapticFeedback.heavyImpact();
       });
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final reminders = ref.read(remindersProvider);
+      final customReminder = widget.reminderId != null
+          ? reminders.where((r) => r.id == widget.reminderId).firstOrNull
+          : null;
+      final bgType = widget.initialBgType ??
+          customReminder?.alarmBgType ??
+          storage.getAlarmBgType();
+      final bgValue = widget.initialBgValue ??
+          customReminder?.alarmBgValue ??
+          storage.getAlarmBgValue();
+
+      if (bgType == 'image') {
+        final isCustom = (bgValue.contains('/') || bgValue.contains('\\')) &&
+            !bgValue.startsWith('assets/');
+        if (isCustom && File(bgValue).existsSync()) {
+          precacheImage(
+            ResizeImage(FileImage(File(bgValue)), width: 1080),
+            context,
+          );
+        } else if (!isCustom) {
+          precacheImage(AssetImage(bgValue), context);
+        }
+      }
+    } catch (_) {}
   }
 
   @override
@@ -657,32 +703,51 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     return Icons.alarm_on_rounded;
   }
 
-  Widget _buildBackground(
+  Widget _getBackground(
     StorageService storage,
     CustomReminder? customReminder,
   ) {
-    final bgType =
-        widget.initialBgType ??
+    final bgType = widget.initialBgType ??
         customReminder?.alarmBgType ??
         storage.getAlarmBgType();
-    final bgValue =
-        widget.initialBgValue ??
+    final bgValue = widget.initialBgValue ??
         customReminder?.alarmBgValue ??
         storage.getAlarmBgValue();
-    final showWaves =
-        widget.initialShowWaves ??
+    final showWaves = widget.initialShowWaves ??
         customReminder?.alarmShowWaves ??
         storage.getAlarmShowWaves();
 
+    final key = '$bgType::$bgValue::$showWaves';
+    if (_memoizedBgWidget != null && _memoizedBgKey == key) {
+      return _memoizedBgWidget!;
+    }
+
+    _memoizedBgKey = key;
+    _memoizedBgWidget = _buildBackground(bgType, bgValue, showWaves);
+    return _memoizedBgWidget!;
+  }
+
+  Widget _buildBackground(
+    String bgType,
+    String bgValue,
+    bool showWaves,
+  ) {
     Widget base;
     if (bgType == 'image') {
-      base = Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            bgValue,
-            fit: BoxFit.cover,
-            errorBuilder: (c, e, s) => Container(
+      final isCustom = (bgValue.contains('/') || bgValue.contains('\\')) && !bgValue.startsWith('assets/');
+      Widget imageWidget;
+      if (isCustom && File(bgValue).existsSync()) {
+        imageWidget = Image.file(
+          File(bgValue),
+          cacheWidth: 1080,
+          fit: BoxFit.cover,
+          gaplessPlayback: true,
+          filterQuality: FilterQuality.low,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded || frame != null) {
+              return child;
+            }
+            return Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xFF0C171F), Color(0xFF192A38)],
@@ -690,8 +755,41 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
                   end: Alignment.bottomCenter,
                 ),
               ),
+            );
+          },
+          errorBuilder: (c, e, s) => Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0C171F), Color(0xFF192A38)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
           ),
+        );
+      } else {
+        imageWidget = Image.asset(
+          bgValue,
+          cacheWidth: 1080,
+          fit: BoxFit.cover,
+          gaplessPlayback: true,
+          filterQuality: FilterQuality.low,
+          errorBuilder: (c, e, s) => Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0C171F), Color(0xFF192A38)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+        );
+      }
+
+      base = Stack(
+        fit: StackFit.expand,
+        children: [
+          imageWidget,
           // Subtle scrim overlay to ensure 100% legibility
           Container(color: Colors.black.withValues(alpha: 0.22)),
           Container(
@@ -726,11 +824,14 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
     if (showWaves) {
       return Stack(
         fit: StackFit.expand,
-        children: [base, const AmbientWaveBackground()],
+        children: [
+          RepaintBoundary(child: base),
+          const RepaintBoundary(child: AmbientWaveBackground()),
+        ],
       );
     }
 
-    return base;
+    return RepaintBoundary(child: base);
   }
 
   @override
@@ -771,7 +872,7 @@ class _AlarmScreenState extends ConsumerState<AlarmScreen>
             fit: StackFit.expand,
             children: [
               // 1. Configured Background (Wallpapers from alarm-bgs / Gradients / Ambient Waves)
-              _buildBackground(storage, customReminder),
+              _getBackground(storage, customReminder),
 
               // 2. Alarm UI Content (matching reference image structure)
               SafeArea(

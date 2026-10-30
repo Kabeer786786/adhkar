@@ -45,12 +45,41 @@ class ReminderAudioConfig {
     return lower.contains('azaan') || lower.contains('azan') || lower.contains('adhan');
   }
 
+  /// Checks if a given sound option is a custom user audio file path.
+  static bool isCustomFile(String? soundType) {
+    if (soundType == null || soundType.trim().isEmpty) return false;
+    final trimmed = soundType.trim();
+    if (trimmed.startsWith('assets/')) return false;
+    return trimmed.contains('/') || trimmed.contains('\\');
+  }
+
+  /// Returns user-friendly display name for an audio (handles custom file paths).
+  static String getDisplayName(String? soundType, [Map<String, String>? customNames]) {
+    if (soundType == null || soundType.trim().isEmpty) {
+      return defaultRingtone;
+    }
+    if (isCustomFile(soundType)) {
+      if (customNames != null && customNames.containsKey(soundType)) {
+        return customNames[soundType]!;
+      }
+      final fileName = soundType.split(RegExp(r'[/\\]')).last;
+      final rawName = fileName.contains('.')
+          ? fileName.substring(0, fileName.lastIndexOf('.'))
+          : fileName;
+      return rawName.length > 30 ? rawName.substring(0, 30) : rawName;
+    }
+    return canonicalSoundName(soundType);
+  }
+
   /// Normalizes any given sound name / alias into one of the canonical [soundOptions].
   static String canonicalSoundName(String? soundType) {
     if (soundType == null || soundType.trim().isEmpty) {
       return defaultRingtone;
     }
     final trimmed = soundType.trim();
+    if (isCustomFile(trimmed)) {
+      return trimmed;
+    }
     if (soundOptions.contains(trimmed)) {
       return trimmed;
     }
@@ -79,8 +108,11 @@ class ReminderAudioConfig {
     return defaultRingtone;
   }
 
-  /// Returns the asset path for a given [soundType], with intelligent fallbacks.
+  /// Returns the asset path or file path for a given [soundType], with intelligent fallbacks.
   static String getAssetPath(String? soundType) {
+    if (isCustomFile(soundType)) {
+      return soundType!;
+    }
     final canonical = canonicalSoundName(soundType);
     return audioAssetPaths[canonical] ?? audioAssetPaths[defaultRingtone]!;
   }

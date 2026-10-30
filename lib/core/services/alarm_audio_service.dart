@@ -40,32 +40,45 @@ class AlarmAudioService {
     if (sound) {
       try {
         _audioPlayer = AudioPlayer();
-        final assetPath = ReminderAudioConfig.getAssetPath(soundType);
+        final isCustom = ReminderAudioConfig.isCustomFile(soundType);
         final mediaItem = MediaItem(
           id: 'alarm_audio_service_${soundType.replaceAll(" ", "_")}',
-          title: soundType,
+          title: ReminderAudioConfig.getDisplayName(soundType),
           album: 'Adhkar Alarm',
         );
 
-        try {
-          await _audioPlayer!.setAudioSource(
-            AudioSource.asset(assetPath, tag: mediaItem),
-          );
-        } catch (_) {
-          // Fallback to local Madina Azaan asset or network
+        if (isCustom) {
           try {
             await _audioPlayer!.setAudioSource(
-              AudioSource.asset('assets/audios/madina_azaan.mp3', tag: mediaItem),
+              AudioSource.file(soundType, tag: mediaItem),
             );
           } catch (_) {
             await _audioPlayer!.setAudioSource(
-              AudioSource.uri(
-                Uri.parse(
-                  'https://raw.githubusercontent.com/islamic-network/athan-mp3/master/mecca.mp3',
-                ),
-                tag: mediaItem,
-              ),
+              AudioSource.asset('assets/audios/iphone_original.mp3', tag: mediaItem),
             );
+          }
+        } else {
+          final assetPath = ReminderAudioConfig.getAssetPath(soundType);
+          try {
+            await _audioPlayer!.setAudioSource(
+              AudioSource.asset(assetPath, tag: mediaItem),
+            );
+          } catch (_) {
+            // Fallback to local Madina Azaan asset or network
+            try {
+              await _audioPlayer!.setAudioSource(
+                AudioSource.asset('assets/audios/madina_azaan.mp3', tag: mediaItem),
+              );
+            } catch (_) {
+              await _audioPlayer!.setAudioSource(
+                AudioSource.uri(
+                  Uri.parse(
+                    'https://raw.githubusercontent.com/islamic-network/athan-mp3/master/mecca.mp3',
+                  ),
+                  tag: mediaItem,
+                ),
+              );
+            }
           }
         }
         await _audioPlayer!.setLoopMode(LoopMode.one);

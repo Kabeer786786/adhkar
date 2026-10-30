@@ -671,6 +671,69 @@ class StorageService {
     await _settingsBox.put('alarm_show_waves', show);
   }
 
+  // --- Alarm Audio Customization ---
+  String getAlarmAudio() {
+    return _settingsBox.get('alarm_audio_value', defaultValue: 'Madinah Azaan') as String;
+  }
+
+  Future<void> setAlarmAudio(String audio) async {
+    await _settingsBox.put('alarm_audio_value', audio);
+  }
+
+  List<String> getCustomAlarmImages() {
+    final list = _settingsBox.get('custom_alarm_images');
+    if (list != null && list is List) {
+      return List<String>.from(list.map((e) => e.toString()));
+    }
+    return [];
+  }
+
+  Future<void> addCustomAlarmImage(String path) async {
+    final list = getCustomAlarmImages();
+    if (!list.contains(path)) {
+      list.insert(0, path);
+      await _settingsBox.put('custom_alarm_images', list);
+    }
+  }
+
+  Future<void> deleteCustomAlarmImage(String path) async {
+    final list = getCustomAlarmImages();
+    list.remove(path);
+    await _settingsBox.put('custom_alarm_images', list);
+  }
+
+  List<Map<String, String>> getCustomAlarmAudios() {
+    final list = _settingsBox.get('custom_alarm_audios');
+    if (list != null && list is List) {
+      return list.map((e) => Map<String, String>.from(e as Map)).toList();
+    }
+    return [];
+  }
+
+  Future<void> addCustomAlarmAudio(String name, String path) async {
+    final list = getCustomAlarmAudios();
+    list.removeWhere((e) => e['path'] == path);
+    list.insert(0, {'name': name, 'path': path});
+    await _settingsBox.put('custom_alarm_audios', list);
+  }
+
+  Future<void> deleteCustomAlarmAudio(String path) async {
+    final list = getCustomAlarmAudios();
+    list.removeWhere((e) => e['path'] == path);
+    await _settingsBox.put('custom_alarm_audios', list);
+  }
+
+  Future<void> updateCustomAlarmAudioName(String path, String newName) async {
+    final list = getCustomAlarmAudios();
+    for (final item in list) {
+      if (item['path'] == path) {
+        item['name'] = newName;
+        break;
+      }
+    }
+    await _settingsBox.put('custom_alarm_audios', list);
+  }
+
   // --- Alarm Interaction Settings ---
   String getVolumeButtonAction() {
     return _settingsBox.get(

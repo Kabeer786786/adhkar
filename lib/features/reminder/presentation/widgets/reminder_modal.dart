@@ -1,15 +1,22 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
+import '../../../../core/config/alarm_background_config.dart';
 import '../../../../core/config/reminder_audio_config.dart';
+import '../../../../shared/providers/app_providers.dart';
+import '../../../../shared/widgets/app_floating_toast.dart';
 import '../../domain/reminder_model.dart';
 import '../alarm_screen.dart';
-import 'alarm_customization_modal.dart';
 
-class ReminderModal extends StatefulWidget {
+class ReminderModal extends ConsumerStatefulWidget {
   final CustomReminder? initialReminder;
   final ValueChanged<CustomReminder> onSave;
   final bool isEmbedded;
@@ -36,17 +43,17 @@ class ReminderModal extends StatefulWidget {
   }
 
   @override
-  State<ReminderModal> createState() => _ReminderModalState();
+  ConsumerState<ReminderModal> createState() => _ReminderModalState();
 }
 
-class _ReminderModalState extends State<ReminderModal> {
+class _ReminderModalState extends ConsumerState<ReminderModal> {
   late TextEditingController _titleController;
   late TextEditingController _descController;
   late TimeOfDay _selectedTime;
   late DateTime _selectedDate;
   late ReminderFrequency _frequency;
   late Set<int> _selectedDays;
-  late AlarmDuration _duration;
+  late AlarmDuration _duration; 
   late bool _soundEnabled;
   late String _soundType;
   late bool _vibrationEnabled;
@@ -56,7 +63,9 @@ class _ReminderModalState extends State<ReminderModal> {
   late bool _alarmShowWaves;
   String? _titleError;
 
-  final List<String> _soundOptions = ReminderAudioConfig.soundOptions;
+  late List<String> _soundOptions;
+  final Map<String, String> _customAudioNames = {};
+  final List<String> _customBgImages = [];
   final AudioPlayer _previewPlayer = AudioPlayer();
   StreamSubscription<PlayerState>? _previewSubscription;
   bool _isPreviewPlaying = false;
@@ -83,6 +92,10 @@ class _ReminderModalState extends State<ReminderModal> {
     _selectedDays = Set<int>.from(rem?.customDays ?? [1, 2, 3, 4, 5, 6, 7]);
     _soundEnabled = rem?.soundEnabled ?? true;
     _soundType = ReminderAudioConfig.canonicalSoundName(rem?.soundType);
+    _soundOptions = List<String>.from(ReminderAudioConfig.soundOptions);
+    if (!_soundOptions.contains(_soundType)) {
+      _soundOptions.insert(0, _soundType);
+    }
     _duration = rem?.duration ??
         (ReminderAudioConfig.isAzan(_soundType)
             ? AlarmDuration.fullRingtone
@@ -91,7 +104,14 @@ class _ReminderModalState extends State<ReminderModal> {
     _notificationEnabled = rem?.notificationEnabled ?? true;
     _alarmBgType = rem?.alarmBgType ?? 'image';
     _alarmBgValue = rem?.alarmBgValue ?? 'assets/images/alarm-bgs/bg1.jpg';
+    if (_alarmBgValue.isNotEmpty &&
+        !AlarmBackgroundConfig.imageList.contains(_alarmBgValue) &&
+        !_alarmBgValue.startsWith('assets/')) {
+      _customBgImages.add(_alarmBgValue);
+    }
     _alarmShowWaves = rem?.alarmShowWaves ?? false;
+    _loadCustomBgImages();
+    _loadCustomAudios();
 
     _previewSubscription = _previewPlayer.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
@@ -118,25 +138,549 @@ class _ReminderModalState extends State<ReminderModal> {
 
   Future<void> _playAudioPreview() async {
     try {
-      final canonicalSound = ReminderAudioConfig.canonicalSoundName(_soundType);
-      final path = ReminderAudioConfig.getAssetPath(canonicalSound);
+      final isCustom = ReminderAudioConfig.isCustomFile(_soundType);
+      final displayName = ReminderAudioConfig.getDisplayName(_soundType);
       final mediaItem = MediaItem(
-        id: 'reminder_preview_${canonicalSound.replaceAll(" ", "_")}',
-        title: canonicalSound,
+        id: 'reminder_preview_${_soundType.replaceAll(" ", "_")}',
+        title: displayName,
         album: 'Adhkar Preview',
       );
 
       await _previewPlayer.stop();
       await _previewPlayer.setVolume(1.0);
-      await _previewPlayer.setAudioSource(
-        AudioSource.asset(path, tag: mediaItem),
-      );
+      if (isCustom) {
+        await _previewPlayer.setAudioSource(
+          AudioSource.file(_soundType, tag: mediaItem),
+        );
+      } else {
+        final path = ReminderAudioConfig.getAssetPath(_soundType);
+        await _previewPlayer.setAudioSource(
+          AudioSource.asset(path, tag: mediaItem),
+        );
+      }
       if (mounted) setState(() => _isPreviewPlaying = true);
       await _previewPlayer.play();
     } catch (e) {
       debugPrint('[ReminderModal] Error loading preview audio: $e');
-      if (mounted) setState(() => _isPreviewPlaying = false);
+      if (mounted) setState(() => _isPreviewPlaying = false); 
     }
+  }
+
+  Future<void> _loadCustomAudios() async {
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final stored = storage.getCustomAlarmAudios();
+      for (final item in stored) {
+        final path = item['path'];
+        final name = item['name'];
+        if (path != null && name != null) {
+          if (File(path).existsSync()) {
+            _customAudioNames[path] = name;
+            if (!_soundOptions.contains(path)) {
+              _soundOptions.insert(0, path);
+            }
+          }
+        }
+      }
+
+      final appDir = await getApplicationDocumentsDirectory();
+      final audiosDir = Directory('${appDir.path}/alarm_audios');
+      if (await audiosDir.exists()) {
+        final files = audiosDir.listSync().whereType<File>().toList();
+        for (final f in files) {
+          if (!_soundOptions.contains(f.path)) {
+            final fileName = f.path.split(RegExp(r'[/\\]')).last;
+            final raw = fileName.contains('.')
+                ? fileName.substring(0, fileName.lastIndexOf('.'))
+                : fileName;
+            final trunc = raw.length > 30 ? raw.substring(0, 30) : raw;
+            final name = trunc.isEmpty ? 'Custom Audio' : trunc;
+            _customAudioNames[f.path] = name;
+            _soundOptions.insert(0, f.path);
+            await storage.addCustomAlarmAudio(name, f.path);
+          }
+        }
+      }
+
+      if (mounted) setState(() {});
+    } catch (e) {
+      debugPrint('[ReminderModal] Load custom audios error: $e');
+    }
+  }
+
+  Future<void> _pickCustomAudioFile() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['mp3', 'm4a', 'wav', 'aac', 'ogg'],
+      );
+      if (result != null && result.files.single.path != null) {
+        final file = result.files.single;
+        final appDir = await getApplicationDocumentsDirectory();
+        final audiosDir = Directory('${appDir.path}/alarm_audios');
+        if (!await audiosDir.exists()) await audiosDir.create(recursive: true);
+
+        // Name truncated to max 30 characters
+        final originalName = file.name;
+        final rawBaseName = originalName.contains('.')
+            ? originalName.substring(0, originalName.lastIndexOf('.'))
+            : originalName;
+        String truncatedName = rawBaseName.trim();
+        if (truncatedName.length > 30) {
+          truncatedName = truncatedName.substring(0, 30).trim();
+        }
+        if (truncatedName.isEmpty) truncatedName = 'Custom Audio';
+
+        final ext = file.name.contains('.')
+            ? '.${file.name.split('.').last}'
+            : '.mp3';
+        final targetPath =
+            '${audiosDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}$ext';
+        await File(file.path!).copy(targetPath);
+
+        final storage = ref.read(storageServiceProvider);
+        await storage.addCustomAlarmAudio(truncatedName, targetPath);
+
+        setState(() {
+          _customAudioNames[targetPath] = truncatedName;
+          if (!_soundOptions.contains(targetPath)) {
+            _soundOptions.insert(0, targetPath);
+          }
+          _soundType = targetPath;
+        });
+
+        if (_isPreviewPlaying) {
+          _playAudioPreview();
+        }
+      }
+    } catch (e) {
+      debugPrint('[ReminderModal] Pick audio error: $e');
+    }
+  }
+
+  void _showEditAudioDialog([String? specificPath]) {
+    final audioPath = specificPath ??
+        (ReminderAudioConfig.isCustomFile(_soundType)
+            ? _soundType
+            : _soundOptions.firstWhere(
+                (s) => ReminderAudioConfig.isCustomFile(s),
+                orElse: () => '',
+              ));
+
+    if (audioPath.isEmpty) return;
+
+    final currentTitle = _customAudioNames[audioPath] ??
+        ReminderAudioConfig.getDisplayName(audioPath, _customAudioNames);
+    final editController = TextEditingController(text: currentTitle);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const primaryGreen = Color(0xFF2A531D);
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.edit_note_rounded, color: primaryGreen, size: 22),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Edit Custom Audio',
+                  style: GoogleFonts.lexend(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : const Color(0xFF1E293B),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Audio Name (max 30 characters)',
+                style: GoogleFonts.lexend(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white70 : const Color(0xFF64748B),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: editController,
+                maxLength: 30,
+                autofocus: true,
+                style: GoogleFonts.lexend(
+                  fontSize: 14,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'e.g. My Morning Azan',
+                  hintStyle: GoogleFonts.lexend(fontSize: 13, color: Colors.grey),
+                  filled: true,
+                  fillColor: isDark
+                      ? const Color(0xFF142018)
+                      : const Color(0xFFF1F5F9),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: isDark ? Colors.white24 : const Color(0xFFCBD5E1),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actionsPadding:
+              const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+          actions: [
+            Row(
+              children: [
+                TextButton( 
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _confirmDeleteCustomAudio(audioPath);
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFEF4444),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  ),
+                  child: Text(
+                    'Delete',
+                    style: GoogleFonts.lexend(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFEF4444),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(
+                    'Cancel',
+                    style: GoogleFonts.lexend(
+                      color: isDark ? Colors.white60 : Colors.grey.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                ElevatedButton(
+                  onPressed: () async {
+                    final newName = editController.text.trim();
+                    if (newName.isEmpty) return;
+                    Navigator.pop(ctx);
+                    final truncated = newName.length > 30
+                        ? newName.substring(0, 30).trim()
+                        : newName;
+                    final storage = ref.read(storageServiceProvider);
+                    await storage.updateCustomAlarmAudioName(
+                      audioPath,
+                      truncated,
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      _customAudioNames[audioPath] = truncated;
+                    });
+                    AppFloatingToast.showEnabled(
+                      context,
+                      message: 'Audio name updated',
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryGreen,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Save',
+                    style: GoogleFonts.lexend(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmDeleteCustomAudio(String audioPath) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final audioName = _customAudioNames[audioPath] ??
+        ReminderAudioConfig.getDisplayName(audioPath, _customAudioNames);
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Delete Audio File?',
+            style: GoogleFonts.lexend(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : const Color(0xFF1E293B),
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to delete "$audioName"? This will permanently remove the audio file.',
+            style: GoogleFonts.lexend(
+              fontSize: 13,
+              color: isDark ? Colors.white70 : const Color(0xFF64748B),
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.lexend(
+                  color: isDark ? Colors.white60 : Colors.grey.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                if (_isPreviewPlaying) {
+                  await _stopAudioPreview();
+                }
+
+                final storage = ref.read(storageServiceProvider);
+                await storage.deleteCustomAlarmAudio(audioPath);
+
+                try {
+                  final f = File(audioPath);
+                  if (await f.exists()) {
+                    await f.delete();
+                  }
+                } catch (e) {
+                  debugPrint('[ReminderModal] Delete audio file error: $e');
+                }
+
+                if (mounted) {
+                  setState(() {
+                    _customAudioNames.remove(audioPath);
+                    _soundOptions.remove(audioPath);
+                    if (_soundType == audioPath) {
+                      _soundType = ReminderAudioConfig.defaultRingtone;
+                    }
+                  });
+                  AppFloatingToast.showRemoved(
+                    context,
+                    message: 'Audio file deleted',
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDC2626),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Delete',
+                style: GoogleFonts.lexend(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _loadCustomBgImages() async {
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final stored = storage.getCustomAlarmImages();
+      for (final p in stored) {
+        if (File(p).existsSync() && !_customBgImages.contains(p)) {
+          _customBgImages.add(p);
+        }
+      }
+
+      final appDir = await getApplicationDocumentsDirectory();
+      final bgsDir = Directory('${appDir.path}/alarm_bgs');
+      if (await bgsDir.exists()) {
+        final files = bgsDir.listSync().whereType<File>().toList();
+        final paths = files.map((f) => f.path).toList();
+        for (final p in paths) {
+          if (!_customBgImages.contains(p)) {
+            _customBgImages.add(p);
+            await storage.addCustomAlarmImage(p);
+          }
+        }
+      }
+      if (mounted) {
+        setState(() {});
+        for (final p in _customBgImages) {
+          if (File(p).existsSync()) {
+            precacheImage(ResizeImage(FileImage(File(p)), width: 250), context);
+            precacheImage(ResizeImage(FileImage(File(p)), width: 1080), context); 
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[ReminderModal] Load custom backgrounds error: $e');
+    }
+  }
+
+  Future<void> _pickCustomBackgroundImage() async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1280,
+        maxHeight: 1280,
+        imageQuality: 85,
+      );
+      if (picked != null) {
+        final appDir = await getApplicationDocumentsDirectory();
+        final bgsDir = Directory('${appDir.path}/alarm_bgs');
+        if (!await bgsDir.exists()) await bgsDir.create(recursive: true);
+
+        final ext = picked.path.contains('.')
+            ? '.${picked.path.split('.').last}'
+            : '.jpg';
+        final targetPath =
+            '${bgsDir.path}/bg_${DateTime.now().millisecondsSinceEpoch}$ext';
+        await File(picked.path).copy(targetPath);
+
+        final storage = ref.read(storageServiceProvider);
+        await storage.addCustomAlarmImage(targetPath);
+
+        if (mounted) {
+          precacheImage(ResizeImage(FileImage(File(targetPath)), width: 250), context);
+          precacheImage(ResizeImage(FileImage(File(targetPath)), width: 1080), context);
+          setState(() {
+            if (!_customBgImages.contains(targetPath)) {
+              _customBgImages.insert(0, targetPath);
+            }
+            _alarmBgType = 'image';
+            _alarmBgValue = targetPath;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('[ReminderModal] Pick custom background error: $e');
+    }
+  }
+
+  void _confirmDeleteCustomBackground(String imgPath) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Delete Background Image?',
+            style: GoogleFonts.lexend(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : const Color(0xFF1E293B),
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to delete this custom background? It will be removed permanently.',
+            style: GoogleFonts.lexend(
+              fontSize: 13,
+              color: isDark ? Colors.white70 : const Color(0xFF64748B),
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.lexend(
+                  color: isDark ? Colors.white60 : Colors.grey.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+
+                // Evict from Flutter image cache for instant memory cleanup
+                FileImage(File(imgPath)).evict();
+
+                final storage = ref.read(storageServiceProvider);
+                await storage.deleteCustomAlarmImage(imgPath);
+
+                try {
+                  final f = File(imgPath);
+                  if (await f.exists()) {
+                    await f.delete();
+                  }
+                } catch (e) {
+                  debugPrint('[ReminderModal] Delete bg file error: $e');
+                }
+
+                if (mounted) {
+                  setState(() {
+                    _customBgImages.remove(imgPath);
+                    if (_alarmBgValue == imgPath) {
+                      _alarmBgType = 'image';
+                      _alarmBgValue = AlarmBackgroundConfig.imageList.first;
+                    }
+                  });
+                  AppFloatingToast.showRemoved(
+                    context,
+                    message: 'Background removed',
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDC2626),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Delete',
+                style: GoogleFonts.lexend(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _stopAudioPreview() async {
@@ -336,10 +880,31 @@ class _ReminderModalState extends State<ReminderModal> {
     Navigator.pop(context);
   }
 
-  void _previewAlarm() {
+  Future<void> _previewAlarm() async {
+    if (_alarmBgType == 'image') {
+      final isCustom = (_alarmBgValue.contains('/') ||
+              _alarmBgValue.contains('\\')) &&
+          !_alarmBgValue.startsWith('assets/');
+      try {
+        if (isCustom && File(_alarmBgValue).existsSync()) {
+          await precacheImage(
+            ResizeImage(FileImage(File(_alarmBgValue)), width: 1080),
+            context,
+          );
+        } else if (!isCustom) {
+          await precacheImage(AssetImage(_alarmBgValue), context);
+        }
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => AlarmScreen(
+      PageRouteBuilder(
+        opaque: true,
+        transitionDuration: const Duration(milliseconds: 180),
+        reverseTransitionDuration: const Duration(milliseconds: 180),
+        pageBuilder: (context, animation, secondaryAnimation) => AlarmScreen(
           title: _titleController.text.trim().isEmpty
               ? 'Reminder Preview'
               : _titleController.text.trim(),
@@ -349,6 +914,15 @@ class _ReminderModalState extends State<ReminderModal> {
           initialShowWaves: _alarmShowWaves,
           isPreview: true,
         ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOut,
+            ),
+            child: child,
+          );
+        },
       ),
     );
   }
@@ -935,11 +1509,9 @@ class _ReminderModalState extends State<ReminderModal> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            initialValue:
-                                ReminderAudioConfig.canonicalSoundName(
-                                  _soundType,
-                                ),
+                            initialValue: _soundType,
                             dropdownColor: cardBg,
+                            isExpanded: true,
                             decoration: InputDecoration(
                               labelText: 'ALARM AUDIO / SOUND',
                               labelStyle: GoogleFonts.lexend(
@@ -964,15 +1536,100 @@ class _ReminderModalState extends State<ReminderModal> {
                                 ),
                               ),
                             ),
+                            selectedItemBuilder: (context) {
+                              return _soundOptions.map((opt) {
+                                final isCustom =
+                                    ReminderAudioConfig.isCustomFile(opt);
+                                final displayName = _customAudioNames[opt] ??
+                                    ReminderAudioConfig.getDisplayName(
+                                      opt,
+                                      _customAudioNames,
+                                    );
+                                return Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        displayName,
+                                        style: GoogleFonts.lexend(
+                                          fontSize: 13,
+                                          color: textColor,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (isCustom)
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
+                                          _showEditAudioDialog(opt);
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          margin: const EdgeInsets.only(left: 6),
+                                          decoration: BoxDecoration(
+                                            color: primaryGreen
+                                                .withValues(alpha: 0.12),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.edit_outlined,
+                                            size: 14,
+                                            color: primaryGreen,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              }).toList();
+                            },
                             items: _soundOptions.map((opt) {
+                              final isCustom =
+                                  ReminderAudioConfig.isCustomFile(opt);
+                              final displayName = _customAudioNames[opt] ??
+                                  ReminderAudioConfig.getDisplayName(
+                                    opt,
+                                    _customAudioNames,
+                                  );
                               return DropdownMenuItem<String>(
                                 value: opt,
-                                child: Text(
-                                  opt,
-                                  style: GoogleFonts.lexend(
-                                    fontSize: 13,
-                                    color: textColor,
-                                  ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        displayName,
+                                        style: GoogleFonts.lexend(
+                                          fontSize: 13,
+                                          color: textColor,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (isCustom)
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .pop();
+                                          _showEditAudioDialog(opt);
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          margin:
+                                              const EdgeInsets.only(left: 6),
+                                          decoration: BoxDecoration(
+                                            color: primaryGreen
+                                                .withValues(alpha: 0.12),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.edit_outlined,
+                                            size: 14,
+                                            color: primaryGreen,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               );
                             }).toList(),
@@ -991,7 +1648,22 @@ class _ReminderModalState extends State<ReminderModal> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
+                        IconButton.filledTonal(
+                          onPressed: _pickCustomAudioFile,
+                          tooltip: 'Upload Audio File from Phone',
+                          style: IconButton.styleFrom(
+                            backgroundColor:
+                                primaryGreen.withValues(alpha: 0.15),
+                            padding: const EdgeInsets.all(8),
+                          ),
+                          icon: const Icon(
+                            Icons.file_upload_outlined,
+                            color: primaryGreen,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
                         IconButton.filledTonal(
                           onPressed: _toggleAudioPreview,
                           tooltip: _isPreviewPlaying
@@ -1003,6 +1675,7 @@ class _ReminderModalState extends State<ReminderModal> {
                                     0xFFEF4444,
                                   ).withValues(alpha: 0.15)
                                 : primaryGreen.withValues(alpha: 0.15),
+                            padding: const EdgeInsets.all(8),
                           ),
                           icon: Icon(
                             _isPreviewPlaying
@@ -1011,7 +1684,7 @@ class _ReminderModalState extends State<ReminderModal> {
                             color: _isPreviewPlaying
                                 ? const Color(0xFFEF4444)
                                 : primaryGreen,
-                            size: 28,
+                            size: 24,
                           ),
                         ),
                       ],
@@ -1134,6 +1807,177 @@ class _ReminderModalState extends State<ReminderModal> {
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
                       children: [
+                        // 0. Add Custom Background Button (Rectangular, exact same dimensions 95x150)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: InkWell(
+                            onTap: _pickCustomBackgroundImage,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: 95,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF1B2E23)
+                                    : const Color(0xFFF0FDF4),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: primaryGreen.withValues(alpha: 0.6),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: primaryGreen.withValues(alpha: 0.15),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.add_photo_alternate_outlined,
+                                      color: primaryGreen,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    child: Text(
+                                      'Add Custom\nBackground',
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.lexend(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark ? Colors.white : primaryGreen,
+                                        height: 1.25,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Custom Uploaded Backgrounds
+                        ..._customBgImages.map((customImg) {
+                          final isSelected =
+                              _alarmBgType == 'image' && _alarmBgValue == customImg;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _alarmBgType = 'image';
+                                  _alarmBgValue = customImg;
+                                });
+                                precacheImage(
+                                  ResizeImage(FileImage(File(customImg)), width: 1080),
+                                  context,
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 95,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? secondaryGreen
+                                        : (isDark
+                                              ? Colors.white12
+                                              : const Color(0xFFE2E8F0)),
+                                    width: isSelected ? 2.5 : 1.0,
+                                  ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Image.file(
+                                        File(customImg),
+                                        fit: BoxFit.cover,
+                                        cacheWidth: 250,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            color: isDark
+                                                ? const Color(0xFF1E2D24)
+                                                : Colors.grey.shade200,
+                                            child: const Icon(
+                                              Icons.broken_image_outlined,
+                                              color: Colors.grey,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      if (isSelected)
+                                        Container(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              margin: const EdgeInsets.all(5),
+                                              decoration: const BoxDecoration(
+                                                color: secondaryGreen,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.check_rounded,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      // Bin icon at bottom left corner
+                                      Align(
+                                        alignment: Alignment.bottomLeft,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5),
+                                          child: GestureDetector(
+                                            behavior: HitTestBehavior.opaque,
+                                            onTap: () =>
+                                                _confirmDeleteCustomBackground(
+                                              customImg,
+                                            ),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.65,
+                                                ),
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white.withValues(
+                                                    alpha: 0.35,
+                                                  ),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: const Icon(
+                                                Icons.delete_outline_rounded,
+                                                color: Colors.white,
+                                                size: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+
                         // 1. Image Wallpapers
                         ...AlarmBackgroundConfig.imageList.map((img) {
                           final isSelected =

@@ -94,8 +94,8 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2035),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -297,7 +297,12 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 14,
+          bottom: 60,
+        ),
         children: [
           if (isAladhan)
             const HijriDisclaimerChip(
@@ -515,7 +520,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
               ],
             ),
           ),
-          const SizedBox(height: 30),
+          // const SizedBox(height: 0),
         ],
       ),
     );
