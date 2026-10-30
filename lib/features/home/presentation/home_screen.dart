@@ -18,6 +18,7 @@ import '../../../shared/providers/user_profile_provider.dart';
 import '../../../shared/widgets/complete_profile_modal.dart';
 import '../../../shared/widgets/startup_permissions_modal.dart';
 import '../../quiet_hours/services/quiet_hours_permission_service.dart';
+import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'widgets/daily_ayah_card.dart';
 import 'widgets/forbidden_sajda_widget.dart';
 
@@ -147,9 +148,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return '$hours:$minutes:$seconds';
   }
 
-  _CurrentNamazInfo? _getCurrentNamazInfo(PrayerTimeResult? result) {
+  _CurrentNamazInfo? _getCurrentNamazInfo(
+    PrayerTimeResult? result, {
+    ForbiddenSajdaInfo? forbiddenInfo,
+  }) {
     if (result == null) return null;
     final now = DateTime.now();
+    final isFriday = now.weekday == DateTime.friday;
+
+    if (forbiddenInfo != null) {
+      return _CurrentNamazInfo(
+        forbiddenInfo.title,
+        forbiddenInfo.startTime,
+        forbiddenInfo.endTime,
+        Icons.block_rounded,
+        isProhibited: true,
+        prohibitedInfo: forbiddenInfo,
+      );
+    }
+
+    final sunriseEnd = result.sunrise.add(const Duration(minutes: 20));
+    final zawalStart = result.dhuhr.subtract(const Duration(minutes: 15));
+    final ghurubStart = result.maghrib.subtract(const Duration(minutes: 10));
 
     if (now.isAfter(result.fajr) && now.isBefore(result.sunrise)) {
       return _CurrentNamazInfo(
@@ -158,26 +178,58 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         result.sunrise,
         CupertinoIcons.cloud_sun_fill,
       );
-    } else if (now.isAfter(result.sunrise) && now.isBefore(result.dhuhr)) {
+    } else if (now.isAfter(result.sunrise) && now.isBefore(sunriseEnd)) {
+      final info = ForbiddenSajdaService.getSunriseInfo(result);
       return _CurrentNamazInfo(
-        'Sunrise',
-        result.sunrise,
-        result.dhuhr,
-        CupertinoIcons.sunrise_fill,
+        info.title,
+        info.startTime,
+        info.endTime,
+        Icons.block_rounded,
+        isProhibited: true,
+        prohibitedInfo: info,
+      );
+    } else if (now.isAfter(sunriseEnd) && now.isBefore(zawalStart)) {
+      return _CurrentNamazInfo(
+        'Ishraq',
+        sunriseEnd,
+        zawalStart,
+        CupertinoIcons.sun_min_fill,
+      );
+    } else if (now.isAfter(zawalStart) && now.isBefore(result.dhuhr)) {
+      final info = ForbiddenSajdaService.getZawalInfo(result);
+      return _CurrentNamazInfo(
+        info.title,
+        info.startTime,
+        info.endTime,
+        Icons.block_rounded,
+        isProhibited: true,
+        prohibitedInfo: info,
       );
     } else if (now.isAfter(result.dhuhr) && now.isBefore(result.asr)) {
       return _CurrentNamazInfo(
-        'Dhuhr',
+        isFriday ? 'Jumma' : 'Dhuhr',
         result.dhuhr,
         result.asr,
-        CupertinoIcons.sun_max_fill,
+        isFriday ? FlutterIslamicIcons.solidKaaba : CupertinoIcons.sun_max_fill,
+        isFriday: isFriday,
       );
-    } else if (now.isAfter(result.asr) && now.isBefore(result.maghrib)) {
+    } else if (now.isAfter(result.asr) && now.isBefore(ghurubStart)) {
       return _CurrentNamazInfo(
         'Asr',
         result.asr,
-        result.maghrib,
+        ghurubStart,
         CupertinoIcons.cloud_sun_fill,
+      );
+    } else if (now.isAfter(ghurubStart) && now.isBefore(result.maghrib)) {
+      final storage = ref.read(storageServiceProvider);
+      final info = ForbiddenSajdaService.getGhurubInfo(result, storage, date: now);
+      return _CurrentNamazInfo(
+        info.title,
+        info.startTime,
+        info.endTime,
+        Icons.block_rounded,
+        isProhibited: true,
+        prohibitedInfo: info,
       );
     } else if (now.isAfter(result.maghrib) && now.isBefore(result.isha)) {
       return _CurrentNamazInfo(
@@ -188,9 +240,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       );
     } else {
       final nextFajr = result.fajr.add(const Duration(days: 1));
+      final startIsha = now.isBefore(result.fajr)
+          ? result.isha.subtract(const Duration(days: 1))
+          : result.isha;
       return _CurrentNamazInfo(
         'Isha',
-        result.isha,
+        startIsha,
         nextFajr,
         CupertinoIcons.moon_stars_fill,
       );
@@ -220,7 +275,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final screenWidth = MediaQuery.of(context).size.width;
     final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 8;
-    final namazInfo = _getCurrentNamazInfo(prayerTimes);
+    final namazInfo = _getCurrentNamazInfo(
+      prayerTimes,
+      forbiddenInfo: forbiddenSajdaInfo,
+    );
+    final nextForbiddenWindow = prayerTimes != null
+        ? ForbiddenSajdaService.getNextForbiddenWindow(
+            prayerTimes: prayerTimes,
+            now: now,
+            storage: storage,
+          )
+        : null;
     final currentNamazName = namazInfo?.name ?? '---';
     final startTimeStr = namazInfo != null
         ? DateFormat('hh:mm a').format(namazInfo.start)
@@ -403,92 +468,220 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ),
 
-                                // Namaz Name with Icon on Left
-                                Row(
-                                  children: [
-                                    Icon(
-                                      namazInfo?.icon ??
-                                          CupertinoIcons.sun_max_fill,
-                                      size: 24,
-                                      color: const Color(0xFFD97724),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      currentNamazName,
-                                      style: const TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF2A531D),
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.white70,
-                                            blurRadius: 8,
-                                          ),
-                                        ],
+                                // Content below time digits: Show Prohibited Time Box if active, else Prayer details
+                                if (forbiddenSajdaInfo != null) ...[
+                                  const SizedBox(height: 10),
+                                  ForbiddenHomeBanner(
+                                    info: forbiddenSajdaInfo,
+                                    now: now,
+                                    onTap: () {
+                                      ForbiddenSajdaDetailModal.show(
+                                        context: context,
+                                        info: forbiddenSajdaInfo,
+                                      );
+                                    },
+                                  ),
+                                ] else ...[
+                                  // Namaz Name with Icon on Left
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        namazInfo?.icon ??
+                                            CupertinoIcons.sun_max_fill,
+                                        size: 24,
+                                        color: namazInfo?.isFriday == true
+                                            ? const Color(0xFF047857)
+                                            : const Color(0xFFD97724),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        currentNamazName,
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: namazInfo?.isFriday == true
+                                              ? const Color(0xFF047857)
+                                              : const Color(0xFF2A531D),
+                                          shadows: const [
+                                            Shadow(
+                                              color: Colors.white70,
+                                              blurRadius: 8,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (namazInfo?.isFriday == true) ...[
+                                        const SizedBox(width: 10),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 3.5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [
+                                                Color(0xFF047857),
+                                                Color(0xFFD97706),
+                                              ],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xFF047857)
+                                                    .withValues(alpha: 0.35),
+                                                blurRadius: 6,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.auto_awesome,
+                                                size: 12,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                'Jumma Mubarak',
+                                                style: TextStyle(
+                                                  fontSize: 11.5,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                  letterSpacing: 0.3,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
 
-                                // Start Time in Green
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFF16A34A),
-                                        shape: BoxShape.circle,
+                                  // Start Time in Green
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFF16A34A),
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Start: $startTimeStr',
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF15803D),
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.white70,
-                                            blurRadius: 4,
-                                          ),
-                                        ],
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Start: $startTimeStr',
+                                        style: const TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF15803D),
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.white70,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
 
-                                // End Time in Red
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFFDC2626),
-                                        shape: BoxShape.circle,
+                                  // End Time in Red
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFDC2626),
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'End: $endTimeStr',
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFFB91C1C),
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.white70,
-                                            blurRadius: 4,
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'End: $endTimeStr',
+                                        style: const TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFFB91C1C),
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.white70,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  // Upcoming Prohibited Window Chip (if approaching)
+                                  if (nextForbiddenWindow != null) ...[
+                                    const SizedBox(height: 6),
+                                    Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          ForbiddenSajdaDetailModal.show(
+                                            context: context,
+                                            info: nextForbiddenWindow,
+                                          );
+                                        },
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 3.5,
                                           ),
-                                        ],
+                                          decoration: BoxDecoration(
+                                            color: nextForbiddenWindow
+                                                .lightBgColor
+                                                .withValues(alpha: 0.9),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            border: Border.all(
+                                              color: nextForbiddenWindow
+                                                  .lightBorderColor,
+                                              width: 0.9,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ForbiddenSajdaIcon(
+                                                size: 14,
+                                                color: nextForbiddenWindow
+                                                    .primaryColor,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                'Next Prohibited: ${nextForbiddenWindow.title} at ${DateFormat('hh:mm a').format(nextForbiddenWindow.startTime)}',
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: nextForbiddenWindow
+                                                      .lightTextColor,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Icon(
+                                                Icons.info_outline_rounded,
+                                                size: 13,
+                                                color: nextForbiddenWindow
+                                                    .primaryColor,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
-                                ),
+                                ],
                               ],
                             ),
                           ),
@@ -523,41 +716,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          'REMAINING TIME',
+                                        Text(
+                                          forbiddenSajdaInfo != null
+                                              ? 'PROHIBITED WINDOW'
+                                              : 'REMAINING TIME',
                                           style: TextStyle(
                                             fontSize: 11.5,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 0.8,
-                                            color: Color(0xFF8C6D53),
+                                            color: forbiddenSajdaInfo != null
+                                                ? forbiddenSajdaInfo.primaryColor
+                                                : const Color(0xFF8C6D53),
                                           ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          (locationAsync.isLoading ||
-                                                  locationAsync.isRefreshing ||
-                                                  nextPrayer == null)
-                                              ? '---'
-                                              : nextPrayer.name,
-                                          style: const TextStyle(
+                                          forbiddenSajdaInfo != null
+                                              ? forbiddenSajdaInfo.pillText
+                                              : (locationAsync.isLoading ||
+                                                      locationAsync.isRefreshing ||
+                                                      nextPrayer == null)
+                                                  ? '---'
+                                                  : nextPrayer.name,
+                                          style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
-                                            color: Color(0xFF2A531D),
+                                            color: forbiddenSajdaInfo != null
+                                                ? forbiddenSajdaInfo.primaryColor
+                                                : const Color(0xFF2A531D),
                                           ),
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
-                                          (locationAsync.isLoading ||
-                                                  locationAsync.isRefreshing ||
-                                                  nextPrayer == null)
-                                              ? '--:--:--'
-                                              : _formatDuration(
-                                                  nextPrayer.currentRemaining,
-                                                ),
-                                          style: const TextStyle(
+                                          forbiddenSajdaInfo != null
+                                              ? _formatDuration(
+                                                  forbiddenSajdaInfo.endTime.difference(now),
+                                                )
+                                              : (locationAsync.isLoading ||
+                                                      locationAsync.isRefreshing ||
+                                                      nextPrayer == null)
+                                                  ? '--:--:--'
+                                                  : _formatDuration(
+                                                      nextPrayer.currentRemaining,
+                                                    ),
+                                          style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w900,
-                                            color: Color(0xFFD97724),
+                                            color: forbiddenSajdaInfo != null
+                                                ? forbiddenSajdaInfo.primaryColor
+                                                : const Color(0xFFD97724),
                                           ),
                                         ),
                                       ],
@@ -848,8 +1055,19 @@ class _CurrentNamazInfo {
   final DateTime start;
   final DateTime end;
   final IconData icon;
+  final bool isProhibited;
+  final ForbiddenSajdaInfo? prohibitedInfo;
+  final bool isFriday;
 
-  _CurrentNamazInfo(this.name, this.start, this.end, this.icon);
+  _CurrentNamazInfo(
+    this.name,
+    this.start,
+    this.end,
+    this.icon, {
+    this.isProhibited = false,
+    this.prohibitedInfo,
+    this.isFriday = false,
+  });
 }
 
 class _FeatureTile extends StatelessWidget {

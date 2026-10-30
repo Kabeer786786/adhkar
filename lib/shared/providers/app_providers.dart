@@ -190,10 +190,19 @@ final nextPrayerProvider = Provider<NextPrayerInfo?>((ref) {
   if (result == null) return null;
 
   final now = DateTime.now();
-  final times = result.toMap();
+  final isFriday = now.weekday == DateTime.friday;
+  final ishraqTime = result.sunrise.add(const Duration(minutes: 20));
 
-  for (final entry in times.entries) {
-    if (entry.key == 'Qiyam') continue;
+  final prayerSchedule = <String, DateTime>{
+    'Fajr': result.fajr,
+    'Ishraq': ishraqTime,
+    isFriday ? 'Jumma' : 'Dhuhr': result.dhuhr,
+    'Asr': result.asr,
+    'Maghrib': result.maghrib,
+    'Isha': result.isha,
+  };
+
+  for (final entry in prayerSchedule.entries) {
     if (entry.value.isAfter(now)) {
       return NextPrayerInfo(
         name: entry.key,
@@ -228,6 +237,10 @@ final currentPrayerProvider = Provider<NextPrayerInfo?>((ref) {
   if (result == null) return null;
 
   final now = DateTime.now();
+  final isFriday = now.weekday == DateTime.friday;
+  final sunriseEnd = result.sunrise.add(const Duration(minutes: 20));
+  final zawalStart = result.dhuhr.subtract(const Duration(minutes: 15));
+  final ghurubStart = result.maghrib.subtract(const Duration(minutes: 10));
 
   if (now.isBefore(result.fajr)) {
     return NextPrayerInfo(
@@ -235,21 +248,45 @@ final currentPrayerProvider = Provider<NextPrayerInfo?>((ref) {
       time: result.fajr,
       remaining: result.fajr.difference(now),
     );
-  } else if (now.isBefore(result.dhuhr)) {
+  } else if (now.isBefore(result.sunrise)) {
     return NextPrayerInfo(
       name: 'Fajr',
+      time: result.sunrise,
+      remaining: result.sunrise.difference(now),
+    );
+  } else if (now.isBefore(sunriseEnd)) {
+    return NextPrayerInfo(
+      name: 'Sunrise (Prohibited)',
+      time: sunriseEnd,
+      remaining: sunriseEnd.difference(now),
+    );
+  } else if (now.isBefore(zawalStart)) {
+    return NextPrayerInfo(
+      name: 'Ishraq',
+      time: zawalStart,
+      remaining: zawalStart.difference(now),
+    );
+  } else if (now.isBefore(result.dhuhr)) {
+    return NextPrayerInfo(
+      name: 'Zawal (Prohibited)',
       time: result.dhuhr,
       remaining: result.dhuhr.difference(now),
     );
   } else if (now.isBefore(result.asr)) {
     return NextPrayerInfo(
-      name: 'Dhuhr',
+      name: isFriday ? 'Jumma' : 'Dhuhr',
       time: result.asr,
       remaining: result.asr.difference(now),
     );
-  } else if (now.isBefore(result.maghrib)) {
+  } else if (now.isBefore(ghurubStart)) {
     return NextPrayerInfo(
       name: 'Asr',
+      time: ghurubStart,
+      remaining: ghurubStart.difference(now),
+    );
+  } else if (now.isBefore(result.maghrib)) {
+    return NextPrayerInfo(
+      name: 'Sunset (Prohibited)',
       time: result.maghrib,
       remaining: result.maghrib.difference(now),
     );

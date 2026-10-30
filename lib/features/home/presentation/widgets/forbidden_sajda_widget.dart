@@ -71,12 +71,12 @@ class ForbiddenSajdaService {
   /// When enabled, cycles through all 3 forbidden toasts for 20 seconds each for testing/demo.
   static bool isTestMode = false;
 
-  static ForbiddenSajdaInfo _buildSunriseInfo(DateTime start, DateTime end) {
+  static ForbiddenSajdaInfo buildSunriseInfo(DateTime start, DateTime end) {
     return ForbiddenSajdaInfo(
       type: ForbiddenSajdaType.sunrise,
-      title: 'Sunrise Forbidden Window (Tulu)',  
+      title: 'Sunrise Prohibited Window (Tulu)',  
       arabicTitle: 'طُلُوعُ الشَّمْسِ',
-      pillText: 'Sajda Forbidden',
+      pillText: 'Sajda Prohibited',
       shortReason: 'Prohibited for 20 minutes after sunrise',
       fullMessage:
           'Prostration and prayer are strictly prohibited from sunrise for 20 minutes until the sun has risen high above the horizon.',
@@ -96,12 +96,12 @@ class ForbiddenSajdaService {
     );
   }
 
-  static ForbiddenSajdaInfo _buildZawalInfo(DateTime start, DateTime end) {
+  static ForbiddenSajdaInfo buildZawalInfo(DateTime start, DateTime end) {
     return ForbiddenSajdaInfo(
       type: ForbiddenSajdaType.zawal,
-      title: 'Zawal Forbidden Window (Zenith)',
+      title: 'Zawal Prohibited Window (Zenith)',
       arabicTitle: 'اسْتِوَاءُ الشَّمْسِ (الزَّوَال)',
-      pillText: 'Sajda Forbidden',
+      pillText: 'Sajda Prohibited',
       shortReason: 'Prohibited for 15 minutes before Dhuhr',
       fullMessage:
           'Prostration and prayer are prohibited for 15 minutes before Dhuhr while the sun is at its midday zenith.',
@@ -121,16 +121,16 @@ class ForbiddenSajdaService {
     );
   }
 
-  static ForbiddenSajdaInfo _buildGhurubInfo(
+  static ForbiddenSajdaInfo buildGhurubInfo(
     DateTime start,
     DateTime end, {
     required bool hasPrayedAsr,
   }) {
     return ForbiddenSajdaInfo(
       type: ForbiddenSajdaType.ghurub,
-      title: 'Pre-Maghrib Forbidden Window (Ghurub)',
+      title: 'Pre-Maghrib Prohibited Window (Ghurub)',
       arabicTitle: 'غُرُوبُ الشَّمْسِ',
-      pillText: 'Sajda Forbidden (Asr Exception)',
+      pillText: 'Sajda Prohibited (Asr Exception)',
       shortReason: 'Prohibited 10 minutes before Maghrib',
       fullMessage:
           'Prostration and voluntary prayers are prohibited during the 10 minutes before Maghrib as the sun sets.',
@@ -152,6 +152,49 @@ class ForbiddenSajdaService {
     );
   }
 
+  static ForbiddenSajdaInfo getSunriseInfo(PrayerTimeResult prayerTimes) {
+    final start = prayerTimes.sunrise;
+    final end = start.add(const Duration(minutes: 20));
+    return buildSunriseInfo(start, end);
+  }
+
+  static ForbiddenSajdaInfo getZawalInfo(PrayerTimeResult prayerTimes) {
+    final end = prayerTimes.dhuhr;
+    final start = end.subtract(const Duration(minutes: 15));
+    return buildZawalInfo(start, end);
+  }
+
+  static ForbiddenSajdaInfo getGhurubInfo(
+    PrayerTimeResult prayerTimes,
+    StorageService storage, {
+    DateTime? date,
+  }) {
+    final d = date ?? DateTime.now();
+    final dateKey = DateFormat('yyyy-MM-dd').format(d);
+    final asrRecords = storage.getSubPrayerRecords(dateKey, 'Asr');
+    final hasPrayedAsr = asrRecords.contains('asr_farz');
+    final end = prayerTimes.maghrib;
+    final start = end.subtract(const Duration(minutes: 10));
+    return buildGhurubInfo(start, end, hasPrayedAsr: hasPrayedAsr);
+  }
+
+  static ForbiddenSajdaInfo? getNextForbiddenWindow({
+    required PrayerTimeResult prayerTimes,
+    required DateTime now,
+    required StorageService storage,
+  }) {
+    final sunrise = getSunriseInfo(prayerTimes);
+    if (now.isBefore(sunrise.startTime)) return sunrise;
+
+    final zawal = getZawalInfo(prayerTimes);
+    if (now.isBefore(zawal.startTime)) return zawal;
+
+    final ghurub = getGhurubInfo(prayerTimes, storage, date: now);
+    if (now.isBefore(ghurub.startTime)) return ghurub;
+
+    return null;
+  }
+
   static ForbiddenSajdaInfo? getForbiddenSajdaInfo({
     required PrayerTimeResult? prayerTimes,
     required DateTime now,
@@ -165,18 +208,18 @@ class ForbiddenSajdaService {
         final start =
             prayerTimes?.sunrise ?? now.subtract(const Duration(minutes: 5));
         final end = start.add(const Duration(minutes: 20));
-        return _buildSunriseInfo(start, end);
+        return buildSunriseInfo(start, end);
       } else if (cycle == 1) {
         final end = prayerTimes?.dhuhr ?? now.add(const Duration(minutes: 10));
         final start = end.subtract(const Duration(minutes: 15));
-        return _buildZawalInfo(start, end);
+        return buildZawalInfo(start, end);
       } else {
         final dateKey = DateFormat('yyyy-MM-dd').format(now);
         final asrRecords = storage.getSubPrayerRecords(dateKey, 'Asr');
         final hasPrayedAsr = asrRecords.contains('asr_farz');
         final end = prayerTimes?.maghrib ?? now.add(const Duration(minutes: 7));
         final start = end.subtract(const Duration(minutes: 10));
-        return _buildGhurubInfo(start, end, hasPrayedAsr: hasPrayedAsr);
+        return buildGhurubInfo(start, end, hasPrayedAsr: hasPrayedAsr);
       }
     }
 
@@ -190,14 +233,14 @@ class ForbiddenSajdaService {
     final sunriseStart = prayerTimes.sunrise;
     final sunriseEnd = sunriseStart.add(const Duration(minutes: 20));
     if (isInWindow(sunriseStart, sunriseEnd)) {
-      return _buildSunriseInfo(sunriseStart, sunriseEnd);
+      return buildSunriseInfo(sunriseStart, sunriseEnd);
     }
 
     // 2. Before Dhuhr 15 mins
     final zawalStart = prayerTimes.dhuhr.subtract(const Duration(minutes: 15));
     final zawalEnd = prayerTimes.dhuhr;
     if (isInWindow(zawalStart, zawalEnd)) {
-      return _buildZawalInfo(zawalStart, zawalEnd);
+      return buildZawalInfo(zawalStart, zawalEnd);
     }
 
     // 3. Before Maghrib 10 mins
@@ -209,7 +252,7 @@ class ForbiddenSajdaService {
       final dateKey = DateFormat('yyyy-MM-dd').format(now);
       final asrRecords = storage.getSubPrayerRecords(dateKey, 'Asr');
       final hasPrayedAsr = asrRecords.contains('asr_farz');
-      return _buildGhurubInfo(
+      return buildGhurubInfo(
         ghurubStart,
         ghurubEnd,
         hasPrayedAsr: hasPrayedAsr,
@@ -687,3 +730,344 @@ class ForbiddenSajdaDetailModal extends StatelessWidget {
     );
   }
 }
+
+/// A clean box placed between prayers in the prayer timetable
+/// showing the prohibited window with its theme color (Red for Sunrise, Yellow/Amber for Zawal & Ghurub)
+/// and tapping opens [ForbiddenSajdaDetailModal].
+class ForbiddenTimeCard extends StatelessWidget {
+  final ForbiddenSajdaInfo info;
+  final bool isCurrent;
+  final VoidCallback? onTap;
+
+  const ForbiddenTimeCard({
+    super.key,
+    required this.info,
+    this.isCurrent = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? info.darkBgColor : info.lightBgColor;
+    final borderColor = isCurrent
+        ? info.primaryColor
+        : (isDark ? info.darkBorderColor : info.lightBorderColor);
+    final textColor = isDark ? info.darkTextColor : info.lightTextColor;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            if (onTap != null) {
+              onTap!();
+            } else {
+              ForbiddenSajdaDetailModal.show(context: context, info: info);
+            }
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: borderColor,
+                width: isCurrent ? 1.8 : 1.2,
+              ),
+              boxShadow: isCurrent
+                  ? [
+                      BoxShadow(
+                        color: info.primaryColor.withValues(alpha: 0.15),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              children: [
+                ForbiddenSajdaIcon(
+                  size: 26,
+                  color: info.primaryColor,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              info.title,
+                              style: TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w700,
+                                color: textColor,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isCurrent) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: info.primaryColor,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                'ACTIVE NOW',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${info.shortReason} • ${info.formattedTimeRange}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: textColor.withValues(alpha: 0.85),
+                        ),
+                      ),
+                      if (info.isAsrExceptionApplicable) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          info.hasPrayedAsr
+                              ? 'Asr already prayed today'
+                              : 'Exception: unperformed Asr Farz may still be offered',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w600,
+                            color: info.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 20,
+                  color: info.primaryColor,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Prominent, elegant box displayed on the Home Screen below the time digits
+/// when a prohibited prayer window is currently active.
+/// Displays name, start time, end time, and live remaining countdown.
+/// On click, it opens the [ForbiddenSajdaDetailModal] showing why.
+class ForbiddenHomeBanner extends StatelessWidget {
+  final ForbiddenSajdaInfo info;
+  final DateTime now;
+  final VoidCallback? onTap;
+
+  const ForbiddenHomeBanner({
+    super.key,
+    required this.info,
+    required this.now,
+    this.onTap,
+  });
+
+  String _formatDuration(Duration d) {
+    if (d.isNegative) return '0:00:00';
+    final hours = d.inHours.toString();
+    final minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (d.inSeconds % 60).toString().padLeft(2, '0');
+    return '$hours:$minutes:$seconds';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final startStr = DateFormat('hh:mm a').format(info.startTime);
+    final endStr = DateFormat('hh:mm a').format(info.endTime);
+    final remainingDiff = info.endTime.difference(now);
+    final remainingStr = _formatDuration(remainingDiff);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          if (onTap != null) {
+            onTap!();
+          } else {
+            ForbiddenSajdaDetailModal.show(context: context, info: info);
+          }
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: info.lightBgColor.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: info.lightBorderColor,
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: info.primaryColor.withValues(alpha: 0.12),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header Row: Icon + Name + Prohibited Tag
+              Row(
+                children: [
+                  ForbiddenSajdaIcon(
+                    size: 22,
+                    color: info.primaryColor,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      info.title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: info.lightTextColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: info.primaryColor,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'PROHIBITED',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+
+              // Start and End Timings Row
+              Row(
+                children: [
+                  // Start Time
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF16A34A),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Start: $startStr',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF15803D),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 14),
+                  // End Time
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: info.primaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'End: $endStr',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: info.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+
+              // Remaining Time and Click Action Row
+              Row(
+                children: [
+                  Icon(
+                    Icons.timer_outlined,
+                    size: 14,
+                    color: info.primaryColor,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Remaining: $remainingStr',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: info.primaryColor,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    'Tap to see why ➔',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: info.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

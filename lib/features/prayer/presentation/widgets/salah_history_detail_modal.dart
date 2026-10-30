@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/utils/hijri_date_helper.dart';
@@ -275,7 +276,10 @@ class SalahHistoryDetailModal extends StatelessWidget {
       String prayerKey,
       List<_SubPrayerDef> defs,
     ) {
-      final completedSubIds = storage.getSubPrayerRecords(dateKey, prayerKey);
+      final completedSubIds = [
+        ...storage.getSubPrayerRecords(dateKey, prayerKey),
+        if (prayerKey == 'Ishraq') ...storage.getSubPrayerRecords(dateKey, 'Shuruq'),
+      ];
       return defs.map((def) {
         return _PrayerGroupItem(
           name: def.name,
@@ -284,6 +288,8 @@ class SalahHistoryDetailModal extends StatelessWidget {
         );
       }).toList();
     }
+
+    final isFriday = date.weekday == DateTime.friday;
 
     return [
       _PrayerGroup(
@@ -297,26 +303,34 @@ class SalahHistoryDetailModal extends StatelessWidget {
         ]),
       ),
       _PrayerGroup(
-        title: 'Shuruq',
-        subtitle: 'Sunrise',
-        icon: CupertinoIcons.sunrise_fill,
+        title: 'Ishraq',
+        subtitle: 'Post-Sunrise',
+        icon: CupertinoIcons.sun_min_fill,
         iconColor: const Color(0xFFF59E0B),
-        items: getSubItems('Shuruq', const [
+        items: getSubItems('Ishraq', const [
           _SubPrayerDef('shuruq_ishraq', 'Ishraq Nafeel', 2),
           _SubPrayerDef('shuruq_chast', 'Chast Nafeel', 2),
         ]),
       ),
       _PrayerGroup(
-        title: 'Dhuhr',
-        subtitle: 'Noon',
-        icon: CupertinoIcons.sun_max_fill,
-        iconColor: const Color(0xFFD97706),
-        items: getSubItems('Dhuhr', const [
-          _SubPrayerDef('dhuhr_sunnat_1', 'Sunnat (Before)', 4),
-          _SubPrayerDef('dhuhr_farz', 'Farz', 4),
-          _SubPrayerDef('dhuhr_sunnat_2', 'Sunnat (After)', 2),
-          _SubPrayerDef('dhuhr_nafeel', 'Nafeel', 2),
-        ]),
+        title: isFriday ? 'Jumma' : 'Dhuhr',
+        subtitle: isFriday ? 'Friday Congregational Prayer (14 Rak\'ats)' : 'Noon',
+        icon: isFriday ? FlutterIslamicIcons.solidKaaba : CupertinoIcons.sun_max_fill,
+        iconColor: isFriday ? const Color(0xFF047857) : const Color(0xFFD97706),
+        items: isFriday
+            ? getSubItems('Dhuhr', const [
+                _SubPrayerDef('jumma_sunnat_1', 'Sunnat (Before Farz)', 4),
+                _SubPrayerDef('jumma_farz', 'Jummah Farz', 2),
+                _SubPrayerDef('jumma_sunnat_2', 'Sunnat (After Farz)', 2),
+                _SubPrayerDef('jumma_sunnat_3', 'Sunnat (Additional)', 4),
+                _SubPrayerDef('jumma_nafeel', 'Nafeel', 2),
+              ])
+            : getSubItems('Dhuhr', const [
+                _SubPrayerDef('dhuhr_sunnat_1', 'Sunnat (Before)', 4),
+                _SubPrayerDef('dhuhr_farz', 'Farz', 4),
+                _SubPrayerDef('dhuhr_sunnat_2', 'Sunnat (After)', 2),
+                _SubPrayerDef('dhuhr_nafeel', 'Nafeel', 2),
+              ]),
       ),
       _PrayerGroup(
         title: 'Asr',
