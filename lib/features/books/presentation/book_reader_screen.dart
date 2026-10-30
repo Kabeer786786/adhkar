@@ -7,8 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../data/books_provider.dart';
+import '../domain/book_content_block.dart';
 import '../domain/book_model.dart';
 import 'widgets/book_content_renderer.dart';
 import 'widgets/book_vertical_scrollbar.dart';
@@ -97,14 +99,10 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
   late final ScrollController _scrollController;
   final List<GlobalKey> _chapterKeys = [];
 
-  // Bottom Floating Dock State
-  bool _isControlsOpen = false;
-  int _activeTab = 0; // 0 = Contents, 1 = Theme, 2 = Text Size
-
+  // Reading controls state
+  bool _isThemePanelOpen = false;
   int _selectedChapterIndex = 0;
-  int _readingTheme =
-      0; // 0 = Light (default), 1 = Sepia, 2 = OLED Dark, 3 = Charcoal
-  double _fontSize = 16.0;
+  final double _fontSize = 16.0;
 
   static const List<Color> _bgColors = [
     Color(0xFFFFFFFF), // Light (default)
@@ -199,9 +197,9 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-    if (_isControlsOpen) {
+    if (_isThemePanelOpen) {
       setState(() {
-        _isControlsOpen = false;
+        _isThemePanelOpen = false;
       });
     }
 
@@ -236,7 +234,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
 
     setState(() {
       _selectedChapterIndex = chapterIndex;
-      _isControlsOpen = false;
+      _isThemePanelOpen = false;
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -278,11 +276,12 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
   @override
   Widget build(BuildContext context) {
     final chapters = widget.book.chapters;
-    final isDark = _readingTheme == 2 || _readingTheme == 3;
-    final bgColor = _bgColors[_readingTheme];
-    final cardBgColor = _cardBgColors[_readingTheme];
-    final textColor = _textColors[_readingTheme];
-    final accentColor = _accentColors[_readingTheme];
+    final readingTheme = ref.watch(readingThemeProvider);
+    final isDark = readingTheme == 2 || readingTheme == 3;
+    final bgColor = _bgColors[readingTheme];
+    final cardBgColor = _cardBgColors[readingTheme];
+    final textColor = _textColors[readingTheme];
+    final accentColor = _accentColors[readingTheme];
 
     final double bottomInset = MediaQuery.of(context).padding.bottom;
 
@@ -309,7 +308,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 8),
             child: Text(
               widget.book.title,
               maxLines: 1,
@@ -322,6 +321,40 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
               ),
             ),
           ),
+          actions: [
+            // Table of Contents Action
+            if (chapters.length > 1)
+              IconButton(
+                icon: const Icon(Icons.format_list_bulleted_rounded, size: 22),
+                color: textColor,
+                tooltip: 'Table of Contents',
+                onPressed: () => _showTableOfContentsModal(
+                  context,
+                  chapters: chapters,
+                  isDark: isDark,
+                  textColor: textColor,
+                  accentColor: accentColor,
+                  cardBgColor: cardBgColor,
+                ),
+              ),
+            // Reading Theme Toggle Action
+            IconButton(
+              icon: Icon(
+                _isThemePanelOpen
+                    ? Icons.palette_rounded
+                    : Icons.palette_outlined,
+                color: textColor,
+                size: 22,
+              ),
+              tooltip: 'Reading Theme',
+              onPressed: () {
+                setState(() {
+                  _isThemePanelOpen = !_isThemePanelOpen;
+                });
+              },
+            ),
+            const SizedBox(width: 4),
+          ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1),
             child: Container(
@@ -337,8 +370,8 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
             // Continuous Reading View
             GestureDetector(
               onTap: () {
-                if (_isControlsOpen) {
-                  setState(() => _isControlsOpen = false);
+                if (_isThemePanelOpen) {
+                  setState(() => _isThemePanelOpen = false);
                 }
               },
               child: chapters.isEmpty
@@ -346,7 +379,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   : SingleChildScrollView(
                       controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 84),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 32),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: List.generate(chapters.length, (chapIdx) {
@@ -363,8 +396,8 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                               // 1. Edge-to-Edge Section Divider (Only between chapters; Chapter 1 has none)
                               if (chapIdx > 0) _buildSectionDivider(isDark),
 
-                              // 2. Chapter Content starting with Hero Header Box (Key placed here so divider is above and hides on scroll)
-                              RepaintBoundary(
+                              // 2. Chapter Content starting with Hero Header Box (KeyedSubtree avoids raster cache blur)
+                              KeyedSubtree(
                                 key: chapIdx < _chapterKeys.length
                                     ? _chapterKeys[chapIdx]
                                     : null,
@@ -391,19 +424,14 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,
-                                        children: [
-                                          // 3. Chapter Content Blocks (Justified text & minimal padding)
-                                          ...blocks.map(
-                                            (b) => BookContentRenderer(
-                                              block: b,
-                                              fontSize: _fontSize,
-                                              isDark: isDark,
-                                              textColor: textColor,
-                                              accentColor: accentColor,
-                                              cardBgColor: cardBgColor,
-                                            ),
-                                          ),
-                                        ],
+                                        children: _buildChapterBlocks(
+                                          blocks,
+                                          fontSize: _fontSize,
+                                          isDark: isDark,
+                                          textColor: textColor,
+                                          accentColor: accentColor,
+                                          cardBgColor: cardBgColor,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -427,130 +455,108 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
               ),
             ),
 
-            // Backdrop dismissal layer when modal card is open
-            if (_isControlsOpen)
-              Positioned.fill(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => setState(() => _isControlsOpen = false),
-                  child: Container(
-                    color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.25),
-                  ),
-                ),
-              ),
-
-            // Floating Active Control Card (Animated with scale, slide, and fade)
-            Positioned(
-              left: 14,
-              right: 14,
-              bottom: bottomInset + 72,
-              child: AnimatedScale(
-                scale: _isControlsOpen ? 1.0 : 0.88,
-                duration: const Duration(milliseconds: 240),
-                curve: Curves.easeOutCubic,
-                alignment: Alignment.bottomRight,
-                child: AnimatedOpacity(
-                  opacity: _isControlsOpen ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: IgnorePointer(
-                    ignoring: !_isControlsOpen,
-                    child: _buildActiveControlPanel(
-                      context,
-                      isDark: isDark,
-                      textColor: textColor,
-                      accentColor: accentColor,
-                      cardBgColor: cardBgColor,
+            // Top Floating Theme Selection Dropdown (Matches SciIslamDetailScreen)
+            if (_isThemePanelOpen)
+              Positioned(
+                top: 8,
+                right: 16,
+                child: Container(
+                  width: 250,
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF18181C) : Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.15)
+                          : Colors.black.withValues(alpha: 0.1),
+                      width: 1,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black
+                            .withValues(alpha: isDark ? 0.45 : 0.18),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ),
-
-            // Bottom Floating Preference / Settings Action Bar (Circular Buttons)
-            Positioned(
-              right: 16,
-              bottom: bottomInset + 14,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 3 Expanded circular action buttons (Animated)
-                  AnimatedOpacity(
-                    opacity: _isControlsOpen ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: IgnorePointer(
-                      ignoring: !_isControlsOpen,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // 1. Contents Circular Button
-                          _buildCircularDockButton(
-                            icon: Icons.format_list_bulleted_rounded,
-                            tooltip: 'Table of Contents',
-                            isSelected: _activeTab == 0,
-                            isDark: isDark,
-                            accentColor: accentColor,
-                            onTap: () => setState(() => _activeTab = 0),
+                          Text(
+                            'READING THEME',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: textColor.withValues(alpha: 0.7),
+                              letterSpacing: 0.8,
+                            ),
                           ),
-                          const SizedBox(width: 10),
-
-                          // 2. Theme Circular Button
-                          _buildCircularDockButton(
-                            icon: Icons.palette_outlined,
-                            tooltip: 'Reading Theme',
-                            isSelected: _activeTab == 1,
-                            isDark: isDark,
-                            accentColor: accentColor,
-                            onTap: () => setState(() => _activeTab = 1),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, size: 18),
+                            color: textColor.withValues(alpha: 0.6),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () =>
+                                setState(() => _isThemePanelOpen = false),
                           ),
-                          const SizedBox(width: 10),
-
-                          // 3. Text Size Circular Button
-                          _buildCircularDockButton(
-                            icon: Icons.format_size_rounded,
-                            tooltip: 'Text Size',
-                            isSelected: _activeTab == 2,
-                            isDark: isDark,
-                            accentColor: accentColor,
-                            onTap: () => setState(() => _activeTab = 2),
-                          ),
-                          const SizedBox(width: 12),
                         ],
                       ),
-                    ),
-                  ),
-
-                  // Main Toggle Circular FAB (Open / Close with smooth animation)
-                  AnimatedOpacity(
-                    opacity: 1.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: IgnorePointer(
-                      ignoring: false,
-                      child: _buildCircularDockButton(
-                        icon: _isControlsOpen
-                            ? Icons.close_rounded
-                            : Icons.tune_rounded,
-                        tooltip: _isControlsOpen
-                            ? 'Close Controls'
-                            : 'Reading Controls',
-                        isSelected: _isControlsOpen,
-                        isDark: isDark,
-                        accentColor: accentColor,
-                        turns: _isControlsOpen ? 0.25 : 0.0,
-                        isMain: true,
-                        onTap: () {
-                          setState(() {
-                            _isControlsOpen = !_isControlsOpen;
-                            if (_isControlsOpen) {
-                              _activeTab = 0; // Default to Contents
-                            }
-                          });
-                        },
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // 1. Light Mode (White with visible subtle border)
+                          _buildThemeCircle(
+                            color: const Color(0xFFFFFFFF),
+                            borderColor: const Color(0xFF2A531D),
+                            checkColor: const Color(0xFF2A531D),
+                            isSelected: readingTheme == 0,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(0),
+                          ),
+                          // 2. Sepia Mode (Warm Cream)
+                          _buildThemeCircle(
+                            color: const Color(0xFFFBF0D9),
+                            borderColor: const Color(0xFF8C4A14),
+                            checkColor: const Color(0xFF422006),
+                            isSelected: readingTheme == 1,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(1),
+                          ),
+                          // 3. OLED Black Mode (Deep Black)
+                          _buildThemeCircle(
+                            color: const Color(0xFF0F0F12),
+                            borderColor: const Color(0xFFA3E635),
+                            checkColor: const Color(0xFFA3E635),
+                            isSelected: readingTheme == 2,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(2),
+                          ),
+                          // 4. Charcoal Slate Mode
+                          _buildThemeCircle(
+                            color: const Color(0xFF1E293B),
+                            borderColor: const Color(0xFF38BDF8),
+                            checkColor: const Color(0xFF38BDF8),
+                            isSelected: readingTheme == 3,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(3),
+                          ),
+                        ],
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -649,477 +655,232 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
     );
   }
 
-  /// Circular Dock Action Button in the bottom right toolbar (No border)
-  Widget _buildCircularDockButton({
-    required IconData icon,
-    required String tooltip,
-    required bool isSelected,
-    required bool isDark,
-    required Color accentColor,
-    required VoidCallback onTap,
-    double? turns,
-    bool isMain = false,
-  }) {
-    final bgColor = isMain
-        ? (isDark ? const Color(0xFFA3E635) : const Color(0xFF2A531D))
-        : isSelected
-        ? (isDark ? const Color(0xFFA3E635) : const Color(0xFF2A531D))
-        : (isDark ? const Color(0xFF1E1E24) : Colors.white);
-
-    final fgColor = isMain
-        ? (isDark ? Colors.black : Colors.white)
-        : isSelected
-        ? (isDark ? Colors.black : Colors.white)
-        : (isDark ? Colors.white70 : const Color(0xFF1A3512));
-
-    final size = isMain ? 50.0 : 44.0;
-    final iconSize = isMain ? 24.0 : 20.0;
-
-    Widget iconWidget = Icon(icon, color: fgColor, size: iconSize);
-
-    if (turns != null) {
-      iconWidget = AnimatedRotation(
-        turns: turns,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-        child: iconWidget,
-      );
-    }
-
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: bgColor,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          shape: const CircleBorder(),
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: onTap,
-            child: Center(child: iconWidget),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Floating Card Panel containing the active tool: Contents, Theme, or Text Size (No border, expanded height)
-  Widget _buildActiveControlPanel(
-    BuildContext context, {
+  /// Builds chapter content blocks, pairing consecutive image blocks into 2-in-a-row layout
+  List<Widget> _buildChapterBlocks(
+    List<BookContentBlock> blocks, {
+    required double fontSize,
     required bool isDark,
     required Color textColor,
     required Color accentColor,
     required Color cardBgColor,
   }) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final panelBg = isDark ? const Color(0xFF18181C) : Colors.white;
-
-    return Container(
-      constraints: BoxConstraints(maxHeight: screenHeight * 0.72),
-      decoration: BoxDecoration(
-        color: panelBg,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.1)
-              : Colors.black.withValues(alpha: 0.08),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.2),
-            blurRadius: 24,
-            offset: const Offset(0, 6),
+    final widgets = <Widget>[];
+    int i = 0;
+    while (i < blocks.length) {
+      if (i + 1 < blocks.length &&
+          blocks[i].type == BookBlockType.image &&
+          blocks[i + 1].type == BookBlockType.image) {
+        final img1 = blocks[i];
+        final img2 = blocks[i + 1];
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: BookContentRenderer(
+                    block: img1,
+                    fontSize: fontSize,
+                    isDark: isDark,
+                    textColor: textColor,
+                    accentColor: accentColor,
+                    cardBgColor: cardBgColor,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: BookContentRenderer(
+                    block: img2,
+                    fontSize: fontSize,
+                    isDark: isDark,
+                    textColor: textColor,
+                    accentColor: accentColor,
+                    cardBgColor: cardBgColor,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 220),
-          child: _activeTab == 0
-              ? _buildContentsTab(isDark, textColor, accentColor, cardBgColor)
-              : (_activeTab == 1
-                    ? _buildThemeTab(isDark, textColor, accentColor)
-                    : _buildTextSizeTab(isDark, textColor, accentColor)),
-        ),
-      ),
-    );
+        );
+        i += 2;
+      } else {
+        widgets.add(
+          BookContentRenderer(
+            block: blocks[i],
+            fontSize: fontSize,
+            isDark: isDark,
+            textColor: textColor,
+            accentColor: accentColor,
+            cardBgColor: cardBgColor,
+          ),
+        );
+        i++;
+      }
+    }
+    return widgets;
   }
 
-  /// 1. Contents Tab (No borders, expanded box size, clean list)
-  Widget _buildContentsTab(
-    bool isDark,
-    Color textColor,
-    Color accentColor,
-    Color cardBgColor,
-  ) {
-    final chapters = widget.book.chapters;
-
-    return Column(
-      key: const ValueKey('tab_contents'),
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Heading Banner: Chapter count & title
-        Container(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF22242A) : const Color(0xFFF1F5F9),
+  void _showTableOfContentsModal(
+    BuildContext context, {
+    required List<BookChapter> chapters,
+    required bool isDark,
+    required Color textColor,
+    required Color accentColor,
+    required Color cardBgColor,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.72,
           ),
-          child: Row(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF18181C) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.2),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 8),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: textColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'TABLE OF CONTENTS',
-                      style: TextStyle(
-                        fontSize: 13,
+                      style: GoogleFonts.outfit(
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? const Color(0xFFA3E635)
-                            : const Color(0xFF1A3512),
-                        letterSpacing: 0.5,
+                        color: textColor,
+                        letterSpacing: 0.8,
                       ),
                     ),
-                    const SizedBox(height: 2),
                     Text(
                       '${chapters.length} Chapters',
                       style: TextStyle(
                         fontSize: 12,
-                        color: textColor.withValues(alpha: 0.65),
+                        color: textColor.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.close_rounded, size: 20),
-                color: textColor.withValues(alpha: 0.6),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () => setState(() => _isControlsOpen = false),
+              Divider(
+                color: isDark ? Colors.white12 : Colors.black12,
+                height: 1,
               ),
-            ],
-          ),
-        ),
-
-        // Chapter List (Clean chapter name + 1-line description, no borders)
-        Flexible(
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            itemCount: chapters.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
-            itemBuilder: (context, idx) {
-              final chap = chapters[idx];
-              final isSelected = idx == _selectedChapterIndex;
-
-              return Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _scrollToChapter(idx),
-                  borderRadius: BorderRadius.circular(14),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? (isDark
-                                ? const Color(0xFF282C34)
-                                : const Color(0xFFE2E8F0))
-                          : (isDark
-                                ? const Color(0xFF1E2026)
-                                : const Color(0xFFF8FAFC)),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Row(
-                      children: [
-                        // Chapter Number Badge
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? accentColor
-                                : textColor.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${idx + 1}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? (isDark ? Colors.black : Colors.white)
-                                    : textColor,
-                              ),
-                            ),
-                          ),
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  itemCount: chapters.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  itemBuilder: (context, idx) {
+                    final chap = chapters[idx];
+                    final isSelected = idx == _selectedChapterIndex;
+                    return InkWell(
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _scrollToChapter(idx);
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? accentColor.withValues(alpha: isDark ? 0.2 : 0.1)
+                              : (isDark ? const Color(0xFF22242A) : const Color(0xFFF8FAFC)),
+                          borderRadius: BorderRadius.circular(12),
+                          border: isSelected
+                              ? Border.all(color: accentColor, width: 1.5)
+                              : null,
                         ),
-                        const SizedBox(width: 10),
-
-                        // Chapter Name & Description
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                chap.title,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.w600,
-                                  color: textColor,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? accentColor
+                                    : (isDark ? Colors.white12 : Colors.black.withValues(alpha: 0.06)),
+                                shape: BoxShape.circle,
                               ),
-                              if (chap.subtitle != null &&
-                                  chap.subtitle!.isNotEmpty) ...[
-                                const SizedBox(height: 3),
-                                Text(
-                                  chap.subtitle!,
+                              child: Center(
+                                child: Text(
+                                  '${idx + 1}',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: textColor.withValues(alpha: 0.65),
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected ? Colors.white : textColor,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ],
-                            ],
-                          ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    chap.title,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                      color: textColor,
+                                    ),
+                                  ),
+                                  if (chap.subtitle != null && chap.subtitle!.isNotEmpty) ...[
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      chap.subtitle!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11.5,
+                                        color: textColor.withValues(alpha: 0.6),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-
-                        if (isSelected)
-                          Icon(
-                            Icons.check_circle_rounded,
-                            color: accentColor,
-                            size: 20,
-                          ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
-  /// 2. Theme Tab (Beautiful balanced top padding, no borders)
-  Widget _buildThemeTab(bool isDark, Color textColor, Color accentColor) {
-    return Padding(
-      key: const ValueKey('tab_theme'),
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'READING THEME',
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.bold,
-                  color: textColor.withValues(alpha: 0.7),
-                  letterSpacing: 0.8,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close_rounded, size: 20),
-                color: textColor.withValues(alpha: 0.6),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () => setState(() => _isControlsOpen = false),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // Light Mode (White Circle with Dark Green Accent)
-              _buildThemeCircle(
-                color: const Color(0xFFFFFFFF),
-                borderColor: const Color(0xFF2A531D),
-                checkColor: const Color(0xFF2A531D),
-                isSelected: _readingTheme == 0,
-                onTap: () => setState(() => _readingTheme = 0),
-              ),
-              // Sepia Mode (Warm Cream)
-              _buildThemeCircle(
-                color: const Color(0xFFFBF0D9),
-                borderColor: const Color(0xFF8C4A14),
-                checkColor: const Color(0xFF422006),
-                isSelected: _readingTheme == 1,
-                onTap: () => setState(() => _readingTheme = 1),
-              ),
-              // OLED Black Mode (Deep Black)
-              _buildThemeCircle(
-                color: const Color(0xFF0F0F12),
-                borderColor: const Color(0xFFA3E635),
-                checkColor: const Color(0xFFA3E635),
-                isSelected: _readingTheme == 2,
-                onTap: () => setState(() => _readingTheme = 2),
-              ),
-              // Charcoal Slate Mode
-              _buildThemeCircle(
-                color: const Color(0xFF1E293B),
-                borderColor: const Color(0xFF38BDF8),
-                checkColor: const Color(0xFF38BDF8),
-                isSelected: _readingTheme == 3,
-                onTap: () => setState(() => _readingTheme = 3),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
-  /// 3. Text Size Tab (Smooth slider & A- / A+ buttons)
-  Widget _buildTextSizeTab(bool isDark, Color textColor, Color accentColor) {
-    return Padding(
-      key: const ValueKey('tab_text_size'),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'TEXT SIZE',
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.bold,
-                  color: textColor.withValues(alpha: 0.7),
-                  letterSpacing: 0.8,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : Colors.black.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '${_fontSize.toInt()} pt',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: accentColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              IconButton(
-                onPressed: _fontSize > 12.0
-                    ? () {
-                        setState(() {
-                          _fontSize = (_fontSize - 2).clamp(12.0, 32.0);
-                        });
-                      }
-                    : null,
-                icon: const Text(
-                  'A-',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                style: IconButton.styleFrom(
-                  backgroundColor: isDark
-                      ? const Color(0xFF222428)
-                      : const Color(0xFFF1F5F9),
-                  foregroundColor: textColor,
-                  padding: const EdgeInsets.all(8),
-                ),
-              ),
-              Expanded(
-                child: SliderTheme(
-                  data: SliderThemeData(
-                    trackHeight: 4,
-                    activeTrackColor: accentColor,
-                    inactiveTrackColor: isDark
-                        ? Colors.white12
-                        : Colors.grey.shade300,
-                    thumbColor: accentColor,
-                    thumbShape: const RoundSliderThumbShape(
-                      enabledThumbRadius: 8,
-                    ),
-                  ),
-                  child: Slider(
-                    value: _fontSize,
-                    min: 12.0,
-                    max: 32.0,
-                    divisions: 10,
-                    onChanged: (val) {
-                      setState(() {
-                        _fontSize = val;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: _fontSize < 32.0
-                    ? () {
-                        setState(() {
-                          _fontSize = (_fontSize + 2).clamp(12.0, 32.0);
-                        });
-                      }
-                    : null,
-                icon: const Text(
-                  'A+',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                style: IconButton.styleFrom(
-                  backgroundColor: isDark
-                      ? const Color(0xFF222428)
-                      : const Color(0xFFF1F5F9),
-                  foregroundColor: textColor,
-                  padding: const EdgeInsets.all(8),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildThemeCircle({
     required Color color,

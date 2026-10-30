@@ -214,8 +214,8 @@ class BookContentRenderer extends StatelessWidget {
               children: [
                 if (block.isOrdered)
                   Container(
-                    width: circleSize,
-                    height: circleSize,
+                    width: 26.0,
+                    height: 26.0,
                     margin: EdgeInsets.only(
                       right: isArabic || isUrdu ? 0 : 10,
                       left: isArabic || isUrdu ? 10 : 0,
@@ -224,24 +224,31 @@ class BookContentRenderer extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark
                           ? const Color(0xFF1E2822)
-                          : const Color(0xFFE8F5E9),
+                          : (cardBgColor == const Color(0xFFF5EAD4)
+                              ? const Color(0xFFF0E1C6)
+                              : const Color(0xFFE8F5E9)),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isDark
                             ? const Color(0xFFA3E635)
-                            : const Color(0xFF2A531D),
-                        width: 1.5,
+                            : (cardBgColor == const Color(0xFFF5EAD4)
+                                ? const Color(0xFF8C4A14)
+                                : const Color(0xFF2A531D)),
+                        width: 1.8,
                       ),
                     ),
                     child: Center(
                       child: Text(
                         '${index + 1}',
-                        style: TextStyle(
-                          fontSize: 11.5,
+                        style: GoogleFonts.outfit(
+                          fontSize: 12.0,
                           fontWeight: FontWeight.w800,
+                          height: 1.0,
                           color: isDark
                               ? const Color(0xFFA3E635)
-                              : const Color(0xFF2A531D),
+                              : (cardBgColor == const Color(0xFFF5EAD4)
+                                  ? const Color(0xFF422006)
+                                  : const Color(0xFF2A531D)),
                         ),
                       ),
                     ),
@@ -345,20 +352,27 @@ class BookContentRenderer extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: isDark
-            ? boxAccent.withValues(alpha: 0.12)
-            : boxAccent.withValues(alpha: 0.07),
+            ? (block.boxType == BookBoxType.islamic
+                ? const Color(0xFF132216)
+                : boxAccent.withValues(alpha: 0.14))
+            : (block.boxType == BookBoxType.islamic
+                ? (cardBgColor == const Color(0xFFF5EAD4)
+                    ? const Color(0xFFF3ECE0)
+                    : const Color(0xFFF0FDF4))
+                : boxAccent.withValues(alpha: 0.08)),
         borderRadius: BorderRadius.circular(16),
-        border: Border(
-          left: isArabic || isUrdu
-              ? BorderSide.none
-              : BorderSide(color: boxAccent, width: 4),
-          right: isArabic || isUrdu
-              ? BorderSide(color: boxAccent, width: 4)
-              : BorderSide.none,
-          top: BorderSide(color: boxAccent.withValues(alpha: 0.25), width: 1),
-          bottom:
-              BorderSide(color: boxAccent.withValues(alpha: 0.25), width: 1),
+        border: Border.all(
+          color: boxAccent.withValues(alpha: isDark ? 0.6 : 0.45),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: (isDark ? Colors.black : boxAccent)
+                .withValues(alpha: isDark ? 0.3 : 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -370,8 +384,15 @@ class BookContentRenderer extends StatelessWidget {
             textDirection:
                 isArabic || isUrdu ? TextDirection.rtl : TextDirection.ltr,
             children: [
-              Icon(boxIcon, size: 18, color: boxAccent),
-              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: boxAccent.withValues(alpha: isDark ? 0.25 : 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(boxIcon, size: 16, color: boxAccent),
+              ),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   title,
@@ -385,7 +406,7 @@ class BookContentRenderer extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             block.text,
             style: (isArabic
@@ -418,13 +439,17 @@ class BookContentRenderer extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF18181B) : const Color(0xFFF8FAFC),
+        color: isDark
+            ? const Color(0xFF18181B)
+            : (cardBgColor == const Color(0xFFF5EAD4)
+                ? const Color(0xFFF5EAD4)
+                : const Color(0xFFF8FAFC)),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
               ? Colors.white12
-              : Colors.grey.shade300,
-          width: 1.0,
+              : const Color(0xFF16A34A).withValues(alpha: 0.35),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
@@ -529,95 +554,250 @@ class BookContentRenderer extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
-    final imgUrl = block.url ?? '';
-    if (imgUrl.isEmpty) return const SizedBox.shrink();
+    final urls = <String>[];
+    if (block.url != null && block.url!.trim().isNotEmpty) {
+      urls.add(block.url!.trim());
+    }
+    for (final item in block.items) {
+      if (item.trim().isNotEmpty && !urls.contains(item.trim())) {
+        urls.add(item.trim());
+      }
+    }
 
-    final isLocal = !imgUrl.startsWith('http://') && !imgUrl.startsWith('https://');
+    if (urls.isEmpty) return const SizedBox.shrink();
 
+    // If 2 images, render them 2 per row
+    if (urls.length == 2) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSingleImageWidget(
+                    context: context,
+                    imgUrl: urls[0],
+                    caption: block.caption,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildSingleImageWidget(
+                    context: context,
+                    imgUrl: urls[1],
+                    caption: block.caption,
+                  ),
+                ),
+              ],
+            ),
+            if (block.caption != null && block.caption!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                block.caption!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: textColor.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+
+    // Default: 1 image (or multiple in pairs)
+    if (urls.length > 2) {
+      final rows = <Widget>[];
+      for (int i = 0; i < urls.length; i += 2) {
+        if (i + 1 < urls.length) {
+          rows.add(
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildSingleImageWidget(
+                      context: context,
+                      imgUrl: urls[i],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _buildSingleImageWidget(
+                      context: context,
+                      imgUrl: urls[i + 1],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          rows.add(
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _buildSingleImageWidget(
+                context: context,
+                imgUrl: urls[i],
+              ),
+            ),
+          );
+        }
+      }
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ...rows,
+            if (block.caption != null && block.caption!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                block.caption!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: textColor.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+
+    // Single Image
+    final singleUrl = urls.first;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GestureDetector(
-            onTap: () => _openFullScreenImage(context, imgUrl, isLocal, block.caption),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.12)
-                      : Colors.black.withValues(alpha: 0.08),
-                  width: 1,
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Stack(
-                  children: [ 
-                    AspectRatio(
-                      aspectRatio: block.aspectRatio ?? 16 / 9,
-                      child: isLocal
-                          ? (imgUrl.startsWith('assets/')
-                              ? Image.asset(imgUrl, fit: BoxFit.cover, cacheWidth: 1080) 
-                              : Image.file(File(imgUrl), fit: BoxFit.cover))
-                          : CachedNetworkImage(
-                              imageUrl: imgUrl,
-                              fit: BoxFit.cover,
-                              memCacheWidth: 1080,
-                              placeholder: (context, url) => Container(
-                                color: isDark ? Colors.white10 : Colors.grey.shade200,
-                                child: const Center(
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                ),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                color: isDark ? Colors.white10 : Colors.grey.shade200,
-                                child: const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.broken_image_rounded, size: 36, color: Colors.grey),
-                                    SizedBox(height: 6),
-                                    Text('Image unavailable', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                  ],
-                                ),
-                              ),
-                            ),
-                    ),
-                    Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.65),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.fullscreen_rounded,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          _buildSingleImageWidget(
+            context: context,
+            imgUrl: singleUrl,
+            caption: block.caption,
           ),
           if (block.caption != null && block.caption!.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               block.caption!,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: fontSize * 0.8,
+                fontSize: 12,
                 fontStyle: FontStyle.italic,
                 color: textColor.withValues(alpha: 0.7),
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildSingleImageWidget({
+    required BuildContext context,
+    required String imgUrl,
+    String? caption,
+    double maxHeight = 400,
+  }) {
+    if (imgUrl.isEmpty) return const SizedBox.shrink();
+    final isLocal =
+        !imgUrl.startsWith('http://') && !imgUrl.startsWith('https://');
+
+    return GestureDetector(
+      onTap: () =>
+          _openFullScreenImage(context, imgUrl, isLocal, caption),
+      child: Container(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF141416) : const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.12)
+                : Colors.black.withValues(alpha: 0.08),
+            width: 1,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: maxHeight),
+                child: isLocal
+                    ? (imgUrl.startsWith('assets/')
+                        ? Image.asset(
+                            imgUrl,
+                            fit: BoxFit.contain,
+                            cacheWidth: 1080,
+                          )
+                        : Image.file(
+                            File(imgUrl),
+                            fit: BoxFit.contain,
+                          ))
+                    : CachedNetworkImage(
+                        imageUrl: imgUrl,
+                        fit: BoxFit.contain,
+                        memCacheWidth: 1080,
+                        placeholder: (context, url) => Container(
+                          height: 180,
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          height: 160,
+                          color: isDark ? Colors.white10 : Colors.grey.shade200,
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.broken_image_rounded,
+                                size: 36,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 6),
+                              Text(
+                                'Image unavailable',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+              ),
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.65),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.fullscreen_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

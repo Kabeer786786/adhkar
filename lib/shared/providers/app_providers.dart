@@ -320,3 +320,20 @@ final currentPrayerProvider = Provider<NextPrayerInfo?>((ref) {
 final appPackageInfoProvider = FutureProvider<PackageInfo>((ref) async {
   return await PackageInfo.fromPlatform();
 });
+
+class ReadingThemeNotifier extends StateNotifier<int> {
+  final StorageService _storage;
+  ReadingThemeNotifier(this._storage) : super(_storage.getReadingTheme());
+
+  Future<void> setTheme(int index) async {
+    state = index;
+    await _storage.saveReadingTheme(index);
+  }
+}
+
+final readingThemeProvider =
+    StateNotifierProvider<ReadingThemeNotifier, int>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return ReadingThemeNotifier(storage);
+});
+

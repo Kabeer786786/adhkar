@@ -39,6 +39,13 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
   @override
   void initState() {
     super.initState();
+    // Record that the modal was shown so it will not popup again within the 3-day cooldown
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        ref.read(storageServiceProvider).recordRegistrationPromptDate();
+      } catch (_) {}
+    });
+
     final profile = ref.read(userProfileProvider);
     _nameController = TextEditingController(text: profile.name);
     _emailController = TextEditingController(text: profile.email);

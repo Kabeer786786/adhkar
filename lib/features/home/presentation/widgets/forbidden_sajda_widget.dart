@@ -806,7 +806,7 @@ class ForbiddenTimeCard extends StatelessWidget {
               boxShadow: isCurrent
                   ? [
                       BoxShadow(
-                        color: info.primaryColor.withValues(alpha: 0.1),
+                        color: info.primaryColor.withValues(alpha: 0.1), 
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),

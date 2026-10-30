@@ -68,26 +68,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _checkAndPromptCompleteProfile() async {
     final userProfile = ref.read(userProfileProvider);
-    final isFilled =
+    final isRegistered =
         userProfile.registrationCompleted || userProfile.name.trim().isNotEmpty;
-    // If user filled it, never ask again
-    if (isFilled) return;
+    // If user is registered, never show the modal
+    if (isRegistered) return;
 
     // If already prompted in this app session or unmounted, return
     if (_hasPromptedProfileInSession || !mounted) return;
+
+    // Modal should only pop up once every 3 days for unregistered users.
+    // In between, user can open the app any number of times without this modal popping up.
+    final storage = ref.read(storageServiceProvider);
+    if (!storage.shouldPromptRegistrationModal(interval: const Duration(days: 3))) {
+      return;
+    }
 
     final hasSeenShowcase = await ShowcaseService.hasSeenHomeShowcase();
     if (!hasSeenShowcase) return;
 
     _hasPromptedProfileInSession = true;
-    Future.delayed(const Duration(milliseconds: 600), () {
+    Future.delayed(const Duration(milliseconds: 600), () async {
       if (mounted) {
         final currentProfile = ref.read(userProfileProvider);
-        final stillFilled =
+        final stillRegistered =
             currentProfile.registrationCompleted ||
             currentProfile.name.trim().isNotEmpty;
-        if (!stillFilled) {
-          CompleteProfileModal.show(context);
+        if (!stillRegistered) {
+          // Record prompt time immediately so it will not popup again for the next 3 days
+          await storage.recordRegistrationPromptDate();
+          if (mounted) {
+            CompleteProfileModal.show(context);
+          }
         }
       }
     });

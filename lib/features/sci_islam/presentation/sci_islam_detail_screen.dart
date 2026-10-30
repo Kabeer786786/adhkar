@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../shared/providers/app_providers.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../domain/models/sci_islam_item.dart';
 
-class SciIslamDetailScreen extends StatefulWidget {
+class SciIslamDetailScreen extends ConsumerStatefulWidget {
   final SciIslamItem item;
 
   const SciIslamDetailScreen({super.key, required this.item});
 
   @override
-  State<SciIslamDetailScreen> createState() => _SciIslamDetailScreenState();
+  ConsumerState<SciIslamDetailScreen> createState() =>
+      _SciIslamDetailScreenState();
 }
 
-class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
+class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
   // Reading theme matching BookReaderScreen
   // 0 = Light, 1 = Sepia, 2 = OLED Dark, 3 = Charcoal
-  int _readingTheme = 0;
   bool _isThemePanelOpen = false;
 
   static const List<Color> _bgColors = [
@@ -37,9 +39,10 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
-    final isDark = _readingTheme == 2 || _readingTheme == 3;
-    final bgColor = _bgColors[_readingTheme];
-    final textColor = _textColors[_readingTheme];
+    final readingTheme = ref.watch(readingThemeProvider);
+    final isDark = readingTheme == 2 || readingTheme == 3;
+    final bgColor = _bgColors[readingTheme];
+    final textColor = _textColors[readingTheme];
 
     // Status bar icon colors: white for dark mode (Brightness.light), dark for light mode (Brightness.dark)
     final overlayStyle = SystemUiOverlayStyle(
@@ -205,7 +208,7 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
                               fontSize: 25,
                               color: isDark
                                   ? const Color(0xFFFDE047)
-                                  : (_readingTheme == 1
+                                  : (readingTheme == 1
                                       ? const Color(0xFF78350F)
                                       : const Color(0xFF1A3512)),
                               height: 1.8,
@@ -230,7 +233,7 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
                               fontWeight: FontWeight.w500,
                               color: isDark
                                   ? Colors.white70
-                                  : (_readingTheme == 1
+                                  : (readingTheme == 1
                                       ? const Color(0xFF5C2D0C)
                                       : const Color(0xFF1B5E20)),
                               height: 1.5,
@@ -259,7 +262,7 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
                               fontSize: 14,
                               color: isDark
                                   ? Colors.white70
-                                  : (_readingTheme == 1
+                                  : (readingTheme == 1
                                       ? const Color(0xFF432818)
                                       : const Color(0xFF334155)),
                               height: 1.6,
@@ -300,7 +303,7 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
                                         fontSize: 13,
                                         color: isDark
                                             ? Colors.white70
-                                            : (_readingTheme == 1
+                                            : (readingTheme == 1
                                                 ? const Color(0xFF432818)
                                                 : const Color(0xFF1F2937)),
                                         height: 1.45,
@@ -349,7 +352,7 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
                                       fontWeight: FontWeight.bold,
                                       color: isDark
                                           ? Colors.white
-                                          : (_readingTheme == 1
+                                          : (readingTheme == 1
                                               ? const Color(0xFF2B170B)
                                               : const Color(0xFF1F2937)),
                                     ),
@@ -361,7 +364,7 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
                                       fontSize: 12,
                                       color: isDark
                                           ? Colors.white60
-                                          : (_readingTheme == 1
+                                          : (readingTheme == 1
                                               ? const Color(0xFF5C3D2E)
                                               : const Color(0xFF6B7280)),
                                       height: 1.35,
@@ -439,32 +442,40 @@ class _SciIslamDetailScreenState extends State<SciIslamDetailScreen> {
                             color: const Color(0xFFFFFFFF),
                             borderColor: const Color(0xFF2A531D),
                             checkColor: const Color(0xFF2A531D),
-                            isSelected: _readingTheme == 0,
-                            onTap: () => setState(() => _readingTheme = 0),
+                            isSelected: readingTheme == 0,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(0),
                           ),
                           // 2. Sepia Mode (Warm Cream)
                           _buildThemeCircle(
                             color: const Color(0xFFFBF0D9),
                             borderColor: const Color(0xFF8C4A14),
                             checkColor: const Color(0xFF422006),
-                            isSelected: _readingTheme == 1,
-                            onTap: () => setState(() => _readingTheme = 1),
+                            isSelected: readingTheme == 1,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(1),
                           ),
                           // 3. OLED Black Mode (Deep Black)
                           _buildThemeCircle(
                             color: const Color(0xFF0F0F12),
                             borderColor: const Color(0xFFA3E635),
                             checkColor: const Color(0xFFA3E635),
-                            isSelected: _readingTheme == 2,
-                            onTap: () => setState(() => _readingTheme = 2),
+                            isSelected: readingTheme == 2,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(2),
                           ),
                           // 4. Charcoal Slate Mode
                           _buildThemeCircle(
                             color: const Color(0xFF1E293B),
                             borderColor: const Color(0xFF38BDF8),
                             checkColor: const Color(0xFF38BDF8),
-                            isSelected: _readingTheme == 3,
-                            onTap: () => setState(() => _readingTheme = 3),
+                            isSelected: readingTheme == 3,
+                            onTap: () => ref
+                                .read(readingThemeProvider.notifier)
+                                .setTheme(3),
                           ),
                         ],
                       ),

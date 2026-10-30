@@ -75,6 +75,35 @@ class StorageService {
     await _settingsBox.put('is_dark_mode', value);
   }
 
+  int getReadingTheme() {
+    return _settingsBox.get('reading_theme_index', defaultValue: 0) as int;
+  }
+
+  Future<void> saveReadingTheme(int index) async {
+    await _settingsBox.put('reading_theme_index', index);
+  }
+
+  // --- Registration Modal Prompt Cooldown (Once every 3 days for unregistered users) ---
+  static const String _keyLastRegistrationModalPrompt = 'last_registration_modal_prompt_ms';
+
+  DateTime? getLastRegistrationPromptDate() {
+    final millis = _settingsBox.get(_keyLastRegistrationModalPrompt) as int?;
+    if (millis == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(millis);
+  }
+
+  Future<void> recordRegistrationPromptDate([DateTime? date]) async {
+    final time = date ?? DateTime.now();
+    await _settingsBox.put(_keyLastRegistrationModalPrompt, time.millisecondsSinceEpoch);
+  }
+
+  bool shouldPromptRegistrationModal({Duration interval = const Duration(days: 3)}) {
+    final lastPrompt = getLastRegistrationPromptDate();
+    if (lastPrompt == null) return true;
+    final now = DateTime.now();
+    return now.difference(lastPrompt) >= interval;
+  }
+
   String getLanguage() {
     return _settingsBox.get('language', defaultValue: 'en') as String;
   }

@@ -595,91 +595,7 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
 
-          // 6px light/dark gray divider box
-          const _SectionDivider(),
-
-          // 5. Guided Feature Tour
-          const SectionHeader(
-            title: 'App Guided Tour',
-            subtitle: 'Re-visit the guided tour of application features',
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: cardBorder, width: 1),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(9),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF23352B)
-                        : const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.explore_outlined,
-                    color: primaryGreen,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Interactive Feature Tour',
-                        style: GoogleFonts.outfit(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Take a quick tour of key app features',
-                        style: GoogleFonts.lexend(
-                          fontSize: 12,
-                          color: subTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    context.go('/');
-                    Future.delayed(const Duration(milliseconds: 300), () {
-                      ShowcaseService.startHomeShowcase(context);
-                    });
-                  },
-                  // icon: const Icon(Icons.play_arrow_rounded, size: 16),
-                  label: const Text('Start'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryGreen,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    textStyle: GoogleFonts.lexend(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
+          
           // 6px light/dark gray divider box
           const _SectionDivider(),
 
@@ -768,6 +684,92 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+
+          // 6px light/dark gray divider box
+          const _SectionDivider(),
+
+          // 5. Guided Feature Tour
+          const SectionHeader(
+            title: 'App Guided Tour',
+            subtitle: 'Re-visit the guided tour of application features',
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: cardBorder, width: 1),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(9),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF23352B)
+                        : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.explore_outlined,
+                    color: primaryGreen,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Interactive Feature Tour',
+                        style: GoogleFonts.outfit(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Take a quick tour of key app features',
+                        style: GoogleFonts.lexend(
+                          fontSize: 12,
+                          color: subTextColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    context.go('/');
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      ShowcaseService.startHomeShowcase(context);
+                    });
+                  },
+                  // icon: const Icon(Icons.play_arrow_rounded, size: 16),
+                  label: const Text('Start'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryGreen,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    textStyle: GoogleFonts.lexend(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
 
           // 6px light/dark gray divider box
           const _SectionDivider(),
@@ -865,7 +867,7 @@ class _SectionDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      height: 8,
+      height: 6,
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
       decoration: BoxDecoration(

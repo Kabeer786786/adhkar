@@ -561,23 +561,6 @@ class _BookCardWidgetState extends State<_BookCardWidget> {
                     ),
                   ),
                 ),
-
-              // Reading Progress Indicator at base
-              if (book.readProgress > 0)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: 3,
-                  child: Container(
-                    color: Colors.black38,
-                    child: FractionallySizedBox(
-                      alignment: Alignment.centerLeft,
-                      widthFactor: book.readProgress.clamp(0.0, 1.0),
-                      child: Container(color: const Color(0xFFFACC15)),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
