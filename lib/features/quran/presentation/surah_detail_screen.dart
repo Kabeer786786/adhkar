@@ -6,7 +6,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/extensions/context_extensions.dart';
 import '../../../core/services/media_download_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/typography/arabic_font.dart';
@@ -75,7 +74,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   // On-screen typography & dedicated reading theme controls
   double _arabicFontSize = 24.0; 
   bool _isReadingDarkMode = false;
-  bool _isThemeInitialized = false;
+  bool _isManualThemeSelected = false;
   // Global keys for exact scroll alignment in Mode 0 (Verse List Mode)
   final Map<int, GlobalKey> _ayahKeys = {};
 
@@ -135,10 +134,15 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     final savedMode = storage.getQuranReadingMode();
  
     _arabicFontSize = savedFontSize;
-    _isReadingDarkMode = savedDarkMode ?? false;
+    if (savedDarkMode != null) {
+      _isReadingDarkMode = savedDarkMode;
+      _isManualThemeSelected = true;
+    } else {
+      _isReadingDarkMode = false;
+      _isManualThemeSelected = false;
+    }
     _translationLanguage = savedTranslationLang;
     _showTranslation = savedTranslationLang != 'none';
-    _isThemeInitialized = true;
 
     _selectedMode = (widget.juzNumber != null && savedMode == 2)
         ? 0
@@ -883,9 +887,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveIsDark = _isThemeInitialized
+    final appIsDark = ref.watch(themeModeProvider) == 'dark';
+    final effectiveIsDark = _isManualThemeSelected
         ? _isReadingDarkMode
-        : context.isDarkMode;
+        : (appIsDark || _isReadingDarkMode);
     final allSurahs = _repository.getSurahs();
 
     late final SurahModel currentSurah;
@@ -1158,6 +1163,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       final newDarkMode = !effectiveIsDark;
                       setState(() {
                         _isReadingDarkMode = newDarkMode;
+                        _isManualThemeSelected = true;
                       });
                       ref
                           .read(storageServiceProvider)

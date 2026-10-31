@@ -91,8 +91,8 @@ class AppDropdown<T> extends StatelessWidget {
               fontWeight: FontWeight.w500,
               color: isDark ? Colors.white : const Color(0xFF1F2937),
             ),
-            dropdownColor: isDark ? const Color(0xFF192520) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            dropdownColor: isDark ? const Color(0xFF18181B) : Colors.white,
+            borderRadius: BorderRadius.circular(16), 
             elevation: 2,
             icon: Icon(
               Icons.keyboard_arrow_down_rounded,
@@ -225,7 +225,7 @@ class AppDropdown<T> extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -233,7 +233,7 @@ class AppDropdown<T> extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: const Color(0xFF2A531D),
+                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                 size: 22,
               ),
               const SizedBox(width: 10),
@@ -257,13 +257,21 @@ class AppDropdown<T> extends StatelessWidget {
             ),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+              hintStyle: TextStyle(fontSize: 13, color: isDark ? Colors.white38 : Colors.grey),
               filled: true,
-              fillColor: isDark ? const Color(0xFF23322B) : const Color(0xFFF4FAF3),
+              fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF4FAF3),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(
+                  color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(
+                  color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+                ),
               ),
             ),
           ),

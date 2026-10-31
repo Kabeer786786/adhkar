@@ -50,11 +50,13 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
@@ -64,7 +66,7 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
             width: 40,
             height: 4.5,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: isDark ? Colors.white24 : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -81,13 +83,13 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
                   style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1F2937),
+                    color: isDark ? Colors.white : const Color(0xFF1F2937),
                   ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close_rounded),
-                  color: Colors.grey.shade600,
+                  color: isDark ? Colors.white70 : Colors.grey.shade600,
                 ),
               ],
             ),
@@ -99,19 +101,39 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
               controller: _searchController,
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+              cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
               decoration: InputDecoration(
                 hintText: 'Search country or code (e.g. India, +91)...',
                 hintStyle: GoogleFonts.outfit(
                   fontSize: 13.5,
-                  color: Colors.grey.shade400,
+                  color: isDark ? Colors.white38 : Colors.grey.shade400,
                 ),
-                prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2A531D)),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                ),
                 filled: true,
-                fillColor: const Color(0xFFF4FAF3),
+                fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF4FAF3),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),
@@ -126,14 +148,19 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
                       'No countries found',
                       style: GoogleFonts.outfit(
                         fontSize: 14,
-                        color: Colors.grey.shade500,
+                        color: isDark ? Colors.white38 : Colors.grey.shade500,
                       ),
                     ),
                   )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     itemCount: _filteredCountries.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1, indent: 16, endIndent: 16),
+                    separatorBuilder: (context, index) => Divider(
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: isDark ? const Color(0xFF27272A) : Colors.grey.shade200,
+                    ),
                     itemBuilder: (context, index) {
                       final country = _filteredCountries[index];
                       final isSelected = country.code == widget.selectedCountry.code;
@@ -142,7 +169,11 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        tileColor: isSelected ? const Color(0xFF2A531D).withValues(alpha: 0.08) : null,
+                        tileColor: isSelected
+                            ? (isDark
+                                ? const Color(0xFF27272A)
+                                : const Color(0xFF2A531D).withValues(alpha: 0.08))
+                            : null,
                         leading: Text(
                           country.flag,
                           style: const TextStyle(fontSize: 26),
@@ -152,7 +183,9 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
                           style: GoogleFonts.outfit(
                             fontSize: 15,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            color: isSelected ? const Color(0xFF2A531D) : const Color(0xFF1F2937),
+                            color: isSelected
+                                ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                                : (isDark ? Colors.white : const Color(0xFF1F2937)),
                           ),
                         ),
                         trailing: Text(
@@ -160,7 +193,9 @@ class _CountryCodePickerModalState extends State<CountryCodePickerModal> {
                           style: GoogleFonts.outfit(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: isSelected ? const Color(0xFF2A531D) : Colors.grey.shade600,
+                            color: isSelected
+                                ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                                : (isDark ? Colors.white60 : Colors.grey.shade600),
                           ),
                         ),
                         onTap: () {

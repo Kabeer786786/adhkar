@@ -23,7 +23,7 @@ class AppDrawer extends ConsumerWidget {
 
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.8,
-      backgroundColor: context.colorScheme.surface,
+      backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
       elevation: 16,
       child: SafeArea(
         child: Column(
@@ -36,7 +36,7 @@ class AppDrawer extends ConsumerWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isDark
-                      ? [const Color(0xFF1E3A15), const Color(0xFF0F1A0E)]
+                      ? [const Color(0xFF172B19), const Color(0xFF122314)]
                       : [const Color(0xFF2A531D), const Color(0xFF16A34A)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -44,7 +44,9 @@ class AppDrawer extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.25),
+                    color: isDark
+                        ? Colors.black38
+                        : const Color(0xFF2A531D).withValues(alpha: 0.25),
                     blurRadius: 16,
                     offset: const Offset(0, 2),
                   ),
@@ -102,7 +104,7 @@ class AppDrawer extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  const Divider(color: Colors.white24, height: 1),
+                  const Divider(color: Colors.white10, height: 1),
                   const SizedBox(height: 8),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -226,11 +228,13 @@ class AppDrawer extends ConsumerWidget {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF23322B)
+                    ? const Color(0xFF18181B)
                     : const Color(0xFFF4FAF3),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                  color: isDark
+                      ? const Color(0xFF233127)
+                      : const Color(0xFF2A531D).withValues(alpha: 0.2),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -245,20 +249,20 @@ class AppDrawer extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
                       Icon(
                         Icons.volunteer_activism_rounded,
-                        color: Color(0xFF2A531D),
+                        color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                         size: 20,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         'Support Adhkar App',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2A531D),
+                          color: isDark ? Colors.white : const Color(0xFF2A531D),
                         ),
                       ),
                     ],
@@ -281,7 +285,9 @@ class AppDrawer extends ConsumerWidget {
                         OnlineDonationModal.show(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2A531D),
+                        backgroundColor: isDark
+                            ? const Color(0xFF1E3A24)
+                            : const Color(0xFF2A531D),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         shape: RoundedRectangleBorder(

@@ -49,11 +49,11 @@ class AppActionPopupMenu<T> extends StatelessWidget {
         color: iconColor ?? (isDark ? Colors.white70 : primaryColor),
       ),
       elevation: 6,
-      color: isDark ? const Color(0xFF192520) : Colors.white,
+      color: isDark ? const Color(0xFF18181B) : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
         side: BorderSide(
-          color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
         ),
       ),
       itemBuilder: (context) {

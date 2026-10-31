@@ -228,7 +228,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF18181b) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -265,9 +265,11 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                       // Header Row
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.history_rounded,
-                            color: Color(0xFF2A531D),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF2A531D),
                             size: 24,
                           ),
                           const SizedBox(width: 8),
@@ -387,12 +389,12 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                     padding: const EdgeInsets.all(14),
                                     decoration: BoxDecoration(
                                       color: isDark
-                                          ? const Color(0xFF23322B)
+                                          ? const Color(0xFF0f0f12)
                                           : const Color(0xFFF4FAF3),
                                       borderRadius: BorderRadius.circular(18),
                                       border: Border.all(
                                         color: isDark
-                                            ? Colors.white10
+                                            ? const Color(0xFF233127)
                                             : const Color(
                                                 0xFF2A531D,
                                               ).withValues(alpha: 0.15),
@@ -504,9 +506,11 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                                 children: [
                                                   Text(
                                                     'Resume from Ayah ${sp['resumeAyahNumber']}',
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       fontSize: 13,
-                                                      color: Color(0xFF2A531D),
+                                                      color: isDark
+                                                          ? Colors.white
+                                                          : Color(0xFF2A531D),
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -634,7 +638,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF18181b) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -813,12 +817,12 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                   padding: const EdgeInsets.all(14),
                                   decoration: BoxDecoration(
                                     color: isDark
-                                        ? const Color(0xFF23322B)
+                                        ? const Color(0xFF0f0f12)
                                         : const Color(0xFFF4FAF3),
                                     borderRadius: BorderRadius.circular(18),
                                     border: Border.all(
                                       color: isDark
-                                          ? Colors.white10
+                                          ? const Color(0xFF233127)
                                           : const Color(
                                               0xFF2A531D,
                                             ).withValues(alpha: 0.15),
@@ -913,7 +917,9 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                             style: AppTypography.arabicHeader(
                                               arabicFont: arabicFont,
                                               fontSize: 18,
-                                              color: const Color(0xFF2A531D),
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Color(0xFF2A531D),
                                             ),
                                           ),
                                           const SizedBox(width: 4),
@@ -1043,7 +1049,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
         children: [
           Scaffold(
             backgroundColor: isDark
-                ? const Color(0xFF17241E)
+                ? const Color(0xFF0F0F12)
                 : const Color(0xFFFFFFFF),
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -1057,7 +1063,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     ? SystemUiOverlayStyle.light
                     : SystemUiOverlayStyle.dark,
                 backgroundColor: isDark
-                    ? const Color(0xFF192520)
+                    ? const Color(0xFF18181B)
                     : Colors.white,
                 iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
                 titleWidget: Text(
@@ -1090,7 +1096,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                     ),
                     tooltip: 'Search Quran',
                   ),
-                  
+
                   // 2. Filter Favorites Button
                   IconButton(
                     visualDensity: VisualDensity.compact,
@@ -1155,7 +1161,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
               children: [
                 if (_isSearching)
                   Container(
-                    color: isDark ? const Color(0xFF192520) : Colors.white,
+                    color: isDark ? const Color(0xFF18181B) : Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
@@ -1175,13 +1181,13 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                           fontSize: 13,
                           color: Colors.grey,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search_rounded,
-                          color: Color(0xFF2A531D),
+                          color: isDark ? Colors.white : Color(0xFF2A531D),
                         ),
                         filled: true,
                         fillColor: isDark
-                            ? const Color(0xFF23322B)
+                            ? const Color(0xFF18181b)
                             : const Color(0xFFF9F9F9),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -1189,7 +1195,21 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
+                          borderSide: isDark
+                              ? const BorderSide(
+                                  color: Color(0xFF233127),
+                                  width: 1,
+                                )
+                              : BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: isDark
+                              ? const BorderSide(
+                                  color: Color(0xFF233127),
+                                  width: 1,
+                                )
+                              : BorderSide.none,
                         ),
                       ),
                     ),
@@ -1259,7 +1279,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                 arabicFont: arabicFont,
                                 isLastRead: isLastRead,
                                 isLastItem: index == filteredJuz.length - 1,
-                              ); 
+                              );
                             }
                           },
                         ),
@@ -1339,16 +1359,12 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isDark
-                ? [const Color(0xFF1E3A15), const Color(0xFF0F1A0E)]
+                ? [const Color(0xFF172B19), const Color(0xFF122314)]
                 : [const Color(0xFF669f1d), const Color(0xFF2A531D)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: const Color(0xFFd1ffbe).withValues(alpha: 0.35),
-            width: 1.2,
-          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1473,16 +1489,16 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF17241E) : const Color(0xFFFFFFFF),
+        color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFFFFFFF),
         border: Border(
           bottom: BorderSide(
             color: isDark
-                ? Colors.white10
+                ? const Color(0xFF27272A)
                 : const Color(0xFF2A531D).withValues(alpha: 0.08),
             width: 1,
           ),
         ),
-      ), 
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -1525,10 +1541,12 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF23322B) : const Color(0xFFF4FAF3),
+              color: isDark ? const Color(0xFF18181B) : const Color(0xFFF4FAF3),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE2E8F0),
               ),
             ),
             child: Row(
@@ -1671,9 +1689,9 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     bool isFirstGroup = false,
     required bool isLastGroup,
   }) {
-    final sideBg = isDark ? const Color(0xFF16251C) : const Color(0xFFEFF3F8);
+    final sideBg = isDark ? const Color(0xFF18181B) : const Color(0xFFEFF3F8);
     final labelColor = isDark
-        ? const Color(0xFFA3E635)
+        ? const Color(0xFF86EFAC)
         : const Color(0xFF2A531D);
     // final borderRightColor = isDark ? Colors.white10 : const Color(0xFFE2E8F0);
 
@@ -1681,7 +1699,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (isFirstGroup) const _SectionDivider(),
-        IntrinsicHeight( 
+        IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -1732,11 +1750,11 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
   }
 
   Widget _buildSurahListItem({
-    required SurahModel surah, 
+    required SurahModel surah,
     required bool isDark,
     required dynamic arabicFont,
     required bool isLastRead,
-  }) { 
+  }) {
     final storage = ref.read(storageServiceProvider);
     final sp = storage.getStopPointForSurah(surah.number);
     final int? resumeAyah = sp != null
@@ -1766,14 +1784,14 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                   color: isLastRead
                       ? const Color(0xFF2A531D)
                       : (isDark
-                            ? const Color(0xFF23322B)
+                            ? const Color(0xFF16201B)
                             : const Color(0xFFF4FAF3)),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isLastRead
                         ? const Color(0xFF2A531D)
                         : (isDark
-                              ? Colors.white12
+                              ? const Color(0xFF233127)
                               : const Color(
                                   0xFF2A531D,
                                 ).withValues(alpha: 0.15)),
@@ -1930,14 +1948,14 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                       color: isLastRead
                           ? const Color(0xFF2A531D)
                           : (isDark
-                                ? const Color(0xFF23322B)
+                                ? const Color(0xFF16201B)
                                 : const Color(0xFFF4FAF3)),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isLastRead
                             ? const Color(0xFF2A531D)
                             : (isDark
-                                  ? Colors.white12
+                                  ? const Color(0xFF233127)
                                   : const Color(
                                       0xFF2A531D,
                                     ).withValues(alpha: 0.15)),
@@ -2033,7 +2051,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                       arabicFont: arabicFont,
                       fontSize: 22,
                       color: isDark
-                          ? const Color(0xFFA3E635)
+                          ? const Color(0xFF86EFAC)
                           : const Color(0xFF2A531D),
                     ),
                   ),
@@ -2057,7 +2075,7 @@ class _SectionDivider extends StatelessWidget {
     return Container(
       height: 6,
       width: double.infinity,
-      color: isDark ? const Color(0xFF1E2822) : const Color(0xFFEFF3F8),
+      color: isDark ? const Color(0xFF18181b) : const Color(0xFFEFF3F8),
     );
   }
 }

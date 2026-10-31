@@ -79,7 +79,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Modal should only pop up once every 3 days for unregistered users.
     // In between, user can open the app any number of times without this modal popping up.
     final storage = ref.read(storageServiceProvider);
-    if (!storage.shouldPromptRegistrationModal(interval: const Duration(days: 3))) {
+    if (!storage.shouldPromptRegistrationModal(
+      interval: const Duration(days: 3),
+    )) {
       return;
     }
 
@@ -248,9 +250,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final timeDigits = DateFormat('hh:mm').format(now);
     final timeAmPm = DateFormat('a').format(now);
     final timeSeconds = DateFormat('ss').format(now);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -264,11 +267,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF2A531D),
-                  shadows: const [Shadow(color: Colors.white, blurRadius: 8)],
+                  color: isDark
+                      ? const Color(0xFF86EFAC)
+                      : const Color(0xFF2A531D),
+                  shadows: [
+                    Shadow(
+                      color: isDark ? Colors.black87 : Colors.white,
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
               ),
-              backgroundColor: Colors.white.withValues(alpha: opacity),
+              backgroundColor: (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                  .withValues(alpha: opacity),
               elevation: opacity * 4.0,
             );
           },
@@ -278,7 +289,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           RefreshIndicator(
             onRefresh: _onRefresh,
-            color: const Color(0xFF2A531D),
+            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
             child: SingleChildScrollView(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(
@@ -293,30 +304,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   // 1. Top Banner Section with Overlapping Grid Cards
                   SizedBox(
                     width: double.infinity,
-                    height: screenWidth + 70,
+                    height: screenWidth + 54,
                     child: Stack(
                       children: [
-                        // Square background image starting from top
+                        // Square background image starting from top with dark overlay in dark mode
                         Positioned(
                           top: 0,
                           left: 0,
                           right: 0,
                           height: screenWidth,
-                          child: Image.asset(
-                            'assets/home_withoutbg.png',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            cacheWidth: 1080,
-                            errorBuilder: (context, error, stackTrace) =>
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.asset(
+                                isDark
+                                    ? 'assets/home_withoutbg_dark.png'
+                                    : 'assets/home_withoutbg.png',
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                cacheWidth: 1080,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: isDark
+                                          ? const Color(0xFF18181B)
+                                          : const Color(0xFFF3FAF2),
+                                      child: const Icon(
+                                        Icons.image_not_supported_rounded,
+                                        size: 48,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                              ),
+                              if (isDark)
                                 Container(
-                                  color: const Color(0xFFF3FAF2),
-                                  child: const Icon(
-                                    Icons.image_not_supported_rounded,
-                                    size: 48,
-                                    color: Colors.grey,
-                                  ),
+                                  color: Colors.black.withValues(alpha: 0.15),
                                 ),
+                            ],
                           ),
                         ),
 
@@ -350,11 +374,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         style: GoogleFonts.oxanium(
                                           fontSize: 60,
                                           fontWeight: FontWeight.w700,
-                                          color: const Color(0xFF2A531D),
+                                          color: isDark
+                                              ? const Color(0xFFD1D5DB)
+                                              : const Color(0xFF2A531D),
                                           letterSpacing: -2.5,
-                                          shadows: const [
+                                          shadows: [
                                             Shadow(
-                                              color: Colors.white70,
+                                              color: isDark
+                                                  ? Colors.black87
+                                                  : Colors.white70,
                                               blurRadius: 10,
                                             ),
                                           ],
@@ -377,11 +405,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               style: GoogleFonts.oxanium(
                                                 fontSize: 22,
                                                 fontWeight: FontWeight.w700,
-                                                color: const Color(0xFF4F2D12),
+                                                color: isDark
+                                                    ? const Color(0xFFFDE68A)
+                                                    : const Color(0xFF4F2D12),
                                                 height: 1.1,
-                                                shadows: const [
+                                                shadows: [
                                                   Shadow(
-                                                    color: Colors.white70,
+                                                    color: isDark
+                                                        ? Colors.black87
+                                                        : Colors.white70,
                                                     blurRadius: 6,
                                                   ),
                                                 ],
@@ -400,13 +432,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                   style: GoogleFonts.oxanium(
                                                     fontSize: 22,
                                                     fontWeight: FontWeight.w700,
-                                                    color: const Color(
-                                                      0xFF2A531D,
-                                                    ),
+                                                    color: isDark
+                                                        ? const Color(
+                                                            0xFFD1D5DB,
+                                                          )
+                                                        : const Color(
+                                                            0xFF2A531D,
+                                                          ),
                                                     height: 1.1,
-                                                    shadows: const [
+                                                    shadows: [
                                                       Shadow(
-                                                        color: Colors.white70,
+                                                        color: isDark
+                                                            ? Colors.black87
+                                                            : Colors.white70,
                                                         blurRadius: 6,
                                                       ),
                                                     ],
@@ -428,8 +466,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           CupertinoIcons.sun_max_fill,
                                       size: 24,
                                       color: namazInfo?.isFriday == true
-                                          ? const Color(0xFF047857)
-                                          : const Color(0xFFD97724),
+                                          ? (isDark
+                                                ? const Color(0xFF34D399)
+                                                : const Color(0xFF047857))
+                                          : (isDark
+                                                ? const Color(0xFFFBBF24)
+                                                : const Color(0xFFD97724)),
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
@@ -438,67 +480,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
                                         color: namazInfo?.isFriday == true
-                                            ? const Color(0xFF047857)
-                                            : const Color(0xFF2A531D),
-                                        shadows: const [
+                                            ? (isDark
+                                                  ? const Color(0xFF34D399)
+                                                  : const Color(0xFF047857))
+                                            : (isDark
+                                                  ? const Color(0xFF86EFAC)
+                                                  : const Color(0xFF2A531D)),
+                                        shadows: [
                                           Shadow(
-                                            color: Colors.white70,
+                                            color: isDark
+                                                ? Colors.black87
+                                                : Colors.white70,
                                             blurRadius: 8,
                                           ),
                                         ],
                                       ),
                                     ),
-                                    if (namazInfo?.isFriday == true) ...[
-                                      const SizedBox(width: 10),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 3.5,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xFF047857),
-                                              Color(0xFFD97706),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color(
-                                                0xFF047857,
-                                              ).withValues(alpha: 0.35),
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.auto_awesome,
-                                              size: 12,
-                                              color: Colors.white,
-                                            ),
-                                            SizedBox(width: 4),
-                                            Text(
-                                              'Jumma Mubarak',
-                                              style: TextStyle(
-                                                fontSize: 11.5,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                letterSpacing: 0.3,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
                                   ],
                                 ),
+
+                                if (namazInfo?.isFriday == true) ...[
+                                  const SizedBox(height: 6,width :10),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 3.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFF047857),
+                                          Color(0xFFD97706),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(
+                                            0xFF047857,
+                                          ).withValues(alpha: 0.35),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.auto_awesome,
+                                          size: 12,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          'Jumma Mubarak',
+                                          style: TextStyle(
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            letterSpacing: 0.3,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                                 const SizedBox(height: 8),
 
                                 // Start Time in Green
@@ -515,13 +562,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     const SizedBox(width: 8),
                                     Text(
                                       'Start: $startTimeStr',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 17,
                                         fontWeight: FontWeight.w700,
-                                        color: Color(0xFF15803D),
+                                        color: isDark
+                                            ? const Color(0xFF4ADE80)
+                                            : const Color(0xFF15803D),
                                         shadows: [
                                           Shadow(
-                                            color: Colors.white70,
+                                            color: isDark
+                                                ? Colors.black87
+                                                : Colors.white70,
                                             blurRadius: 4,
                                           ),
                                         ],
@@ -545,13 +596,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     const SizedBox(width: 8),
                                     Text(
                                       'End: $endTimeStr',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 17,
                                         fontWeight: FontWeight.w700,
-                                        color: Color(0xFFB91C1C),
+                                        color: isDark
+                                            ? const Color(0xFFF87171)
+                                            : const Color(0xFFB91C1C),
                                         shadows: [
                                           Shadow(
-                                            color: Colors.white70,
+                                            color: isDark
+                                                ? Colors.black87
+                                                : Colors.white70,
                                             blurRadius: 4,
                                           ),
                                         ],
@@ -566,7 +621,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                         // 2. Two Grid Boxes Overlapping Banner Image by 50px
                         Positioned(
-                          top: screenWidth - 44,
+                          top: screenWidth - 56,
                           left: 16,
                           right: 16,
                           child: Row(
@@ -586,20 +641,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       vertical: 14,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFF3FAF2),
+                                      color: isDark
+                                          ? const Color(0xFF18181B)
+                                          : const Color(0xFFF3FAF2),
                                       borderRadius: BorderRadius.circular(18),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
+                                        Text(
                                           'REMAINING TIME',
                                           style: TextStyle(
                                             fontSize: 11.5,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 0.8,
-                                            color: Color(0xFF8C6D53),
+                                            color: isDark
+                                                ? const Color(0xFFD1D5DB)
+                                                : const Color(0xFF8C6D53),
                                           ),
                                         ),
                                         const SizedBox(height: 4),
@@ -609,10 +668,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                   nextPrayer == null)
                                               ? '---'
                                               : nextPrayer.name,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
-                                            color: Color(0xFF2A531D),
+                                            color: isDark
+                                                ? Colors.white
+                                                : const Color(0xFF2A531D),
                                           ),
                                         ),
                                         const SizedBox(height: 2),
@@ -624,10 +685,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               : _formatDuration(
                                                   nextPrayer.currentRemaining,
                                                 ),
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w900,
-                                            color: Color(0xFFD97724),
+                                            color: isDark
+                                                ? const Color(0xFFFBBF24)
+                                                : const Color(0xFFD97724),
                                           ),
                                         ),
                                       ],
@@ -652,29 +715,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       vertical: 14,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFF3FAF2),
+                                      color: isDark
+                                          ? const Color(0xFF18181B)
+                                          : const Color(0xFFF3FAF2),
                                       borderRadius: BorderRadius.circular(18),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
+                                        Text(
                                           'HIJRI & LOCATION',
                                           style: TextStyle(
                                             fontSize: 11.5,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 0.7,
-                                            color: Color(0xFF8C6D53),
+                                            color: isDark
+                                                ? const Color(0xFFD1D5DB)
+                                                : const Color(0xFF8C6D53),
                                           ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           hijriStr,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
-                                            color: Color(0xFF2A531D),
+                                            color: isDark
+                                                ? Colors.white
+                                                : const Color(0xFF2A531D),
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -697,10 +766,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                     : locationAsync
                                                           .value!
                                                           .city),
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
-                                            color: Color(0xFF6B533E),
+                                            color: isDark
+                                                ? const Color(0xFF94A3B8)
+                                                : const Color(0xFF6B533E),
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -725,7 +796,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF3FAF2),
+                      color: isDark
+                          ? const Color(0xFF18181B)
+                          : const Color(0xFFF3FAF2),
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: GridView.count(
@@ -946,32 +1019,55 @@ class _FeatureTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            assetPath,
-            width: width,
-            height: height,
-            fit: BoxFit.contain,
-            cacheWidth: (width * 3).round(),
-            cacheHeight: (height * 3).round(),
-            errorBuilder: (context, error, stackTrace) => const Icon(
-              Icons.grid_view_rounded,
-              size: 36,
-              color: Color(0xFFD97724),
+          if (isDark)
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withValues(alpha: 0.15),
+                BlendMode.srcATop,
+              ),
+              child: Image.asset(
+                assetPath,
+                width: width,
+                height: height,
+                fit: BoxFit.contain,
+                cacheWidth: (width * 3).round(),
+                cacheHeight: (height * 3).round(),
+                errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.grid_view_rounded,
+                  size: 36,
+                  color: Color(0xFFD97724),
+                ),
+              ),
+            )
+          else
+            Image.asset(
+              assetPath,
+              width: width,
+              height: height,
+              fit: BoxFit.contain,
+              cacheWidth: (width * 3).round(),
+              cacheHeight: (height * 3).round(),
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.grid_view_rounded,
+                size: 36,
+                color: Color(0xFFD97724),
+              ),
             ),
-          ),
           const SizedBox(height: 4),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 13,
-              color: Color(0xFF2A531D),
+              color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF2A531D),
             ),
           ),
         ],

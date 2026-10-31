@@ -468,9 +468,9 @@ class ForbiddenSajdaDetailModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final bgColor = isDark ? const Color(0xFF18181B) : Colors.white;
     final surfaceBg = isDark
-        ? const Color(0xFF142018)
+        ? const Color(0xFF0F0F12)
         : info.lightBgColor.withValues(alpha: 0.5);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
     final subTextColor = isDark ? Colors.white70 : const Color(0xFF475569);
@@ -481,7 +481,11 @@ class ForbiddenSajdaDetailModal extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-
+        border: isDark
+            ? const Border(
+                top: BorderSide(color: Color(0xFF27272A), width: 1.0),
+              )
+            : null,
         // NO box shadow
         boxShadow: null,
       ),
@@ -569,7 +573,9 @@ class ForbiddenSajdaDetailModal extends StatelessWidget {
                   color: surfaceBg,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: info.primaryColor.withValues(alpha: 0.25),
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : info.primaryColor.withValues(alpha: 0.25),
                   ),
                 ),
                 child: Row(
@@ -618,12 +624,12 @@ class ForbiddenSajdaDetailModal extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF131D16)
+                      ? const Color(0xFF0F0F12)
                       : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isDark
-                        ? const Color(0xFF27382B)
+                        ? const Color(0xFF27272A)
                         : const Color(0xFFE2E8F0),
                   ),
                 ),
@@ -651,11 +657,12 @@ class ForbiddenSajdaDetailModal extends StatelessWidget {
                         (info.hasPrayedAsr
                                 ? const Color(0xFF16A34A)
                                 : const Color(0xFFD97706))
-                            .withValues(alpha: 0.08),
+                            .withValues(alpha: isDark ? 0.15 : 0.08),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color:
-                          (info.hasPrayedAsr
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : (info.hasPrayedAsr
                                   ? const Color(0xFF16A34A)
                                   : const Color(0xFFD97706))
                               .withValues(alpha: 0.28),
@@ -893,6 +900,7 @@ class ForbiddenHomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final startStr = DateFormat('hh:mm a').format(info.startTime);
     final endStr = DateFormat('hh:mm a').format(info.endTime);
     final remainingDiff = info.endTime.difference(now);
@@ -913,16 +921,23 @@ class ForbiddenHomeBanner extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: info.lightBgColor.withValues(alpha: 0.95),
+            color: isDark
+                ? const Color(0xFF18181B)
+                : info.lightBgColor.withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: info.lightBorderColor, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: info.primaryColor.withValues(alpha: 0.12),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            border: Border.all(
+              color: isDark ? const Color(0xFF27272A) : info.lightBorderColor,
+              width: 1.5,
+            ),
+            boxShadow: isDark
+                ? null
+                : [
+                    BoxShadow(
+                      color: info.primaryColor.withValues(alpha: 0.12),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -939,7 +954,7 @@ class ForbiddenHomeBanner extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: info.lightTextColor,
+                        color: isDark ? Colors.white : info.lightTextColor,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

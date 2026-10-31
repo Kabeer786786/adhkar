@@ -220,6 +220,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
   // ===========================================================================
 
   Widget _buildCelebrationView(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currencySymbol = _successCurrency == 'INR' ? '₹' : '\$';
     final dateStr = DateFormat('dd MMM yyyy, hh:mm a').format(
       _successDate ?? DateTime.now(),
@@ -235,9 +236,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
         top: 14,
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -250,7 +251,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 width: 44,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: isDark ? Colors.white24 : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -269,7 +270,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               style: GoogleFonts.amiri(
                 fontSize: 34,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1B3D14),
+                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF1B3D14),
                 height: 1.3,
               ),
             ).animate().fadeIn(duration: 500.ms).scale(
@@ -286,7 +287,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               style: GoogleFonts.outfit(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2A531D),
+                color: isDark ? Colors.white : const Color(0xFF2A531D),
                 letterSpacing: -0.3,
               ),
             ).animate().fadeIn(delay: 150.ms, duration: 450.ms),
@@ -301,7 +302,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.outfit(
                   fontSize: 13.5,
-                  color: const Color(0xFF4B5563),
+                  color: isDark ? Colors.white70 : const Color(0xFF4B5563),
                   height: 1.45,
                 ),
               ),
@@ -314,15 +315,15 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF6FAF5),
+                color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF6FAF5),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFFD4E7D2),
+                  color: isDark ? const Color(0xFF27272A) : const Color(0xFFD4E7D2),
                   width: 1.3,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.05),
+                    color: const Color(0xFF2A531D).withValues(alpha: isDark ? 0.02 : 0.05),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
@@ -338,14 +339,14 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                         children: [
                           Container(
                             padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF2A531D),
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.check_rounded,
                               size: 13,
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -354,7 +355,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                             style: GoogleFonts.outfit(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF2A531D),
+                              color: isDark ? Colors.white : const Color(0xFF2A531D),
                             ),
                           ),
                         ],
@@ -365,20 +366,20 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
+                          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE8F5E9),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFFA5D6A7),
+                            color: isDark ? const Color(0xFF3F3F46) : const Color(0xFFA5D6A7),
                             width: 0.8,
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.verified_rounded,
                               size: 13,
-                              color: Color(0xFF2E7D32),
+                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2E7D32),
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -386,7 +387,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                               style: GoogleFonts.outfit(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF2E7D32),
+                                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2E7D32),
                               ),
                             ),
                           ],
@@ -405,10 +406,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                       horizontal: 14,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDark ? const Color(0xFF18181B) : Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: const Color(0xFFE5E7EB),
+                        color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
                       ),
                     ),
                     child: Row(
@@ -421,14 +422,14 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                               'Amount Donated',
                               style: GoogleFonts.outfit(
                                 fontSize: 12,
-                                color: Colors.grey.shade600,
+                                color: isDark ? Colors.white70 : Colors.grey.shade600,
                               ),
                             ),
                             Text(
                               'Online Sadqa Support',
                               style: GoogleFonts.outfit(
                                 fontSize: 11,
-                                color: const Color(0xFF9CA3AF),
+                                color: isDark ? Colors.white38 : const Color(0xFF9CA3AF),
                               ),
                             ),
                           ],
@@ -438,7 +439,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                           style: GoogleFonts.outfit(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF2A531D),
+                            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                           ),
                         ),
                       ],
@@ -455,10 +456,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                       horizontal: 14,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDark ? const Color(0xFF18181B) : Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: const Color(0xFFE5E7EB),
+                        color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
                       ),
                     ),
                     child: Row(
@@ -473,7 +474,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                                   : 'Transaction ID',
                               style: GoogleFonts.outfit(
                                 fontSize: 11.5,
-                                color: Colors.grey.shade600,
+                                color: isDark ? Colors.white70 : Colors.grey.shade600,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -484,7 +485,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                               style: GoogleFonts.outfit(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1F2937),
+                                color: isDark ? Colors.white : const Color(0xFF1F2937),
                               ),
                             ),
                             if (_successOrderId.isNotEmpty) ...[
@@ -493,7 +494,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                                 'Order: $_successOrderId',
                                 style: GoogleFonts.outfit(
                                   fontSize: 11,
-                                  color: Colors.grey.shade500,
+                                  color: isDark ? Colors.white38 : Colors.grey.shade500,
                                 ),
                               ),
                             ],
@@ -501,10 +502,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                         ),
                         if (_successPaymentId.isNotEmpty)
                           IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.copy_rounded,
                               size: 18,
-                              color: Color(0xFF2A531D),
+                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                             ),
                             tooltip: 'Copy Txn ID',
                             visualDensity: VisualDensity.compact,
@@ -534,15 +535,15 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                         dateStr,
                         style: GoogleFonts.outfit(
                           fontSize: 11.5,
-                          color: Colors.grey.shade600,
+                          color: isDark ? Colors.white60 : Colors.grey.shade600,
                         ),
                       ),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.bookmark_added_rounded,
                             size: 14,
-                            color: Color(0xFF2A531D),
+                            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -550,7 +551,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                             style: GoogleFonts.outfit(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF2A531D),
+                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                             ),
                           ),
                         ],
@@ -577,11 +578,12 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2A531D),
-                  foregroundColor: Colors.white,
+                  backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
+                  foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                   elevation: 4,
-                  shadowColor:
-                      const Color(0xFF2A531D).withValues(alpha: 0.35),
+                  shadowColor: isDark
+                      ? Colors.black26
+                      : const Color(0xFF2A531D).withValues(alpha: 0.35),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -620,6 +622,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
   // ===========================================================================
 
   Widget _buildDonationFormView(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currencySymbol = _selectedCurrency == 'INR' ? '₹' : '\$';
 
     return Container(
@@ -629,9 +632,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
         top: 16,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: SingleChildScrollView(
         child: Form(
@@ -646,7 +649,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                   width: 44,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: isDark ? Colors.white24 : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -658,8 +661,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF1B3D14), Color(0xFF2A531D)],
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? const [Color(0xFF14532D), Color(0xFF0F291E)]
+                        : const [Color(0xFF1B3D14), Color(0xFF2A531D)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -725,7 +730,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 style: GoogleFonts.outfit(
                   fontSize: 12.5,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF4B5563),
+                  color: isDark ? Colors.white70 : const Color(0xFF4B5563),
                 ),
               ),
               const SizedBox(height: 8),
@@ -747,13 +752,21 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFF2A531D)
-                              : const Color(0xFFF4FAF3),
+                              ? (isDark
+                                  ? const Color(0xFF22C55E)
+                                  : const Color(0xFF2A531D))
+                              : (isDark
+                                  ? const Color(0xFF27272A)
+                                  : const Color(0xFFF4FAF3)),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFF2A531D)
-                                : const Color(0xFFE5E7EB),
+                                ? (isDark
+                                    ? const Color(0xFF22C55E)
+                                    : const Color(0xFF2A531D))
+                                : (isDark
+                                    ? const Color(0xFF3F3F46)
+                                    : const Color(0xFFE5E7EB)),
                             width: isSelected ? 1.8 : 1.0,
                           ),
                         ),
@@ -764,8 +777,12 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: isSelected
-                                ? Colors.white
-                                : const Color(0xFF2A531D),
+                                ? (isDark
+                                    ? const Color(0xFF0F0F12)
+                                    : Colors.white)
+                                : (isDark
+                                    ? Colors.white
+                                    : const Color(0xFF2A531D)),
                           ),
                         ),
                       ),
@@ -782,9 +799,23 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: false,
                 ),
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+                cursorColor:
+                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Custom Donation Amount ($currencySymbol)',
+                  labelStyle: TextStyle(
+                    color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+                  ),
                   hintText: 'Enter amount (Max: ${currencySymbol}100,000)',
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.grey.shade400,
+                  ),
+                  filled: true,
+                  fillColor:
+                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Text(
@@ -792,18 +823,35 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                       style: GoogleFonts.outfit(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF2A531D),
+                        color: isDark
+                            ? const Color(0xFF86EFAC)
+                            : const Color(0xFF2A531D),
                       ),
                     ),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF2A531D),
-                      width: 2,
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFF2A531D),
+                      width: 1.8,
                     ),
                   ),
                 ),
@@ -838,7 +886,7 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 style: GoogleFonts.outfit(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF374151),
+                  color: isDark ? Colors.white : const Color(0xFF374151),
                 ),
               ),
               const SizedBox(height: 8),
@@ -846,15 +894,53 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               // Donor Name Input Field
               TextFormField(
                 controller: _nameController,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+                cursorColor:
+                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Full Name',
+                  labelStyle: TextStyle(
+                    color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+                  ),
                   hintText: 'Enter your name',
-                  prefixIcon: const Icon(
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.grey.shade400,
+                  ),
+                  filled: true,
+                  fillColor:
+                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+                  prefixIcon: Icon(
                     Icons.person_outline_rounded,
-                    color: Color(0xFF2A531D),
+                    color: isDark
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFF2A531D),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFF2A531D),
+                      width: 1.8,
+                    ),
                   ),
                 ),
                 validator: (val) {
@@ -871,15 +957,53 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+                cursorColor:
+                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Email Address',
+                  labelStyle: TextStyle(
+                    color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+                  ),
                   hintText: 'Enter your email address',
-                  prefixIcon: const Icon(
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.grey.shade400,
+                  ),
+                  filled: true,
+                  fillColor:
+                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+                  prefixIcon: Icon(
                     Icons.email_outlined,
-                    color: Color(0xFF2A531D),
+                    color: isDark
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFF2A531D),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFF2A531D),
+                      width: 1.8,
+                    ),
                   ),
                 ),
                 validator: (val) {
@@ -896,15 +1020,53 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+                cursorColor:
+                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Phone Number (Optional)',
+                  labelStyle: TextStyle(
+                    color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+                  ),
                   hintText: 'Enter your phone number',
-                  prefixIcon: const Icon(
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.grey.shade400,
+                  ),
+                  filled: true,
+                  fillColor:
+                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+                  prefixIcon: Icon(
                     Icons.phone_outlined,
-                    color: Color(0xFF2A531D),
+                    color: isDark
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFF2A531D),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFF2A531D),
+                      width: 1.8,
+                    ),
                   ),
                 ),
               ),
@@ -918,12 +1080,16 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _startRazorpayPayment,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2A531D),
-                    foregroundColor: Colors.white,
+                    backgroundColor: isDark
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xFF2A531D),
+                    foregroundColor:
+                        isDark ? const Color(0xFF0F0F12) : Colors.white,
                     elevation: 3,
-                    shadowColor: const Color(
-                      0xFF2A531D,
-                    ).withValues(alpha: 0.35),
+                    shadowColor: (isDark
+                            ? const Color(0xFF22C55E)
+                            : const Color(0xFF2A531D))
+                        .withValues(alpha: 0.35),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -932,11 +1098,13 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(
+                            SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
-                                color: Colors.white,
+                                color: isDark
+                                    ? const Color(0xFF0F0F12)
+                                    : Colors.white,
                                 strokeWidth: 2.2,
                               ),
                             ),

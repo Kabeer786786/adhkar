@@ -31,9 +31,9 @@ class SettingsScreen extends ConsumerWidget {
       error: (_, _) => 'Version 1.3.0',
     );
 
-    final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
-    final cardBorder = isDark ? const Color(0xFF2B3F33) : const Color(0xFFE2E8F0);
+    final bgColor = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF233127) : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
     final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
     const primaryGreen = Color(0xFF2A531D);
@@ -44,11 +44,113 @@ class SettingsScreen extends ConsumerWidget {
         title: 'SETTINGS',
         showDrawerButton: false,
         showBackButton: true,
-      ),
+      ), 
       body: ListView(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 36, top: 8),
         children: [
+          // 0. Theme & Appearance Section
+          const SectionHeader(
+            title: 'Theme & Appearance',
+            subtitle: 'Choose between Light Mode and Black Dark Mode',
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: cardBorder, width: 1),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      ref.read(themeModeProvider.notifier).setThemeMode('light');
+                    },
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: !isDark
+                            ? const Color(0xFFE7F6E3)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(14),
+                        border: !isDark
+                            ? Border.all(color: primaryGreen.withValues(alpha: 0.4), width: 1.5)
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.light_mode_rounded,
+                            size: 19,
+                            color: !isDark ? primaryGreen : subTextColor,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Light Mode',
+                            style: GoogleFonts.lexend(
+                              fontSize: 13.5,
+                              fontWeight: !isDark ? FontWeight.w700 : FontWeight.w500,
+                              color: !isDark ? primaryGreen : subTextColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      ref.read(themeModeProvider.notifier).setThemeMode('dark');
+                      ref.read(storageServiceProvider).setQuranReadingDarkMode(true);
+                      ref.read(readingThemeProvider.notifier).setTheme(2);
+                    },
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF27272A)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(14),
+                        border: isDark
+                            ? Border.all(color: const Color(0xFF86EFAC).withValues(alpha: 0.6), width: 1.5)
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.dark_mode_rounded,
+                            size: 19,
+                            color: isDark ? const Color(0xFF86EFAC) : subTextColor,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Dark Mode',
+                            style: GoogleFonts.lexend(
+                              fontSize: 13.5,
+                              fontWeight: isDark ? FontWeight.w700 : FontWeight.w500,
+                              color: isDark ? Colors.white : subTextColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          const _SectionDivider(),
+
           // 1. Location & GPS Section
           const SectionHeader(
             title: 'Location & GPS',
@@ -745,7 +847,9 @@ class SettingsScreen extends ConsumerWidget {
                   onPressed: () {
                     context.go('/');
                     Future.delayed(const Duration(milliseconds: 300), () {
-                      ShowcaseService.startHomeShowcase(context);
+                      if (context.mounted) {
+                        ShowcaseService.startHomeShowcase(context);
+                      }
                     });
                   },
                   // icon: const Icon(Icons.play_arrow_rounded, size: 16),

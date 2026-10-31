@@ -32,6 +32,8 @@ class _MainShellState extends ConsumerState<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -65,33 +67,51 @@ class _MainShellState extends ConsumerState<MainShell> {
         drawer: const AppDrawer(),
         body: widget.navigationShell,
         bottomNavigationBar: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
             border: Border(
               top: BorderSide(
-                color: Color(0xFFE5E7EB),
+                color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
                 width: 1.0,
               ),
             ),
           ),
-              child: NavigationBarTheme(
-                data: NavigationBarThemeData(
-                  height: 60,
-                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                    final isSelected = states.contains(WidgetState.selected);
-                    return TextStyle(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                      height: 1.2,
-                    );
-                  }),
-                ),
-                child: NavigationBar(
-                  selectedIndex: widget.navigationShell.currentIndex,
-                  onDestinationSelected: _onTapIndex,
-                  indicatorColor: context.colorScheme.primaryContainer,
-                  elevation: 0,
-                  height: 70,
-                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          child: NavigationBarTheme(
+            data: NavigationBarThemeData(
+              height: 60,
+              indicatorColor: isDark
+                  ? const Color(0xFF1C3822)
+                  : context.colorScheme.primaryContainer,
+              iconTheme: WidgetStateProperty.resolveWith((states) {
+                final isSelected = states.contains(WidgetState.selected);
+                return IconThemeData(
+                  color: isSelected
+                      ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                      : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                );
+              }),
+              labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                final isSelected = states.contains(WidgetState.selected);
+                return TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  height: 1.2,
+                  color: isSelected
+                      ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                      : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                );
+              }),
+            ),
+            child: NavigationBar(
+              selectedIndex: widget.navigationShell.currentIndex,
+              onDestinationSelected: _onTapIndex,
+              indicatorColor: isDark
+                  ? const Color(0xFF1C3822)
+                  : context.colorScheme.primaryContainer,
+              backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
+              elevation: 0,
+              height: 70,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                   destinations: [
                     const NavigationDestination(
                       icon: Icon(FlutterIslamicIcons.mosque, size: 22),

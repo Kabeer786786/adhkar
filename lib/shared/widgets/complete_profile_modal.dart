@@ -170,13 +170,61 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    InputDecoration inputDecoration({
+      required String labelText,
+      required String hintText,
+      required IconData prefixIcon,
+    }) {
+      return InputDecoration(
+        labelText: labelText,
+        labelStyle: TextStyle(
+          color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+        ),
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: isDark ? Colors.white38 : Colors.grey.shade400,
+        ),
+        prefixIcon: Icon(
+          prefixIcon,
+          color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+        ),
+        filled: true,
+        fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+            width: 1.8,
+          ),
+        ),
+      );
+    }
+
     return Container(
       margin: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: SafeArea(
         top: false,
@@ -187,21 +235,25 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-               const SizedBox(height: 6),
+                const SizedBox(height: 6),
 
                 // Icon Badge & Title
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF3FAF2),
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFF3FAF2),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                      color: isDark
+                          ? const Color(0xFF3F3F46)
+                          : const Color(0xFF2A531D).withValues(alpha: 0.2),
                     ),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person_add_alt_1_rounded,
-                    color: Color(0xFF2A531D),
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                     size: 28,
                   ),
                 ),
@@ -212,7 +264,7 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                   style: GoogleFonts.outfit(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1F2937),
+                    color: isDark ? Colors.white : const Color(0xFF1F2937),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -222,7 +274,7 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
                     fontSize: 12.5,
-                    color: const Color(0xFF6B7280),
+                    color: isDark ? Colors.white70 : const Color(0xFF6B7280),
                     height: 1.35,
                   ),
                 ),
@@ -233,21 +285,12 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                 TextFormField(
                   controller: _nameController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: InputDecoration(
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                  cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                  decoration: inputDecoration(
                     labelText: 'Full Name',
                     hintText: 'e.g. Shaik Kabeer',
-                    prefixIcon: const Icon(Icons.person_outline_rounded,
-                        color: Color(0xFF2A531D)),
-                    filled: true,
-                    fillColor: const Color(0xFFF9FAFB),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
+                    prefixIcon: Icons.person_outline_rounded,
                   ),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
@@ -262,23 +305,14 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                  cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                  decoration: inputDecoration(
                     labelText: 'Email Address',
                     hintText: 'name@example.com',
-                    prefixIcon: const Icon(Icons.email_outlined,
-                        color: Color(0xFF2A531D)),
-                    filled: true,
-                    fillColor: const Color(0xFFF9FAFB),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
+                    prefixIcon: Icons.email_outlined,
                   ),
-                    validator: (val) {
+                  validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Please enter your email';
                     }
@@ -302,26 +336,32 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                         height: 56,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF9FAFB),
+                          color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                          border: Border.all(
+                            color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(_selectedCountry.flag,
-                                style: const TextStyle(fontSize: 16)),
+                            Text(
+                              _selectedCountry.flag,
+                              style: const TextStyle(fontSize: 16),
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               _selectedCountry.dialCode,
                               style: GoogleFonts.outfit(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1F2937),
+                                color: isDark ? Colors.white : const Color(0xFF1F2937),
                               ),
                             ),
-                            const Icon(Icons.arrow_drop_down_rounded,
-                                color: Colors.grey),
+                            Icon(
+                              Icons.arrow_drop_down_rounded,
+                              color: isDark ? Colors.white70 : Colors.grey,
+                            ),
                           ],
                         ),
                       ),
@@ -331,19 +371,41 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                       child: TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
+                        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                        cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                         decoration: InputDecoration(
                           labelText: 'Phone Number',
+                          labelStyle: TextStyle(
+                            color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+                          ),
                           hintText: '9876543210',
+                          hintStyle: TextStyle(
+                            color: isDark ? Colors.white38 : Colors.grey.shade400,
+                          ),
                           filled: true,
-                          fillColor: const Color(0xFFF9FAFB),
+                          fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 14,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide:
-                                const BorderSide(color: Color(0xFFE5E7EB)),
+                            borderSide: BorderSide(
+                              color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(
+                              color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(
+                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                              width: 1.8,
+                            ),
                           ),
                         ),
                         validator: (val) {
@@ -370,19 +432,19 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                   child: ElevatedButton(
                     onPressed: _isSaving ? null : _handleSave,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2A531D),
-                      foregroundColor: Colors.white,
+                      backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
+                      foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                       elevation: 1,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                     child: _isSaving
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                               strokeWidth: 2,
                             ),
                           )
@@ -412,7 +474,7 @@ class _CompleteProfileModalState extends ConsumerState<CompleteProfileModal> {
                     style: GoogleFonts.outfit(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF6B7280),
+                      color: isDark ? Colors.white60 : const Color(0xFF6B7280),
                     ),
                   ),
                 ),

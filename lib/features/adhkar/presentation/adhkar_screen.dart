@@ -78,6 +78,18 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
     final savedItemMaps = storage.getSavedAdhkarItems();
     if (savedItemMaps != null && savedItemMaps.isNotEmpty) {
       _allAdhkar = savedItemMaps.map((map) => DhikrItem.fromJson(map)).toList();
+      // Ensure all 4 test types in daily duas category exist
+      final defaultDaily = repo.getAdhkarByCategory('duas');
+      bool hasNew = false;
+      for (final defItem in defaultDaily) {
+        if (!_allAdhkar.any((item) => item.id == defItem.id)) {
+          _allAdhkar.add(defItem);
+          hasNew = true;
+        }
+      }
+      if (hasNew) {
+        _persistAdhkar();
+      }
     } else {
       _allAdhkar = repo.getAllDefaultAdhkar();
       _persistAdhkar();
@@ -154,30 +166,54 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
   }
 
   void _confirmDeleteCategory(AdhkarCategory category) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
-              SizedBox(width: 10),
-              Text('Delete Adhkar?'),
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+            ),
+          ),
+          title: Row(
+            children: [ 
+              const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 26),
+              const SizedBox(width: 10),
+              Text(
+                'Delete Adhkar?',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
             ],
           ),
           content: Text(
             'Are you sure you want to delete "${category.title}" and all its Duas and Adhkar? This action cannot be undone.',
-            style: const TextStyle(fontSize: 14, height: 1.4),
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.4,
+              color: isDark ? Colors.white70 : Colors.black87,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: isDark ? Colors.white60 : Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -185,7 +221,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                 Navigator.pop(context);
                 _deleteCategory(category.id);
               },
-              child: const Text('Delete'),
+              child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         );
@@ -197,21 +233,26 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
     required String labelText,
     required String hintText,
     required IconData prefixIcon,
+    bool isDark = false,
   }) {
     return InputDecoration(
       labelText: labelText,
       hintText: hintText,
       filled: true,
-      fillColor: const Color(0xFFF9FAFB),
+      fillColor: isDark ? const Color(0xFF18181B) : const Color(0xFFF9FAFB),
       prefixIcon: Icon(prefixIcon, color: const Color(0xFF2A531D)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -220,9 +261,10 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
     );
   }
 
-  Widget _buildCategoryImageWidget(String imagePath) {
+  Widget _buildCategoryImageWidget(String imagePath, [bool isDark = false]) {
+    Widget imgWidget;
     if (imagePath.startsWith('assets/')) {
-      return Image.asset(
+      imgWidget = Image.asset(
         imagePath,
         fit: BoxFit.contain,
         cacheWidth: 300,
@@ -237,7 +279,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
     } else {
       final file = File(imagePath);
       if (file.existsSync()) {
-        return Image.file(
+        imgWidget = Image.file(
           file,
           fit: BoxFit.contain,
           alignment: Alignment.bottomRight,
@@ -247,16 +289,29 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
             color: Colors.black12,
           ),
         );
+      } else {
+        imgWidget = const Icon(
+          Icons.auto_awesome_rounded,
+          size: 60,
+          color: Colors.black12,
+        );
       }
-      return const Icon(
-        Icons.auto_awesome_rounded,
-        size: 60,
-        color: Colors.black12,
+    }
+
+    if (isDark) {
+      return ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          Colors.black.withValues(alpha: 0.15),
+          BlendMode.srcATop,
+        ),
+        child: imgWidget,
       );
     }
+    return imgWidget;
   }
 
   void _showCategoryModal({AdhkarCategory? category}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEdit = category != null;
     final titleController = TextEditingController(text: category?.title ?? '');
     final subtitleController = TextEditingController(text: category?.subtitle ?? '');
@@ -267,7 +322,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -280,46 +335,64 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
               selectableImages.insert(0, selectedImagePath);
             }
 
-            return Padding(
+            return Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+              ),
               padding: EdgeInsets.only(
                 top: 20,
                 left: 20,
                 right: 20,
                 bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Sheet Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          isEdit ? 'Edit Adhkar' : 'Create New Adhkar',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2A531D),
-                          ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Fixed Sheet Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isEdit ? 'Edit Adhkar' : 'Create New Adhkar',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : const Color(0xFF2A531D),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded),
-                          onPressed: () => Navigator.pop(context),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: isDark ? Colors.white70 : Colors.black87,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  Divider(
+                    height: 1,
+                    color: isDark ? const Color(0xFF27272A) : Colors.grey.shade200,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Scrollable Content
+                  Flexible(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
                     // Category Title Input
                     TextField(
                       controller: titleController,
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                       decoration: _roundedInputDecoration(
                         labelText: 'Adhkar Title *',
                         hintText: 'e.g. Travel Duas',
                         prefixIcon: Icons.category_rounded,
+                        isDark: isDark,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -329,10 +402,12 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                       controller: subtitleController,
                       maxLines: 2,
                       maxLength: 100,
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                       decoration: _roundedInputDecoration(
                         labelText: 'Subtitle / Description (max 2 lines)',
                         hintText: 'e.g. Duas for protection during journeys',
                         prefixIcon: Icons.description_rounded,
+                        isDark: isDark,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -342,22 +417,25 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                       controller: titleArController,
                       textAlign: TextAlign.right,
                       textDirection: TextDirection.rtl,
-                      style: AppTypography.arabicBody(fontSize: 18),
+                      style: AppTypography.arabicBody(
+                        fontSize: 18,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
                       decoration: _roundedInputDecoration(
                         labelText: 'Arabic Title (Optional)',
                         hintText: 'أدعية السفر',
                         prefixIcon: Icons.translate_rounded,
+                        isDark: isDark,
                       ),
                     ),
                     const SizedBox(height: 20),
 
-                    // Gradient Theme Picker (No Shadow!)
-                    const Text(
-                      'Select Light Gradient Theme',
+                    Text(
+                      'Select Gradient Theme',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2A531D),
+                        color: isDark ? Colors.white : const Color(0xFF2A531D),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -411,12 +489,12 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                     const SizedBox(height: 22),
 
                     // Image Upload / Selector
-                    const Text(
+                    Text(
                       'Upload background-less image or select icon',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2A531D),
+                        color: isDark ? Colors.white : const Color(0xFF2A531D),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -446,28 +524,32 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                                 width: 68,
                                 height: 68,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFE8F4E5),
+                                  color: isDark
+                                      ? const Color(0xFF18181B)
+                                      : const Color(0xFFE8F4E5),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFF2A531D),
-                                    width: 1.8,
+                                    color: isDark
+                                        ? const Color(0xFF27272A)
+                                        : const Color(0xFF2A531D),
+                                    width: 1.8, 
                                   ),
                                 ),
-                                child: const Column(
+                                child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
                                       Icons.add_a_photo_rounded,
-                                      color: Color(0xFF2A531D),
+                                      color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                                       size: 24,
                                     ),
-                                    SizedBox(height: 2),
+                                    const SizedBox(height: 2),
                                     Text(
                                       'Upload',
                                       style: TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF2A531D),
+                                        color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                                       ),
                                     ),
                                   ],
@@ -494,13 +576,13 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                               height: 68,
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? const Color(0xFFE8F4E5)
-                                    : Colors.grey.shade100,
+                                    ? (isDark ? const Color(0xFF27272A) : const Color(0xFFE8F4E5))
+                                    : (isDark ? const Color(0xFF18181B) : Colors.grey.shade100),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: isSelected
-                                      ? const Color(0xFF2A531D)
-                                      : Colors.transparent,
+                                      ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                                      : (isDark ? const Color(0xFF27272A) : Colors.transparent),
                                   width: 2.0,
                                 ),
                               ),
@@ -516,21 +598,27 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF0FDF4),
+                        color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF0FDF4),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFBBF7D0)),
+                        border: Border.all(
+                          color: isDark ? const Color(0xFF27272A) : const Color(0xFFBBF7D0),
+                        ),
                       ),
-                      child: const Row(
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.info_outline_rounded, color: Color(0xFF16A34A), size: 20),
-                          SizedBox(width: 10),
+                          Icon(
+                            Icons.info_outline_rounded,
+                            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               'This is only to create an Adhkar folder for you. Once it is created, you can add Dhikrs, Duas, Quran Surahs, or Tasbeeh inside it.',
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: Color(0xFF166534),
+                                color: isDark ? Colors.white70 : const Color(0xFF166534),
                                 height: 1.4,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -572,8 +660,8 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2A531D),
-                          foregroundColor: Colors.white,
+                          backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
+                          foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
@@ -584,7 +672,10 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                   ],
                 ),
               ),
-            );
+            ),
+          ],
+        ),
+      );
           },
         );
       },
@@ -596,7 +687,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121B15) : const Color(0xFFF9FAFB),
+      backgroundColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
       appBar: const AppHeaderBar(title: 'ADHKAR'),
       body: _categories.isEmpty
           ? Center(
@@ -773,6 +864,8 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                 final cat = _categories[index];
                 final gradientPreset =
                     AdhkarCategory.getGradient(cat.gradientIndex);
+                final cardColors = gradientPreset.getColors(isDark);
+                final cardTextColor = gradientPreset.getTextColor(isDark);
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -798,22 +891,9 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           gradient: LinearGradient(
-                            colors: gradientPreset.colors,
+                            colors: cardColors,
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: gradientPreset.textColor
-                                  .withValues(alpha: 0.08),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                          border: Border.all(
-                            color: gradientPreset.textColor
-                                .withValues(alpha: 0.15),
-                            width: 1.0,
                           ),
                         ),
                         child: Stack(
@@ -829,7 +909,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                                   padding: const EdgeInsets.all(4),
                                   child: Opacity(
                                     opacity: 0.85,
-                                    child: _buildCategoryImageWidget(cat.imagePath),
+                                    child: _buildCategoryImageWidget(cat.imagePath, isDark),
                                   ),
                                 ),
                               ),
@@ -840,7 +920,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                               top: 4,
                               right: 4,
                               child: AppActionPopupMenu<String>(
-                                iconColor: gradientPreset.textColor,
+                                iconColor: cardTextColor,
                                 items: const [
                                   AppActionMenuItem(
                                     value: 'edit',
@@ -876,7 +956,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                                       textDirection: TextDirection.rtl,
                                       style: AppTypography.arabicHeader(
                                         fontSize: 16,
-                                        color: gradientPreset.textColor,
+                                        color: cardTextColor,
                                       ),
                                     ),
                                     const SizedBox(height: 5),
@@ -892,7 +972,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                                       style: TextStyle(
                                         fontSize: 19,
                                         fontWeight: FontWeight.w800,
-                                        color: gradientPreset.textColor,
+                                        color: cardTextColor,
                                         letterSpacing: -0.2,
                                       ),
                                     ),
@@ -912,7 +992,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                                         fontSize: 12,
                                         height: 1.3,
                                         fontWeight: FontWeight.w500,
-                                        color: gradientPreset.textColor
+                                        color: cardTextColor
                                             .withValues(alpha: 0.85),
                                       ),
                                     ),
@@ -920,7 +1000,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
                                   const SizedBox(height: 8),
 
                                   // Daily Progress Indicator for this folder
-                                  _buildCategoryProgressBadge(cat, gradientPreset),
+                                  _buildCategoryProgressBadge(cat, cardTextColor),
                                 ],
                               ),
                             ),
@@ -955,7 +1035,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
     );
   }
 
-  Widget _buildCategoryProgressBadge(AdhkarCategory cat, CategoryGradientPreset preset) {
+  Widget _buildCategoryProgressBadge(AdhkarCategory cat, Color textColor) {
     final catItems = _allAdhkar.where((i) => i.category == cat.id).toList();
     final totalCount = catItems.length;
     final completedCount = catItems.where((i) => (_dailyCounts[i.id] ?? 0) >= i.countTarget).length;
@@ -966,7 +1046,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
       decoration: BoxDecoration(
         color: isAllDone
             ? const Color(0xFF14532D)
-            : preset.textColor.withValues(alpha: 0.12),
+            : textColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -975,7 +1055,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
           Icon(
             isAllDone ? Icons.check_circle_rounded : Icons.timelapse_rounded,
             size: 12.5,
-            color: isAllDone ? Colors.white : preset.textColor,
+            color: isAllDone ? Colors.white : textColor,
           ),
           const SizedBox(width: 4.5),
           Text(
@@ -987,7 +1067,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: isAllDone ? Colors.white : preset.textColor,
+              color: isAllDone ? Colors.white : textColor,
             ),
           ),
         ],
@@ -1002,10 +1082,10 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          color: isDark ? const Color(0xFF18181B) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDark ? const Color(0xFF2A531D) : const Color(0xFFD4EBD0),
+            color: isDark ? const Color(0xFF27272A) : const Color(0xFFD4EBD0),
             width: 1,
           ),
         ),

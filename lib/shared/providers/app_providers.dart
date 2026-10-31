@@ -139,9 +139,21 @@ class ArabicFontNotifier extends StateNotifier<ArabicFont> {
   }
 }
 
-final themeModeProvider = StateProvider<String>((ref) {
+class ThemeModeNotifier extends StateNotifier<String> {
+  final StorageService _storage;
+  ThemeModeNotifier(this._storage) : super(_storage.getThemeMode());
+
+  Future<void> setThemeMode(String mode) async {
+    state = mode;
+    await _storage.setThemeMode(mode);
+    await _storage.setDarkMode(mode == 'dark');
+  }
+}
+
+final themeModeProvider =
+    StateNotifierProvider<ThemeModeNotifier, String>((ref) {
   final storage = ref.watch(storageServiceProvider);
-  return storage.getThemeMode();
+  return ThemeModeNotifier(storage);
 });
 
 /// Provides current prayer times. Watches AlAdhan API provider and falls back to local math calculation.

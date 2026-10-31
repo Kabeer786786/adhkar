@@ -34,10 +34,12 @@ class DailyAyahCard extends ConsumerWidget {
   }
 
   Widget _buildCard(BuildContext context, DailyAyahModel ayah) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3FAF2),
+        color: isDark ? const Color(0xFF18181B) : const Color(0xFFF3FAF2),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Material(
@@ -62,7 +64,7 @@ class DailyAyahCard extends ConsumerWidget {
                   style: AppTypography.arabicHeader(
                     fontSize: 22,
                     height: 1.8,
-                    color: const Color(0xFF1A3512),
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF1A3512),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -76,7 +78,7 @@ class DailyAyahCard extends ConsumerWidget {
                     height: 1.5,
                     fontWeight: FontWeight.w500,
                     fontStyle: FontStyle.italic,
-                    color: const Color(0xFF2A531D),
+                    color: isDark ? Colors.white.withValues(alpha: 0.90) : const Color(0xFF2A531D),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -87,19 +89,19 @@ class DailyAyahCard extends ConsumerWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         FlutterIslamicIcons.quran2,
                         size: 15,
-                        color: Color(0xFF8C6D53),
+                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF8C6D53),
                       ),
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
                           'Quran • ${ayah.surahEnglishName} (${ayah.surahName}) ${ayah.surahNumber}:${ayah.numberInSurah}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF8C6D53),
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF8C6D53),
                             letterSpacing: 0.2,
                           ),
                           maxLines: 1,

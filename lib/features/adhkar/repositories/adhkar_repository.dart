@@ -272,18 +272,105 @@ class AdhkarRepository {
   ];
 
   static const List<DhikrItem> _dailyDuas = [
+    // 1. TYPE: QURAN
     DhikrItem(
-      id: 'd1',
+      id: 'd_quran_ikhlas',
       category: 'duas',
+      type: 'quran',
+      surahNumber: 112,
+      surahName: 'Al-Ikhlas',
+      surahNameArabic: 'الإخلاص',
+      surahMeaning: 'The Sincerity • 4 Verses • Meccan',
+      arabicText: 'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',
+      transliteration:
+          'Qul Huwallahu Ahad, Allahus-Samad, Lam yalid wa lam yoolad, Wa lam yakun lahu kufuwan ahad.',
+      translation:
+          'Say: He is Allah, [who is] One. Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent.',
+      reference: 'Holy Quran • Surah Al-Ikhlas (112:1-4)',
+      virtue:
+          'Equal to one-third of the Quran. Reciting it repeatedly brings divine love, protection, and eternal paradise.',
+      countTarget: 3,
+    ),
+
+    // 2. TYPE: DAILY DUA (Multi-language)
+    DhikrItem(
+      id: 'd_dua_rabbana',
+      category: 'duas',
+      type: 'dua',
+      duaId: 'dua_rabbana_hasanah',
+      titles: {
+        'en': 'Supplication for Goodness in Both Worlds',
+        'ur': 'دنیا اور آخرت کی بھلائی کی دعا',
+        'hi': 'दोनों जहां की भलाई की दुआ',
+        'te': 'ఇహ పరలోకాల మేలు కొరకు దుఆ',
+      },
+      translations: {
+        'en':
+            'Our Lord, give us in this world that which is good and in the Hereafter that which is good, and save us from the punishment of the Fire.',
+        'ur':
+            'اے ہمارے پروردگار! ہمیں دنیا میں بھی بھلائی دے اور آخرت میں بھی بھلائی دے اور ہمیں عذابِ جہنم سے بچا۔',
+        'hi':
+            'ऐ हमारे रब! हमें दुनिया में भी भलाई दे और आख़िरत में भी भलाई दे और हमें आग के अज़ाब से बचा।',
+        'te':
+            'ఓ మా ప్రభూ! మాకు ఈ లోకంలోనూ మేలు చేయి, పరలోకంలోనూ మేలు చేయి మరియు నరకాగ్ని శిక్ష నుండి మమ్ములను కాపాడు.',
+      },
+      transliterations: {
+        'en':
+            'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina \'adhaban-nar.',
+        'ur': 'ربنا آتنا فی الدنیا حسنۃ وفی الآخرۃ حسنۃ وقنا عذاب النار',
+        'hi':
+            'रब्बना आतीना फ़िद-दुनिया ह़सनतन वफ़िल-आख़िरती ह़सनतन वक़िना अज़ाबन-नार।',
+        'te':
+            'రబ్బనా ఆతినా ఫిద్-దున్యా హసనతవ్-వఫిల్-ఆఖిరతి హసనతవ్-వఖినా అజాబన్-నార్.',
+      },
+      benefitsMap: {
+        'en':
+            'The most frequent and comprehensive supplication of the Prophet Muhammad (ﷺ). Encompasses all spiritual, physical, and worldly needs.',
+        'ur':
+            'حضور اکرم صلی اللہ علیہ وسلم کی کثرت سے پڑھی جانے والی دعا۔ دنیا و آخرت کی تمام بھلائیوں کی ضامن۔',
+      },
       arabicText:
           'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
       transliteration:
           'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina \'adhaban-nar.',
       translation:
           'Our Lord, give us in this world that which is good and in the Hereafter that which is good, and save us from the punishment of the Fire.',
-      reference: 'Surah Al-Baqarah 2:201',
-      virtue: 'The most comprehensive dua taught in the Quran.',
+      reference: 'Quran (Surah Al-Baqarah 2:201)',
+      virtue:
+          'The most comprehensive dua taught in the Quran and favored by the Prophet (ﷺ).',
       countTarget: 3,
+    ),
+
+    // 3. TYPE: TASBEEH
+    DhikrItem(
+      id: 'd_tasbeeh_subhanallah',
+      category: 'duas',
+      type: 'tasbeeh',
+      tasbeehId: 't_subhanallah_bihamdihi',
+      tasbeehName: 'SubhanAllah wa biHamdihi',
+      arabicText: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
+      transliteration: 'SubhanAllahi wa bihamdihi',
+      translation: 'Glory be to Allah and Praise be to Him',
+      reference: 'Sahih al-Bukhari 6405',
+      virtue:
+          'Whoever says it 100 times a day, their sins will be wiped away even if they were like the foam of the sea.',
+      countTarget: 33,
+    ),
+
+    // 4. TYPE: CUSTOM DHIKR
+    DhikrItem(
+      id: 'd_custom_istighfar',
+      category: 'duas',
+      type: 'custom',
+      arabicText: 'أَسْتَغْفِرُ اللَّهَ رَبِّي مِنْ كُلِّ ذَنْبٍ وَأَتُوبُ إِلَيْهِ',
+      transliteration:
+          'Astaghfirullaha Rabbi min kulli dhambin wa atoobu ilayh',
+      translation:
+          'I seek forgiveness from Allah, my Lord, from every sin and I turn to Him in repentance.',
+      reference: 'Daily Sunnah Istighfar',
+      virtue:
+          'Continuous repentance brings immense peace, sustenance, relief from anxiety, and divine pardon.',
+      countTarget: 10,
     ),
   ];
 }

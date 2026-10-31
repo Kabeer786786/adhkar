@@ -96,19 +96,20 @@ class AppTheme {
     const colorScheme = ColorScheme(
       brightness: Brightness.dark,
       primary: AppColors.primaryDark,
-      onPrimary: Color(0xFF42280A),
+      onPrimary: Color(0xFF0C190D),
       primaryContainer: AppColors.primaryContainerDark,
       onPrimaryContainer: AppColors.primaryContainerLight,
       secondary: AppColors.secondaryDark,
-      onSecondary: Color(0xFF542503),
+      onSecondary: Color(0xFF0C190D),
       secondaryContainer: AppColors.secondaryContainerDark,
       onSecondaryContainer: AppColors.secondaryContainerLight,
       tertiary: AppColors.tertiaryDark,
-      onTertiary: Color(0xFF003826),
+      onTertiary: Color(0xFF0C190D),
       surface: AppColors.surfaceDark,
       onSurface: AppColors.textPrimaryDark,
       surfaceContainerHighest: AppColors.surfaceVariantDark,
       onSurfaceVariant: AppColors.textSecondaryDark,
+      outlineVariant: Color(0xFF27272A),
       outline: AppColors.outlineDark,
       error: AppColors.error,
       onError: Colors.white,
@@ -124,9 +125,9 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(cardRadius),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1),
+          side: const BorderSide(color: AppColors.outlineDark, width: 1),
         ),
-        color: AppColors.surfaceDark,
+        color: AppColors.cardDark,
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
       ),
       appBarTheme: const AppBarTheme(
@@ -148,14 +149,33 @@ class AppTheme {
         elevation: 12,
         type: BottomNavigationBarType.fixed,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.surfaceDark,
+        indicatorColor: AppColors.primaryContainerDark,
+        elevation: 0,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final isSelected = states.contains(WidgetState.selected);
+          return TextStyle(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+            color: isSelected ? AppColors.primaryDark : AppColors.textSecondaryDark,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final isSelected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: isSelected ? AppColors.primaryDark : AppColors.textSecondaryDark,
+          );
+        }),
+      ),
       dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(cardRadius),
         ),
-        backgroundColor: AppColors.surfaceDark,
+        backgroundColor: AppColors.cardDark,
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: AppColors.surfaceDark,
+        backgroundColor: AppColors.cardDark,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -166,7 +186,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(buttonRadius),
         ),
         backgroundColor: AppColors.primaryDark,
-        foregroundColor: const Color(0xFF42280A),
+        foregroundColor: const Color(0xFF0C190D),
       ),
     );
   }

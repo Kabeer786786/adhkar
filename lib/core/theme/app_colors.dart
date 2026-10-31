@@ -28,12 +28,12 @@ class AppColors {
   static const Color surfaceVariantLight = Color(0xFFE7F6E3);
   static const Color outlineLight = Color(0xFFC8E6C9);
 
-  // Background & Surfaces - Deep Dark Mode (#2F3330 background, #57615C surface/cards)
-  static const Color backgroundDark = Color(0xFF2F3330);
-  static const Color surfaceDark = Color(0xFF2F3330);
-  static const Color cardDark = Color(0xFF57615C);
-  static const Color surfaceVariantDark = Color(0xFF57615C);
-  static const Color outlineDark = Color(0xFF434A46);
+  // Background & Surfaces - Charcoal Black Theme (consistent 0F0F12 bg & 18181B card)
+  static const Color backgroundDark = Color(0xFF0F0F12);
+  static const Color surfaceDark = Color(0xFF18181B);
+  static const Color cardDark = Color(0xFF18181B);
+  static const Color surfaceVariantDark = Color(0xFF27272A);
+  static const Color outlineDark = Color(0xFF27272A);
 
   // Text Colors
   static const Color textPrimaryLight = Color(0xFF1A3512);
@@ -61,5 +61,30 @@ class AppColors {
     double alpha = 0.15,
   }) {
     return color.withValues(alpha: isDark ? alpha * 1.3 : alpha);
+  }
+
+  /// Dark overlay utility to gracefully dim colorful backgrounds in dark mode
+  /// so they maintain their colors without looking overly bright
+  static Widget withDarkOverlay({
+    required Widget child,
+    required bool isDark,
+    double opacity = 0.40,
+    BorderRadius? borderRadius,
+  }) {
+    if (!isDark) return child;
+    return ClipRRect(
+      borderRadius: borderRadius ?? BorderRadius.zero,
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          child,
+          Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black.withValues(alpha: opacity),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

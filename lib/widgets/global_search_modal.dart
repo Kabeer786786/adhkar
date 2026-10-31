@@ -44,6 +44,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
 
   String _query = '';
   GlobalSearchCategory _selectedCategory = GlobalSearchCategory.all;
+  bool _showFilters = false;
 
   @override
   void initState() {
@@ -116,11 +117,15 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
     return Dialog(
       alignment: Alignment.topCenter,
       insetPadding: const EdgeInsets.only(top: 60, left: 16, right: 16, bottom: 24),
-      backgroundColor: context.colorScheme.surface,
+      backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
       surfaceTintColor: Colors.transparent,
-      elevation: 8,
+      elevation: isDark ? 16 : 8,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
+          width: 1.2,
+        ),
       ),
       child: Container(
         constraints: BoxConstraints(
@@ -137,6 +142,10 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
               controller: _controller,
               focusNode: _focusNode,
               textInputAction: TextInputAction.search,
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 14,
+              ),
               onChanged: (val) {
                 setState(() {
                   _query = val;
@@ -144,18 +153,25 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
               },
               decoration: InputDecoration(
                 hintText: 'Search Surahs, Juz, Duas, 99 Names, Books...',
-                hintStyle: context.textTheme.bodyMedium?.copyWith(
-                  color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                hintStyle: TextStyle(
+                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                   fontSize: 14,
                 ),
                 prefixIcon: Icon(
                   Icons.search_rounded,
-                  color: context.colorScheme.primary,
+                  color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                   size: 22,
                 ),
-                suffixIcon: hasQuery
-                    ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 20),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (hasQuery)
+                      IconButton(
+                        icon: Icon(
+                          Icons.clear_rounded,
+                          size: 19,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        ),
                         tooltip: 'Clear search',
                         onPressed: () {
                           _controller.clear();
@@ -163,87 +179,155 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                             _query = '';
                           });
                         },
-                      )
-                    : null,
+                      ),
+                    IconButton(
+                      icon: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Icon(
+                            _showFilters ? Icons.tune_rounded : Icons.tune_outlined,
+                            size: 20,
+                            color: (_showFilters || _selectedCategory != GlobalSearchCategory.all)
+                                ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                                : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                          ),
+                          if (_selectedCategory != GlobalSearchCategory.all)
+                            Positioned(
+                              right: -1,
+                              top: -1,
+                              child: Container(
+                                width: 7,
+                                height: 7,
+                                decoration: BoxDecoration(
+                                  color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      tooltip: _showFilters ? 'Hide category filters' : 'Show category filters',
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        setState(() {
+                          _showFilters = !_showFilters;
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+                ),
                 filled: true,
-                fillColor: isDark
-                    ? context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
-                    : context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF4F6F4),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
+                    width: 1,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
+                    width: 1,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                    width: 1.5,
+                  ),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
 
-            const SizedBox(height: 10),
+            // Collapsible Category Filter Chips (Smoothly slides from behind search box)
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.fastOutSlowIn,
+              child: _showFilters
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 36,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: GlobalSearchCategory.values.length,
+                            separatorBuilder: (context, index) => const SizedBox(width: 6),
+                            itemBuilder: (context, index) {
+                              final cat = GlobalSearchCategory.values[index];
+                              final isSelected = _selectedCategory == cat;
 
-            // Category Filter Chips
-            SizedBox(
-              height: 36,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                itemCount: GlobalSearchCategory.values.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 6),
-                itemBuilder: (context, index) {
-                  final cat = GlobalSearchCategory.values[index];
-                  final isSelected = _selectedCategory == cat;
-
-                  return FilterChip(
-                    selected: isSelected,
-                    showCheckmark: false,
-                    avatar: Icon(
-                      cat.icon,
-                      size: 14,
-                      color: isSelected
-                          ? context.colorScheme.onPrimary
-                          : context.colorScheme.onSurfaceVariant,
-                    ),
-                    label: Text(cat.label),
-                    labelPadding: const EdgeInsets.only(right: 10, left:-2),
-                    labelStyle: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      color: isSelected
-                          ? context.colorScheme.onPrimary
-                          : context.colorScheme.onSurface,
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0),
-                    visualDensity: VisualDensity.compact,
-                    backgroundColor: isDark
-                        ? context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
-                        : context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                    selectedColor: context.colorScheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: isSelected
-                            ? context.colorScheme.primary
-                            : context.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                        width: 1,
-                      ),
-                    ),
-                    onSelected: (selected) {
-                      HapticFeedback.selectionClick();
-                      setState(() {
-                        _selectedCategory = cat;
-                      });
-                    },
-                  );
-                },
-              ),
+                              return FilterChip(
+                                selected: isSelected,
+                                showCheckmark: false,
+                                avatar: Icon(
+                                  cat.icon,
+                                  size: 14,
+                                  color: isSelected
+                                      ? (isDark ? const Color(0xFF86EFAC) : Colors.white)
+                                      : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                                ),
+                                label: Text(cat.label),
+                                labelPadding: const EdgeInsets.only(right: 10, left: -2),
+                                labelStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  color: isSelected
+                                      ? (isDark ? const Color(0xFF86EFAC) : Colors.white)
+                                      : (isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155)),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0),
+                                visualDensity: VisualDensity.compact,
+                                backgroundColor: isDark
+                                    ? const Color(0xFF0F0F12)
+                                    : const Color(0xFFF1F5F9),
+                                selectedColor: isDark
+                                    ? const Color(0xFF27272A)
+                                    : const Color(0xFF2A531D),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: BorderSide(
+                                    color: isSelected
+                                        ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                                        : (isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0)),
+                                    width: 1,
+                                  ),
+                                ),
+                                onSelected: (selected) {
+                                  HapticFeedback.selectionClick();
+                                  setState(() {
+                                    _selectedCategory = cat;
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
             ),
 
-            const SizedBox(height: 10),
-            const Divider(height: 1),
+            if (!_showFilters) const SizedBox(height: 10),
+
+            Divider(
+              height: 1,
+              color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
+            ),
 
             // Search Content / Results Area (Shows results if query entered OR category pill selected)
             Expanded(
               child: (hasQuery || _selectedCategory != GlobalSearchCategory.all)
-                  ? _buildSearchResults(results)
-                  : _buildIdleContent(recentHistory, quickShortcuts),
+                  ? _buildSearchResults(results, isDark)
+                  : _buildIdleContent(recentHistory, quickShortcuts, isDark),
             ),
           ],
         ),
@@ -251,7 +335,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
     );
   }
 
-  Widget _buildSearchResults(List<GlobalSearchItem> results) {
+  Widget _buildSearchResults(List<GlobalSearchItem> results, bool isDark) {
     final isCategoryFiltered = _selectedCategory != GlobalSearchCategory.all;
 
     if (results.isEmpty) {
@@ -264,7 +348,9 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
               Icon(
                 Icons.search_off_rounded,
                 size: 48,
-                color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: isDark
+                    ? const Color(0xFF94A3B8).withValues(alpha: 0.5)
+                    : context.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 12),
               Text(
@@ -272,20 +358,23 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                     ? 'No matches found for "$_query"'
                     : 'No items in ${_selectedCategory.label}',
                 textAlign: TextAlign.center,
-                style: context.textTheme.titleSmall?.copyWith(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: context.colorScheme.onSurface,
+                  fontSize: 15,
+                  color: isDark ? Colors.white : context.colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Try searching for Surah name, Juz number, Dua, Asma Ul Husna, or app feature.',
                 textAlign: TextAlign.center,
-                style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colorScheme.onSurfaceVariant,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? const Color(0xFF94A3B8) : context.colorScheme.onSurfaceVariant,
                 ),
               ),
               if (isCategoryFiltered) ...[
+                const SizedBox(height: 8),
                 TextButton.icon(
                   onPressed: () {
                     HapticFeedback.selectionClick();
@@ -293,8 +382,17 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                       _selectedCategory = GlobalSearchCategory.all;
                     });
                   },
-                  icon: const Icon(Icons.clear_all_rounded, size: 16),
-                  label: const Text('Show All Categories'),
+                  icon: Icon(
+                    Icons.clear_all_rounded,
+                    size: 16,
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                  ),
+                  label: Text(
+                    'Show All Categories',
+                    style: TextStyle(
+                      color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                    ),
+                  ),
                 ),
               ],
             ],
@@ -320,9 +418,10 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                   titleText,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.labelMedium?.copyWith(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: context.colorScheme.primary,
+                    fontSize: 13,
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -338,7 +437,9 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: context.colorScheme.primary.withValues(alpha: 0.1),
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFF2A531D).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
@@ -349,11 +450,15 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: context.colorScheme.primary,
+                            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                           ),
                         ),
                         const SizedBox(width: 3),
-                        Icon(Icons.close_rounded, size: 13, color: context.colorScheme.primary),
+                        Icon(
+                          Icons.close_rounded,
+                          size: 13,
+                          color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                        ),
                       ],
                     ),
                   ),
@@ -361,8 +466,9 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
               else
                 Text(
                   'Top 10 ranked',
-                  style: context.textTheme.labelSmall?.copyWith(
-                    color: context.colorScheme.onSurfaceVariant,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? const Color(0xFF94A3B8) : context.colorScheme.onSurfaceVariant,
                   ),
                 ),
             ],
@@ -374,11 +480,11 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
             itemCount: results.length,
             separatorBuilder: (context, index) => Divider(
               height: 1,
-              color: context.colorScheme.outlineVariant.withValues(alpha: 0.3),
+              color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
             ),
             itemBuilder: (context, index) {
               final item = results[index];
-              return _buildSearchResultTile(item);
+              return _buildSearchResultTile(item, isDark);
             },
           ),
         ),
@@ -386,7 +492,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
     );
   }
 
-  Widget _buildSearchResultTile(GlobalSearchItem item) {
+  Widget _buildSearchResultTile(GlobalSearchItem item, bool isDark) {
     final hasArabic = item.arabic != null && item.arabic!.trim().isNotEmpty;
     // Omit Arabic in overflowing/long cases to keep tile compact with clean English ellipsis
     final isOverflowProne = item.title.length > 24 || (hasArabic && item.arabic!.trim().length > 16);
@@ -404,12 +510,14 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: context.colorScheme.primaryContainer.withValues(alpha: 0.7),
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFF2A531D).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 item.icon,
-                color: context.colorScheme.primary,
+                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                 size: 20,
               ),
             ),
@@ -429,9 +537,10 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                           item.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodyMedium?.copyWith(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
+                            color: isDark ? Colors.white : Colors.black87,
                           ),
                         ),
                       ),
@@ -447,7 +556,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                             style: TextStyle(
                               fontFamily: 'Amiri',
                               fontSize: 13,
-                              color: context.colorScheme.primary,
+                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -471,13 +580,13 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                           decoration: BoxDecoration(
                             color: _selectedCategory == item.categoryType
-                                ? context.colorScheme.primary.withValues(alpha: 0.15)
-                                : context.colorScheme.surfaceContainerHighest,
+                                ? (isDark ? const Color(0xFF27272A) : const Color(0xFF2A531D).withValues(alpha: 0.15))
+                                : (isDark ? const Color(0xFF0F0F12) : const Color(0xFFF1F5F9)),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
                               color: _selectedCategory == item.categoryType
-                                  ? context.colorScheme.primary.withValues(alpha: 0.5)
-                                  : Colors.transparent,
+                                  ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D).withValues(alpha: 0.5))
+                                  : (isDark ? const Color(0xFF27272A) : Colors.transparent),
                               width: 0.8,
                             ),
                           ),
@@ -485,12 +594,12 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                             item.category,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.labelSmall?.copyWith(
+                            style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
                               color: _selectedCategory == item.categoryType
-                                  ? context.colorScheme.primary
-                                  : context.colorScheme.onSurfaceVariant,
+                                  ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                                  : (isDark ? const Color(0xFF86EFAC) : const Color(0xFF64748B)),
                             ),
                           ),
                         ),
@@ -502,9 +611,9 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                           item.subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmall?.copyWith(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: context.colorScheme.onSurfaceVariant,
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                           ),
                         ),
                       ),
@@ -517,7 +626,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
             Icon(
               Icons.chevron_right_rounded,
               size: 20,
-              color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+              color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
             ),
           ],
         ),
@@ -528,6 +637,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
   Widget _buildIdleContent(
     List<String> recentHistory,
     List<GlobalSearchItem> shortcuts,
+    bool isDark,
   ) {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -544,7 +654,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                     Icon(
                       Icons.history_rounded,
                       size: 16,
-                      color: context.colorScheme.primary,
+                      color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -552,9 +662,10 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                         'Recent Searches (${recentHistory.length})',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.labelMedium?.copyWith(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: context.colorScheme.onSurface,
+                          fontSize: 13,
+                          color: isDark ? Colors.white : context.colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -572,7 +683,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                   'Clear All',
                   style: TextStyle(
                     fontSize: 12,
-                    color: context.colorScheme.error,
+                    color: isDark ? const Color(0xFFF87171) : context.colorScheme.error,
                   ),
                 ),
               ),
@@ -589,10 +700,14 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    color: isDark
+                        ? const Color(0xFF0F0F12)
+                        : context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: context.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : context.colorScheme.outlineVariant.withValues(alpha: 0.4),
                       width: 0.8,
                     ),
                   ),
@@ -602,7 +717,7 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                       Icon(
                         Icons.search_rounded,
                         size: 13,
-                        color: context.colorScheme.onSurfaceVariant,
+                        color: isDark ? const Color(0xFF86EFAC) : context.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 5),
                       ConstrainedBox(
@@ -611,9 +726,10 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                           term,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmall?.copyWith(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
+                            color: isDark ? const Color(0xFFE2E8F0) : null,
                           ),
                         ),
                       ),
@@ -625,7 +741,9 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
                           child: Icon(
                             Icons.close_rounded,
                             size: 13,
-                            color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : context.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
                         ),
                       ),
@@ -636,7 +754,10 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
             }).toList(),
           ),
           const SizedBox(height: 16),
-          const Divider(height: 1),
+          Divider(
+            height: 1,
+            color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
+          ),
           const SizedBox(height: 8),
         ],
 
@@ -646,20 +767,21 @@ class _GlobalSearchModalState extends ConsumerState<GlobalSearchModal> {
             Icon(
               Icons.trending_up_rounded,
               size: 16,
-              color: context.colorScheme.primary,
+              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
             ),
             const SizedBox(width: 6),
             Text(
               'Popular Shortcuts',
-              style: context.textTheme.labelMedium?.copyWith(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: context.colorScheme.onSurface,
+                fontSize: 13,
+                color: isDark ? Colors.white : context.colorScheme.onSurface,
               ),
             ),
           ],
         ),
         const SizedBox(height: 6),
-        ...shortcuts.map((item) => _buildSearchResultTile(item)),
+        ...shortcuts.map((item) => _buildSearchResultTile(item, isDark)),
       ],
     );
   }
