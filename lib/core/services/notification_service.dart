@@ -153,6 +153,20 @@ class NotificationService {
           ),
         );
       }
+
+      // Background Audio Playback Channel (Safeguard for AudioService media playback)
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'com.sprnt.adhkar.channel.audio',
+          'Adhkar Audio Playback',
+          description:
+              'Playback notifications for Quran recitation and Asma-ul-Husna',
+          importance: Importance.low,
+          playSound: false,
+          enableVibration: false,
+          showBadge: false,
+        ),
+      );
     } catch (_) {}
   }
 

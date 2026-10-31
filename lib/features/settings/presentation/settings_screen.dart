@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,6 +17,11 @@ import '../../reminder/presentation/widgets/alarm_interaction_settings_modal.dar
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
+  bool isAdaptiveDarkMode([DateTime? time]) {
+    final now = time ?? DateTime.now();
+    return now.hour >= 19 || now.hour < 7;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final storage = ref.watch(storageServiceProvider);
@@ -30,6 +36,10 @@ class SettingsScreen extends ConsumerWidget {
       loading: () => 'Loading version...',
       error: (_, _) => 'Version 1.3.0',
     );
+
+    final selectedThemeMode = ref.watch(themeModeProvider);
+    final isAdaptiveDark =
+        ref.watch(adaptiveDarkScheduleProvider).value ?? isAdaptiveDarkMode();
 
     final bgColor = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
@@ -54,115 +64,158 @@ class SettingsScreen extends ConsumerWidget {
           // 0. Theme & Appearance Section
           const SectionHeader(
             title: 'Theme & Appearance',
-            subtitle: 'Choose between Light Mode and Black Dark Mode',
+            subtitle: 'Choose Light, Dark, or Automatic Adaptive Schedule',
           ),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration( 
               color: cardBg,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(color: cardBorder, width: 1),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      ref
-                          .read(themeModeProvider.notifier)
-                          .setThemeMode('light');
-                    },
+                Row(
+                  children: [
+                    _ThemeOptionTile(
+                      title: 'Light',
+                      subtitle: 'Mode',
+                      icon: Icons.light_mode_rounded,
+                      isSelected: selectedThemeMode == 'light',
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        ref.read(themeModeProvider.notifier).setThemeMode('light');
+                        ref.read(storageServiceProvider).setQuranReadingDarkMode(false);
+                        ref.read(readingThemeProvider.notifier).setTheme(0);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    _ThemeOptionTile(
+                      title: 'Dark',
+                      subtitle: 'Mode',
+                      icon: Icons.dark_mode_rounded,
+                      isSelected: selectedThemeMode == 'dark',
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        ref.read(themeModeProvider.notifier).setThemeMode('dark');
+                        ref.read(storageServiceProvider).setQuranReadingDarkMode(true);
+                        ref.read(readingThemeProvider.notifier).setTheme(2);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    _ThemeOptionTile(
+                      title: 'Adaptive',
+                      subtitle: '7 PM – 7 AM',
+                      icon: Icons.schedule_rounded,
+                      isSelected: selectedThemeMode == 'adaptive',
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        ref.read(themeModeProvider.notifier).setThemeMode('adaptive');
+                        final isDarkNow = isAdaptiveDarkMode();
+                        ref.read(storageServiceProvider).setQuranReadingDarkMode(isDarkNow);
+                        ref.read(readingThemeProvider.notifier).setTheme(isDarkNow ? 2 : 0);
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Live Status Banner
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: !isDark
-                            ? const Color(0xFFE7F6E3)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(14),
-                        border: !isDark
-                            ? Border.all(
-                                color: primaryGreen.withValues(alpha: 0.4),
-                                width: 1.5,
-                              )
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.light_mode_rounded,
-                            size: 19,
-                            color: !isDark ? primaryGreen : subTextColor,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Light Mode',
-                            style: GoogleFonts.lexend(
-                              fontSize: 13.5,
-                              fontWeight: !isDark
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: !isDark ? primaryGreen : subTextColor,
-                            ),
-                          ),
-                        ],
-                      ),
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
                     ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      ref.read(themeModeProvider.notifier).setThemeMode('dark');
-                      ref
-                          .read(storageServiceProvider)
-                          .setQuranReadingDarkMode(true);
-                      ref.read(readingThemeProvider.notifier).setTheme(2);
-                    },
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF27272A)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(14),
-                        border: isDark
-                            ? Border.all(
-                                color: const Color(
-                                  0xFF86EFAC,
-                                ).withValues(alpha: 0.6),
-                                width: 1.5,
-                              )
-                            : null,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: selectedThemeMode == 'adaptive'
+                              ? (isDark ? const Color(0xFF143820) : const Color(0xFFE7F6E3))
+                              : (selectedThemeMode == 'dark'
+                                  ? const Color(0xFF143820)
+                                  : const Color(0xFFFEF3C7)),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          selectedThemeMode == 'adaptive'
+                              ? Icons.auto_mode_rounded
+                              : (selectedThemeMode == 'dark'
+                                  ? Icons.nightlight_round
+                                  : Icons.wb_sunny_rounded),
+                          size: 16,
+                          color: selectedThemeMode == 'adaptive'
+                              ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                              : (selectedThemeMode == 'dark'
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFFD97706)),
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.dark_mode_rounded,
-                            size: 19,
-                            color: isDark
-                                ? const Color(0xFF86EFAC)
-                                : subTextColor,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          selectedThemeMode == 'adaptive'
+                              ? (isAdaptiveDark
+                                  ? 'Adaptive: Currently Night (Dark). Switches to Light at 7:00 AM.'
+                                  : 'Adaptive: Currently Day (Light). Switches to Dark at 7:00 PM.')
+                              : (selectedThemeMode == 'dark'
+                                  ? 'Dark Mode: 24-hour full-time deep obsidian dark theme.'
+                                  : 'Light Mode: 24-hour full-time light theme.'),
+                          style: GoogleFonts.lexend( 
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: isDark ? Colors.white70 : const Color(0xFF475569),
+                            height: 1.35,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Dark Mode',
-                            style: GoogleFonts.lexend(
-                              fontSize: 13.5,
-                              fontWeight: isDark
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: isDark ? Colors.white : subTextColor,
+                        ),
+                      ),
+                      if (selectedThemeMode == 'adaptive') ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF143820) : const Color(0xFFE7F6E3),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF18A74C).withValues(alpha: 0.4)
+                                  : const Color(0xFF2A531D).withValues(alpha: 0.3),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isAdaptiveDark
+                                    ? Icons.nightlight_round
+                                    : Icons.wb_sunny_rounded,
+                                size: 12,
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : const Color(0xFF2A531D),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                isAdaptiveDark ? 'Dark' : 'Light',
+                                style: GoogleFonts.lexend(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : const Color(0xFF2A531D),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ],
@@ -1108,3 +1161,97 @@ class _OptionSelectTile extends StatelessWidget {
     );
   }
 }
+
+class _ThemeOptionTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ThemeOptionTile({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final selectedBg = isDark
+        ? const Color(0xFF143820)
+        : const Color(0xFFE7F6E3);
+    final unselectedBg = isDark
+        ? const Color(0xFF18181B)
+        : const Color(0xFFF8FAFC);
+    final selectedBorder = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final unselectedBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
+
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+            decoration: BoxDecoration(
+              color: isSelected ? selectedBg : unselectedBg,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? selectedBorder : unselectedBorder,
+                width: isSelected ? 1.8 : 1.0,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 22,
+                  color: isSelected
+                      ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                      : (isDark ? Colors.white60 : const Color(0xFF64748B)),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  style: GoogleFonts.lexend(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    color: isSelected
+                        ? (isDark ? Colors.white : const Color(0xFF2A531D))
+                        : (isDark ? Colors.white70 : const Color(0xFF334155)),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.lexend(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected
+                        ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                        : (isDark ? Colors.white38 : const Color(0xFF94A3B8)),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+

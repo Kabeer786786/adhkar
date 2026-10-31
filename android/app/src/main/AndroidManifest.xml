@@ -167,6 +167,20 @@
             </intent-filter>
         </receiver>
 
+        <!-- audio_service configuration metadata for notification channel and small icon -->
+        <meta-data
+            android:name="com.ryanheise.audioservice.notification_channel_id"
+            android:value="com.sprnt.adhkar.channel.audio" />
+        <meta-data
+            android:name="com.ryanheise.audioservice.notification_channel_name"
+            android:value="Adhkar Audio Playback" />
+        <meta-data
+            android:name="com.ryanheise.audioservice.notification_channel_description"
+            android:value="Playback notifications for Quran recitation and Asma-ul-Husna" />
+        <meta-data
+            android:name="com.ryanheise.audioservice.notification_small_icon"
+            android:value="@drawable/ic_notification" />
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

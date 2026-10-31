@@ -34,6 +34,18 @@
     public static <fields>;
 }
 
+# Flutter Local Notifications & Gson Type Reflection (Fixes ScheduledNotificationBootReceiver crash)
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+-keep class com.google.gson.** { *; }
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
+-keepclassmembers class * extends com.google.gson.reflect.TypeToken { *; }
+-keep class com.dexterous.flutterlocalnotifications.** { *; }
+-dontwarn com.dexterous.flutterlocalnotifications.**
+
 -dontwarn io.flutter.**
 -dontwarn com.ryanheise.**
 -dontwarn androidx.media3.**

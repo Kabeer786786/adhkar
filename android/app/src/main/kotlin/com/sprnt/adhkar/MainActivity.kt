@@ -1,6 +1,8 @@
 package com.sprnt.adhkar
 
 import android.app.KeyguardManager
+import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -24,8 +26,28 @@ class MainActivity : AudioServiceActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createAudioNotificationChannel()
         showOverLockscreen()
         handleAlarmIntent(intent)
+    }
+
+    private fun createAudioNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                val channelId = "com.sprnt.adhkar.channel.audio"
+                val channelName = "Adhkar Audio Playback"
+                val channelDesc = "Playback notifications for Quran recitation and Asma-ul-Husna"
+                val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW).apply {
+                    description = channelDesc
+                    setShowBadge(false)
+                    lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                }
+                val notificationManager = getSystemService(NotificationManager::class.java)
+                notificationManager?.createNotificationChannel(channel)
+            } catch (e: Exception) {
+                // Safeguard against framework-level notification errors
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

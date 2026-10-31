@@ -887,7 +887,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final appIsDark = ref.watch(themeModeProvider) == 'dark';
+    final appIsDark = ref.watch(isAppDarkModeProvider);
     final effectiveIsDark = _isManualThemeSelected
         ? _isReadingDarkMode
         : (appIsDark || _isReadingDarkMode);

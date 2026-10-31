@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/audio_service.dart';
 import '../../core/services/location_service.dart';
@@ -139,6 +140,24 @@ class ArabicFontNotifier extends StateNotifier<ArabicFont> {
   }
 }
 
+/// Helper that checks if the adaptive schedule is currently in dark mode (7:00 PM to 7:00 AM).
+bool isAdaptiveDarkMode([DateTime? time]) {
+  final now = time ?? DateTime.now();
+  final hour = now.hour;
+  // 7:00 PM (19:00) through 6:59 AM (< 7) is Dark Mode
+  return hour >= 19 || hour < 7;
+}
+
+/// Periodic stream that updates every 30 seconds to catch the 7:00 AM / 7:00 PM transitions.
+final adaptiveDarkScheduleProvider = StreamProvider<bool>((ref) async* {
+  yield isAdaptiveDarkMode();
+  final timer = Stream.periodic(
+    const Duration(seconds: 30),
+    (_) => isAdaptiveDarkMode(),
+  );
+  yield* timer.distinct();
+});
+
 class ThemeModeNotifier extends StateNotifier<String> {
   final StorageService _storage;
   ThemeModeNotifier(this._storage) : super(_storage.getThemeMode());
@@ -146,7 +165,8 @@ class ThemeModeNotifier extends StateNotifier<String> {
   Future<void> setThemeMode(String mode) async {
     state = mode;
     await _storage.setThemeMode(mode);
-    await _storage.setDarkMode(mode == 'dark');
+    final isDark = mode == 'dark' || (mode == 'adaptive' && isAdaptiveDarkMode());
+    await _storage.setDarkMode(isDark);
   }
 }
 
@@ -154,6 +174,24 @@ final themeModeProvider =
     StateNotifierProvider<ThemeModeNotifier, String>((ref) {
   final storage = ref.watch(storageServiceProvider);
   return ThemeModeNotifier(storage);
+});
+
+/// Resolves whether the app should currently display in Dark or Light mode.
+/// Considers 'light' (24h), 'dark' (24h), and 'adaptive' (7:00 PM - 7:00 AM).
+final effectiveThemeModeProvider = Provider<ThemeMode>((ref) {
+  final mode = ref.watch(themeModeProvider);
+  if (mode == 'dark') return ThemeMode.dark;
+  if (mode == 'light') return ThemeMode.light;
+  if (mode == 'adaptive') {
+    final isDark = ref.watch(adaptiveDarkScheduleProvider).value ?? isAdaptiveDarkMode();
+    return isDark ? ThemeMode.dark : ThemeMode.light;
+  }
+  return ThemeMode.light;
+});
+
+/// Convenience boolean provider for whether the active theme is currently dark.
+final isAppDarkModeProvider = Provider<bool>((ref) {
+  return ref.watch(effectiveThemeModeProvider) == ThemeMode.dark;
 });
 
 /// Provides current prayer times. Watches AlAdhan API provider and falls back to local math calculation.

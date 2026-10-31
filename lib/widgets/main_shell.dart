@@ -78,13 +78,14 @@ class _MainShellState extends ConsumerState<MainShell> {
           ),
           child: NavigationBarTheme(
             data: NavigationBarThemeData(
-              height: 60,
+              height: 64,
               indicatorColor: isDark
                   ? const Color(0xFF1C3822)
                   : context.colorScheme.primaryContainer,
               iconTheme: WidgetStateProperty.resolveWith((states) {
                 final isSelected = states.contains(WidgetState.selected);
                 return IconThemeData(
+                  size: 23,
                   color: isSelected
                       ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
                       : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
@@ -93,9 +94,9 @@ class _MainShellState extends ConsumerState<MainShell> {
               labelTextStyle: WidgetStateProperty.resolveWith((states) {
                 final isSelected = states.contains(WidgetState.selected);
                 return TextStyle(
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                  height: 1.2,
+                  height: 1.0,
                   color: isSelected
                       ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
                       : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
@@ -110,109 +111,61 @@ class _MainShellState extends ConsumerState<MainShell> {
                   : context.colorScheme.primaryContainer,
               backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
               elevation: 0,
-              height: 70,
+              height: 68,
               labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                  destinations: [
-                    const NavigationDestination(
-                      icon: SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(FlutterIslamicIcons.mosque, size: 22),
-                        ),
-                      ),
-                      selectedIcon: SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(FlutterIslamicIcons.solidMosque, size: 22),
-                        ),
-                      ),
-                      label: 'Home',
-                    ),
-                    NavigationDestination(
-                      icon: AppShowcase(
-                        globalKey: ShowcaseService.keyQuranTab,
-                        title: 'Holy Quran',
-                        description:
-                            'Explore Surahs with audio recitations, translations, and verse bookmarking.',
-                        stepIndex: 13,
-                        totalSteps: 15,
-                        targetShapeBorder: const CircleBorder(),
-                        targetPadding: EdgeInsets.zero,
-                        child: const SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: Center(
-                            child: Icon(FlutterIslamicIcons.solidQuran2, size: 22),
-                          ),
-                        ),
-                      ),
-                      selectedIcon: const SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(FlutterIslamicIcons.solidQuran2, size: 22),
-                        ),
-                      ),
-                      label: 'Quran',
-                    ),
-                    NavigationDestination(
-                      icon: AppShowcase(
-                        globalKey: ShowcaseService.keyAdhkarTab,
-                        title: 'Daily Adhkar',
-                        description:
-                            'Access Morning, Evening, Bedtime, and Daily Remembrance Supplications.',
-                        stepIndex: 14,
-                        totalSteps: 15,
-                        targetShapeBorder: const CircleBorder(),
-                        targetPadding: EdgeInsets.zero,
-                        child: const SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: Center(
-                            child: Icon(FlutterIslamicIcons.tasbih2, size: 22),
-                          ),
-                        ),
-                      ),
-                      selectedIcon: const SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(FlutterIslamicIcons.solidTasbih2, size: 22),
-                        ),
-                      ),
-                      label: 'Adhkar',
-                    ),
-                    NavigationDestination(
-                      icon: AppShowcase(
-                        globalKey: ShowcaseService.keyQiblaTab,
-                        title: 'Qibla Compass',
-                        description:
-                            'Find the exact Qibla direction anywhere in the world using interactive compass.',
-                        stepIndex: 15,
-                        totalSteps: 15,
-                        targetShapeBorder: const CircleBorder(),
-                        targetPadding: EdgeInsets.zero,
-                        child: const SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: Center(
-                            child: Icon(FlutterIslamicIcons.qibla, size: 22),
-                          ),
-                        ),
-                      ),
-                      selectedIcon: const SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(FlutterIslamicIcons.solidQibla, size: 22),
-                        ),
-                      ),
-                      label: 'Qibla',
-                    ),
-                  ],
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(FlutterIslamicIcons.mosque, size: 23),
+                  selectedIcon: Icon(FlutterIslamicIcons.solidMosque, size: 23),
+                  label: 'Home',
                 ),
+                NavigationDestination(
+                  icon: AppShowcase(
+                    globalKey: ShowcaseService.keyQuranTab,
+                    title: 'Holy Quran',
+                    description:
+                        'Explore Surahs with audio recitations, translations, and verse bookmarking.',
+                    stepIndex: 13,
+                    totalSteps: 15,
+                    targetShapeBorder: const CircleBorder(),
+                    targetPadding: const EdgeInsets.all(4),
+                    child: const Icon(FlutterIslamicIcons.solidQuran2, size: 23),
+                  ),
+                  selectedIcon: const Icon(FlutterIslamicIcons.solidQuran2, size: 23),
+                  label: 'Quran',
+                ),
+                NavigationDestination(
+                  icon: AppShowcase(
+                    globalKey: ShowcaseService.keyAdhkarTab,
+                    title: 'Daily Adhkar',
+                    description:
+                        'Access Morning, Evening, Bedtime, and Daily Remembrance Supplications.',
+                    stepIndex: 14,
+                    totalSteps: 15,
+                    targetShapeBorder: const CircleBorder(),
+                    targetPadding: const EdgeInsets.all(4),
+                    child: const Icon(FlutterIslamicIcons.tasbih2, size: 23),
+                  ),
+                  selectedIcon: const Icon(FlutterIslamicIcons.solidTasbih2, size: 23),
+                  label: 'Adhkar',
+                ),
+                NavigationDestination(
+                  icon: AppShowcase(
+                    globalKey: ShowcaseService.keyQiblaTab,
+                    title: 'Qibla Compass',
+                    description:
+                        'Find the exact Qibla direction anywhere in the world using interactive compass.',
+                    stepIndex: 15,
+                    totalSteps: 15,
+                    targetShapeBorder: const CircleBorder(),
+                    targetPadding: const EdgeInsets.all(4),
+                    child: const Icon(FlutterIslamicIcons.qibla, size: 23),
+                  ),
+                  selectedIcon: const Icon(FlutterIslamicIcons.solidQibla, size: 23),
+                  label: 'Qibla',
+                ),
+              ],
+            ),
               ),
         ),
       ),

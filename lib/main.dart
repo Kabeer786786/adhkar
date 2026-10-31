@@ -280,8 +280,7 @@ class _AdhkarAppState extends ConsumerState<AdhkarApp> {
     // start, ensuring background notification alarms survive app kill / reboot.
     ref.read(remindersProvider);
 
-    final themeModeStr = ref.watch(themeModeProvider);
-    final themeMode = themeModeStr == 'dark' ? ThemeMode.dark : ThemeMode.light;
+    final themeMode = ref.watch(effectiveThemeModeProvider);
 
     return MaterialApp.router(
       title: 'Adhkar - Islamic Companion',
