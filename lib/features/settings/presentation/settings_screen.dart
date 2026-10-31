@@ -33,9 +33,11 @@ class SettingsScreen extends ConsumerWidget {
 
     final bgColor = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
-    final cardBorder = isDark ? const Color(0xFF233127) : const Color(0xFFE2E8F0);
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
     const primaryGreen = Color(0xFF2A531D);
 
     return Scaffold(
@@ -44,7 +46,7 @@ class SettingsScreen extends ConsumerWidget {
         title: 'SETTINGS',
         showDrawerButton: false,
         showBackButton: true,
-      ), 
+      ),
       body: ListView(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 36, top: 8),
@@ -67,7 +69,9 @@ class SettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      ref.read(themeModeProvider.notifier).setThemeMode('light');
+                      ref
+                          .read(themeModeProvider.notifier)
+                          .setThemeMode('light');
                     },
                     borderRadius: BorderRadius.circular(14),
                     child: Container(
@@ -78,7 +82,10 @@ class SettingsScreen extends ConsumerWidget {
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                         border: !isDark
-                            ? Border.all(color: primaryGreen.withValues(alpha: 0.4), width: 1.5)
+                            ? Border.all(
+                                color: primaryGreen.withValues(alpha: 0.4),
+                                width: 1.5,
+                              )
                             : null,
                       ),
                       child: Row(
@@ -94,7 +101,9 @@ class SettingsScreen extends ConsumerWidget {
                             'Light Mode',
                             style: GoogleFonts.lexend(
                               fontSize: 13.5,
-                              fontWeight: !isDark ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: !isDark
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                               color: !isDark ? primaryGreen : subTextColor,
                             ),
                           ),
@@ -108,7 +117,9 @@ class SettingsScreen extends ConsumerWidget {
                   child: InkWell(
                     onTap: () {
                       ref.read(themeModeProvider.notifier).setThemeMode('dark');
-                      ref.read(storageServiceProvider).setQuranReadingDarkMode(true);
+                      ref
+                          .read(storageServiceProvider)
+                          .setQuranReadingDarkMode(true);
                       ref.read(readingThemeProvider.notifier).setTheme(2);
                     },
                     borderRadius: BorderRadius.circular(14),
@@ -120,7 +131,12 @@ class SettingsScreen extends ConsumerWidget {
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
                         border: isDark
-                            ? Border.all(color: const Color(0xFF86EFAC).withValues(alpha: 0.6), width: 1.5)
+                            ? Border.all(
+                                color: const Color(
+                                  0xFF86EFAC,
+                                ).withValues(alpha: 0.6),
+                                width: 1.5,
+                              )
                             : null,
                       ),
                       child: Row(
@@ -129,14 +145,18 @@ class SettingsScreen extends ConsumerWidget {
                           Icon(
                             Icons.dark_mode_rounded,
                             size: 19,
-                            color: isDark ? const Color(0xFF86EFAC) : subTextColor,
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : subTextColor,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Dark Mode',
                             style: GoogleFonts.lexend(
                               fontSize: 13.5,
-                              fontWeight: isDark ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: isDark
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                               color: isDark ? Colors.white : subTextColor,
                             ),
                           ),
@@ -172,13 +192,13 @@ class SettingsScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(9),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF23352B)
+                            ? const Color(0xFF27272A)
                             : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.location_on_outlined,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                         size: 20,
                       ),
                     ),
@@ -219,9 +239,13 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     label: const Text('Change City or Detect GPS'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: primaryGreen,
+                      foregroundColor: isDark
+                          ? const Color(0xFF86EFAC)
+                          : primaryGreen,
                       side: BorderSide(
-                        color: primaryGreen.withValues(alpha: 0.5),
+                        color: isDark
+                            ? const Color(0xFF86EFAC).withValues(alpha: 0.5)
+                            : primaryGreen.withValues(alpha: 0.5),
                         width: 1,
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -252,7 +276,7 @@ class SettingsScreen extends ConsumerWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: cardBg, 
+              color: cardBg,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: cardBorder, width: 1),
             ),
@@ -267,13 +291,15 @@ class SettingsScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(9),
                           decoration: BoxDecoration(
                             color: isDark
-                                ? const Color(0xFF23352B)
+                                ? const Color(0xFF27272A)
                                 : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.calculate_outlined,
-                            color: primaryGreen,
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : primaryGreen,
                             size: 20,
                           ),
                         ),
@@ -306,9 +332,14 @@ class SettingsScreen extends ConsumerWidget {
                   ],
                 ),
 
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: Divider(
+                    height: 1,
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFE2E8F0),
+                  ),
                 ),
 
                 // Asr Juristic Method Toggle
@@ -318,13 +349,13 @@ class SettingsScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(9),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF23352B)
+                            ? const Color(0xFF27272A)
                             : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.balance_outlined,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                         size: 20,
                       ),
                     ),
@@ -413,13 +444,15 @@ class SettingsScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(9),
                           decoration: BoxDecoration(
                             color: isDark
-                                ? const Color(0xFF23352B)
+                                ? const Color(0xFF27272A)
                                 : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.text_fields_rounded,
-                            color: primaryGreen,
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : primaryGreen,
                             size: 20,
                           ),
                         ),
@@ -465,18 +498,22 @@ class SettingsScreen extends ConsumerWidget {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? (isDark
-                                      ? primaryGreen.withValues(alpha: 0.25)
-                                      : const Color(0xFFE8F5E9))
+                                        ? const Color(
+                                            0xFF18A74C,
+                                          ).withValues(alpha: 0.25)
+                                        : const Color(0xFFE8F5E9))
                                   : (isDark
-                                      ? const Color(0xFF23352B)
-                                      : const Color(0xFFF8FAFC)),
+                                        ? const Color(0xFF27272A)
+                                        : const Color(0xFFF8FAFC)),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
                                 color: isSelected
-                                    ? primaryGreen
+                                    ? (isDark
+                                          ? const Color(0xFF18A74C)
+                                          : primaryGreen)
                                     : (isDark
-                                        ? Colors.white10
-                                        : const Color(0xFFE2E8F0)),
+                                          ? const Color(0xFF3F3F46)
+                                          : const Color(0xFFE2E8F0)),
                                 width: isSelected ? 1.5 : 1.0,
                               ),
                             ),
@@ -490,10 +527,12 @@ class SettingsScreen extends ConsumerWidget {
                                           ? Icons.radio_button_checked_rounded
                                           : Icons.radio_button_off_rounded,
                                       color: isSelected
-                                          ? primaryGreen
+                                          ? (isDark
+                                                ? const Color(0xFF18A74C)
+                                                : primaryGreen)
                                           : (isDark
-                                              ? Colors.white38
-                                              : const Color(0xFF94A3B8)),
+                                                ? Colors.white38
+                                                : const Color(0xFF94A3B8)),
                                       size: 20,
                                     ),
                                     const SizedBox(width: 10),
@@ -511,8 +550,8 @@ class SettingsScreen extends ConsumerWidget {
                                                   fontWeight: FontWeight.w600,
                                                   color: isSelected
                                                       ? (isDark
-                                                          ? Colors.white
-                                                          : primaryGreen)
+                                                            ? Colors.white
+                                                            : primaryGreen)
                                                       : textColor,
                                                 ),
                                               ),
@@ -521,14 +560,23 @@ class SettingsScreen extends ConsumerWidget {
                                                 Container(
                                                   padding:
                                                       const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
+                                                        horizontal: 6,
+                                                        vertical: 2,
+                                                      ),
                                                   decoration: BoxDecoration(
-                                                    color: primaryGreen
-                                                        .withValues(alpha: 0.15),
+                                                    color:
+                                                        (isDark
+                                                                ? const Color(
+                                                                    0xFF18A74C,
+                                                                  )
+                                                                : primaryGreen)
+                                                            .withValues(
+                                                              alpha: 0.15,
+                                                            ),
                                                     borderRadius:
-                                                        BorderRadius.circular(6),
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
                                                   ),
                                                   child: Text(
                                                     'DEFAULT',
@@ -536,7 +584,11 @@ class SettingsScreen extends ConsumerWidget {
                                                       fontSize: 9.5,
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      color: primaryGreen,
+                                                      color: isDark
+                                                          ? const Color(
+                                                              0xFF86EFAC,
+                                                            )
+                                                          : primaryGreen,
                                                     ),
                                                   ),
                                                 ),
@@ -564,12 +616,12 @@ class SettingsScreen extends ConsumerWidget {
                                   ),
                                   decoration: BoxDecoration(
                                     color: isDark
-                                        ? Colors.black.withValues(alpha: 0.25)
+                                        ? const Color(0xFF0F0F12)
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: isDark
-                                          ? Colors.white10
+                                          ? const Color(0xFF27272A)
                                           : const Color(0xFFEEF2F6),
                                     ),
                                   ),
@@ -626,13 +678,15 @@ class SettingsScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(9),
                           decoration: BoxDecoration(
                             color: isDark
-                                ? const Color(0xFF23352B)
+                                ? const Color(0xFF27272A)
                                 : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.calendar_month_outlined,
-                            color: primaryGreen,
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : primaryGreen,
                             size: 20,
                           ),
                         ),
@@ -697,7 +751,6 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
 
-          
           // 6px light/dark gray divider box
           const _SectionDivider(),
 
@@ -723,13 +776,13 @@ class SettingsScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(9),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF23352B)
+                            ? const Color(0xFF27272A)
                             : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.touch_app_outlined,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                         size: 20,
                       ),
                     ),
@@ -763,13 +816,18 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () => AlarmInteractionSettingsModal.show(context),
+                    onPressed: () =>
+                        AlarmInteractionSettingsModal.show(context),
                     icon: const Icon(Icons.tune_rounded, size: 16),
                     label: const Text('Configure Alarm Interaction'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: primaryGreen,
+                      foregroundColor: isDark
+                          ? const Color(0xFF86EFAC)
+                          : primaryGreen,
                       side: BorderSide(
-                        color: primaryGreen.withValues(alpha: 0.5),
+                        color: isDark
+                            ? const Color(0xFF86EFAC).withValues(alpha: 0.5)
+                            : primaryGreen.withValues(alpha: 0.5),
                         width: 1,
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -809,13 +867,13 @@ class SettingsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF23352B)
+                        ? const Color(0xFF27272A)
                         : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.explore_outlined,
-                    color: primaryGreen,
+                    color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                     size: 20,
                   ),
                 ),
@@ -852,13 +910,16 @@ class SettingsScreen extends ConsumerWidget {
                       }
                     });
                   },
-                  // icon: const Icon(Icons.play_arrow_rounded, size: 16),
                   label: const Text('Start'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryGreen,
-                    foregroundColor: Colors.white,
+                    backgroundColor: isDark
+                        ? const Color(0xFF18A74C)
+                        : primaryGreen,
+                    foregroundColor: isDark
+                        ? const Color(0xFF0F0F12)
+                        : Colors.white,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
+                      horizontal: 14,
                       vertical: 6,
                     ),
                     shape: RoundedRectangleBorder(
@@ -866,14 +927,13 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     textStyle: GoogleFonts.lexend(
                       fontSize: 13.5,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-
 
           // 6px light/dark gray divider box
           const _SectionDivider(),
@@ -900,7 +960,7 @@ class SettingsScreen extends ConsumerWidget {
                       height: 44,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: isDark ? const Color(0xFF27272A) : Colors.white,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.06),
@@ -930,7 +990,9 @@ class SettingsScreen extends ConsumerWidget {
                             style: GoogleFonts.outfit(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: primaryGreen,
+                              color: isDark
+                                  ? const Color(0xFF86EFAC)
+                                  : primaryGreen,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -975,7 +1037,7 @@ class _SectionDivider extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E2822) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
       ),
     );
   }
@@ -1005,13 +1067,13 @@ class _OptionSelectTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF2A531D)
-              : (isDark ? const Color(0xFF23352B) : const Color(0xFFF1F5F9)),
+              ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+              : (isDark ? const Color(0xFF27272A) : const Color(0xFFF1F5F9)),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF2A531D)
-                : (isDark ? Colors.white10 : const Color(0xFFE2E8F0)),
+                ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                : (isDark ? const Color(0xFF3F3F46) : const Color(0xFFE2E8F0)),
             width: 1.2,
           ),
         ),
@@ -1023,7 +1085,7 @@ class _OptionSelectTile extends StatelessWidget {
                 fontSize: 13.5,
                 fontWeight: FontWeight.w600,
                 color: isSelected
-                    ? Colors.white
+                    ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
                     : (isDark ? Colors.white : const Color(0xFF1E293B)),
               ),
             ),
@@ -1034,7 +1096,9 @@ class _OptionSelectTile extends StatelessWidget {
                 fontSize: 10.5,
                 fontWeight: FontWeight.w500,
                 color: isSelected
-                    ? Colors.white.withValues(alpha: 0.85)
+                    ? (isDark
+                          ? const Color(0xFF0F0F12).withValues(alpha: 0.85)
+                          : Colors.white.withValues(alpha: 0.85))
                     : (isDark ? Colors.white54 : const Color(0xFF64748B)),
               ),
             ),

@@ -291,9 +291,12 @@ class _AdhkarAppState extends ConsumerState<AdhkarApp> {
       themeMode: themeMode,
       routerConfig: appRouter,
       builder: (context, child) {
+        // ignore: deprecated_member_use
         return ShowCaseWidget(
           blurValue: 0,
           enableAutoScroll: false,
+          disableMovingAnimation: true,
+          scrollDuration: const Duration(milliseconds: 150),
           onFinish: () {
             ShowcaseService.markHomeShowcaseAsSeen();
           },

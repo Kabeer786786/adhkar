@@ -69,40 +69,34 @@ class AyahVerseCard extends StatelessWidget {
     final cardBgColor = isSelected
         ? null
         : (isResumeHighlight
-            ? (isDark ? const Color(0xFF27272A) : const Color(0xFFFEF9C3))
-            : (isDark ? const Color(0xFF1E1E1E) : Colors.white));
+              ? (isDark ? const Color(0xFF27272A) : const Color(0xFFFEF9C3))
+              : (isDark ? const Color(0xFF1E1E1E) : Colors.white));
 
     final cardGradient = isSelected
         ? (isDark
-            ? const LinearGradient(
-                colors: [
-                  Color(0xFF19281F),
-                  Color(0xFF14221A),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : const LinearGradient(
-                colors: [
-                  Color(0xFFF2FBF5),
-                  Color(0xFFEAF7EE),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ))
+              ? const LinearGradient(
+                  colors: [Color(0xFF19281F), Color(0xFF14221A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : const LinearGradient(
+                  colors: [Color(0xFFF2FBF5), Color(0xFFEAF7EE)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ))
         : null;
 
     final borderColor = isResumeHighlight
         ? const Color(0xFFF59E0B)
         : (isMarkedStopPoint
-            ? const Color(0xFFD97706)
-            : (isSelected
-                ? (isDark
-                    ? const Color(0xFF22C55E).withValues(alpha: 0.7)
-                    : const Color(0xFF16A34A).withValues(alpha: 0.65))
-                : (isDark
-                    ? const Color(0xFF2E2E32)
-                    : const Color(0xFF2A531D).withValues(alpha: 0.12))));
+              ? const Color(0xFFD97706)
+              : (isSelected
+                    ? (isDark
+                          ? const Color(0xFF18A74C).withValues(alpha: 0.7)
+                          : const Color(0xFF16A34A).withValues(alpha: 0.65))
+                    : (isDark
+                          ? const Color(0xFF2E2E32)
+                          : const Color(0xFF2A531D).withValues(alpha: 0.12))));
 
     final int resumeAyahNum = ayah.numberInSurah < allAyahs.length
         ? ayah.numberInSurah + 1
@@ -120,7 +114,7 @@ class AyahVerseCard extends StatelessWidget {
           gradient: cardGradient,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSajda ? const Color(0xFF22C55E) : borderColor,
+            color: isSajda ? const Color(0xFF18A74C) : borderColor,
             width: isSelected
                 ? 1.4
                 : (isResumeHighlight || isMarkedStopPoint ? 1.4 : 0.8),
@@ -150,21 +144,23 @@ class AyahVerseCard extends StatelessWidget {
                     color: isResumeHighlight || isMarkedStopPoint
                         ? const Color(0xFFD97706)
                         : (isSelected
-                            ? (isDark
-                                ? const Color(0xFF166534)
-                                : const Color(0xFF16A34A))
-                            : (isDark
-                                ? const Color(0xFF1E3A2B)
-                                : const Color(0xFFE8F5E9))),
+                              ? (isDark
+                                    ? const Color(0xFF166534)
+                                    : const Color(0xFF16A34A))
+                              : (isDark
+                                    ? const Color(0xFF1E3A2B)
+                                    : const Color(0xFFE8F5E9))),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isResumeHighlight || isMarkedStopPoint
                           ? const Color(0xFFF59E0B)
                           : (isSelected
-                              ? (isDark
-                                  ? const Color(0xFF4ADE80)
-                                  : const Color(0xFF22C55E))
-                              : const Color(0xFF2A531D).withValues(alpha: 0.2)),
+                                ? (isDark
+                                      ? const Color(0xFF4ADE80)
+                                      : const Color(0xFF18A74C))
+                                : const Color(
+                                    0xFF2A531D,
+                                  ).withValues(alpha: 0.2)),
                       width: isSelected ? 1.4 : 1.2,
                     ),
                   ),
@@ -182,15 +178,16 @@ class AyahVerseCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.bold,
-                              color: (isSelected ||
+                              color:
+                                  (isSelected ||
                                       isResumeHighlight ||
                                       isMarkedStopPoint)
                                   ? (isSelected && isDark
-                                      ? const Color(0xFF0F172A)
-                                      : Colors.white)
+                                        ? const Color(0xFF0F172A)
+                                        : Colors.white)
                                   : (isDark
-                                      ? const Color(0xFFA3E635)
-                                      : const Color(0xFF2A531D)),
+                                        ? const Color(0xFFA3E635)
+                                        : const Color(0xFF2A531D)),
                             ),
                           ),
                   ),
@@ -217,7 +214,9 @@ class AyahVerseCard extends StatelessWidget {
                                 : const Color(0xFFE8F5E9),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: const Color(0xFF2A531D).withValues(alpha: 0.15),
+                              color: const Color(
+                                0xFF2A531D,
+                              ).withValues(alpha: 0.15),
                             ),
                           ),
                           child: Text(
@@ -245,7 +244,9 @@ class AyahVerseCard extends StatelessWidget {
                                 : const Color(0xFFE8F5E9),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                              color: const Color(
+                                0xFF2A531D,
+                              ).withValues(alpha: 0.2),
                             ),
                           ),
                           child: Text(
@@ -273,7 +274,9 @@ class AyahVerseCard extends StatelessWidget {
                                 : const Color(0xFFE8F5E9),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                              color: const Color(
+                                0xFF2A531D,
+                              ).withValues(alpha: 0.2),
                             ),
                           ),
                           child: Text(
@@ -296,10 +299,14 @@ class AyahVerseCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                            color: const Color(
+                              0xFF10B981,
+                            ).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: const Color(0xFF10B981).withValues(alpha: 0.4),
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.4),
                             ),
                           ),
                           child: const Row(
@@ -450,7 +457,10 @@ class AyahVerseCard extends StatelessWidget {
                     // Bookmark Action Button (🔖)
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                       padding: const EdgeInsets.all(3),
                       onPressed: onBookmarkTap,
                       icon: Icon(
@@ -459,16 +469,23 @@ class AyahVerseCard extends StatelessWidget {
                             : Icons.bookmark_outline_rounded,
                         color: isBookmarked
                             ? const Color(0xFF10B981)
-                            : (isDark ? Colors.white60 : const Color(0xFF2A531D)),
+                            : (isDark
+                                  ? Colors.white60
+                                  : const Color(0xFF2A531D)),
                         size: 20,
                       ),
-                      tooltip: isBookmarked ? 'Remove Bookmark' : 'Bookmark Ayah',
+                      tooltip: isBookmarked
+                          ? 'Remove Bookmark'
+                          : 'Bookmark Ayah',
                     ),
 
                     // Mark as Stop Point Action Button (🚩)
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                       padding: const EdgeInsets.all(3),
                       onPressed: onStopPointTap,
                       icon: Icon(
@@ -477,7 +494,9 @@ class AyahVerseCard extends StatelessWidget {
                             : Icons.outlined_flag_rounded,
                         color: isMarkedStopPoint
                             ? const Color(0xFFF59E0B)
-                            : (isDark ? Colors.white60 : const Color(0xFF2A531D)),
+                            : (isDark
+                                  ? Colors.white60
+                                  : const Color(0xFF2A531D)),
                         size: 20,
                       ),
                       tooltip: isMarkedStopPoint
@@ -488,20 +507,23 @@ class AyahVerseCard extends StatelessWidget {
                     // Play Ayah Audio Button
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
+                      constraints: const BoxConstraints(
+                        minWidth: 34,
+                        minHeight: 34,
+                      ),
                       padding: const EdgeInsets.all(2),
                       onPressed: onPlayTap,
                       icon: Icon(
                         isPlaying
                             ? Icons.pause_circle_filled_rounded
                             : (isSelected
-                                ? Icons.play_circle_fill_rounded
-                                : Icons.play_circle_outline_rounded),
+                                  ? Icons.play_circle_fill_rounded
+                                  : Icons.play_circle_outline_rounded),
                         color: isDark
                             ? const Color(0xFFA3E635)
                             : (isSelected
-                                ? const Color(0xFF15803D)
-                                : const Color(0xFF2A531D)),
+                                  ? const Color(0xFF15803D)
+                                  : const Color(0xFF2A531D)),
                         size: 26,
                       ),
                       tooltip: isPlaying ? 'Pause Audio' : 'Play Ayah Audio',
@@ -510,12 +532,17 @@ class AyahVerseCard extends StatelessWidget {
                     // 3-dots Vertical Menu Button beside Play Button (opens Quick Actions / Tafsir / Copy modal)
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      constraints: const BoxConstraints(minWidth: 28, minHeight: 32),
+                      constraints: const BoxConstraints(
+                        minWidth: 28,
+                        minHeight: 32,
+                      ),
                       padding: const EdgeInsets.all(2),
                       onPressed: onQuickActionsTap,
                       icon: Icon(
                         Icons.more_vert_rounded,
-                        color: isDark ? Colors.white60 : const Color(0xFF2A531D),
+                        color: isDark
+                            ? Colors.white60
+                            : const Color(0xFF2A531D),
                         size: 20,
                       ),
                       tooltip: 'More Actions & Tafsir',

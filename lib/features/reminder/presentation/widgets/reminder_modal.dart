@@ -53,7 +53,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
   late DateTime _selectedDate;
   late ReminderFrequency _frequency;
   late Set<int> _selectedDays;
-  late AlarmDuration _duration; 
+  late AlarmDuration _duration;
   late bool _soundEnabled;
   late String _soundType;
   late bool _vibrationEnabled;
@@ -96,7 +96,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
     if (!_soundOptions.contains(_soundType)) {
       _soundOptions.insert(0, _soundType);
     }
-    _duration = rem?.duration ??
+    _duration =
+        rem?.duration ??
         (ReminderAudioConfig.isAzan(_soundType)
             ? AlarmDuration.fullRingtone
             : AlarmDuration.seconds30);
@@ -162,7 +163,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
       await _previewPlayer.play();
     } catch (e) {
       debugPrint('[ReminderModal] Error loading preview audio: $e');
-      if (mounted) setState(() => _isPreviewPlaying = false); 
+      if (mounted) setState(() => _isPreviewPlaying = false);
     }
   }
 
@@ -259,7 +260,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
   }
 
   void _showEditAudioDialog([String? specificPath]) {
-    final audioPath = specificPath ??
+    final audioPath =
+        specificPath ??
         (ReminderAudioConfig.isCustomFile(_soundType)
             ? _soundType
             : _soundOptions.firstWhere(
@@ -269,23 +271,33 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
 
     if (audioPath.isEmpty) return;
 
-    final currentTitle = _customAudioNames[audioPath] ??
+    final currentTitle =
+        _customAudioNames[audioPath] ??
         ReminderAudioConfig.getDisplayName(audioPath, _customAudioNames);
     final editController = TextEditingController(text: currentTitle);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
 
     showDialog(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+            ),
           ),
           title: Row(
             children: [
-              const Icon(Icons.edit_note_rounded, color: primaryGreen, size: 22),
+              Icon(
+                Icons.edit_note_rounded,
+                color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                size: 22,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -322,10 +334,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                 ),
                 decoration: InputDecoration(
                   hintText: 'e.g. My Morning Azan',
-                  hintStyle: GoogleFonts.lexend(fontSize: 13, color: Colors.grey),
+                  hintStyle: GoogleFonts.lexend(
+                    fontSize: 13,
+                    color: Colors.grey,
+                  ),
                   filled: true,
                   fillColor: isDark
-                      ? const Color(0xFF142018)
+                      ? const Color(0xFF0F0F12)
                       : const Color(0xFFF1F5F9),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -334,31 +349,41 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: isDark ? Colors.white24 : const Color(0xFFCBD5E1),
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFCBD5E1),
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+                    borderSide: BorderSide(
+                      color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          actionsPadding:
-              const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+          actionsPadding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: 12,
+          ),
           actions: [
             Row(
               children: [
-                TextButton( 
+                TextButton(
                   onPressed: () {
                     Navigator.pop(ctx);
                     _confirmDeleteCustomAudio(audioPath);
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFFEF4444),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
                   ),
                   child: Text(
                     'Delete',
@@ -405,7 +430,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryGreen,
-                    foregroundColor: Colors.white,
+                    foregroundColor: isDark
+                        ? const Color(0xFF0F0F12)
+                        : Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -426,16 +453,20 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
 
   void _confirmDeleteCustomAudio(String audioPath) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final audioName = _customAudioNames[audioPath] ??
+    final audioName =
+        _customAudioNames[audioPath] ??
         ReminderAudioConfig.getDisplayName(audioPath, _customAudioNames);
 
     showDialog(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+            ),
           ),
           title: Text(
             'Delete Audio File?',
@@ -543,7 +574,10 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
         for (final p in _customBgImages) {
           if (File(p).existsSync()) {
             precacheImage(ResizeImage(FileImage(File(p)), width: 250), context);
-            precacheImage(ResizeImage(FileImage(File(p)), width: 1080), context); 
+            precacheImage(
+              ResizeImage(FileImage(File(p)), width: 1080),
+              context,
+            );
           }
         }
       }
@@ -577,8 +611,14 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
         await storage.addCustomAlarmImage(targetPath);
 
         if (mounted) {
-          precacheImage(ResizeImage(FileImage(File(targetPath)), width: 250), context);
-          precacheImage(ResizeImage(FileImage(File(targetPath)), width: 1080), context);
+          precacheImage(
+            ResizeImage(FileImage(File(targetPath)), width: 250),
+            context,
+          );
+          precacheImage(
+            ResizeImage(FileImage(File(targetPath)), width: 1080),
+            context,
+          );
           setState(() {
             if (!_customBgImages.contains(targetPath)) {
               _customBgImages.insert(0, targetPath);
@@ -600,9 +640,12 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+            ),
           ),
           title: Text(
             'Delete Background Image?',
@@ -708,14 +751,15 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF2A531D),
-                    onPrimary: Colors.white,
-                    surface: Color(0xFF1E2D24),
+                    primary: Color(0xFF18A74C),
+                    onPrimary: Color(0xFF0F0F12),
+                    surface: Color(0xFF18181B),
+                    onSurface: Colors.white,
                   )
                 : const ColorScheme.light(
                     primary: Color(0xFF2A531D),
                     onPrimary: Colors.white,
-                    onSurface: Color(0xFF2A531D),
+                    onSurface: Color(0xFF1E293B),
                   ),
           ),
           child: child!,
@@ -744,9 +788,10 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF2A531D),
-                    onPrimary: Colors.white,
-                    surface: Color(0xFF1E2D24),
+                    primary: Color(0xFF18A74C),
+                    onPrimary: Color(0xFF0F0F12),
+                    surface: Color(0xFF18181B),
+                    onSurface: Colors.white,
                   )
                 : const ColorScheme.light(
                     primary: Color(0xFF2A531D),
@@ -768,8 +813,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+          ),
+        ),
         icon: const Icon(
           Icons.error_outline_rounded,
           color: Color(0xFFEF4444),
@@ -799,8 +849,12 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(ctx),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2A531D),
-                foregroundColor: Colors.white,
+                backgroundColor: isDark
+                    ? const Color(0xFF18A74C)
+                    : const Color(0xFF2A531D),
+                foregroundColor: isDark
+                    ? const Color(0xFF0F0F12)
+                    : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -882,8 +936,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
 
   Future<void> _previewAlarm() async {
     if (_alarmBgType == 'image') {
-      final isCustom = (_alarmBgValue.contains('/') ||
-              _alarmBgValue.contains('\\')) &&
+      final isCustom =
+          (_alarmBgValue.contains('/') || _alarmBgValue.contains('\\')) &&
           !_alarmBgValue.startsWith('assets/');
       try {
         if (isCustom && File(_alarmBgValue).existsSync()) {
@@ -916,10 +970,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOut,
-            ),
+            opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
             child: child,
           );
         },
@@ -930,11 +981,19 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
-    const secondaryGreen = Color(0xFF458830);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final secondaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
+    final inputBg = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     final hour12 = _selectedTime.hourOfPeriod == 0
         ? 12
@@ -956,7 +1015,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
-              color: primaryGreen,
+              color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
             ),
           ),
           const SizedBox(height: 6),
@@ -974,22 +1033,21 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
               hintStyle: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
               errorText: _titleError,
               filled: true,
-              fillColor: isDark
-                  ? const Color(0xFF16251C)
-                  : const Color(0xFFF8FAFC),
+              fillColor: inputBg,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 12,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-                ),
+                borderSide: BorderSide(color: cardBorder),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+                borderSide: BorderSide(
+                  color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
@@ -1016,22 +1074,21 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
               hintText: 'e.g., Read Ayatul Kursi and 3 Quls',
               hintStyle: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
               filled: true,
-              fillColor: isDark
-                  ? const Color(0xFF16251C)
-                  : const Color(0xFFF8FAFC),
+              fillColor: inputBg,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 12,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-                ),
+                borderSide: BorderSide(color: cardBorder),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+                borderSide: BorderSide(
+                  color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
@@ -1046,19 +1103,23 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF16251C)
+                    ? const Color(0xFF0F0F12)
                     : const Color(0xFFF0FDF4),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: primaryGreen.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: isDark
+                      ? cardBorder
+                      : primaryGreen.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.access_time_filled_rounded,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                         size: 22,
                       ),
                       const SizedBox(width: 12),
@@ -1077,7 +1138,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: primaryGreen,
+                      color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                     ),
                   ),
                 ],
@@ -1118,15 +1179,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                       color: _frequency != ReminderFrequency.once
                           ? primaryGreen
                           : (isDark
-                                ? const Color(0xFF16251C)
+                                ? const Color(0xFF0F0F12)
                                 : const Color(0xFFF1F5F9)),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: _frequency != ReminderFrequency.once
                             ? primaryGreen
-                            : (isDark
-                                  ? Colors.white12
-                                  : const Color(0xFFE2E8F0)),
+                            : (isDark ? cardBorder : const Color(0xFFE2E8F0)),
                       ),
                     ),
                     child: Row(
@@ -1136,7 +1195,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                           Icons.repeat_rounded,
                           size: 15,
                           color: _frequency != ReminderFrequency.once
-                              ? Colors.white
+                              ? (isDark
+                                    ? const Color(0xFF0F0F12)
+                                    : Colors.white)
                               : (isDark
                                     ? Colors.white70
                                     : const Color(0xFF475569)),
@@ -1148,7 +1209,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: _frequency != ReminderFrequency.once
-                                ? Colors.white
+                                ? (isDark
+                                      ? const Color(0xFF0F0F12)
+                                      : Colors.white)
                                 : (isDark
                                       ? Colors.white70
                                       : const Color(0xFF475569)),
@@ -1174,15 +1237,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                       color: _frequency == ReminderFrequency.once
                           ? primaryGreen
                           : (isDark
-                                ? const Color(0xFF16251C)
+                                ? const Color(0xFF0F0F12)
                                 : const Color(0xFFF1F5F9)),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: _frequency == ReminderFrequency.once
                             ? primaryGreen
-                            : (isDark
-                                  ? Colors.white12
-                                  : const Color(0xFFE2E8F0)),
+                            : (isDark ? cardBorder : const Color(0xFFE2E8F0)),
                       ),
                     ),
                     child: Row(
@@ -1192,7 +1253,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                           Icons.calendar_today_rounded,
                           size: 14,
                           color: _frequency == ReminderFrequency.once
-                              ? Colors.white
+                              ? (isDark
+                                    ? const Color(0xFF0F0F12)
+                                    : Colors.white)
                               : (isDark
                                     ? Colors.white70
                                     : const Color(0xFF475569)),
@@ -1204,7 +1267,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: _frequency == ReminderFrequency.once
-                                ? Colors.white
+                                ? (isDark
+                                      ? const Color(0xFF0F0F12)
+                                      : Colors.white)
                                 : (isDark
                                       ? Colors.white70
                                       : const Color(0xFF475569)),
@@ -1254,15 +1319,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                       color: isSelected
                           ? primaryGreen
                           : (isDark
-                                ? const Color(0xFF16251C)
+                                ? const Color(0xFF0F0F12)
                                 : const Color(0xFFF1F5F9)),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected
                             ? primaryGreen
-                            : (isDark
-                                  ? Colors.white12
-                                  : const Color(0xFFE2E8F0)),
+                            : (isDark ? cardBorder : const Color(0xFFE2E8F0)),
                         width: 1.5,
                       ),
                       boxShadow: isSelected
@@ -1281,7 +1344,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                         color: isSelected
-                            ? Colors.white
+                            ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
                             : (isDark
                                   ? Colors.white70
                                   : const Color(0xFF475569)),
@@ -1310,7 +1373,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                       style: GoogleFonts.lexend(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                       ),
                     ),
                   ),
@@ -1331,7 +1394,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                       style: GoogleFonts.lexend(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                       ),
                     ),
                   ),
@@ -1352,7 +1415,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                       style: GoogleFonts.lexend(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                       ),
                     ),
                   ),
@@ -1371,11 +1434,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                 ),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF16251C)
+                      ? const Color(0xFF0F0F12)
                       : const Color(0xFFF0FDF4),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: primaryGreen.withValues(alpha: 0.3),
+                    color: isDark
+                        ? cardBorder
+                        : primaryGreen.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -1383,9 +1448,11 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                   children: [
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.event_available_rounded,
-                          color: primaryGreen,
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : primaryGreen,
                           size: 22,
                         ),
                         const SizedBox(width: 12),
@@ -1404,7 +1471,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                       style: GoogleFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                       ),
                     ),
                   ],
@@ -1432,17 +1499,20 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
             dropdownColor: cardBg,
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark
-                  ? const Color(0xFF16251C)
-                  : const Color(0xFFF8FAFC),
+              fillColor: inputBg,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 10,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: cardBorder),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                  color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                  width: 1.5,
                 ),
               ),
             ),
@@ -1466,32 +1536,56 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF16251C) : const Color(0xFFF8FAFC),
+              color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-              ), 
+              border: Border.all(color: cardBorder),
             ),
             child: Column(
               children: [
                 InkWell(
                   onTap: () => setState(() => _soundEnabled = !_soundEnabled),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text( 
+                        Text(
                           'Sound',
-                          style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                          style: GoogleFonts.lexend(
+                            fontSize: 15,
+                            color: textColor,
+                          ),
                         ),
                         Transform.scale(
                           scale: 0.85,
                           child: Switch(
                             value: _soundEnabled,
-                            activeTrackColor: primaryGreen,
-                            activeThumbColor: Colors.white,
-                            onChanged: (val) => setState(() => _soundEnabled = val),
+                            activeTrackColor: isDark
+                                ? const Color(0xFF166534)
+                                : primaryGreen,
+                            activeThumbColor: isDark
+                                ? const Color(0xFF18A74C)
+                                : Colors.white,
+                            inactiveThumbColor: isDark
+                                ? const Color(0xFF94A3B8)
+                                : Colors.grey.shade400,
+                            inactiveTrackColor: isDark
+                                ? const Color(0xFF27272A)
+                                : const Color(0xFFE2E8F0),
+                            trackOutlineColor: WidgetStateProperty.resolveWith((
+                              states,
+                            ) {
+                              if (states.contains(WidgetState.selected))
+                                return Colors.transparent;
+                              return isDark
+                                  ? const Color(0xFF3F3F46)
+                                  : const Color(0xFFCBD5E1);
+                            }),
+                            onChanged: (val) =>
+                                setState(() => _soundEnabled = val),
                           ),
                         ),
                       ],
@@ -1517,11 +1611,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                               labelStyle: GoogleFonts.lexend(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: primaryGreen,
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : primaryGreen,
                               ),
                               filled: true,
                               fillColor: isDark
-                                  ? const Color(0xFF1E2D24)
+                                  ? const Color(0xFF18181B)
                                   : const Color(0xFFF1F5F9),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -1529,10 +1625,15 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: cardBorder),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
                                   color: isDark
-                                      ? Colors.white12
-                                      : const Color(0xFFCBD5E1),
+                                      ? const Color(0xFF86EFAC)
+                                      : primaryGreen,
+                                  width: 1.5,
                                 ),
                               ),
                             ),
@@ -1540,7 +1641,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                               return _soundOptions.map((opt) {
                                 final isCustom =
                                     ReminderAudioConfig.isCustomFile(opt);
-                                final displayName = _customAudioNames[opt] ??
+                                final displayName =
+                                    _customAudioNames[opt] ??
                                     ReminderAudioConfig.getDisplayName(
                                       opt,
                                       _customAudioNames,
@@ -1565,16 +1667,23 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
-                                          margin: const EdgeInsets.only(left: 6),
+                                          margin: const EdgeInsets.only(
+                                            left: 6,
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: primaryGreen
-                                                .withValues(alpha: 0.12),
+                                            color: isDark
+                                                ? const Color(0xFF27272A)
+                                                : primaryGreen.withValues(
+                                                    alpha: 0.12,
+                                                  ),
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             Icons.edit_outlined,
                                             size: 14,
-                                            color: primaryGreen,
+                                            color: isDark
+                                                ? const Color(0xFF86EFAC)
+                                                : primaryGreen,
                                           ),
                                         ),
                                       ),
@@ -1583,9 +1692,11 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                               }).toList();
                             },
                             items: _soundOptions.map((opt) {
-                              final isCustom =
-                                  ReminderAudioConfig.isCustomFile(opt);
-                              final displayName = _customAudioNames[opt] ??
+                              final isCustom = ReminderAudioConfig.isCustomFile(
+                                opt,
+                              );
+                              final displayName =
+                                  _customAudioNames[opt] ??
                                   ReminderAudioConfig.getDisplayName(
                                     opt,
                                     _customAudioNames,
@@ -1608,24 +1719,31 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                       GestureDetector(
                                         behavior: HitTestBehavior.opaque,
                                         onTap: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
+                                          Navigator.of(
+                                            context,
+                                            rootNavigator: true,
+                                          ).pop();
                                           _showEditAudioDialog(opt);
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
-                                          margin:
-                                              const EdgeInsets.only(left: 6),
+                                          margin: const EdgeInsets.only(
+                                            left: 6,
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: primaryGreen
-                                                .withValues(alpha: 0.12),
+                                            color: isDark
+                                                ? const Color(0xFF27272A)
+                                                : primaryGreen.withValues(
+                                                    alpha: 0.12,
+                                                  ),
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             Icons.edit_outlined,
                                             size: 14,
-                                            color: primaryGreen,
+                                            color: isDark
+                                                ? const Color(0xFF86EFAC)
+                                                : primaryGreen,
                                           ),
                                         ),
                                       ),
@@ -1653,13 +1771,16 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                           onPressed: _pickCustomAudioFile,
                           tooltip: 'Upload Audio File from Phone',
                           style: IconButton.styleFrom(
-                            backgroundColor:
-                                primaryGreen.withValues(alpha: 0.15),
+                            backgroundColor: isDark
+                                ? const Color(0xFF27272A)
+                                : primaryGreen.withValues(alpha: 0.15),
                             padding: const EdgeInsets.all(8),
                           ),
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.file_upload_outlined,
-                            color: primaryGreen,
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : primaryGreen,
                             size: 24,
                           ),
                         ),
@@ -1674,7 +1795,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                 ? const Color(
                                     0xFFEF4444,
                                   ).withValues(alpha: 0.15)
-                                : primaryGreen.withValues(alpha: 0.15),
+                                : (isDark
+                                      ? const Color(0xFF27272A)
+                                      : primaryGreen.withValues(alpha: 0.15)),
                             padding: const EdgeInsets.all(8),
                           ),
                           icon: Icon(
@@ -1683,7 +1806,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                 : Icons.play_circle_filled_rounded,
                             color: _isPreviewPlaying
                                 ? const Color(0xFFEF4444)
-                                : primaryGreen,
+                                : (isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : primaryGreen),
                             size: 24,
                           ),
                         ),
@@ -1693,26 +1818,55 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                 ],
                 Divider(
                   height: 1,
-                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : Colors.grey.shade300,
                 ),
                 InkWell(
-                  onTap: () => setState(() => _vibrationEnabled = !_vibrationEnabled),
+                  onTap: () =>
+                      setState(() => _vibrationEnabled = !_vibrationEnabled),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Vibration',
-                          style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                          style: GoogleFonts.lexend(
+                            fontSize: 15,
+                            color: textColor,
+                          ),
                         ),
                         Transform.scale(
                           scale: 0.85,
                           child: Switch(
                             value: _vibrationEnabled,
-                            activeTrackColor: primaryGreen,
-                            activeThumbColor: Colors.white,
-                            onChanged: (val) => setState(() => _vibrationEnabled = val),
+                            activeTrackColor: isDark
+                                ? const Color(0xFF166534)
+                                : primaryGreen,
+                            activeThumbColor: isDark
+                                ? const Color(0xFF18A74C)
+                                : Colors.white,
+                            inactiveThumbColor: isDark
+                                ? const Color(0xFF94A3B8)
+                                : Colors.grey.shade400,
+                            inactiveTrackColor: isDark
+                                ? const Color(0xFF27272A)
+                                : const Color(0xFFE2E8F0),
+                            trackOutlineColor: WidgetStateProperty.resolveWith((
+                              states,
+                            ) {
+                              if (states.contains(WidgetState.selected))
+                                return Colors.transparent;
+                              return isDark
+                                  ? const Color(0xFF3F3F46)
+                                  : const Color(0xFFCBD5E1);
+                            }),
+                            onChanged: (val) =>
+                                setState(() => _vibrationEnabled = val),
                           ),
                         ),
                       ],
@@ -1721,25 +1875,54 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                 ),
                 Divider(
                   height: 1,
-                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : Colors.grey.shade300,
                 ),
                 InkWell(
-                  onTap: () => setState(() => _notificationEnabled = !_notificationEnabled),
+                  onTap: () => setState(
+                    () => _notificationEnabled = !_notificationEnabled,
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Notification Alert',
-                          style: GoogleFonts.lexend(fontSize: 15, color: textColor),
+                          style: GoogleFonts.lexend(
+                            fontSize: 15,
+                            color: textColor,
+                          ),
                         ),
                         Transform.scale(
                           scale: 0.85,
                           child: Switch(
                             value: _notificationEnabled,
-                            activeTrackColor: primaryGreen,
-                            activeThumbColor: Colors.white,
+                            activeTrackColor: isDark
+                                ? const Color(0xFF166534)
+                                : primaryGreen,
+                            activeThumbColor: isDark
+                                ? const Color(0xFF18A74C)
+                                : Colors.white,
+                            inactiveThumbColor: isDark
+                                ? const Color(0xFF94A3B8)
+                                : Colors.grey.shade400,
+                            inactiveTrackColor: isDark
+                                ? const Color(0xFF27272A)
+                                : const Color(0xFFE2E8F0),
+                            trackOutlineColor: WidgetStateProperty.resolveWith((
+                              states,
+                            ) {
+                              if (states.contains(WidgetState.selected))
+                                return Colors.transparent;
+                              return isDark
+                                  ? const Color(0xFF3F3F46)
+                                  : const Color(0xFFCBD5E1);
+                            }),
                             onChanged: (val) =>
                                 setState(() => _notificationEnabled = val),
                           ),
@@ -1750,7 +1933,9 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                 ),
                 Divider(
                   height: 1,
-                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : Colors.grey.shade300,
                 ),
                 // ALARM SCREEN THEME SECTION
                 Padding(
@@ -1818,11 +2003,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                               height: 150,
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? const Color(0xFF1B2E23)
+                                    ? const Color(0xFF0F0F12)
                                     : const Color(0xFFF0FDF4),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: primaryGreen.withValues(alpha: 0.6),
+                                  color: isDark
+                                      ? cardBorder
+                                      : primaryGreen.withValues(alpha: 0.6),
                                   width: 1.5,
                                 ),
                               ),
@@ -1832,25 +2019,35 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: primaryGreen.withValues(alpha: 0.15),
+                                      color: isDark
+                                          ? const Color(0xFF27272A)
+                                          : primaryGreen.withValues(
+                                              alpha: 0.15,
+                                            ),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.add_photo_alternate_outlined,
-                                      color: primaryGreen,
+                                      color: isDark
+                                          ? const Color(0xFF86EFAC)
+                                          : primaryGreen,
                                       size: 24,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
                                     child: Text(
                                       'Add Custom\nBackground',
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.lexend(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
-                                        color: isDark ? Colors.white : primaryGreen,
+                                        color: isDark
+                                            ? Colors.white
+                                            : primaryGreen,
                                         height: 1.25,
                                       ),
                                     ),
@@ -1864,7 +2061,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                         // Custom Uploaded Backgrounds
                         ..._customBgImages.map((customImg) {
                           final isSelected =
-                              _alarmBgType == 'image' && _alarmBgValue == customImg;
+                              _alarmBgType == 'image' &&
+                              _alarmBgValue == customImg;
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: InkWell(
@@ -1874,7 +2072,10 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                   _alarmBgValue = customImg;
                                 });
                                 precacheImage(
-                                  ResizeImage(FileImage(File(customImg)), width: 1080),
+                                  ResizeImage(
+                                    FileImage(File(customImg)),
+                                    width: 1080,
+                                  ),
                                   context,
                                 );
                               },
@@ -1888,7 +2089,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                     color: isSelected
                                         ? secondaryGreen
                                         : (isDark
-                                              ? Colors.white12
+                                              ? cardBorder
                                               : const Color(0xFFE2E8F0)),
                                     width: isSelected ? 2.5 : 1.0,
                                   ),
@@ -1902,17 +2103,18 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                         File(customImg),
                                         fit: BoxFit.cover,
                                         cacheWidth: 250,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            color: isDark
-                                                ? const Color(0xFF1E2D24)
-                                                : Colors.grey.shade200,
-                                            child: const Icon(
-                                              Icons.broken_image_outlined,
-                                              color: Colors.grey,
-                                            ),
-                                          );
-                                        },
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Container(
+                                                color: isDark
+                                                    ? const Color(0xFF18181B)
+                                                    : Colors.grey.shade200,
+                                                child: const Icon(
+                                                  Icons.broken_image_outlined,
+                                                  color: Colors.grey,
+                                                ),
+                                              );
+                                            },
                                       ),
                                       if (isSelected)
                                         Container(
@@ -1924,7 +2126,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                             child: Container(
                                               padding: const EdgeInsets.all(4),
                                               margin: const EdgeInsets.all(5),
-                                              decoration: const BoxDecoration(
+                                              decoration: BoxDecoration(
                                                 color: secondaryGreen,
                                                 shape: BoxShape.circle,
                                               ),
@@ -1945,8 +2147,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                             behavior: HitTestBehavior.opaque,
                                             onTap: () =>
                                                 _confirmDeleteCustomBackground(
-                                              customImg,
-                                            ),
+                                                  customImg,
+                                                ),
                                             child: Container(
                                               padding: const EdgeInsets.all(4),
                                               decoration: BoxDecoration(
@@ -1955,9 +2157,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                                 ),
                                                 shape: BoxShape.circle,
                                                 border: Border.all(
-                                                  color: Colors.white.withValues(
-                                                    alpha: 0.35,
-                                                  ),
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.35),
                                                   width: 1,
                                                 ),
                                               ),
@@ -2001,7 +2202,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                     color: isSelected
                                         ? secondaryGreen
                                         : (isDark
-                                              ? Colors.white12
+                                              ? cardBorder
                                               : const Color(0xFFE2E8F0)),
                                     width: isSelected ? 2.5 : 1.0,
                                   ),
@@ -2022,7 +2223,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                             child: Container(
                                               padding: const EdgeInsets.all(4),
                                               margin: const EdgeInsets.all(5),
-                                              decoration: const BoxDecoration(
+                                              decoration: BoxDecoration(
                                                 color: secondaryGreen,
                                                 shape: BoxShape.circle,
                                               ),
@@ -2068,7 +2269,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                     color: isSelected
                                         ? primaryGreen
                                         : (isDark
-                                              ? Colors.white12
+                                              ? cardBorder
                                               : const Color(0xFFE2E8F0)),
                                     width: isSelected ? 2.5 : 1.0,
                                   ),
@@ -2084,7 +2285,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                       Center(
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
-                                          decoration: const BoxDecoration(
+                                          decoration: BoxDecoration(
                                             color: primaryGreen,
                                             shape: BoxShape.circle,
                                           ),
@@ -2126,13 +2327,17 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                           );
                         }),
                       ],
-                    ), 
+                    ),
                   ),
                 ),
                 InkWell(
-                  onTap: () => setState(() => _alarmShowWaves = !_alarmShowWaves),
+                  onTap: () =>
+                      setState(() => _alarmShowWaves = !_alarmShowWaves),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -2162,16 +2367,36 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                           scale: 0.85,
                           child: Switch(
                             value: _alarmShowWaves,
-                            activeTrackColor: primaryGreen,
-                            activeThumbColor: Colors.white,
-                            onChanged: (val) => setState(() => _alarmShowWaves = val),
+                            activeTrackColor: isDark
+                                ? const Color(0xFF166534)
+                                : primaryGreen,
+                            activeThumbColor: isDark
+                                ? const Color(0xFF18A74C)
+                                : Colors.white,
+                            inactiveThumbColor: isDark
+                                ? const Color(0xFF94A3B8)
+                                : Colors.grey.shade400,
+                            inactiveTrackColor: isDark
+                                ? const Color(0xFF27272A)
+                                : const Color(0xFFE2E8F0),
+                            trackOutlineColor: WidgetStateProperty.resolveWith((
+                              states,
+                            ) {
+                              if (states.contains(WidgetState.selected))
+                                return Colors.transparent;
+                              return isDark
+                                  ? const Color(0xFF3F3F46)
+                                  : const Color(0xFFCBD5E1);
+                            }),
+                            onChanged: (val) =>
+                                setState(() => _alarmShowWaves = val),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 4)
+                const SizedBox(height: 4),
               ],
             ),
           ),
@@ -2183,11 +2408,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
       decoration: BoxDecoration(
         color: cardBg,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-          ),
-        ),
+        border: Border(top: BorderSide(color: cardBorder)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -2204,7 +2425,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
             onPressed: _save,
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryGreen,
-              foregroundColor: Colors.white,
+              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
@@ -2249,6 +2470,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
+          border: Border.all(color: cardBorder),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -2279,7 +2501,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
 
             Divider(
               height: 1,
-              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+              color: isDark ? const Color(0xFF27272A) : Colors.grey.shade300,
             ),
 
             Flexible(child: formContent),

@@ -63,10 +63,15 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     final locationAsync = ref.watch(currentLocationProvider);
     final method = ref.watch(calculationMethodProvider);
@@ -130,6 +135,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
+          border: Border.all(color: cardBorder),
         ),
         child: Column(
           children: [
@@ -139,7 +145,9 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
               width: 38,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : const Color(0xFFCBD5E1),
+                color: isDark
+                    ? const Color(0xFF3F3F46)
+                    : const Color(0xFFCBD5E1),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -155,7 +163,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                     style: GoogleFonts.outfit(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: primaryGreen,
+                      color: isDark ? Colors.white : primaryGreen,
                     ),
                   ),
                 ],
@@ -167,9 +175,10 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
               margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF16251C)
+                    ? const Color(0xFF0F0F12)
                     : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: cardBorder),
               ),
               child: TabBar(
                 controller: _tabController,
@@ -178,7 +187,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                   borderRadius: BorderRadius.circular(10),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.white,
+                labelColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                 unselectedLabelColor: subTextColor,
                 labelStyle: GoogleFonts.lexend(
                   fontSize: 13,
@@ -234,15 +243,15 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF16251C)
+                              ? const Color(0xFF0F0F12)
                               : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isAdded
-                                ? primaryGreen
-                                : (isDark
-                                      ? Colors.white12
-                                      : const Color(0xFFE2E8F0)),
+                                ? (isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : primaryGreen)
+                                : cardBorder,
                             width: isAdded ? 1.5 : 1,
                           ),
                         ),
@@ -281,18 +290,20 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: primaryGreen.withValues(
-                                        alpha: 0.1,
-                                      ),
+                                      color: isDark
+                                          ? const Color(0xFF27272A)
+                                          : primaryGreen.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.access_time_filled_rounded,
                                           size: 15,
-                                          color: primaryGreen,
+                                          color: isDark
+                                              ? const Color(0xFF86EFAC)
+                                              : primaryGreen,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
@@ -300,7 +311,9 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                           style: GoogleFonts.outfit(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
-                                            color: primaryGreen,
+                                            color: isDark
+                                                ? const Color(0xFF86EFAC)
+                                                : primaryGreen,
                                           ),
                                         ),
                                       ],
@@ -321,7 +334,9 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                       : Icons.add_circle_outline_rounded,
                                   size: 28,
                                   color: isAdded
-                                      ? primaryGreen
+                                      ? (isDark
+                                            ? const Color(0xFF86EFAC)
+                                            : primaryGreen)
                                       : (isDark
                                             ? Colors.white54
                                             : Colors.grey.shade400),
@@ -335,15 +350,19 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                         .read(quietHoursProvider.notifier)
                                         .deleteSchedule(existing.id);
                                     AppFloatingToast.showRemoved(
-                                      context, 
+                                      context,
                                       message: 'Removed',
                                     );
                                   } else {
-                                    final service = ref.read(quietHoursServiceProvider);
+                                    final service = ref.read(
+                                      quietHoursServiceProvider,
+                                    );
                                     bool canEnable = true;
                                     if (service.isSupported) {
-                                      final dndGranted = await service.isDndPermissionGranted();
-                                      final batteryIgnored = await service.isBatteryOptimizationIgnored();
+                                      final dndGranted = await service
+                                          .isDndPermissionGranted();
+                                      final batteryIgnored = await service
+                                          .isBatteryOptimizationIgnored();
                                       canEnable = dndGranted && batteryIgnored;
                                     }
                                     final now = DateTime.now();
@@ -366,7 +385,9 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                         .addSchedule(schedule);
                                     if (!canEnable) {
                                       if (context.mounted) {
-                                        AppFloatingToast.showPermissionRequired(context);
+                                        AppFloatingToast.showPermissionRequired(
+                                          context,
+                                        );
                                       }
                                     } else {
                                       if (context.mounted) {
@@ -395,11 +416,15 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                           final service = ref.read(quietHoursServiceProvider);
                           bool canEnable = true;
                           if (service.isSupported) {
-                            final dndGranted = await service.isDndPermissionGranted();
-                            final batteryIgnored = await service.isBatteryOptimizationIgnored();
+                            final dndGranted = await service
+                                .isDndPermissionGranted();
+                            final batteryIgnored = await service
+                                .isBatteryOptimizationIgnored();
                             canEnable = dndGranted && batteryIgnored;
                           }
-                          final toSave = canEnable ? schedule : schedule.copyWith(enabled: false);
+                          final toSave = canEnable
+                              ? schedule
+                              : schedule.copyWith(enabled: false);
                           ref
                               .read(quietHoursProvider.notifier)
                               .addSchedule(toSave);
@@ -408,7 +433,10 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                             if (!canEnable) {
                               AppFloatingToast.showPermissionRequired(context);
                             } else {
-                              AppFloatingToast.showAdded(context, message: 'Added');
+                              AppFloatingToast.showAdded(
+                                context,
+                                message: 'Added',
+                              );
                             }
                           }
                         },
@@ -478,9 +506,9 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF2A531D),
-                    onPrimary: Colors.white,
-                    surface: Color(0xFF1E2D24),
+                    primary: Color(0xFF18A74C),
+                    onPrimary: Color(0xFF0F0F12),
+                    surface: Color(0xFF18181B),
                   )
                 : const ColorScheme.light(
                     primary: Color(0xFF2A531D),
@@ -507,9 +535,9 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF2A531D),
-                    onPrimary: Colors.white,
-                    surface: Color(0xFF1E2D24),
+                    primary: Color(0xFF18A74C),
+                    onPrimary: Color(0xFF0F0F12),
+                    surface: Color(0xFF18181B),
                   )
                 : const ColorScheme.light(
                     primary: Color(0xFF2A531D),
@@ -563,9 +591,15 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
+    final inputBg = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,7 +610,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
             fontSize: 11,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
-            color: primaryGreen,
+            color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
           ),
         ),
         const SizedBox(height: 6),
@@ -594,22 +628,21 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
             hintStyle: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
             errorText: _titleError,
             filled: true,
-            fillColor: isDark
-                ? const Color(0xFF16251C)
-                : const Color(0xFFF8FAFC),
+            fillColor: inputBg,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 12,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-              ),
+              borderSide: BorderSide(color: cardBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+              borderSide: BorderSide(
+                color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -635,22 +668,21 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
             hintText: 'e.g., Silence phone during Zuhr prayer',
             hintStyle: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
             filled: true,
-            fillColor: isDark
-                ? const Color(0xFF16251C)
-                : const Color(0xFFF8FAFC),
+            fillColor: inputBg,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 12,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-              ),
+              borderSide: BorderSide(color: cardBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: primaryGreen, width: 1.5),
+              borderSide: BorderSide(
+                color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -669,12 +701,12 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF16251C)
-                        : const Color(0xFFF8FAFC),
+                    color: inputBg,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: primaryGreen.withValues(alpha: 0.3),
+                      color: isDark
+                          ? cardBorder
+                          : primaryGreen.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Column(
@@ -682,10 +714,12 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.play_circle_outline_rounded,
                             size: 15,
-                            color: Color(0xFF16A34A),
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFF16A34A),
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -693,7 +727,9 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                             style: GoogleFonts.lexend(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF16A34A),
+                              color: isDark
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFF16A34A),
                             ),
                           ),
                         ],
@@ -704,7 +740,9 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                         style: GoogleFonts.outfit(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: primaryGreen,
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : primaryGreen,
                         ),
                       ),
                     ],
@@ -723,12 +761,12 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF16251C)
-                        : const Color(0xFFF8FAFC),
+                    color: inputBg,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: const Color(0xFFDC2626).withValues(alpha: 0.3),
+                      color: isDark
+                          ? cardBorder
+                          : const Color(0xFFDC2626).withValues(alpha: 0.3),
                     ),
                   ),
                   child: Column(
@@ -809,15 +847,24 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                   color: isSelected
                       ? primaryGreen
                       : (isDark
-                            ? const Color(0xFF16251C)
+                            ? const Color(0xFF0F0F12)
                             : const Color(0xFFF1F5F9)),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isSelected
                         ? primaryGreen
-                        : (isDark ? Colors.white12 : const Color(0xFFE2E8F0)),
+                        : (isDark ? cardBorder : const Color(0xFFE2E8F0)),
                     width: 1.5,
                   ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: primaryGreen.withValues(alpha: 0.25),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Text(
                   dayName,
@@ -825,13 +872,69 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                     color: isSelected
-                        ? Colors.white
+                        ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
                         : (isDark ? Colors.white70 : const Color(0xFF475569)),
                   ),
                 ),
               ),
             );
           }).toList(),
+        ),
+        const SizedBox(height: 6),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            InkWell(
+              onTap: () => setState(() {
+                _selectedDays = {1, 2, 3, 4, 5, 6, 7};
+              }),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                child: Text(
+                  'All Days',
+                  style: GoogleFonts.lexend(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            InkWell(
+              onTap: () => setState(() {
+                _selectedDays = {1, 2, 3, 4, 5};
+              }),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                child: Text(
+                  'Weekdays',
+                  style: GoogleFonts.lexend(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            InkWell(
+              onTap: () => setState(() {
+                _selectedDays = {6, 7};
+              }),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                child: Text(
+                  'Weekends',
+                  style: GoogleFonts.lexend(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
 
         const SizedBox(height: 24),
@@ -841,7 +944,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryGreen,
-              foregroundColor: Colors.white,
+              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
               elevation: 2,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

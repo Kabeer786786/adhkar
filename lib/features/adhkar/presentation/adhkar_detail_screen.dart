@@ -14,7 +14,7 @@ import '../../../shared/providers/app_providers.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
 import '../../../shared/widgets/m3_card.dart';
 import '../../../widgets/app_action_popup_menu.dart';
-import '../../../widgets/app_header_bar.dart'; 
+import '../../../widgets/app_header_bar.dart';
 import '../../dua/data/dua_repository.dart';
 import '../../dua/domain/dua_item.dart';
 import '../../quran/repositories/quran_repository.dart';
@@ -95,7 +95,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
     if (nowKey != _todayDateKey) {
       setState(() {
         _todayDateKey = nowKey;
-        _dailyCounts = ref.read(storageServiceProvider).getDailyAdhkarCounts(_todayDateKey);
+        _dailyCounts = ref
+            .read(storageServiceProvider)
+            .getDailyAdhkarCounts(_todayDateKey);
       });
     }
   }
@@ -243,7 +245,11 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
           ),
           title: Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 26),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.redAccent,
+                size: 26,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Delete Item?',
@@ -286,7 +292,10 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                 Navigator.pop(context);
                 _deleteDhikr(item.id);
               },
-              child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Delete',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );
@@ -337,7 +346,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
     bool alignLabelWithHint = false,
     bool? isDark,
   }) {
-    final dark = isDark ?? (mounted ? Theme.of(context).brightness == Brightness.dark : false);
+    final dark =
+        isDark ??
+        (mounted ? Theme.of(context).brightness == Brightness.dark : false);
     return InputDecoration(
       labelText: labelText,
       labelStyle: TextStyle(
@@ -355,15 +366,22 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: dark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB)),
+        borderSide: BorderSide(
+          color: dark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: dark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB)),
+        borderSide: BorderSide(
+          color: dark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: dark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D), width: 1.8),
+        borderSide: BorderSide(
+          color: dark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+          width: 1.8,
+        ),
       ),
     );
   }
@@ -373,7 +391,8 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
     final storage = ref.read(storageServiceProvider);
 
     // Initial state values
-    String selectedType = item?.type ?? (item?.isSurah == true ? 'quran' : 'custom');
+    String selectedType =
+        item?.type ?? (item?.isSurah == true ? 'quran' : 'custom');
 
     // Quran Data
     final surahsList = QuranRepository().getSurahs();
@@ -381,7 +400,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
 
     // Dua Data
     final savedDuaMaps = storage.getSavedDuaItems() ?? [];
-    final List<DuaItem> userDuas = savedDuaMaps.map((m) => DuaItem.fromJson(m)).toList();
+    final List<DuaItem> userDuas = savedDuaMaps
+        .map((m) => DuaItem.fromJson(m))
+        .toList();
     final List<DuaItem> defaultDuas = DuaRepository().getDefaultDuas();
     final List<DuaItem> allAvailableDuas = [
       ...userDuas,
@@ -396,25 +417,41 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
 
     // Tasbeeh Data
     final savedTasbeehMaps = storage.getSavedTasbeehItems() ?? [];
-    final List<TasbeehItem> userTasbeehs = savedTasbeehMaps.map((m) => TasbeehItem.fromJson(m)).toList();
+    final List<TasbeehItem> userTasbeehs = savedTasbeehMaps
+        .map((m) => TasbeehItem.fromJson(m))
+        .toList();
     final List<TasbeehItem> allAvailableTasbeehs = [
       ...userTasbeehs,
-      ...TasbeehItem.defaults.where((d) => !userTasbeehs.any((u) => u.id == d.id)),
+      ...TasbeehItem.defaults.where(
+        (d) => !userTasbeehs.any((u) => u.id == d.id),
+      ),
     ];
     TasbeehItem? selectedTasbeeh;
     if (item?.tasbeehId != null) {
       try {
-        selectedTasbeeh = allAvailableTasbeehs.firstWhere((t) => t.id == item!.tasbeehId);
+        selectedTasbeeh = allAvailableTasbeehs.firstWhere(
+          (t) => t.id == item!.tasbeehId,
+        );
       } catch (_) {}
     }
 
     // Controllers
-    final arabicController = TextEditingController(text: item?.arabicText ?? '');
-    final transliterationController = TextEditingController(text: item?.transliteration ?? '');
-    final translationController = TextEditingController(text: item?.translation ?? '');
-    final referenceController = TextEditingController(text: item?.reference ?? '');
+    final arabicController = TextEditingController(
+      text: item?.arabicText ?? '',
+    );
+    final transliterationController = TextEditingController(
+      text: item?.transliteration ?? '',
+    );
+    final translationController = TextEditingController(
+      text: item?.translation ?? '',
+    );
+    final referenceController = TextEditingController(
+      text: item?.reference ?? '',
+    );
     final virtueController = TextEditingController(text: item?.virtue ?? '');
-    final countController = TextEditingController(text: (item?.countTarget ?? 1).toString());
+    final countController = TextEditingController(
+      text: (item?.countTarget ?? 1).toString(),
+    );
 
     // Holding maps for multi-language Duas
     Map<String, String>? duaTitles = item?.titles;
@@ -461,7 +498,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                             width: 40,
                             height: 4,
                             decoration: BoxDecoration(
-                              color: isDark ? Colors.white24 : Colors.grey.shade300,
+                              color: isDark
+                                  ? Colors.white24
+                                  : Colors.grey.shade300,
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -475,7 +514,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : const Color(0xFF2A531D),
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF2A531D),
                               ),
                             ),
                             IconButton(
@@ -493,7 +534,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                   Divider(
                     height: 1,
                     thickness: 1,
-                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFF1F5F0),
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFF1F5F0),
                   ),
 
                   // SCROLLABLE FORM BODY
@@ -506,429 +549,554 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // 1. TYPE SELECTOR DROPDOWN (Quran, Daily Duaeen, Tasbeeh, Custom Dhikr)
-                    DropdownButtonFormField<String>(
-                      key: ValueKey('type_selector_$selectedType'),
-                      initialValue: selectedType,
-                      dropdownColor: isDark ? const Color(0xFF18181B) : Colors.white,
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white : const Color(0xFF1E293B),
-                      ),
-                      icon: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: isDark ? Colors.white70 : Colors.black54,
-                      ),
-                      decoration: _roundedDecoration(
-                        labelText: 'Select Dhikr Type *',
-                        isDark: isDark,
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'quran',
-                          child: Row(
-                            children: [
-                              Icon(Icons.menu_book_rounded, color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF2A531D), size: 19),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Quran (Surah Recitation)',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark ? Colors.white : const Color(0xFF1E293B),
+                          DropdownButtonFormField<String>(
+                            key: ValueKey('type_selector_$selectedType'),
+                            initialValue: selectedType,
+                            dropdownColor: isDark
+                                ? const Color(0xFF18181B)
+                                : Colors.white,
+                            style: TextStyle(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1E293B),
+                            ),
+                            icon: Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
+                            decoration: _roundedDecoration(
+                              labelText: 'Select Dhikr Type *',
+                              isDark: isDark,
+                            ),
+                            items: [
+                              DropdownMenuItem(
+                                value: 'quran',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.menu_book_rounded,
+                                      color: isDark
+                                          ? const Color(0xFF38BDF8)
+                                          : const Color(0xFF2A531D),
+                                      size: 19,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Quran (Surah Recitation)',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF1E293B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: 'dua',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.favorite_rounded,
+                                      color: isDark
+                                          ? const Color(0xFFFBBF24)
+                                          : const Color(0xFFD97724),
+                                      size: 19,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Daily Duaeen',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF1E293B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: 'tasbeeh',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.touch_app_rounded,
+                                      color: isDark
+                                          ? const Color(0xFFA78BFA)
+                                          : const Color(0xFF2563EB),
+                                      size: 19,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Tasbeeh (Dhikr & Counter)',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF1E293B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: 'custom',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.edit_note_rounded,
+                                      color: isDark
+                                          ? Colors.white70
+                                          : const Color(0xFF4B5563),
+                                      size: 19,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Custom Dhikr',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF1E293B),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
+                            onChanged: (val) {
+                              if (val != null) {
+                                setModalState(() {
+                                  selectedType = val;
+                                });
+                              }
+                            },
                           ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'dua',
-                          child: Row(
-                            children: [
-                              Icon(Icons.favorite_rounded, color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97724), size: 19),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Daily Duaeen',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark ? Colors.white : const Color(0xFF1E293B),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'tasbeeh',
-                          child: Row(
-                            children: [
-                              Icon(Icons.touch_app_rounded, color: isDark ? const Color(0xFFA78BFA) : const Color(0xFF2563EB), size: 19),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Tasbeeh (Dhikr & Counter)',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark ? Colors.white : const Color(0xFF1E293B),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'custom',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_note_rounded, color: isDark ? Colors.white70 : const Color(0xFF4B5563), size: 19),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Custom Dhikr',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark ? Colors.white : const Color(0xFF1E293B),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      onChanged: (val) {
-                        if (val != null) {
-                          setModalState(() {
-                            selectedType = val;
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                    // -------------------------------------------------------------
-                    // TYPE A: QURAN
-                    // -------------------------------------------------------------
-                    if (selectedType == 'quran') ...[
-                      DropdownButtonFormField<int>(
-                        key: ValueKey('surah_dropdown_$selectedSurahNumber'),
-                        initialValue: selectedSurahNumber,
-                        dropdownColor: isDark ? const Color(0xFF18181B) : Colors.white,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white : const Color(0xFF1E293B),
-                        ),
-                        icon: Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: isDark ? Colors.white70 : Colors.black54,
-                        ),
-                        decoration: _roundedDecoration(
-                          labelText: 'Select Quran Surah *',
-                          hintText: 'Choose from 114 Surahs',
-                          isDark: isDark,
-                        ),
-                        isExpanded: true,
-                        items: surahsList.map((s) {
-                          return DropdownMenuItem<int>(
-                            value: s.number,
-                            child: Text(
-                              'Surah ${s.number}. ${s.nameEnglish} (${s.nameArabic})',
-                              overflow: TextOverflow.ellipsis,
+                          // -------------------------------------------------------------
+                          // TYPE A: QURAN
+                          // -------------------------------------------------------------
+                          if (selectedType == 'quran') ...[
+                            DropdownButtonFormField<int>(
+                              key: ValueKey(
+                                'surah_dropdown_$selectedSurahNumber',
+                              ),
+                              initialValue: selectedSurahNumber,
+                              dropdownColor: isDark
+                                  ? const Color(0xFF18181B)
+                                  : Colors.white,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: isDark ? Colors.white : Colors.black87,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
                               ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (numVal) {
-                          if (numVal != null) {
-                            final s = surahsList.firstWhere((element) => element.number == numVal);
-                            setModalState(() {
-                              selectedSurahNumber = numVal;
-                              surahNameEnglish = s.nameEnglish;
-                              surahNameArabic = s.nameArabic;
-                              surahMeaning = '${s.nameTranslation} • ${s.verseCount} Verses • ${s.revelationType}';
-                              arabicController.text = s.nameArabic;
-                              translationController.text = '${s.nameTranslation} • ${s.verseCount} Verses';
-                              referenceController.text = 'Holy Quran • Surah ${s.nameEnglish} (${s.number}:1-${s.verseCount})';
-                            });
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-
-                    // -------------------------------------------------------------
-                    // TYPE B: DAILY DUAEEN
-                    // -------------------------------------------------------------
-                    if (selectedType == 'dua') ...[
-                      DropdownButtonFormField<String>(
-                        key: ValueKey('dua_dropdown_${selectedDua?.id}'),
-                        initialValue: selectedDua?.id,
-                        dropdownColor: isDark ? const Color(0xFF18181B) : Colors.white,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white : const Color(0xFF1E293B),
-                        ),
-                        icon: Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: isDark ? Colors.white70 : Colors.black54,
-                        ),
-                        decoration: _roundedDecoration(
-                          labelText: 'Select Dua from Library *',
-                          hintText: 'Choose from library & custom duas',
-                          isDark: isDark,
-                        ),
-                        isExpanded: true,
-                        items: allAvailableDuas.map((d) {
-                          return DropdownMenuItem<String>(
-                            value: d.id,
-                            child: Text(
-                              d.title,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: isDark ? Colors.white : Colors.black87,
+                              icon: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: isDark ? Colors.white70 : Colors.black54,
                               ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (duaId) {
-                          if (duaId != null) {
-                            final d = allAvailableDuas.firstWhere((element) => element.id == duaId);
-                            setModalState(() {
-                              selectedDua = d;
-                              arabicController.text = d.arabic;
-                              transliterationController.text = d.transliteration;
-                              translationController.text = d.translation;
-                              referenceController.text = d.reference;
-                              virtueController.text = d.benefits;
-                              countController.text = d.repeatCount.toString();
-                              duaTitles = d.titles;
-                              duaTranslations = d.translations;
-                              duaTransliterations = d.transliterations;
-                              duaBenefitsMap = d.benefitsMap;
-                              duaAudioUrl = d.audioUrl;
-                            });
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-
-                    // -------------------------------------------------------------
-                    // TYPE C: TASBEEH
-                    // -------------------------------------------------------------
-                    if (selectedType == 'tasbeeh') ...[
-                      DropdownButtonFormField<String>(
-                        key: ValueKey('tasbeeh_dropdown_${selectedTasbeeh?.id}'),
-                        initialValue: selectedTasbeeh?.id,
-                        dropdownColor: isDark ? const Color(0xFF18181B) : Colors.white,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white : const Color(0xFF1E293B),
-                        ),
-                        icon: Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: isDark ? Colors.white70 : Colors.black54,
-                        ),
-                        decoration: _roundedDecoration(
-                          labelText: 'Select Tasbeeh *',
-                          hintText: 'Choose from Tasbeeh presets',
-                          isDark: isDark,
-                        ),
-                        isExpanded: true,
-                        items: allAvailableTasbeehs.map((t) {
-                          return DropdownMenuItem<String>(
-                            value: t.id,
-                            child: Text(
-                              '${t.textEn} (${t.textAr})',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: isDark ? Colors.white : Colors.black87,
+                              decoration: _roundedDecoration(
+                                labelText: 'Select Quran Surah *',
+                                hintText: 'Choose from 114 Surahs',
+                                isDark: isDark,
                               ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (tasbeehId) {
-                          if (tasbeehId != null) {
-                            final t = allAvailableTasbeehs.firstWhere((element) => element.id == tasbeehId);
-                            setModalState(() {
-                              selectedTasbeeh = t;
-                              arabicController.text = t.textAr;
-                              translationController.text = t.effectiveTranslation;
-                              virtueController.text = t.description;
-                              referenceController.text = 'Daily Dhikr & Tasbeeh';
-                              countController.text = t.targetGoal.toString();
-                            });
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-
-                    // Arabic Text Display / Input
-                    if (selectedType == 'custom') ...[
-                      TextField(
-                        controller: arabicController,
-                        textAlign: TextAlign.right,
-                        textDirection: TextDirection.rtl,
-                        maxLines: 3,
-                        cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                        style: AppTypography.arabicBody(
-                          fontSize: 20,
-                          height: 1.8,
-                          color: isDark ? Colors.white : const Color(0xFF1E293B),
-                        ),
-                        decoration: _roundedDecoration(
-                          labelText: 'Arabic Text *',
-                          alignLabelWithHint: true,
-                          isDark: isDark,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: transliterationController,
-                        cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white : const Color(0xFF1E293B),
-                        ),
-                        decoration: _roundedDecoration(
-                          labelText: 'Transliteration (Optional)',
-                          isDark: isDark,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: translationController,
-                        maxLines: 2,
-                        cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white : const Color(0xFF1E293B),
-                        ),
-                        decoration: _roundedDecoration(
-                          labelText: 'Translation (Optional)',
-                          isDark: isDark,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ] else ...[
-                      if (arabicController.text.isNotEmpty)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF0FDF4),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: isDark ? const Color(0xFF27272A) : const Color(0xFFDCFCE7),
-                            ),
-                          ),
-                          child: Text(
-                            arabicController.text,
-                            textAlign: TextAlign.center,
-                            textDirection: TextDirection.rtl,
-                            style: AppTypography.arabicBody(
-                              fontSize: 20,
-                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF1E3A14),
-                            ),
-                          ),
-                        ),
-                    ],
-
-                    // Reference field (Editable)
-                    TextField(
-                      controller: referenceController,
-                      cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: isDark ? Colors.white : const Color(0xFF1E293B),
-                      ),
-                      decoration: _roundedDecoration(
-                        labelText: 'Reference (Optional)',
-                        hintText: 'e.g. Sahih al-Bukhari',
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Spiritual Benefits / Virtues field (Editable)
-                    TextField(
-                      controller: virtueController,
-                      maxLines: 2,
-                      cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: isDark ? Colors.white : const Color(0xFF1E293B),
-                      ),
-                      decoration: _roundedDecoration(
-                        labelText: 'Virtues & Spiritual Benefits (Optional)',
-                        hintText: 'e.g. Protection, immense reward & peace',
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Target Count Input
-                    TextField(
-                      controller: countController,
-                      keyboardType: TextInputType.number,
-                      cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : const Color(0xFF1E293B),
-                      ),
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      onChanged: (val) {
-                        setModalState(() {});
-                      },
-                      decoration: _roundedDecoration(
-                        labelText: 'Target Recitation Count *',
-                        hintText: 'e.g. 1, 3, 7, 33, 100',
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Quick Count Preset Chips
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      child: Row(
-                        children: [1, 3, 7, 10, 33, 99, 100].map((presetVal) {
-                          final isSelected = countController.text.trim() == presetVal.toString();
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 6),
-                            child: ChoiceChip(
-                              label: Text('$presetVal x'),
-                              selected: isSelected,
-                              selectedColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                              backgroundColor: isDark ? const Color(0xFF27272A) : const Color(0xFFF3F4F6),
-                              checkmarkColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
-                              side: BorderSide(
-                                color: isSelected
-                                    ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
-                                    : (isDark ? const Color(0xFF3F3F46) : const Color(0xFFE5E7EB)),
-                              ),
-                              labelStyle: TextStyle(
-                                color: isSelected
-                                    ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
-                                    : (isDark ? Colors.white : const Color(0xFF2A531D)),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                              onSelected: (selected) {
-                                if (selected) {
+                              isExpanded: true,
+                              items: surahsList.map((s) {
+                                return DropdownMenuItem<int>(
+                                  value: s.number,
+                                  child: Text(
+                                    'Surah ${s.number}. ${s.nameEnglish} (${s.nameArabic})',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (numVal) {
+                                if (numVal != null) {
+                                  final s = surahsList.firstWhere(
+                                    (element) => element.number == numVal,
+                                  );
                                   setModalState(() {
-                                    countController.text = presetVal.toString();
+                                    selectedSurahNumber = numVal;
+                                    surahNameEnglish = s.nameEnglish;
+                                    surahNameArabic = s.nameArabic;
+                                    surahMeaning =
+                                        '${s.nameTranslation} • ${s.verseCount} Verses • ${s.revelationType}';
+                                    arabicController.text = s.nameArabic;
+                                    translationController.text =
+                                        '${s.nameTranslation} • ${s.verseCount} Verses';
+                                    referenceController.text =
+                                        'Holy Quran • Surah ${s.nameEnglish} (${s.number}:1-${s.verseCount})';
                                   });
                                 }
                               },
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ), 
-                    const SizedBox(height: 12),
+                            const SizedBox(height: 12),
+                          ],
+
+                          // -------------------------------------------------------------
+                          // TYPE B: DAILY DUAEEN
+                          // -------------------------------------------------------------
+                          if (selectedType == 'dua') ...[
+                            DropdownButtonFormField<String>(
+                              key: ValueKey('dua_dropdown_${selectedDua?.id}'),
+                              initialValue: selectedDua?.id,
+                              dropdownColor: isDark
+                                  ? const Color(0xFF18181B)
+                                  : Colors.white,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
+                              ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: isDark ? Colors.white70 : Colors.black54,
+                              ),
+                              decoration: _roundedDecoration(
+                                labelText: 'Select Dua from Library *',
+                                hintText: 'Choose from library & custom duas',
+                                isDark: isDark,
+                              ),
+                              isExpanded: true,
+                              items: allAvailableDuas.map((d) {
+                                return DropdownMenuItem<String>(
+                                  value: d.id,
+                                  child: Text(
+                                    d.title,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (duaId) {
+                                if (duaId != null) {
+                                  final d = allAvailableDuas.firstWhere(
+                                    (element) => element.id == duaId,
+                                  );
+                                  setModalState(() {
+                                    selectedDua = d;
+                                    arabicController.text = d.arabic;
+                                    transliterationController.text =
+                                        d.transliteration;
+                                    translationController.text = d.translation;
+                                    referenceController.text = d.reference;
+                                    virtueController.text = d.benefits;
+                                    countController.text = d.repeatCount
+                                        .toString();
+                                    duaTitles = d.titles;
+                                    duaTranslations = d.translations;
+                                    duaTransliterations = d.transliterations;
+                                    duaBenefitsMap = d.benefitsMap;
+                                    duaAudioUrl = d.audioUrl;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+
+                          // -------------------------------------------------------------
+                          // TYPE C: TASBEEH
+                          // -------------------------------------------------------------
+                          if (selectedType == 'tasbeeh') ...[
+                            DropdownButtonFormField<String>(
+                              key: ValueKey(
+                                'tasbeeh_dropdown_${selectedTasbeeh?.id}',
+                              ),
+                              initialValue: selectedTasbeeh?.id,
+                              dropdownColor: isDark
+                                  ? const Color(0xFF18181B)
+                                  : Colors.white,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
+                              ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: isDark ? Colors.white70 : Colors.black54,
+                              ),
+                              decoration: _roundedDecoration(
+                                labelText: 'Select Tasbeeh *',
+                                hintText: 'Choose from Tasbeeh presets',
+                                isDark: isDark,
+                              ),
+                              isExpanded: true,
+                              items: allAvailableTasbeehs.map((t) {
+                                return DropdownMenuItem<String>(
+                                  value: t.id,
+                                  child: Text(
+                                    '${t.textEn} (${t.textAr})',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (tasbeehId) {
+                                if (tasbeehId != null) {
+                                  final t = allAvailableTasbeehs.firstWhere(
+                                    (element) => element.id == tasbeehId,
+                                  );
+                                  setModalState(() {
+                                    selectedTasbeeh = t;
+                                    arabicController.text = t.textAr;
+                                    translationController.text =
+                                        t.effectiveTranslation;
+                                    virtueController.text = t.description;
+                                    referenceController.text =
+                                        'Daily Dhikr & Tasbeeh';
+                                    countController.text = t.targetGoal
+                                        .toString();
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+
+                          // Arabic Text Display / Input
+                          if (selectedType == 'custom') ...[
+                            TextField(
+                              controller: arabicController,
+                              textAlign: TextAlign.right,
+                              textDirection: TextDirection.rtl,
+                              maxLines: 3,
+                              cursorColor: isDark
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFF2A531D),
+                              style: AppTypography.arabicBody(
+                                fontSize: 20,
+                                height: 1.8,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
+                              ),
+                              decoration: _roundedDecoration(
+                                labelText: 'Arabic Text *',
+                                alignLabelWithHint: true,
+                                isDark: isDark,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: transliterationController,
+                              cursorColor: isDark
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFF2A531D),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
+                              ),
+                              decoration: _roundedDecoration(
+                                labelText: 'Transliteration (Optional)',
+                                isDark: isDark,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: translationController,
+                              maxLines: 2,
+                              cursorColor: isDark
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFF2A531D),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
+                              ),
+                              decoration: _roundedDecoration(
+                                labelText: 'Translation (Optional)',
+                                isDark: isDark,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ] else ...[
+                            if (arabicController.text.isNotEmpty)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(0xFF0F0F12)
+                                      : const Color(0xFFF0FDF4),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? const Color(0xFF27272A)
+                                        : const Color(0xFFDCFCE7),
+                                  ),
+                                ),
+                                child: Text(
+                                  arabicController.text,
+                                  textAlign: TextAlign.center,
+                                  textDirection: TextDirection.rtl,
+                                  style: AppTypography.arabicBody(
+                                    fontSize: 20,
+                                    color: isDark
+                                        ? const Color(0xFF86EFAC)
+                                        : const Color(0xFF1E3A14),
+                                  ),
+                                ),
+                              ),
+                          ],
+
+                          // Reference field (Editable)
+                          TextField(
+                            controller: referenceController,
+                            cursorColor: isDark
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFF2A531D),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1E293B),
+                            ),
+                            decoration: _roundedDecoration(
+                              labelText: 'Reference (Optional)',
+                              hintText: 'e.g. Sahih al-Bukhari',
+                              isDark: isDark,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Spiritual Benefits / Virtues field (Editable)
+                          TextField(
+                            controller: virtueController,
+                            maxLines: 2,
+                            cursorColor: isDark
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFF2A531D),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1E293B),
+                            ),
+                            decoration: _roundedDecoration(
+                              labelText:
+                                  'Virtues & Spiritual Benefits (Optional)',
+                              hintText:
+                                  'e.g. Protection, immense reward & peace',
+                              isDark: isDark,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Target Count Input
+                          TextField(
+                            controller: countController,
+                            keyboardType: TextInputType.number,
+                            cursorColor: isDark
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFF2A531D),
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1E293B),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: (val) {
+                              setModalState(() {});
+                            },
+                            decoration: _roundedDecoration(
+                              labelText: 'Target Recitation Count *',
+                              hintText: 'e.g. 1, 3, 7, 33, 100',
+                              isDark: isDark,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Quick Count Preset Chips
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            child: Row(
+                              children: [1, 3, 7, 10, 33, 99, 100].map((
+                                presetVal,
+                              ) {
+                                final isSelected =
+                                    countController.text.trim() ==
+                                    presetVal.toString();
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: ChoiceChip(
+                                    label: Text('$presetVal x'),
+                                    selected: isSelected,
+                                    selectedColor: isDark
+                                        ? const Color(0xFF86EFAC)
+                                        : const Color(0xFF2A531D),
+                                    backgroundColor: isDark
+                                        ? const Color(0xFF27272A)
+                                        : const Color(0xFFF3F4F6),
+                                    checkmarkColor: isDark
+                                        ? const Color(0xFF0F0F12)
+                                        : Colors.white,
+                                    side: BorderSide(
+                                      color: isSelected
+                                          ? (isDark
+                                                ? const Color(0xFF86EFAC)
+                                                : const Color(0xFF2A531D))
+                                          : (isDark
+                                                ? const Color(0xFF3F3F46)
+                                                : const Color(0xFFE5E7EB)),
+                                    ),
+                                    labelStyle: TextStyle(
+                                      color: isSelected
+                                          ? (isDark
+                                                ? const Color(0xFF0F0F12)
+                                                : Colors.white)
+                                          : (isDark
+                                                ? Colors.white
+                                                : const Color(0xFF2A531D)),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                    onSelected: (selected) {
+                                      if (selected) {
+                                        setModalState(() {
+                                          countController.text = presetVal
+                                              .toString();
+                                        });
+                                      }
+                                    },
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
                         ],
                       ),
                     ),
@@ -938,7 +1106,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                   Divider(
                     height: 1,
                     thickness: 1,
-                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFF1F5F0),
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFF1F5F0),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -946,26 +1116,45 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          if (selectedType == 'quran' && selectedSurahNumber == null) {
-                            AppFloatingToast.showError(context, message: 'Please select a Quran Surah');
+                          if (selectedType == 'quran' &&
+                              selectedSurahNumber == null) {
+                            AppFloatingToast.showError(
+                              context,
+                              message: 'Please select a Quran Surah',
+                            );
                             return;
                           }
-                          if (selectedType == 'custom' && arabicController.text.trim().isEmpty) {
-                            AppFloatingToast.showError(context, message: 'Please enter Arabic text for custom Dhikr');
+                          if (selectedType == 'custom' &&
+                              arabicController.text.trim().isEmpty) {
+                            AppFloatingToast.showError(
+                              context,
+                              message:
+                                  'Please enter Arabic text for custom Dhikr',
+                            );
                             return;
                           }
 
-                          final parsedTarget = int.tryParse(countController.text.trim());
-                          final finalTarget = (parsedTarget != null && parsedTarget > 0) ? parsedTarget : 1;
+                          final parsedTarget = int.tryParse(
+                            countController.text.trim(),
+                          );
+                          final finalTarget =
+                              (parsedTarget != null && parsedTarget > 0)
+                              ? parsedTarget
+                              : 1;
 
                           final newItem = DhikrItem(
-                            id: item?.id ?? 'dhikr_${DateTime.now().millisecondsSinceEpoch}',
+                            id:
+                                item?.id ??
+                                'dhikr_${DateTime.now().millisecondsSinceEpoch}',
                             category: widget.categoryId,
                             arabicText: arabicController.text.trim(),
-                            transliteration: transliterationController.text.trim(),
+                            transliteration: transliterationController.text
+                                .trim(),
                             translation: translationController.text.trim(),
                             reference: referenceController.text.trim().isEmpty
-                                ? (selectedType == 'quran' ? 'Holy Quran' : 'Adhkar & Supplication')
+                                ? (selectedType == 'quran'
+                                      ? 'Holy Quran'
+                                      : 'Adhkar & Supplication')
                                 : referenceController.text.trim(),
                             virtue: virtueController.text.trim(),
                             countTarget: finalTarget,
@@ -987,14 +1176,23 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                           _saveOrUpdateDhikr(newItem);
                           Navigator.pop(context);
                         },
-                        icon: Icon(isEdit ? Icons.save_rounded : Icons.add_rounded),
+                        icon: Icon(
+                          isEdit ? Icons.save_rounded : Icons.add_rounded,
+                        ),
                         label: Text(
                           isEdit ? 'Save Changes' : 'Add to Adhkar',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
-                          foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+                          backgroundColor: isDark
+                              ? const Color(0xFF18A74C)
+                              : const Color(0xFF2A531D),
+                          foregroundColor: isDark
+                              ? const Color(0xFF0F0F12)
+                              : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -1030,16 +1228,16 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
         margin: const EdgeInsets.symmetric(horizontal: 1.5),
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark ? const Color(0xFF22C55E) : const Color(0xFF14532D))
+              ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF14532D))
               : (isDark ? const Color(0xFF27272A) : const Color(0xFFF3F4F6)),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected
-                ? (isDark ? const Color(0xFF22C55E) : const Color(0xFF14532D))
+                ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF14532D))
                 : (isDark ? const Color(0xFF3F3F46) : const Color(0xFFE5E7EB)),
             width: 1,
           ),
-        ), 
+        ),
         child: Text(
           label,
           style: TextStyle(
@@ -1059,7 +1257,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAF7),
+      backgroundColor: isDark
+          ? const Color(0xFF0F0F12)
+          : const Color(0xFFF8FAF7),
       appBar: AppHeaderBar(
         title: widget.title,
         showBackButton: true,
@@ -1077,7 +1277,10 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
           ? Center(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 36,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -1097,8 +1300,12 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: isDark
-                                ? const Color(0xFF2A531D).withValues(alpha: 0.25)
-                                : const Color(0xFFD4EBD0).withValues(alpha: 0.8),
+                                ? const Color(
+                                    0xFF2A531D,
+                                  ).withValues(alpha: 0.25)
+                                : const Color(
+                                    0xFFD4EBD0,
+                                  ).withValues(alpha: 0.8),
                           ),
                           child: Center(
                             child: Container(
@@ -1107,13 +1314,18 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF2A531D), Color(0xFF14532D)],
+                                  colors: [
+                                    Color(0xFF2A531D),
+                                    Color(0xFF14532D),
+                                  ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF14532D).withValues(alpha: 0.35),
+                                    color: const Color(
+                                      0xFF14532D,
+                                    ).withValues(alpha: 0.35),
                                     blurRadius: 16,
                                     offset: const Offset(0, 5),
                                   ),
@@ -1155,7 +1367,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF14532D).withValues(alpha: 0.28),
+                            color: const Color(
+                              0xFF14532D,
+                            ).withValues(alpha: 0.28),
                             blurRadius: 16,
                             offset: const Offset(0, 5),
                           ),
@@ -1173,16 +1387,23 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
-                          foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 14),
+                          backgroundColor: isDark
+                              ? const Color(0xFF18A74C)
+                              : const Color(0xFF2A531D),
+                          foregroundColor: isDark
+                              ? const Color(0xFF0F0F12)
+                              : Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 26,
+                            vertical: 14,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18),
                           ),
-                          elevation: 0, 
-                        ), 
-                      ), 
-                    ), 
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1210,17 +1431,21 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         child: M3Card(
-                          color: isDark ? const Color(0xFF18181B) : Colors.white,
+                          color: isDark
+                              ? const Color(0xFF18181B)
+                              : Colors.white,
                           border: Border.all(
                             color: isDone
                                 ? const Color(0xFF14532D).withValues(alpha: 0.8)
-                                : (isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB)),
+                                : (isDark
+                                      ? const Color(0xFF27272A)
+                                      : const Color(0xFFE5E7EB)),
                             width: isDone ? 1.6 : 1.0,
                           ),
                           margin: EdgeInsets.zero,
                           padding: EdgeInsets.zero,
                           borderRadius: 24,
-                          child: ClipRRect( 
+                          child: ClipRRect(
                             borderRadius: BorderRadius.circular(24),
                             child: Stack(
                               children: [
@@ -1228,9 +1453,15 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                 Positioned.fill(
                                   child: SingleChildScrollView(
                                     physics: const BouncingScrollPhysics(),
-                                    padding: EdgeInsets.fromLTRB(18, item.isDua ? 110 : 70, 18, 80),
+                                    padding: EdgeInsets.fromLTRB(
+                                      18,
+                                      item.isDua ? 110 : 70,
+                                      18,
+                                      80,
+                                    ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
                                         // -------------------------------------------------------------
                                         // BODY CONTENT BASED ON TYPE
@@ -1254,112 +1485,135 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                   left: 12,
                                   right: 12,
                                   child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        // Left Floating Pills
-                                        Row(
-                                          children: [
-                                            const SizedBox(width: 6),
-                                            _buildTypeBadge(item),
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                              decoration: BoxDecoration(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Left Floating Pills
+                                      Row(
+                                        children: [
+                                          const SizedBox(width: 6),
+                                          _buildTypeBadge(item),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isDark
+                                                  ? const Color(0xFF27272A)
+                                                  : const Color(0xFFE8F4E5),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
                                                 color: isDark
-                                                    ? const Color(0xFF27272A)
-                                                    : const Color(0xFFE8F4E5),
-                                                borderRadius: BorderRadius.circular(10),
-                                                border: Border.all(
-                                                  color: isDark
-                                                      ? const Color(0xFF3F3F46)
-                                                      : const Color(0xFFC8E6C9),
-                                                  width: 0.8,
-                                                ),
-                                              ),
-                                              child: Text(
-                                                'Recite ${item.countTarget}x',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.bold, 
-                                                  color: isDark
-                                                      ? const Color(0xFF86EFAC)
-                                                      : const Color(0xFF2A531D),
-                                                ),
+                                                    ? const Color(0xFF3F3F46)
+                                                    : const Color(0xFFC8E6C9),
+                                                width: 0.8,
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                            child: Text(
+                                              'Recite ${item.countTarget}x',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: isDark
+                                                    ? const Color(0xFF86EFAC)
+                                                    : const Color(0xFF2A531D),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
 
-                                        // Right Floating Actions & 3-Dots
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            if (item.isDua && item.audioUrl != null && item.audioUrl!.isNotEmpty)
-                                              Padding(
-                                                padding: const EdgeInsets.only(right: 6),
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: InkWell(
-                                                    onTap: () => _toggleAudio(item),
-                                                    borderRadius: BorderRadius.circular(14),
-                                                    child: Container(
-                                                      padding: const EdgeInsets.all(5),
-                                                      child: Icon(
-                                                        isPlayingAudio
-                                                            ? Icons.pause_circle_filled_rounded
-                                                            : Icons.volume_up_rounded,
-                                                        color: isPlayingAudio
-                                                            ? const Color(0xFFD97724)
-                                                            : const Color(0xFF2A531D),
-                                                        size: 20,
-                                                      ),
+                                      // Right Floating Actions & 3-Dots
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (item.isDua &&
+                                              item.audioUrl != null &&
+                                              item.audioUrl!.isNotEmpty)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                right: 6,
+                                              ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  onTap: () =>
+                                                      _toggleAudio(item),
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(5),
+                                                    child: Icon(
+                                                      isPlayingAudio
+                                                          ? Icons
+                                                                .pause_circle_filled_rounded
+                                                          : Icons
+                                                                .volume_up_rounded,
+                                                      color: isPlayingAudio
+                                                          ? const Color(
+                                                              0xFFD97724,
+                                                            )
+                                                          : const Color(
+                                                              0xFF2A531D,
+                                                            ),
+                                                      size: 20,
                                                     ),
                                                   ),
                                                 ),
                                               ),
-
-                                            // Floating 3-Dots Popup Menu Button
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                color: isDark
-                                                    ? Colors.white.withValues(alpha: 0.08)
-                                                    : const Color(0xFFF3F4F6),
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: AppActionPopupMenu<String>(
-                                                items: const [
-                                                  AppActionMenuItem(
-                                                    value: 'edit',
-                                                    title: 'Edit Item',
-                                                    icon: Icons.edit_outlined,
-                                                  ),
-                                                  AppActionMenuItem(
-                                                    value: 'reset',
-                                                    title: 'Reset Count',
-                                                    icon: Icons.refresh_rounded,
-                                                  ),
-                                                  AppActionMenuItem(
-                                                    value: 'delete',
-                                                    title: 'Delete Item',
-                                                    icon: Icons.delete_outline_rounded,
-                                                    isDestructive: true,
-                                                  ),
-                                                ],
-                                                onSelected: (val) {
-                                                  if (val == 'edit') {
-                                                    _showAddEditDhikrDialog(item: item);
-                                                  } else if (val == 'reset') {
-                                                    _resetCount(item.id);
-                                                  } else if (val == 'delete') {
-                                                    _confirmDeleteDhikr(item);
-                                                  }
-                                                },
-                                              ),
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+
+                                          // Floating 3-Dots Popup Menu Button
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: isDark
+                                                  ? Colors.white.withValues(
+                                                      alpha: 0.08,
+                                                    )
+                                                  : const Color(0xFFF3F4F6),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: AppActionPopupMenu<String>(
+                                              items: const [
+                                                AppActionMenuItem(
+                                                  value: 'edit',
+                                                  title: 'Edit Item',
+                                                  icon: Icons.edit_outlined,
+                                                ),
+                                                AppActionMenuItem(
+                                                  value: 'reset',
+                                                  title: 'Reset Count',
+                                                  icon: Icons.refresh_rounded,
+                                                ),
+                                                AppActionMenuItem(
+                                                  value: 'delete',
+                                                  title: 'Delete Item',
+                                                  icon: Icons
+                                                      .delete_outline_rounded,
+                                                  isDestructive: true,
+                                                ),
+                                              ],
+                                              onSelected: (val) {
+                                                if (val == 'edit') {
+                                                  _showAddEditDhikrDialog(
+                                                    item: item,
+                                                  );
+                                                } else if (val == 'reset') {
+                                                  _resetCount(item.id);
+                                                } else if (val == 'delete') {
+                                                  _confirmDeleteDhikr(item);
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
 
                                 // 2b. FLOATING LANGUAGE CHIPS (BELOW 3-DOTS FOR DAILY DUA)
@@ -1368,24 +1622,49 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                     top: 70,
                                     right: 14,
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                        vertical: 5,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: isDark
-                                            ? const Color(0xFF18181B).withValues(alpha: 0.94)
-                                            : Colors.white.withValues(alpha: 0.94),
+                                            ? const Color(
+                                                0xFF18181B,
+                                              ).withValues(alpha: 0.94)
+                                            : Colors.white.withValues(
+                                                alpha: 0.94,
+                                              ),
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+                                          color: isDark
+                                              ? const Color(0xFF27272A)
+                                              : const Color(0xFFE5E7EB),
                                           width: 0.8,
                                         ),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          _buildDuaLangChip(item.id, 'en', 'EN'),
-                                          _buildDuaLangChip(item.id, 'ur', 'UR'),
-                                          _buildDuaLangChip(item.id, 'hi', 'HI'),
-                                          _buildDuaLangChip(item.id, 'te', 'TE'),
+                                          _buildDuaLangChip(
+                                            item.id,
+                                            'en',
+                                            'EN',
+                                          ),
+                                          _buildDuaLangChip(
+                                            item.id,
+                                            'ur',
+                                            'UR',
+                                          ),
+                                          _buildDuaLangChip(
+                                            item.id,
+                                            'hi',
+                                            'HI',
+                                          ),
+                                          _buildDuaLangChip(
+                                            item.id,
+                                            'te',
+                                            'TE',
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -1406,7 +1685,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                             HapticFeedback.lightImpact();
                                             _resetCount(item.id);
                                           },
-                                          borderRadius: BorderRadius.circular(22),
+                                          borderRadius: BorderRadius.circular(
+                                            22,
+                                          ),
                                           child: Container(
                                             width: 44,
                                             height: 44,
@@ -1416,7 +1697,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                                   ? const Color(0xFF18181B)
                                                   : Colors.white,
                                               border: Border.all(
-                                                color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
+                                                color: isDark
+                                                    ? const Color(0xFF27272A)
+                                                    : const Color(0xFFE5E7EB),
                                                 width: 1.2,
                                               ),
                                               // boxShadow: [
@@ -1430,7 +1713,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                             child: Icon(
                                               Icons.refresh_rounded,
                                               size: 20,
-                                              color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+                                              color: isDark
+                                                  ? Colors.white70
+                                                  : const Color(0xFF4B5563),
                                             ),
                                           ),
                                         ),
@@ -1441,29 +1726,51 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                       Material(
                                         color: Colors.transparent,
                                         child: InkWell(
-                                          onTap: () => _incrementCount(item.id, item.countTarget),
-                                          borderRadius: BorderRadius.circular(24),
+                                          onTap: () => _incrementCount(
+                                            item.id,
+                                            item.countTarget,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                           child: AnimatedContainer(
-                                            duration: const Duration(milliseconds: 250),
+                                            duration: const Duration(
+                                              milliseconds: 250,
+                                            ),
                                             height: 48,
-                                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                            ),
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(24),
+                                              borderRadius:
+                                                  BorderRadius.circular(24),
                                               gradient: isDone
                                                   ? const LinearGradient(
-                                                      colors: [Color(0xFF166534), Color(0xFF14532D)],
+                                                      colors: [
+                                                        Color(0xFF166534),
+                                                        Color(0xFF14532D),
+                                                      ],
                                                       begin: Alignment.topLeft,
-                                                      end: Alignment.bottomRight,
+                                                      end:
+                                                          Alignment.bottomRight,
                                                     )
                                                   : const LinearGradient(
-                                                      colors: [Color(0xFFFBBF24), Color(0xFFEAB308)],
+                                                      colors: [
+                                                        Color(0xFFFBBF24),
+                                                        Color(0xFFEAB308),
+                                                      ],
                                                       begin: Alignment.topLeft,
-                                                      end: Alignment.bottomRight,
+                                                      end:
+                                                          Alignment.bottomRight,
                                                     ),
                                               border: Border.all(
                                                 color: isDone
-                                                    ? const Color(0xFF15803D).withValues(alpha: 0.8)
-                                                    : const Color(0xFFFDE68A).withValues(alpha: 0.6),
+                                                    ? const Color(
+                                                        0xFF15803D,
+                                                      ).withValues(alpha: 0.8)
+                                                    : const Color(
+                                                        0xFFFDE68A,
+                                                      ).withValues(alpha: 0.6),
                                                 width: 1.2,
                                               ),
                                               // boxShadow: [
@@ -1481,9 +1788,14 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Icon(
-                                                  isDone ? Icons.check_circle_rounded : Icons.add_rounded,
+                                                  isDone
+                                                      ? Icons
+                                                            .check_circle_rounded
+                                                      : Icons.add_rounded,
                                                   size: 21,
-                                                  color: isDone ? Colors.white : const Color(0xFF78350F),
+                                                  color: isDone
+                                                      ? Colors.white
+                                                      : const Color(0xFF78350F),
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Text(
@@ -1491,7 +1803,11 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.bold,
-                                                    color: isDone ? Colors.white : const Color(0xFF78350F),
+                                                    color: isDone
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFF78350F,
+                                                          ),
                                                     letterSpacing: 0.3,
                                                   ),
                                                 ),
@@ -1521,10 +1837,13 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(_categoryAdhkar.length, (dotIndex) {
+                      children: List.generate(_categoryAdhkar.length, (
+                        dotIndex,
+                      ) {
                         final isSelected = dotIndex == _currentIndex;
                         final dhikr = _categoryAdhkar[dotIndex];
-                        final isCompleted = (_dailyCounts[dhikr.id] ?? 0) >= dhikr.countTarget;
+                        final isCompleted =
+                            (_dailyCounts[dhikr.id] ?? 0) >= dhikr.countTarget;
 
                         return GestureDetector(
                           onTap: () {
@@ -1542,10 +1861,16 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                               color: isSelected
-                                  ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
+                                  ? (isDark
+                                        ? const Color(0xFF86EFAC)
+                                        : const Color(0xFF2A531D))
                                   : (isCompleted
-                                      ? (isDark ? const Color(0xFF166534) : const Color(0xFF14532D))
-                                      : (isDark ? const Color(0xFF27272A) : Colors.grey.shade300)),
+                                        ? (isDark
+                                              ? const Color(0xFF166534)
+                                              : const Color(0xFF14532D))
+                                        : (isDark
+                                              ? const Color(0xFF27272A)
+                                              : Colors.grey.shade300)),
                             ),
                           ),
                         );
@@ -1567,18 +1892,29 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF0C2A44) : const Color(0xFFE0F2FE),
           borderRadius: BorderRadius.circular(10),
-          border: isDark ? Border.all(color: const Color(0xFF0284C7).withValues(alpha: 0.4), width: 0.8) : null,
+          border: isDark
+              ? Border.all(
+                  color: const Color(0xFF0284C7).withValues(alpha: 0.4),
+                  width: 0.8,
+                )
+              : null,
         ),
         child: Row(
           children: [
-            Icon(Icons.menu_book_rounded, size: 12, color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0369A1)),
+            Icon(
+              Icons.menu_book_rounded,
+              size: 12,
+              color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0369A1),
+            ),
             const SizedBox(width: 4),
             Text(
               'Quran',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0369A1),
+                color: isDark
+                    ? const Color(0xFF38BDF8)
+                    : const Color(0xFF0369A1),
               ),
             ),
           ],
@@ -1590,18 +1926,29 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF38230B) : const Color(0xFFFEF3C7),
           borderRadius: BorderRadius.circular(10),
-          border: isDark ? Border.all(color: const Color(0xFFD97706).withValues(alpha: 0.4), width: 0.8) : null,
+          border: isDark
+              ? Border.all(
+                  color: const Color(0xFFD97706).withValues(alpha: 0.4),
+                  width: 0.8,
+                )
+              : null,
         ),
         child: Row(
           children: [
-            Icon(Icons.favorite_rounded, size: 12, color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFB45309)),
+            Icon(
+              Icons.favorite_rounded,
+              size: 12,
+              color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFB45309),
+            ),
             const SizedBox(width: 4),
             Text(
               'Daily Dua',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFB45309),
+                color: isDark
+                    ? const Color(0xFFFBBF24)
+                    : const Color(0xFFB45309),
               ),
             ),
           ],
@@ -1613,18 +1960,29 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF2E1065) : const Color(0xFFEDE9FE),
           borderRadius: BorderRadius.circular(10),
-          border: isDark ? Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.4), width: 0.8) : null,
+          border: isDark
+              ? Border.all(
+                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.4),
+                  width: 0.8,
+                )
+              : null,
         ),
         child: Row(
           children: [
-            Icon(Icons.touch_app_rounded, size: 12, color: isDark ? const Color(0xFFA78BFA) : const Color(0xFF6D28D9)),
+            Icon(
+              Icons.touch_app_rounded,
+              size: 12,
+              color: isDark ? const Color(0xFFA78BFA) : const Color(0xFF6D28D9),
+            ),
             const SizedBox(width: 4),
             Text(
               'Tasbeeh',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: isDark ? const Color(0xFFA78BFA) : const Color(0xFF6D28D9),
+                color: isDark
+                    ? const Color(0xFFA78BFA)
+                    : const Color(0xFF6D28D9),
               ),
             ),
           ],
@@ -1636,11 +1994,17 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF27272A) : const Color(0xFFF3F4F6),
         borderRadius: BorderRadius.circular(10),
-        border: isDark ? Border.all(color: const Color(0xFF3F3F46), width: 0.8) : null,
+        border: isDark
+            ? Border.all(color: const Color(0xFF3F3F46), width: 0.8)
+            : null,
       ),
       child: Row(
         children: [
-          Icon(Icons.edit_note_rounded, size: 12, color: isDark ? Colors.white70 : const Color(0xFF4B5563)),
+          Icon(
+            Icons.edit_note_rounded,
+            size: 12,
+            color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+          ),
           const SizedBox(width: 4),
           Text(
             'Custom Dhikr',
@@ -1693,7 +2057,9 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
               textDirection: TextDirection.rtl,
               style: AppTypography.arabicHeader(
                 fontSize: 26,
-                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF1B5E20),
+                color: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF1B5E20),
                 height: 1.8,
               ),
             ),
@@ -1719,13 +2085,20 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
               icon: const Icon(Icons.menu_book_rounded, size: 20),
               label: Text(
                 'Read Surah ${item.surahName ?? ""} in Quran',
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? const Color(0xFF166534) : const Color(0xFF2A531D),
+                backgroundColor: isDark
+                    ? const Color(0xFF166534)
+                    : const Color(0xFF2A531D),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 1,
               ),
             ),
@@ -1877,15 +2250,19 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
               style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? const Color(0xFF166534) : const Color(0xFF14532D),
+              backgroundColor: isDark
+                  ? const Color(0xFF166534)
+                  : const Color(0xFF14532D),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               elevation: 2,
               shadowColor: const Color(0xFF14532D).withValues(alpha: 0.4),
             ),
           ),
-        ), 
+        ),
 
         if (item.reference.isNotEmpty) _buildReferenceBox(item.reference),
         if (item.virtue.isNotEmpty) _buildBenefitsBox(item.virtue),

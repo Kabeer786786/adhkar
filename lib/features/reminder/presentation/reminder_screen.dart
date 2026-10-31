@@ -19,7 +19,7 @@ class ReminderScreen extends ConsumerStatefulWidget {
   ConsumerState<ReminderScreen> createState() => _ReminderScreenState();
 }
 
-class _ReminderScreenState extends ConsumerState<ReminderScreen> 
+class _ReminderScreenState extends ConsumerState<ReminderScreen>
     with WidgetsBindingObserver {
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = <String>{};
@@ -59,9 +59,12 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+            ),
           ),
           title: Text(
             'Delete Reminder${count > 1 ? 's' : ''}?',
@@ -148,7 +151,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
   ) {
     if (_isSelectionMode) {
       return AppBar(
-        backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+        backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
         elevation: 1,
         leading: IconButton(
           icon: Icon(Icons.close_rounded, color: textColor),
@@ -164,13 +167,13 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
           style: GoogleFonts.outfit(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: textColor, 
+            color: textColor,
           ),
         ),
         actions: [
           IconButton(
             icon: const Icon(
-              Icons.delete_outline_rounded, 
+              Icons.delete_outline_rounded,
               color: Color(0xFFEF4444),
             ),
             onPressed: _selectedIds.isEmpty
@@ -204,14 +207,16 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
         (a, b) => (a.hour * 60 + a.minute).compareTo(b.hour * 60 + b.minute),
       );
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
-    final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final bgColor = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
     final cardBorder = isDark
-        ? const Color(0xFF2B3F33)
+        ? const Color(0xFF27272A)
         : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     final isAllSelected =
         reminders.isNotEmpty && _selectedIds.length == reminders.length;
@@ -314,9 +319,9 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
                       'TODAY\'S REMINDERS',
                       style: GoogleFonts.lexend(
                         fontSize: 13.5,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         letterSpacing: 0.6,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                       ),
                     ),
                   ),
@@ -372,8 +377,8 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
               onPressed: () {
                 ReminderLibraryModal.show(context);
               },
-              backgroundColor: primaryGreen,
-              foregroundColor: Colors.white,
+              backgroundColor: isDark ? const Color(0xFF18A74C) : primaryGreen,
+              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
               icon: const Icon(Icons.add_rounded),
               label: Text(
                 'Add Reminder',
@@ -403,14 +408,16 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
               height: 90,
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF1E2D24)
+                    ? const Color(0xFF27272A)
                     : const Color(0xFFFFFFFF),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.notifications_active_outlined,
                 size: 44,
-                color: Color(0xFF2A531D),
+                color: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
               ),
             ),
             const SizedBox(height: 20),
@@ -440,8 +447,12 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Add Reminder'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: primaryGreen,
-                foregroundColor: Colors.white,
+                backgroundColor: isDark
+                    ? const Color(0xFF18A74C)
+                    : primaryGreen,
+                foregroundColor: isDark
+                    ? const Color(0xFF0F0F12)
+                    : Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
@@ -482,11 +493,13 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
         color: isSelected
-            ? (isDark ? const Color(0xFF243B2C) : const Color(0xFFF0FDF4))
+            ? (isDark ? const Color(0xFF27272A) : const Color(0xFFF0FDF4))
             : cardBg,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isSelected ? primaryGreen : cardBorder,
+          color: isSelected
+              ? (isDark ? const Color(0xFF86EFAC) : primaryGreen)
+              : cardBorder,
           width: isSelected ? 1.8 : 1,
         ),
         boxShadow: [
@@ -599,8 +612,25 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
                         scale: 0.85,
                         child: Switch(
                           value: reminder.isEnabled,
-                          activeTrackColor: primaryGreen,
-                          activeThumbColor: Colors.white,
+                          activeTrackColor: isDark
+                              ? const Color(0xFF166534)
+                              : primaryGreen,
+                          activeThumbColor: isDark
+                              ? const Color(0xFF18A74C)
+                              : Colors.white,
+                          inactiveThumbColor: isDark
+                              ? const Color(0xFF94A3B8)
+                              : Colors.grey.shade400,
+                          inactiveTrackColor: isDark
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFE2E8F0),
+                          trackOutlineColor: WidgetStateProperty.resolveWith(
+                            (states) => states.contains(WidgetState.selected)
+                                ? Colors.transparent
+                                : (isDark
+                                      ? const Color(0xFF3F3F46)
+                                      : const Color(0xFFCBD5E1)),
+                          ),
                           onChanged: (val) {
                             ref
                                 .read(remindersProvider.notifier)
@@ -637,7 +667,9 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
                             height: 1,
                             fontWeight: FontWeight.w600,
                             color: reminder.isEnabled
-                                ? primaryGreen
+                                ? (isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : primaryGreen)
                                 : subTextColor,
                           ),
                         ),
@@ -648,7 +680,9 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: reminder.isEnabled
-                                ? primaryGreen
+                                ? (isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : primaryGreen)
                                 : subTextColor,
                           ),
                         ),
@@ -679,7 +713,9 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
     Color subTextColor,
     bool isDark,
   ) {
-    final tagColor = reminder.isEnabled ? primaryGreen : subTextColor;
+    final tagColor = reminder.isEnabled
+        ? (isDark ? const Color(0xFF86EFAC) : primaryGreen)
+        : subTextColor;
 
     if (reminder.frequency == ReminderFrequency.once) {
       final formattedDate = DateFormat(
@@ -756,7 +792,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
     ];
 
     final activeColor = isEnabled
-        ? primaryGreen
+        ? (isDark ? const Color(0xFF86EFAC) : primaryGreen)
         : (isDark ? Colors.white70 : const Color(0xFF475569));
     final inactiveColor = isDark ? Colors.white24 : const Color(0xFFCBD5E1);
 

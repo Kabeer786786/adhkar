@@ -178,10 +178,7 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
     );
 
     widget.onCreateCustom(newCat, []);
-    AppFloatingToast.showAdded(
-      context,
-      message: 'Adhkar section created',
-    );
+    AppFloatingToast.showAdded(context, message: 'Adhkar section created');
     Navigator.of(context).pop();
   }
 
@@ -243,9 +240,7 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
     return InputDecoration(
       labelText: labelText,
       hintText: hintText,
-      labelStyle: TextStyle(
-        color: isDark ? Colors.white70 : Colors.black87,
-      ),
+      labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
       hintStyle: TextStyle(
         color: isDark ? Colors.white38 : Colors.grey.shade500,
       ),
@@ -279,7 +274,7 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
   }
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     return AnimatedSize(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
@@ -359,8 +354,12 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                 icon: const Icon(Icons.add_rounded, size: 18),
                 label: const Text('Create Adhkar'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
-                  foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+                  backgroundColor: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
+                  foregroundColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
@@ -387,21 +386,29 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
               ),
               prefixIcon: Icon(
                 Icons.search_rounded,
-                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                color: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
               ),
               filled: true,
-              fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9F9F9),
+              fillColor: isDark
+                  ? const Color(0xFF0F0F12)
+                  : const Color(0xFFF9F9F9),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 8,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: isDark ? const BorderSide(color: Color(0xFF27272A)) : BorderSide.none,
+                borderSide: isDark
+                    ? const BorderSide(color: Color(0xFF27272A))
+                    : BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: isDark ? const BorderSide(color: Color(0xFF27272A)) : BorderSide.none,
+                borderSide: isDark
+                    ? const BorderSide(color: Color(0xFF27272A))
+                    : BorderSide.none,
               ),
             ),
           ),
@@ -475,9 +482,7 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                     size: 24,
                                     color: isSelected
                                         ? cardTextColor
-                                        : cardTextColor.withValues(
-                                            alpha: 0.45,
-                                          ),
+                                        : cardTextColor.withValues(alpha: 0.45),
                                   ),
                                 ),
                               ),
@@ -524,8 +529,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: cardTextColor
-                                          .withValues(alpha: 0.85),
+                                      color: cardTextColor.withValues(
+                                        alpha: 0.85,
+                                      ),
                                       height: 1.35,
                                     ),
                                   ),
@@ -569,7 +575,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
               IconButton(
                 icon: Icon(
                   Icons.arrow_back_rounded,
-                  color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                  color: isDark
+                      ? const Color(0xFF86EFAC)
+                      : const Color(0xFF2A531D),
                 ),
                 onPressed: () {
                   setState(() {
@@ -590,7 +598,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: gradientPreset.getTextColor(isDark).withValues(alpha: 0.15),
+                  color: gradientPreset
+                      .getTextColor(isDark)
+                      .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -634,7 +644,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        color: isDark ? const Color(0xFF0f0f12) : const Color(0xFFF4FAF3),
+                        color: isDark
+                            ? const Color(0xFF0f0f12)
+                            : const Color(0xFFF4FAF3),
                         elevation: 0,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -651,7 +663,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                   style: AppTypography.arabicBody(
                                     fontSize: 22,
                                     height: 1.8,
-                                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF1B5E20),
+                                    color: isDark
+                                        ? const Color(0xFF86EFAC)
+                                        : const Color(0xFF1B5E20),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -662,7 +676,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontStyle: FontStyle.italic,
-                                      color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade800,
+                                      color: isDark
+                                          ? const Color(0xFF94A3B8)
+                                          : Colors.grey.shade800,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -674,7 +690,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                                     fontSize: 13,
                                     height: 1.4,
                                     fontWeight: FontWeight.w500,
-                                    color: isDark ? Colors.white : const Color(0xFF1B5E20),
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF1B5E20),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -722,8 +740,12 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                   height: 6,
                   decoration: BoxDecoration(
                     color: isCurrent
-                        ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
-                        : (isDark ? const Color(0xFF27272A) : Colors.grey.shade300),
+                        ? (isDark
+                              ? const Color(0xFF86EFAC)
+                              : const Color(0xFF2A531D))
+                        : (isDark
+                              ? const Color(0xFF27272A)
+                              : Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(3),
                   ),
                 );
@@ -755,7 +777,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: isSelected
                     ? Colors.red.shade700
-                    : (isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D)),
+                    : (isDark
+                          ? const Color(0xFF18A74C)
+                          : const Color(0xFF2A531D)),
                 foregroundColor: isSelected
                     ? Colors.white
                     : (isDark ? const Color(0xFF0F0F12) : Colors.white),
@@ -792,7 +816,9 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
               IconButton(
                 icon: Icon(
                   Icons.arrow_back_rounded,
-                  color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                  color: isDark
+                      ? const Color(0xFF86EFAC)
+                      : const Color(0xFF2A531D),
                 ),
                 onPressed: () {
                   setState(() {
@@ -824,277 +850,324 @@ class _AdhkarLibraryModalState extends State<AdhkarLibraryModal> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-
-            // Category Title Input
-            TextField(
-              controller: _formTitleController,
-              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-              cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-              decoration: _roundedInputDecoration(
-                labelText: 'Adhkar Title *',
-                hintText: 'e.g. Travel Duas',
-                prefixIcon: Icons.category_rounded,
-                isDark: isDark,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Subtitle / Description Input
-            TextField(
-              controller: _formSubtitleController,
-              maxLines: 2,
-              maxLength: 100,
-              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-              cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-              decoration: _roundedInputDecoration(
-                labelText: 'Subtitle / Description (max 2 lines)',
-                hintText: 'e.g. Duas for protection during journeys',
-                prefixIcon: Icons.description_rounded,
-                isDark: isDark,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Arabic Title (optional)
-            TextField(
-              controller: _formTitleArController,
-              textAlign: TextAlign.right,
-              textDirection: TextDirection.rtl,
-              style: AppTypography.arabicBody(
-                fontSize: 18,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-              cursorColor: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-              decoration: _roundedInputDecoration(
-                labelText: 'Arabic Title (Optional)',
-                hintText: 'أدعية السفر',
-                prefixIcon: Icons.translate_rounded,
-                isDark: isDark,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Gradient Theme Picker
-            Text(
-              'Select Gradient Theme',
-              style: TextStyle(
-                fontSize: 13.5,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : const Color(0xFF2A531D),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 48,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                itemCount: AdhkarCategory.gradientPresets.length,
-                itemBuilder: (context, index) {
-                  final preset = AdhkarCategory.gradientPresets[index];
-                  final isSelected = _formSelectedGradientIndex == index;
-                  final colors = preset.getColors(isDark);
-                  final textColor = preset.getTextColor(isDark);
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _formSelectedGradientIndex = index;
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.only(right: 10),
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: colors,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        border: Border.all(
-                          color: isSelected
-                              ? (isDark ? const Color(0xFF86EFAC) : textColor)
-                              : (isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300),
-                          width: isSelected ? 3.0 : 1.5,
-                        ),
-                      ),
-                      child: isSelected
-                          ? Icon(
-                              Icons.check_rounded,
-                              color: textColor,
-                              size: 20,
-                            )
-                          : null,
+                  // Category Title Input
+                  TextField(
+                    controller: _formTitleController,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black87,
                     ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
+                    cursorColor: isDark
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFF2A531D),
+                    decoration: _roundedInputDecoration(
+                      labelText: 'Adhkar Title *',
+                      hintText: 'e.g. Travel Duas',
+                      prefixIcon: Icons.category_rounded,
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
 
-            // Image Selector
-            Text(
-              'Upload background-less image or select icon',
-              style: TextStyle(
-                fontSize: 13.5,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : const Color(0xFF2A531D),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 64,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                itemCount: selectableImages.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return GestureDetector(
-                      onTap: () async {
-                        final picker = ImagePicker();
-                        final XFile? image = await picker.pickImage(
-                          source: ImageSource.gallery,
-                        );
-                        if (image != null) {
-                          setState(() {
-                            _formSelectedImagePath = image.path;
-                          });
-                        }
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 10),
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF18181B) : const Color(0xFFE8F4E5),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isDark ? const Color(0xFF27272A) : const Color(0xFF2A531D),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_a_photo_rounded,
-                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                              size: 20,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Upload',
-                              style: TextStyle(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                  // Subtitle / Description Input
+                  TextField(
+                    controller: _formSubtitleController,
+                    maxLines: 2,
+                    maxLength: 100,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                    cursorColor: isDark
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFF2A531D),
+                    decoration: _roundedInputDecoration(
+                      labelText: 'Subtitle / Description (max 2 lines)',
+                      hintText: 'e.g. Duas for protection during journeys',
+                      prefixIcon: Icons.description_rounded,
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Arabic Title (optional)
+                  TextField(
+                    controller: _formTitleArController,
+                    textAlign: TextAlign.right,
+                    textDirection: TextDirection.rtl,
+                    style: AppTypography.arabicBody(
+                      fontSize: 18,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                    cursorColor: isDark
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFF2A531D),
+                    decoration: _roundedInputDecoration(
+                      labelText: 'Arabic Title (Optional)',
+                      hintText: 'أدعية السفر',
+                      prefixIcon: Icons.translate_rounded,
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Gradient Theme Picker
+                  Text(
+                    'Select Gradient Theme',
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : const Color(0xFF2A531D),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 48,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: AdhkarCategory.gradientPresets.length,
+                      itemBuilder: (context, index) {
+                        final preset = AdhkarCategory.gradientPresets[index];
+                        final isSelected = _formSelectedGradientIndex == index;
+                        final colors = preset.getColors(isDark);
+                        final textColor = preset.getTextColor(isDark);
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _formSelectedGradientIndex = index;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.only(right: 10),
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: colors,
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              border: Border.all(
+                                color: isSelected
+                                    ? (isDark
+                                          ? const Color(0xFF86EFAC)
+                                          : textColor)
+                                    : (isDark
+                                          ? const Color(0xFF3F3F46)
+                                          : Colors.grey.shade300),
+                                width: isSelected ? 3.0 : 1.5,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-
-                  final imgPath = selectableImages[index - 1];
-                  final isSelected = _formSelectedImagePath == imgPath;
-
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _formSelectedImagePath = imgPath;
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.only(right: 10),
-                      padding: const EdgeInsets.all(4),
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? (isDark ? const Color(0xFF27272A) : const Color(0xFFE8F4E5))
-                            : (isDark ? const Color(0xFF18181B) : Colors.grey.shade100),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isSelected
-                              ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D))
-                              : (isDark ? const Color(0xFF27272A) : Colors.transparent),
-                          width: 2.0,
-                        ),
-                      ),
-                      child: _buildCategoryImageWidget(imgPath, isDark),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Folder info notice
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF0FDF4),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isDark ? const Color(0xFF27272A) : const Color(0xFFBBF7D0),
-                ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'This is only to create an Adhkar folder for you. Once it is created, you can add Dhikrs, Duas, Quran Surahs, or Tasbeeh inside it.',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: isDark ? Colors.white70 : const Color(0xFF166534),
-                        height: 1.4,
-                        fontWeight: FontWeight.w500,
-                      ),
+                            child: isSelected
+                                ? Icon(
+                                    Icons.check_rounded,
+                                    color: textColor,
+                                    size: 20,
+                                  )
+                                : null,
+                          ),
+                        );
+                      },
                     ),
                   ),
+                  const SizedBox(height: 16),
+
+                  // Image Selector
+                  Text(
+                    'Upload background-less image or select icon',
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : const Color(0xFF2A531D),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 64,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: selectableImages.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return GestureDetector(
+                            onTap: () async {
+                              final picker = ImagePicker();
+                              final XFile? image = await picker.pickImage(
+                                source: ImageSource.gallery,
+                              );
+                              if (image != null) {
+                                setState(() {
+                                  _formSelectedImagePath = image.path;
+                                });
+                              }
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF18181B)
+                                    : const Color(0xFFE8F4E5),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: isDark
+                                      ? const Color(0xFF27272A)
+                                      : const Color(0xFF2A531D),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_a_photo_rounded,
+                                    color: isDark
+                                        ? const Color(0xFF86EFAC)
+                                        : const Color(0xFF2A531D),
+                                    size: 20,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Upload',
+                                    style: TextStyle(
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark
+                                          ? const Color(0xFF86EFAC)
+                                          : const Color(0xFF2A531D),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        final imgPath = selectableImages[index - 1];
+                        final isSelected = _formSelectedImagePath == imgPath;
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _formSelectedImagePath = imgPath;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.only(right: 10),
+                            padding: const EdgeInsets.all(4),
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? (isDark
+                                        ? const Color(0xFF27272A)
+                                        : const Color(0xFFE8F4E5))
+                                  : (isDark
+                                        ? const Color(0xFF18181B)
+                                        : Colors.grey.shade100),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSelected
+                                    ? (isDark
+                                          ? const Color(0xFF86EFAC)
+                                          : const Color(0xFF2A531D))
+                                    : (isDark
+                                          ? const Color(0xFF27272A)
+                                          : Colors.transparent),
+                                width: 2.0,
+                              ),
+                            ),
+                            child: _buildCategoryImageWidget(imgPath, isDark),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Folder info notice
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF0F0F12)
+                          : const Color(0xFFF0FDF4),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF27272A)
+                            : const Color(0xFFBBF7D0),
+                      ),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info_outline_rounded,
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : const Color(0xFF16A34A),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'This is only to create an Adhkar folder for you. Once it is created, you can add Dhikrs, Duas, Quran Surahs, or Tasbeeh inside it.',
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              color: isDark
+                                  ? Colors.white70
+                                  : const Color(0xFF166534),
+                              height: 1.4,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Submit Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF2A531D),
+                        foregroundColor: isDark
+                            ? const Color(0xFF0F0F12)
+                            : Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Create Adhkar Section',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
-            const SizedBox(height: 18),
-
-            // Submit Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
-                  foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: const Text(
-                  'Create Adhkar Section',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ),
+        ],
       ),
-    ),
-  ],
-),
-);
+    );
   }
 }

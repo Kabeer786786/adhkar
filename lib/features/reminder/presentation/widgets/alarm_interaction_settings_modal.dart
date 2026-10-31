@@ -41,9 +41,10 @@ class _AlarmInteractionSettingsModalState
     final storedScreenOff = storage.getScreenOffAction();
 
     // Check native sync
-    final nativeSettings =
-        await NativeAlarmService.instance.getAlarmInteractionSettings();
-    final effectiveVolume = nativeSettings['volumeButtonAction'] ?? storedVolume;
+    final nativeSettings = await NativeAlarmService.instance
+        .getAlarmInteractionSettings();
+    final effectiveVolume =
+        nativeSettings['volumeButtonAction'] ?? storedVolume;
     final effectiveScreenOff =
         nativeSettings['screenOffAction'] ?? storedScreenOff;
 
@@ -78,12 +79,15 @@ class _AlarmInteractionSettingsModalState
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
-    final cardBorder =
-        isDark ? const Color(0xFF2B3F33) : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
-    const primaryGreen = Color(0xFF2A531D);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
 
     return Container(
       constraints: BoxConstraints(
@@ -95,6 +99,7 @@ class _AlarmInteractionSettingsModalState
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
+        border: Border.all(color: cardBorder),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -106,7 +111,7 @@ class _AlarmInteractionSettingsModalState
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : Colors.black12,
+                color: isDark ? const Color(0xFF3F3F46) : Colors.black12,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -124,12 +129,14 @@ class _AlarmInteractionSettingsModalState
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: primaryGreen.withValues(alpha: 0.15),
+                        color: isDark
+                            ? const Color(0xFF27272A)
+                            : primaryGreen.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.touch_app_outlined,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                         size: 20,
                       ),
                     ),
@@ -166,13 +173,13 @@ class _AlarmInteractionSettingsModalState
 
           Divider(
             height: 1,
-            color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+            color: isDark ? const Color(0xFF27272A) : Colors.grey.shade200,
           ),
 
           // Scrollable Settings Content
           Flexible(
             child: _isLoading
-                ? const Center(
+                ? Center(
                     child: Padding(
                       padding: EdgeInsets.all(32),
                       child: CircularProgressIndicator(color: primaryGreen),
@@ -189,7 +196,9 @@ class _AlarmInteractionSettingsModalState
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.6,
-                          color: primaryGreen,
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : primaryGreen,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -226,7 +235,9 @@ class _AlarmInteractionSettingsModalState
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.6,
-                          color: primaryGreen,
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : primaryGreen,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -245,7 +256,8 @@ class _AlarmInteractionSettingsModalState
                           title: action.title,
                           description: action.description,
                           isSelected: isSelected,
-                          onTap: () => setState(() => _screenOffAction = action),
+                          onTap: () =>
+                              setState(() => _screenOffAction = action),
                           isDark: isDark,
                           textColor: textColor,
                           subTextColor: subTextColor,
@@ -253,7 +265,6 @@ class _AlarmInteractionSettingsModalState
                           cardBorder: cardBorder,
                         );
                       }),
-
                     ],
                   ),
           ),
@@ -263,11 +274,7 @@ class _AlarmInteractionSettingsModalState
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
             decoration: BoxDecoration(
               color: cardBg,
-              border: Border(
-                top: BorderSide(
-                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
-                ),
-              ),
+              border: Border(top: BorderSide(color: cardBorder)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -284,7 +291,9 @@ class _AlarmInteractionSettingsModalState
                   onPressed: _saveSettings,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryGreen,
-                    foregroundColor: Colors.white,
+                    foregroundColor: isDark
+                        ? const Color(0xFF0F0F12)
+                        : Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -328,12 +337,14 @@ class _AlarmInteractionSettingsModalState
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: isSelected
-                ? primaryGreen.withValues(alpha: isDark ? 0.22 : 0.08)
-                : (isDark ? const Color(0xFF23352B) : const Color(0xFFF8FAFC)),
+                ? (isDark
+                      ? const Color(0xFF18A74C).withValues(alpha: 0.2)
+                      : primaryGreen.withValues(alpha: 0.08))
+                : (isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC)),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isSelected
-                  ? primaryGreen
+                  ? (isDark ? const Color(0xFF86EFAC) : primaryGreen)
                   : cardBorder,
               width: isSelected ? 1.6 : 1.0,
             ),
@@ -347,7 +358,9 @@ class _AlarmInteractionSettingsModalState
                   isSelected
                       ? Icons.radio_button_checked_rounded
                       : Icons.radio_button_off_rounded,
-                  color: isSelected ? primaryGreen : (isDark ? Colors.white38 : const Color(0xFF94A3B8)),
+                  color: isSelected
+                      ? (isDark ? const Color(0xFF86EFAC) : primaryGreen)
+                      : (isDark ? Colors.white38 : const Color(0xFF94A3B8)),
                   size: 20,
                 ),
               ),

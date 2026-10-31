@@ -221,45 +221,92 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
     );
   }
 
-  Color _getEventColor(String type) {
+  Color _getEventColor(String type, bool isDark) {
+    if (isDark) {
+      switch (type) {
+        case 'fasting':
+          return const Color(0xFF4ADE80);
+        case 'holy':
+          return const Color(0xFFC084FC);
+        case 'eid':
+          return const Color(0xFFFBBF24);
+        case 'hajj':
+          return const Color(0xFFF59E0B);
+        case 'newyear':
+          return const Color(0xFF60A5FA);
+        case 'prophet':
+          return const Color(0xFF2DD4BF);
+        case 'miracle':
+          return const Color(0xFF818CF8);
+        default:
+          return const Color(0xFF22C55E);
+      }
+    } else {
+      switch (type) {
+        case 'fasting':
+          return const Color(0xFF16A34A);
+        case 'holy':
+          return const Color(0xFF9333EA);
+        case 'eid':
+          return const Color(0xFFD97724);
+        case 'hajj':
+          return const Color(0xFFB45309);
+        case 'newyear':
+          return const Color(0xFF2563EB);
+        case 'prophet':
+          return const Color(0xFF0D9488);
+        case 'miracle':
+          return const Color(0xFF6366F1);
+        default:
+          return const Color(0xFF2A531D);
+      }
+    }
+  }
+
+  IconData _getEventIcon(String type) {
     switch (type) {
       case 'fasting':
-        return const Color(0xFF16A34A);
+        return Icons.nights_stay_rounded;
       case 'holy':
-        return const Color(0xFF9333EA);
+        return Icons.auto_awesome_rounded;
       case 'eid':
-        return const Color(0xFFD97724);
+        return Icons.celebration_rounded;
       case 'hajj':
-        return const Color(0xFFB45309);
+        return Icons.mosque_rounded;
       case 'newyear':
-        return const Color(0xFF2563EB);
+        return Icons.calendar_today_rounded;
       case 'prophet':
-        return const Color(0xFF0D9488);
+        return Icons.favorite_rounded;
       case 'miracle':
-        return const Color(0xFF6366F1);
+        return Icons.star_rounded;
       default:
-        return const Color(0xFF2A531D);
+        return Icons.event_available_rounded;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+    final primaryColor =
+        isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder =
+        isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
+
     final todayAsync = ref.watch(todayHijriProvider);
     final todayData = todayAsync.value;
     final currentHijriMonthMeta = _hijriMonths[_currentMonthIndex];
     final isAladhan = todayData?.isAladhan ?? false;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF17241E)
-          : const Color(0xFFF9F9F9),
+      backgroundColor:
+          isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppHeaderBar(
           title: 'ISLAMIC CALENDAR',
           showBackButton: true,
-          backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+          backgroundColor: cardBg,
           iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
           titleWidget: Text(
             'ISLAMIC CALENDAR',
@@ -283,15 +330,24 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
           Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF2A531D), Color(0xFF15803D)],
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [const Color(0xFF143820), const Color(0xFF18181B)]
+                    : [const Color(0xFF2A531D), const Color(0xFF15803D)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF22C55E).withValues(alpha: 0.3)
+                    : Colors.transparent,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.25),
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.4)
+                      : const Color(0xFF2A531D).withValues(alpha: 0.25),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
@@ -303,19 +359,21 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
-                    vertical: 4,
+                    vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: isDark
+                        ? const Color(0xFF22C55E).withValues(alpha: 0.2)
+                        : Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
+                  child: Text(
                     'TODAY\'S HIJRI DATE',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 0.8, 
+                      color: isDark ? const Color(0xFF86EFAC) : Colors.white,
+                      letterSpacing: 0.8,
                     ),
                   ),
                 ),
@@ -357,12 +415,12 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: isDark
-                  ? const Color(0xFF1E2E25)
+                  ? const Color(0xFF143820).withValues(alpha: 0.3)
                   : const Color(0xFFF0FDF4),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: isDark
-                    ? const Color(0xFF2A531D).withValues(alpha: 0.5)
+                    ? const Color(0xFF22C55E).withValues(alpha: 0.4)
                     : const Color(0xFF86EFAC).withValues(alpha: 0.6),
               ),
             ),
@@ -373,13 +431,13 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                   Icons.info_outline_rounded,
                   size: 18,
                   color: isDark
-                      ? const Color(0xFF86EFAC)
+                      ? const Color(0xFF4ADE80)
                       : const Color(0xFF16A34A),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Note: For consistency across prayers and logs, the Hijri date changes at midnight (12:00 AM) instead of after Maghrib.',
+                    'Note: For consistency across prayers and logs, the Hijri date advances at midnight (12:00 AM) instead of after Maghrib.',
                     style: TextStyle(
                       fontSize: 12,
                       height: 1.4,
@@ -408,8 +466,12 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2A531D),
-                    foregroundColor: Colors.white,
+                    backgroundColor: isDark
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xFF2A531D),
+                    foregroundColor: isDark
+                        ? const Color(0xFF0F0F12)
+                        : Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -432,9 +494,9 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF2A531D),
-                    side: const BorderSide(
-                      color: Color(0xFF2A531D),
+                    foregroundColor: primaryColor,
+                    side: BorderSide(
+                      color: primaryColor,
                       width: 1.5,
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 13),
@@ -453,23 +515,48 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'ISLAMIC MONTHS DIRECTORY',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.6,
-                  color: isDark ? Colors.white70 : const Color(0xFF2A531D),
-                  decoration: TextDecoration.underline,
-                  decorationColor: const Color(0xFF2A531D),
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.view_agenda_rounded,
+                    size: 18,
+                    color: primaryColor,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'ISLAMIC MONTHS DIRECTORY',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.6,
+                      color: primaryColor,
+                      decoration: TextDecoration.underline,
+                      decorationColor: primaryColor,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                'Year $_activeHijriYear AH',
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFD97724),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: (isDark
+                          ? const Color(0xFFFBBF24)
+                          : const Color(0xFFD97724))
+                      .withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Year $_activeHijriYear AH',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: isDark
+                        ? const Color(0xFFFBBF24)
+                        : const Color(0xFFD97724),
+                  ),
                 ),
               ),
             ],
@@ -498,23 +585,25 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF192520) : Colors.white,
+                    color: cardBg,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isCurrent
-                          ? const Color(0xFF2A531D)
-                          : (isDark ? Colors.white10 : const Color(0xFFE2E8F0)),
+                      color: isCurrent ? primaryColor : cardBorder,
                       width: isCurrent ? 2 : 1,
                     ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 38,
-                        height: 38,
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.12),
+                          color: accentColor.withValues(alpha: 0.14),
                           shape: BoxShape.circle,
+                          border: Border.all(
+                            color: accentColor.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
                         ),
                         child: Center(
                           child: Text(
@@ -567,10 +656,10 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.calendar_month_rounded,
                         size: 20,
-                        color: Color(0xFF2A531D),
+                        color: primaryColor,
                       ),
                     ],
                   ),
@@ -582,16 +671,32 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
           const SizedBox(height: 24),
 
           // Significant Islamic Events List
-          Text(
-            'KEY ISLAMIC EVENTS & HOLIDAYS',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.6,
-              color: isDark ? Colors.white70 : const Color(0xFF2A531D),
-              decoration: TextDecoration.underline,
-              decorationColor: const Color(0xFF2A531D),
-            ),
+          Row(
+            children: [
+              Icon(
+                Icons.event_note_rounded,
+                size: 18,
+                color: isDark
+                    ? const Color(0xFFFBBF24)
+                    : const Color(0xFFD97724),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'KEY ISLAMIC EVENTS & HOLIDAYS',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                  color: isDark
+                      ? const Color(0xFFFBBF24)
+                      : const Color(0xFFD97724),
+                  decoration: TextDecoration.underline,
+                  decorationColor: isDark
+                      ? const Color(0xFFFBBF24)
+                      : const Color(0xFFD97724),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
 
@@ -602,36 +707,33 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
             separatorBuilder: (context, index) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final event = _islamicEvents[index];
-              final eventColor = _getEventColor(event['type']!);
+              final eventColor = _getEventColor(event['type']!, isDark);
+              final eventIcon = _getEventIcon(event['type']!);
 
               return Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF192520) : Colors.white,
+                  color: cardBg,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
-                  ),
+                  border: Border.all(color: cardBorder),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: eventColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        event['hijri']!,
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                          color: eventColor,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: eventColor.withValues(alpha: 0.3),
+                          width: 1,
                         ),
+                      ),
+                      child: Icon(
+                        eventIcon,
+                        size: 20,
+                        color: eventColor,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -639,23 +741,48 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            event['title']!,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF1F2937),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  event['title']!,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF1F2937),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: eventColor.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  event['hijri']!,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: eventColor,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
                           Text(
                             event['description']!,
                             style: GoogleFonts.lexend(
                               fontSize: 12,
                               color: isDark
-                                  ? Colors.white60
+                                  ? Colors.white70
                                   : const Color(0xFF4B5563),
                               height: 1.35,
                             ),
@@ -719,6 +846,7 @@ class _GregorianToHijriModalState
   }
 
   Future<void> _pickDate() async {
+    final isDark = context.isDarkMode;
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
@@ -726,13 +854,25 @@ class _GregorianToHijriModalState
       lastDate: DateTime(2100),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF2A531D),
-              onPrimary: Colors.white,
-              onSurface: Color(0xFF1F2937),
-            ),
-          ),
+          data: isDark
+              ? ThemeData.dark().copyWith(
+                  colorScheme: const ColorScheme.dark(
+                    primary: Color(0xFF22C55E),
+                    onPrimary: Color(0xFF0F0F12),
+                    surface: Color(0xFF18181B),
+                    onSurface: Colors.white,
+                  ),
+                  dialogTheme: const DialogThemeData(
+                    backgroundColor: Color(0xFF18181B),
+                  ),
+                )
+              : ThemeData.light().copyWith(
+                  colorScheme: const ColorScheme.light(
+                    primary: Color(0xFF2A531D),
+                    onPrimary: Colors.white,
+                    onSurface: Color(0xFF1F2937),
+                  ),
+                ),
           child: child!,
         );
       },
@@ -749,6 +889,12 @@ class _GregorianToHijriModalState
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+    final primaryColor =
+        isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder =
+        isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
+
     final location = ref.watch(currentLocationProvider).value;
     final isSubcontinent = HijriService.isChandKiTarikhRegion(
       location?.country,
@@ -762,7 +908,7 @@ class _GregorianToHijriModalState
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF192520) : Colors.white,
+        color: cardBg,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
@@ -774,7 +920,7 @@ class _GregorianToHijriModalState
             width: 42,
             height: 4,
             decoration: BoxDecoration(
-              color: isDark ? Colors.white24 : Colors.grey.shade300,
+              color: isDark ? const Color(0xFF27272A) : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -809,19 +955,19 @@ class _GregorianToHijriModalState
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF23322B)
+                    ? const Color(0xFF0F0F12)
                     : const Color(0xFFF4FAF3),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.3),
+                  color: isDark ? cardBorder : primaryColor.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_today_rounded,
-                    color: Color(0xFF2A531D),
+                    color: primaryColor,
                     size: 22,
                   ),
                   const SizedBox(width: 14),
@@ -829,13 +975,15 @@ class _GregorianToHijriModalState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'SELECTED GREGORIAN DATE',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 0.5,
-                            color: Color(0xFF8C6D53),
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFF2A531D),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -855,12 +1003,12 @@ class _GregorianToHijriModalState
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2A531D),
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit_calendar_rounded,
-                      color: Colors.white,
+                      color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                       size: 18,
                     ),
                   ),
@@ -873,24 +1021,33 @@ class _GregorianToHijriModalState
 
           // Conversion Output Result Box
           if (_isConverting)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: CircularProgressIndicator(color: Color(0xFF2A531D)),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: CircularProgressIndicator(color: primaryColor),
             )
           else if (_convertedResult != null)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF2A531D), Color(0xFF15803D)],
+                gradient: LinearGradient(
+                  colors: isDark
+                      ? [const Color(0xFF143820), const Color(0xFF18181B)]
+                      : [const Color(0xFF2A531D), const Color(0xFF15803D)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF22C55E).withValues(alpha: 0.3)
+                      : Colors.transparent,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.3),
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.4)
+                        : const Color(0xFF2A531D).withValues(alpha: 0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
@@ -907,15 +1064,19 @@ class _GregorianToHijriModalState
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: isDark
+                              ? const Color(0xFF22C55E).withValues(alpha: 0.2)
+                              : Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
+                        child: Text(
                           'HIJRI CONVERSION',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : Colors.white,
                             letterSpacing: 0.8,
                           ),
                         ),
@@ -965,13 +1126,19 @@ class _GregorianToHijriModalState
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isSubcontinent
-                    ? const Color(0xFFD97724).withValues(alpha: 0.1)
-                    : const Color(0xFF2563EB).withValues(alpha: 0.1),
+                    ? (isDark
+                        ? const Color(0xFFFBBF24).withValues(alpha: 0.1)
+                        : const Color(0xFFD97724).withValues(alpha: 0.1))
+                    : (isDark
+                        ? const Color(0xFF60A5FA).withValues(alpha: 0.1)
+                        : const Color(0xFF2563EB).withValues(alpha: 0.1)),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: isSubcontinent
-                      ? const Color(0xFFD97724).withValues(alpha: 0.3)
-                      : const Color(0xFF2563EB).withValues(alpha: 0.3),
+                  color: isDark
+                      ? cardBorder
+                      : (isSubcontinent
+                          ? const Color(0xFFD97724).withValues(alpha: 0.3)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.3)),
                 ),
               ),
               child: Row(
@@ -981,8 +1148,12 @@ class _GregorianToHijriModalState
                     Icons.info_outline_rounded,
                     size: 16,
                     color: isSubcontinent
-                        ? const Color(0xFFD97724)
-                        : const Color(0xFF2563EB),
+                        ? (isDark
+                            ? const Color(0xFFFBBF24)
+                            : const Color(0xFFD97724))
+                        : (isDark
+                            ? const Color(0xFF60A5FA)
+                            : const Color(0xFF2563EB)),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -1013,9 +1184,11 @@ class _GregorianToHijriModalState
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark
-                    ? const Color(0xFF23322B)
+                    ? const Color(0xFF22C55E)
                     : const Color(0xFFE8F4E5),
-                foregroundColor: const Color(0xFF2A531D),
+                foregroundColor: isDark
+                    ? const Color(0xFF0F0F12)
+                    : const Color(0xFF2A531D),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),

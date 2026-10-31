@@ -34,7 +34,9 @@ class QuranReadingSettingsModal {
             return Container(
               decoration: BoxDecoration(
                 color: isDark ? const Color(0xFF212121) : Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
               ),
               child: DraggableScrollableSheet(
                 initialChildSize: 0.85,
@@ -52,7 +54,9 @@ class QuranReadingSettingsModal {
                           width: 38,
                           height: 4,
                           decoration: BoxDecoration(
-                            color: isDark ? Colors.white24 : Colors.grey.shade300,
+                            color: isDark
+                                ? Colors.white24
+                                : Colors.grey.shade300,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -87,7 +91,9 @@ class QuranReadingSettingsModal {
                             onPressed: () => Navigator.pop(context),
                             icon: Icon(
                               Icons.close_rounded,
-                              color: isDark ? Colors.white70 : Colors.grey.shade700,
+                              color: isDark
+                                  ? Colors.white70
+                                  : Colors.grey.shade700,
                             ),
                           ),
                         ],
@@ -167,11 +173,14 @@ class QuranReadingSettingsModal {
                               loadingMode = 2;
                             });
                             onModeChanged(2);
-                            Future.delayed(const Duration(milliseconds: 300), () {
-                              if (context.mounted) {
-                                Navigator.of(context).pop();
-                              }
-                            });
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () {
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            );
                           },
                         ),
                       ],
@@ -190,133 +199,65 @@ class QuranReadingSettingsModal {
                       ),
                       const SizedBox(height: 10),
 
-                    _buildLangTile(
-                      keyName: 'both',
-                      title: 'Both English & Urdu',
-                      subtitle: 'Side-by-side bilingual translation',
-                      badge: 'EN + UR',
-                      selectedLang: currentLang,
-                      isDark: isDark,
-                      onTap: () {
-                        setModalState(() => currentLang = 'both');
-                        onTranslationLanguageChanged('both');
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    _buildLangTile(
-                      keyName: 'en',
-                      title: 'English Translation Only',
-                      subtitle: 'Sahih International',
-                      badge: 'EN',
-                      selectedLang: currentLang,
-                      isDark: isDark, 
-                      onTap: () {
-                        setModalState(() => currentLang = 'en');
-                        onTranslationLanguageChanged('en');
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    _buildLangTile(
-                      keyName: 'ur',
-                      title: 'Urdu Translation Only',
-                      subtitle: 'Fateh Muhammad Jalandhry',
-                      badge: 'UR',
-                      selectedLang: currentLang,
-                      isDark: isDark,
-                      onTap: () {
-                        setModalState(() => currentLang = 'ur');
-                        onTranslationLanguageChanged('ur');
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    _buildLangTile(
-                      keyName: 'none',
-                      title: 'Arabic Only (Hide Translation)',
-                      subtitle: 'Pure Arabic recitation mode',
-                      badge: 'AR',
-                      selectedLang: currentLang,
-                      isDark: isDark,
-                      onTap: () {
-                        setModalState(() => currentLang = 'none');
-                        onTranslationLanguageChanged('none');
-                      },
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // Transliteration Toggle Switch
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
+                      _buildLangTile(
+                        keyName: 'both',
+                        title: 'Both English & Urdu',
+                        subtitle: 'Side-by-side bilingual translation',
+                        badge: 'EN + UR',
+                        selectedLang: currentLang,
+                        isDark: isDark,
+                        onTap: () {
+                          setModalState(() => currentLang = 'both');
+                          onTranslationLanguageChanged('both');
+                        },
                       ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF23322B)
-                            : const Color(0xFFF4FAF3),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDark
-                              ? Colors.white10
-                              : const Color(0xFF2A531D).withValues(alpha: 0.12),
-                        ),
+                      const SizedBox(height: 8),
+                      _buildLangTile(
+                        keyName: 'en',
+                        title: 'English Translation Only',
+                        subtitle: 'Sahih International',
+                        badge: 'EN',
+                        selectedLang: currentLang,
+                        isDark: isDark,
+                        onTap: () {
+                          setModalState(() => currentLang = 'en');
+                          onTranslationLanguageChanged('en');
+                        },
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.spellcheck_rounded,
-                            size: 20,
-                            color: Color(0xFF2A531D),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'English Transliteration',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14.5,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF1F2937),
-                              ),
-                            ),
-                          ),
-                          Switch(
-                            value: currentTransliteration,
-                            activeThumbColor: const Color(0xFF2A531D),
-                            onChanged: (val) {
-                              setModalState(() => currentTransliteration = val);
-                              onTransliterationChanged(val);
-                            },
-                          ),
-                        ],
+                      const SizedBox(height: 8),
+                      _buildLangTile(
+                        keyName: 'ur',
+                        title: 'Urdu Translation Only',
+                        subtitle: 'Fateh Muhammad Jalandhry',
+                        badge: 'UR',
+                        selectedLang: currentLang,
+                        isDark: isDark,
+                        onTap: () {
+                          setModalState(() => currentLang = 'ur');
+                          onTranslationLanguageChanged('ur');
+                        },
                       ),
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    // SECTION 3: Offline Audio Download
-                    Text(
-                      'OFFLINE AUDIO MEDIA',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
-                        color: isDark ? Colors.white60 : Colors.grey.shade600,
+                      const SizedBox(height: 8),
+                      _buildLangTile(
+                        keyName: 'none',
+                        title: 'Arabic Only (Hide Translation)',
+                        subtitle: 'Pure Arabic recitation mode',
+                        badge: 'AR',
+                        selectedLang: currentLang,
+                        isDark: isDark,
+                        onTap: () {
+                          setModalState(() => currentLang = 'none');
+                          onTranslationLanguageChanged('none');
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 10),
 
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        onTriggerDownload();
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
+                      const SizedBox(height: 14),
+
+                      // Transliteration Toggle Switch
+                      Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 14,
+                          vertical: 10,
                         ),
                         decoration: BoxDecoration(
                           color: isDark
@@ -333,88 +274,180 @@ class QuranReadingSettingsModal {
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              isDownloaded
-                                  ? Icons.cloud_done_rounded
-                                  : Icons.download_for_offline_rounded,
-                              size: 22,
-                              color: isDownloaded
-                                  ? const Color(0xFF22C55E)
-                                  : const Color(0xFF2A531D),
+                            const Icon(
+                              Icons.spellcheck_rounded,
+                              size: 20,
+                              color: Color(0xFF2A531D),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 10),
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    isDownloaded
-                                        ? 'Audio Downloaded'
-                                        : 'Download Surah Audio',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.5,
-                                      color: isDark
-                                          ? Colors.white
-                                          : const Color(0xFF1F2937),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    isDownloaded
-                                        ? 'Available for offline listening'
-                                        : 'Listen without internet connection',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: isDark
-                                          ? Colors.white60
-                                          : Colors.grey.shade600,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isDownloaded
-                                    ? const Color(0xFF166534)
-                                    : const Color(0xFF2A531D),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
                               child: Text(
-                                isDownloaded ? 'Downloaded' : 'Download',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                'English Transliteration',
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                  fontSize: 14.5,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF1F2937),
                                 ),
                               ),
+                            ),
+                            Switch(
+                              value: currentTransliteration,
+                              activeTrackColor: isDark
+                                  ? const Color(0xFF166534)
+                                  : const Color(0xFF2A531D),
+                              activeThumbColor: isDark
+                                  ? const Color(0xFF18A74C)
+                                  : Colors.white,
+                              inactiveThumbColor: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : Colors.grey.shade400,
+                              inactiveTrackColor: isDark
+                                  ? const Color(0xFF27272A)
+                                  : const Color(0xFFE2E8F0),
+                              trackOutlineColor:
+                                  WidgetStateProperty.resolveWith(
+                                    (states) =>
+                                        states.contains(WidgetState.selected)
+                                        ? Colors.transparent
+                                        : (isDark
+                                              ? const Color(0xFF3F3F46)
+                                              : const Color(0xFFCBD5E1)),
+                                  ),
+                              onChanged: (val) {
+                                setModalState(
+                                  () => currentTransliteration = val,
+                                );
+                                onTransliterationChanged(val);
+                              },
                             ),
                           ],
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 20),
-                  ],
-                );
-              },
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+                      const SizedBox(height: 22),
+
+                      // SECTION 3: Offline Audio Download
+                      Text(
+                        'OFFLINE AUDIO MEDIA',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.8,
+                          color: isDark ? Colors.white60 : Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          onTriggerDownload();
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF23322B)
+                                : const Color(0xFFF4FAF3),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.white10
+                                  : const Color(
+                                      0xFF2A531D,
+                                    ).withValues(alpha: 0.12),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isDownloaded
+                                    ? Icons.cloud_done_rounded
+                                    : Icons.download_for_offline_rounded,
+                                size: 22,
+                                color: isDownloaded
+                                    ? const Color(0xFF18A74C)
+                                    : const Color(0xFF2A531D),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isDownloaded
+                                          ? 'Audio Downloaded'
+                                          : 'Download Surah Audio',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.5,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF1F2937),
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      isDownloaded
+                                          ? 'Available for offline listening'
+                                          : 'Listen without internet connection',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: isDark
+                                            ? Colors.white60
+                                            : Colors.grey.shade600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isDownloaded
+                                      ? const Color(0xFF166534)
+                                      : const Color(0xFF2A531D),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  isDownloaded ? 'Downloaded' : 'Download',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+                    ],
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   static Widget _buildModeTile({
     required String title,

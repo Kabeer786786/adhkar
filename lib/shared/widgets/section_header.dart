@@ -19,6 +19,11 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : const Color(0xFF1E293B);
+    final subtitleColor =
+        isDark ? Colors.white70 : context.colorScheme.onSurfaceVariant;
+
     return Padding(
       padding: padding,
       child: Row(
@@ -33,7 +38,8 @@ class SectionHeader extends StatelessWidget {
                 Text(
                   title,
                   style: context.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    color: titleColor,
                   ),
                 ),
                 if (subtitle != null) ...[
@@ -41,7 +47,7 @@ class SectionHeader extends StatelessWidget {
                   Text(
                     subtitle!,
                     style: context.textTheme.bodyMedium?.copyWith(
-                      color: context.colorScheme.onSurfaceVariant,
+                      color: subtitleColor,
                     ),
                   ),
                 ],
@@ -61,7 +67,9 @@ class SectionHeader extends StatelessWidget {
                       Text(
                         actionText!,
                         style: context.textTheme.labelLarge?.copyWith(
-                          color: context.colorScheme.primary,
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : context.colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -69,14 +77,18 @@ class SectionHeader extends StatelessWidget {
                     ],
                     Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE7F6E3),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF27272A)
+                            : const Color(0xFFE7F6E3),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_forward_rounded,
                         size: 20,
-                        color: Color(0xFF2A531D),
+                        color: isDark
+                            ? const Color(0xFF86EFAC)
+                            : const Color(0xFF2A531D),
                       ),
                     ),
                   ],
@@ -86,6 +98,5 @@ class SectionHeader extends StatelessWidget {
         ],
       ),
     );
-
   }
 }

@@ -60,10 +60,10 @@ class StartupPermissionsModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
-    final cardBorder = isDark ? const Color(0xFF2B3F33) : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
     const primaryGreen = Color(0xFF2A531D);
 
     return Container(
@@ -91,7 +91,7 @@ class StartupPermissionsModal extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: 18),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : Colors.grey.shade300,
+                color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -195,7 +195,7 @@ class StartupPermissionsModal extends StatelessWidget {
                 onPressed: () => _handleEnableAll(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryGreen,
-                  foregroundColor: Colors.white,
+                  foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -253,10 +253,10 @@ class StartupPermissionsModal extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF141F19) : const Color(0xFFF8FAFC),
+        color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isDark ? const Color(0xFF26382E) : const Color(0xFFE2E8F0),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
           width: 1,
         ),
       ),

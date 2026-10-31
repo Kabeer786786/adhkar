@@ -114,8 +114,20 @@ class _MainShellState extends ConsumerState<MainShell> {
               labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                   destinations: [
                     const NavigationDestination(
-                      icon: Icon(FlutterIslamicIcons.mosque, size: 22),
-                      selectedIcon: Icon(FlutterIslamicIcons.solidMosque, size: 22),
+                      icon: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(
+                          child: Icon(FlutterIslamicIcons.mosque, size: 22),
+                        ),
+                      ),
+                      selectedIcon: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(
+                          child: Icon(FlutterIslamicIcons.solidMosque, size: 22),
+                        ),
+                      ),
                       label: 'Home',
                     ),
                     NavigationDestination(
@@ -127,10 +139,22 @@ class _MainShellState extends ConsumerState<MainShell> {
                         stepIndex: 13,
                         totalSteps: 15,
                         targetShapeBorder: const CircleBorder(),
-                        child: const Icon(FlutterIslamicIcons.solidQuran2, size: 22),
+                        targetPadding: EdgeInsets.zero,
+                        child: const SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: Center(
+                            child: Icon(FlutterIslamicIcons.solidQuran2, size: 22),
+                          ),
+                        ),
                       ),
-                      selectedIcon:
-                          const Icon(FlutterIslamicIcons.solidQuran2, size: 22),
+                      selectedIcon: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(
+                          child: Icon(FlutterIslamicIcons.solidQuran2, size: 22),
+                        ),
+                      ),
                       label: 'Quran',
                     ),
                     NavigationDestination(
@@ -142,10 +166,22 @@ class _MainShellState extends ConsumerState<MainShell> {
                         stepIndex: 14,
                         totalSteps: 15,
                         targetShapeBorder: const CircleBorder(),
-                        child: const Icon(FlutterIslamicIcons.tasbih2, size: 22),
+                        targetPadding: EdgeInsets.zero,
+                        child: const SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: Center(
+                            child: Icon(FlutterIslamicIcons.tasbih2, size: 22),
+                          ),
+                        ),
                       ),
-                      selectedIcon:
-                          const Icon(FlutterIslamicIcons.solidTasbih2, size: 22),
+                      selectedIcon: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(
+                          child: Icon(FlutterIslamicIcons.solidTasbih2, size: 22),
+                        ),
+                      ),
                       label: 'Adhkar',
                     ),
                     NavigationDestination(
@@ -157,10 +193,22 @@ class _MainShellState extends ConsumerState<MainShell> {
                         stepIndex: 15,
                         totalSteps: 15,
                         targetShapeBorder: const CircleBorder(),
-                        child: const Icon(FlutterIslamicIcons.qibla, size: 22),
+                        targetPadding: EdgeInsets.zero,
+                        child: const SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: Center(
+                            child: Icon(FlutterIslamicIcons.qibla, size: 22),
+                          ),
+                        ),
                       ),
-                      selectedIcon:
-                          const Icon(FlutterIslamicIcons.solidQibla, size: 22),
+                      selectedIcon: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(
+                          child: Icon(FlutterIslamicIcons.solidQibla, size: 22),
+                        ),
+                      ),
                       label: 'Qibla',
                     ),
                   ],

@@ -83,14 +83,15 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF2A531D),
-                    onPrimary: Colors.white,
-                    surface: Color(0xFF1E2D24),
+                    primary: Color(0xFF18A74C),
+                    onPrimary: Color(0xFF0F0F12),
+                    surface: Color(0xFF18181B),
+                    onSurface: Colors.white,
                   )
                 : const ColorScheme.light(
-                    primary: Color(0xFF2A531D),
+                    primary: Color(0xFF18A74C),
                     onPrimary: Colors.white,
-                    onSurface: Color(0xFF2A531D),
+                    onSurface: Color(0xFF1E293B),
                   ),
           ),
           child: child!,
@@ -112,14 +113,15 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF2A531D),
-                    onPrimary: Colors.white,
-                    surface: Color(0xFF1E2D24),
+                    primary: Color(0xFF18A74C),
+                    onPrimary: Color(0xFF0F0F12),
+                    surface: Color(0xFF18181B),
+                    onSurface: Colors.white,
                   )
                 : const ColorScheme.light(
-                    primary: Color(0xFF2A531D),
+                    primary: Color(0xFF18A74C),
                     onPrimary: Colors.white,
-                    onSurface: Color(0xFF2A531D),
+                    onSurface: Color(0xFF1E293B),
                   ),
           ),
           child: child!,
@@ -169,10 +171,16 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
+    final inputBg = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -188,6 +196,7 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
+          border: Border.all(color: cardBorder),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -198,7 +207,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
               width: 38,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : const Color(0xFFCBD5E1),
+                color: isDark
+                    ? const Color(0xFF3F3F46)
+                    : const Color(0xFFCBD5E1),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -229,7 +240,7 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
 
             Divider(
               height: 1,
-              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+              color: isDark ? const Color(0xFF27272A) : Colors.grey.shade300,
             ),
 
             Flexible(
@@ -246,7 +257,7 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
-                        color: primaryGreen,
+                        color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -267,25 +278,21 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                         ),
                         errorText: _titleError,
                         filled: true,
-                        fillColor: isDark
-                            ? const Color(0xFF16251C)
-                            : const Color(0xFFF8FAFC),
+                        fillColor: inputBg,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 12,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: isDark
-                                ? Colors.white12
-                                : const Color(0xFFE2E8F0),
-                          ),
+                          borderSide: BorderSide(color: cardBorder),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: primaryGreen,
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : primaryGreen,
                             width: 1.5,
                           ),
                         ),
@@ -317,25 +324,21 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                           color: subTextColor,
                         ),
                         filled: true,
-                        fillColor: isDark
-                            ? const Color(0xFF16251C)
-                            : const Color(0xFFF8FAFC),
+                        fillColor: inputBg,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 12,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: isDark
-                                ? Colors.white12
-                                : const Color(0xFFE2E8F0),
-                          ),
+                          borderSide: BorderSide(color: cardBorder),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: primaryGreen,
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : primaryGreen,
                             width: 1.5,
                           ),
                         ),
@@ -358,11 +361,13 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               ),
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? const Color(0xFF16251C)
+                                    ? const Color(0xFF0F0F12)
                                     : const Color(0xFFF8FAFC),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: primaryGreen.withValues(alpha: 0.3),
+                                  color: isDark
+                                      ? cardBorder
+                                      : primaryGreen.withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Column(
@@ -370,10 +375,12 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.play_circle_outline_rounded,
                                         size: 15,
-                                        color: Color(0xFF16A34A),
+                                        color: isDark
+                                            ? const Color(0xFF86EFAC)
+                                            : const Color(0xFF16A34A),
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
@@ -381,7 +388,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                                         style: GoogleFonts.lexend(
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF16A34A),
+                                          color: isDark
+                                              ? const Color(0xFF86EFAC)
+                                              : const Color(0xFF16A34A),
                                         ),
                                       ),
                                     ],
@@ -392,7 +401,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                                     style: GoogleFonts.outfit(
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold,
-                                      color: primaryGreen,
+                                      color: isDark
+                                          ? const Color(0xFF86EFAC)
+                                          : primaryGreen,
                                     ),
                                   ),
                                 ],
@@ -412,13 +423,15 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               ),
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? const Color(0xFF16251C)
+                                    ? const Color(0xFF0F0F12)
                                     : const Color(0xFFF8FAFC),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: const Color(
-                                    0xFFDC2626,
-                                  ).withValues(alpha: 0.3),
+                                  color: isDark
+                                      ? cardBorder
+                                      : const Color(
+                                          0xFFDC2626,
+                                        ).withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Column(
@@ -500,14 +513,14 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               color: isSelected
                                   ? primaryGreen
                                   : (isDark
-                                        ? const Color(0xFF16251C)
+                                        ? const Color(0xFF0F0F12)
                                         : const Color(0xFFF1F5F9)),
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: isSelected
                                     ? primaryGreen
                                     : (isDark
-                                          ? Colors.white12
+                                          ? cardBorder
                                           : const Color(0xFFE2E8F0)),
                                 width: 1.5,
                               ),
@@ -529,7 +542,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,
                                 color: isSelected
-                                    ? Colors.white
+                                    ? (isDark
+                                          ? const Color(0xFF0F0F12)
+                                          : Colors.white)
                                     : (isDark
                                           ? Colors.white70
                                           : const Color(0xFF475569)),
@@ -557,7 +572,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               style: GoogleFonts.lexend(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: primaryGreen,
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : primaryGreen,
                               ),
                             ),
                           ),
@@ -577,7 +594,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               style: GoogleFonts.lexend(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: primaryGreen,
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : primaryGreen,
                               ),
                             ),
                           ),
@@ -597,7 +616,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                               style: GoogleFonts.lexend(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: primaryGreen,
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : primaryGreen,
                               ),
                             ),
                           ),
@@ -613,7 +634,9 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryGreen,
-                          foregroundColor: Colors.white,
+                          foregroundColor: isDark
+                              ? const Color(0xFF0F0F12)
+                              : Colors.white,
                           elevation: 2,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(

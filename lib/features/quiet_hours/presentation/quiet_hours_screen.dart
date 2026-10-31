@@ -43,7 +43,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _timer?.cancel(); 
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -136,9 +136,12 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF27272A) : Colors.transparent,
+            ),
           ),
           title: Text(
             'Delete Timing${count > 1 ? 's' : ''}?',
@@ -240,7 +243,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
   ) {
     if (_isSelectionMode) {
       return AppBar(
-        backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+        backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
         elevation: 1,
         leading: IconButton(
           icon: Icon(Icons.close_rounded, color: textColor),
@@ -275,10 +278,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       );
     }
 
-    return const AppHeaderBar(
-      title: 'QUIET HOURS',
-      showBackButton: true,
-    );
+    return const AppHeaderBar(title: 'QUIET HOURS', showBackButton: true);
   }
 
   @override
@@ -293,18 +293,28 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     final service = ref.watch(quietHoursServiceProvider);
     final isSupported = service.isSupported;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
-    final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final bgColor = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
     final cardBorder = isDark
-        ? const Color(0xFF2B3F33)
+        ? const Color(0xFF27272A)
         : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: _buildAppBar(context, isDark, textColor, schedules, primaryGreen, isSupported, service),
+      appBar: _buildAppBar(
+        context,
+        isDark,
+        textColor,
+        schedules,
+        primaryGreen,
+        isSupported,
+        service,
+      ),
       body: schedules.isEmpty
           ? _buildEmptyState(context, ref, primaryGreen, isDark, subTextColor)
           : ListView(
@@ -353,7 +363,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                               children: [
                                 Icon(
                                   schedules.isNotEmpty &&
-                                          _selectedIds.length == schedules.length
+                                          _selectedIds.length ==
+                                              schedules.length
                                       ? Icons.check_box_rounded
                                       : Icons.check_box_outline_blank_rounded,
                                   size: 18,
@@ -362,7 +373,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                 const SizedBox(width: 6),
                                 Text(
                                   schedules.isNotEmpty &&
-                                          _selectedIds.length == schedules.length
+                                          _selectedIds.length ==
+                                              schedules.length
                                       ? 'Deselect All'
                                       : 'Select All',
                                   style: GoogleFonts.lexend(
@@ -393,8 +405,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                   ),
                 ),
               ],
-            
-          ),
+            ),
       floatingActionButton: (schedules.isEmpty || _isSelectionMode)
           ? null
           : FloatingActionButton.extended(
@@ -402,7 +413,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                 QuietHoursLibraryModal.show(context);
               },
               backgroundColor: primaryGreen,
-              foregroundColor: Colors.white,
+              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
               icon: const Icon(Icons.add_rounded),
               label: Text(
                 'Add Timing',
@@ -433,14 +444,14 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               height: 90,
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF1E2D24)
+                    ? const Color(0xFF27272A)
                     : const Color(0xFFFFFFFF),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.do_not_disturb_on_outlined,
                 size: 44,
-                color: Color(0xFF2A531D),
+                color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
               ),
             ),
             const SizedBox(height: 20),
@@ -471,7 +482,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               label: const Text('Add Timing'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryGreen,
-                foregroundColor: Colors.white,
+                foregroundColor: isDark
+                    ? const Color(0xFF0F0F12)
+                    : Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
@@ -501,8 +514,10 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     QuietHoursService service,
   ) {
     final isTimingActive = schedule.enabled && arePermissionsGranted;
-    final gridBg = isDark ? const Color(0xFF16251C) : const Color(0xFFF8FAFC);
-    final gridBorder = isDark ? Colors.white12 : const Color(0xFFE2E8F0);
+    final gridBg = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
+    final gridBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
     final daysMap = const {
       1: 'Mon',
       2: 'Tue',
@@ -518,13 +533,13 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: isSelected
-            ? (isDark
-                ? primaryGreen.withValues(alpha: 0.15)
-                : const Color(0xFFE8F5E9))
+            ? (isDark ? const Color(0xFF27272A) : const Color(0xFFE8F5E9))
             : cardBg,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isSelected ? primaryGreen : cardBorder,
+          color: isSelected
+              ? (isDark ? const Color(0xFF86EFAC) : primaryGreen)
+              : cardBorder,
           width: isSelected ? 2 : 1,
         ),
         boxShadow: [
@@ -604,8 +619,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                             color: isSelected
                                 ? primaryGreen
                                 : (isDark
-                                    ? Colors.white38
-                                    : Colors.grey.shade400),
+                                      ? Colors.white38
+                                      : Colors.grey.shade400),
                             width: 2,
                           ),
                         ),
@@ -659,7 +674,27 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                         scale: 0.82,
                         child: Switch(
                           value: isTimingActive,
-                          activeTrackColor: primaryGreen,
+                          activeTrackColor: isDark
+                              ? const Color(0xFF166534)
+                              : primaryGreen,
+                          activeThumbColor: isDark
+                              ? const Color(0xFF18A74C)
+                              : Colors.white,
+                          inactiveThumbColor: isDark
+                              ? const Color(0xFF94A3B8)
+                              : Colors.grey.shade400,
+                          inactiveTrackColor: isDark
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFE2E8F0),
+                          trackOutlineColor: WidgetStateProperty.resolveWith((
+                            states,
+                          ) {
+                            if (states.contains(WidgetState.selected))
+                              return Colors.transparent;
+                            return isDark
+                                ? const Color(0xFF3F3F46)
+                                : const Color(0xFFCBD5E1);
+                          }),
                           onChanged: (val) async {
                             if (val) {
                               if (!arePermissionsGranted) {
@@ -671,7 +706,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                               }
 
                               if (service.isSupported) {
-                                final dndGranted = await service.isDndPermissionGranted();
+                                final dndGranted = await service
+                                    .isDndPermissionGranted();
                                 if (!dndGranted) {
                                   if (mounted) {
                                     setState(() {
@@ -679,7 +715,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                     });
                                     HapticFeedback.lightImpact();
                                     _showPermissionRequiredToast(context);
-                                    context.push('/permissions?from=quiet_hours');
+                                    context.push(
+                                      '/permissions?from=quiet_hours',
+                                    );
                                   }
                                   return;
                                 }
@@ -728,7 +766,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                   Icons.access_time_filled_rounded,
                                   size: 16,
                                   color: isTimingActive
-                                      ? primaryGreen
+                                      ? (isDark
+                                            ? const Color(0xFF86EFAC)
+                                            : primaryGreen)
                                       : subTextColor,
                                 ),
                                 const SizedBox(width: 8),
@@ -738,7 +778,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                     fontSize: 16.5,
                                     fontWeight: FontWeight.bold,
                                     color: isTimingActive
-                                        ? primaryGreen
+                                        ? (isDark
+                                              ? const Color(0xFF86EFAC)
+                                              : primaryGreen)
                                         : subTextColor,
                                   ),
                                 ),
@@ -759,7 +801,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                       Divider(
                         height: 1,
                         color: isDark
-                            ? Colors.grey.shade700
+                            ? const Color(0xFF27272A)
                             : Colors.grey.shade300,
                       ),
                       const SizedBox(height: 10),
@@ -781,7 +823,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                     ? (isTimingActive
                                           ? primaryGreen
                                           : (isDark
-                                                ? Colors.white24
+                                                ? const Color(0xFF27272A)
                                                 : Colors.grey.shade400))
                                     : Colors.transparent,
                                 shape: BoxShape.circle,
@@ -790,7 +832,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                       ? (isTimingActive
                                             ? primaryGreen
                                             : (isDark
-                                                  ? Colors.white24
+                                                  ? const Color(0xFF3F3F46)
                                                   : Colors.grey.shade400))
                                       : gridBorder,
                                 ),
@@ -801,7 +843,9 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: isSelected
-                                      ? Colors.white
+                                      ? (isDark && isTimingActive
+                                            ? const Color(0xFF0F0F12)
+                                            : Colors.white)
                                       : subTextColor,
                                 ),
                               ),
@@ -819,5 +863,4 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
       ),
     );
   }
-
 }

@@ -52,10 +52,15 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const primaryGreen = Color(0xFF2A531D);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     final locationAsync = ref.watch(currentLocationProvider);
     final method = ref.watch(calculationMethodProvider);
@@ -119,6 +124,7 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
+          border: Border.all(color: cardBorder),
         ),
         child: Column(
           children: [
@@ -128,7 +134,9 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
               width: 38,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : const Color(0xFFCBD5E1),
+                color: isDark
+                    ? const Color(0xFF3F3F46)
+                    : const Color(0xFFCBD5E1),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -144,7 +152,7 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                     style: GoogleFonts.outfit(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: primaryGreen,
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                 ],
@@ -156,9 +164,10 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
               margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF16251C)
+                    ? const Color(0xFF0F0F12)
                     : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: cardBorder),
               ),
               child: TabBar(
                 controller: _tabController,
@@ -167,7 +176,7 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                   borderRadius: BorderRadius.circular(10),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.white,
+                labelColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                 unselectedLabelColor: subTextColor,
                 labelStyle: GoogleFonts.lexend(
                   fontSize: 13,
@@ -221,15 +230,11 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF16251C)
+                              ? const Color(0xFF0F0F12)
                               : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: isAdded
-                                ? primaryGreen
-                                : (isDark
-                                      ? Colors.white12
-                                      : const Color(0xFFE2E8F0)),
+                            color: isAdded ? primaryGreen : cardBorder,
                             width: isAdded ? 1.5 : 1,
                           ),
                         ),
@@ -268,18 +273,20 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: primaryGreen.withValues(
-                                        alpha: 0.1,
-                                      ),
+                                      color: isDark
+                                          ? const Color(0xFF27272A)
+                                          : primaryGreen.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.access_time_filled_rounded,
                                           size: 15,
-                                          color: primaryGreen,
+                                          color: isDark
+                                              ? const Color(0xFF86EFAC)
+                                              : primaryGreen,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
@@ -287,7 +294,9 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                                           style: GoogleFonts.outfit(
                                             fontSize: 14.5,
                                             fontWeight: FontWeight.bold,
-                                            color: primaryGreen,
+                                            color: isDark
+                                                ? const Color(0xFF86EFAC)
+                                                : primaryGreen,
                                           ),
                                         ),
                                       ],
@@ -310,7 +319,7 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                                   color: isAdded
                                       ? primaryGreen
                                       : (isDark
-                                            ? Colors.white54
+                                            ? const Color(0xFF86EFAC)
                                             : Colors.grey.shade400),
                                 ),
                                 onPressed: () {
@@ -366,14 +375,12 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                   ReminderModal(
                     isEmbedded: true,
                     onSave: (newRem) {
-                      ref
-                          .read(remindersProvider.notifier)
-                          .addReminder(newRem);
+                      ref.read(remindersProvider.notifier).addReminder(newRem);
                       AppFloatingToast.showAdded(context, message: 'Added');
                     },
                   ),
                 ],
-              ), 
+              ),
             ),
           ],
         ),

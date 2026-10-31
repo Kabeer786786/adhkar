@@ -54,12 +54,15 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     final dndGranted = await QuietHoursService().isDndPermissionGranted();
     final dnd = dndGranted ? PermissionStatus.granted : PermissionStatus.denied;
     final battery = await Permission.ignoreBatteryOptimizations.status;
-    final fsiGranted = await NativeAlarmService.instance.canUseFullScreenIntent();
+    final fsiGranted = await NativeAlarmService.instance
+        .canUseFullScreenIntent();
     final fsi = fsiGranted ? PermissionStatus.granted : PermissionStatus.denied;
     final overlay = await Permission.systemAlertWindow.status;
 
-    final reminderMissing = await ReminderPermissionService.getMissingPermissions();
-    final quietHoursMissing = await QuietHoursPermissionService.getMissingPermissions();
+    final reminderMissing =
+        await ReminderPermissionService.getMissingPermissions();
+    final quietHoursMissing =
+        await QuietHoursPermissionService.getMissingPermissions();
 
     if (mounted) {
       setState(() {
@@ -84,7 +87,9 @@ class _PermissionsScreenState extends State<PermissionsScreen>
           if (mounted) {
             ReminderPermissionsRequiredModal.show(
               context,
-              missingPermissions: reminderMissing.where((p) => p.isCritical).toList(),
+              missingPermissions: reminderMissing
+                  .where((p) => p.isCritical)
+                  .toList(),
             );
           }
         });
@@ -99,7 +104,9 @@ class _PermissionsScreenState extends State<PermissionsScreen>
           if (mounted) {
             QuietHoursPermissionsRequiredModal.show(
               context,
-              missingPermissions: quietHoursMissing.where((p) => p.isCritical).toList(),
+              missingPermissions: quietHoursMissing
+                  .where((p) => p.isCritical)
+                  .toList(),
             );
           }
         });
@@ -113,8 +120,9 @@ class _PermissionsScreenState extends State<PermissionsScreen>
       final isGranted = await QuietHoursService().isDndPermissionGranted();
       if (mounted) {
         setState(() {
-          _permissionStatuses[key] =
-              isGranted ? PermissionStatus.granted : PermissionStatus.denied;
+          _permissionStatuses[key] = isGranted
+              ? PermissionStatus.granted
+              : PermissionStatus.denied;
         });
       }
       return;
@@ -122,11 +130,13 @@ class _PermissionsScreenState extends State<PermissionsScreen>
 
     if (key == 'fullScreenIntent') {
       await NativeAlarmService.instance.openFullScreenIntentSettings();
-      final isGranted = await NativeAlarmService.instance.canUseFullScreenIntent();
+      final isGranted = await NativeAlarmService.instance
+          .canUseFullScreenIntent();
       if (mounted) {
         setState(() {
-          _permissionStatuses[key] =
-              isGranted ? PermissionStatus.granted : PermissionStatus.denied;
+          _permissionStatuses[key] = isGranted
+              ? PermissionStatus.granted
+              : PermissionStatus.denied;
         });
       }
       return;
@@ -156,11 +166,13 @@ class _PermissionsScreenState extends State<PermissionsScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     const primaryGreen = Color(0xFF2A531D);
-    final bgColor = isDark ? const Color(0xFF121B16) : const Color(0xFFF8FAFC);
-    final cardBg = isDark ? const Color(0xFF1E2D24) : Colors.white;
-    final cardBorder = isDark ? const Color(0xFF2B3F33) : const Color(0xFFE2E8F0);
+    final bgColor = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final subTextColor = isDark ? Colors.white60 : const Color(0xFF64748B);
+    final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -178,10 +190,14 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                 // 1. Notifications & Alerts Section
                 const SectionHeader(
                   title: 'Notifications & Alerts',
-                  subtitle: 'Required for Adhan prayer calls, Adhkar, and alarms screen',
+                  subtitle:
+                      'Required for Adhan prayer calls, Adhkar, and alarms screen',
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: cardBg,
                     borderRadius: BorderRadius.circular(18),
@@ -211,7 +227,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                         textColor: textColor,
                         subTextColor: subTextColor,
                       ),
-                      Divider(height: 1, color: cardBorder), 
+                      Divider(height: 1, color: cardBorder),
                       _buildPermissionItem(
                         title: 'Alarm & Schedule Access',
                         subtitle:
@@ -280,10 +296,14 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                 // 2. Location & GPS Section
                 const SectionHeader(
                   title: 'Location & GPS',
-                  subtitle: 'Coordinates used for precise local prayer calculations and Qibla compass',
+                  subtitle:
+                      'Coordinates used for precise local prayer calculations and Qibla compass',
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: cardBg,
                     borderRadius: BorderRadius.circular(18),
@@ -318,10 +338,14 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                 // 3. System & Battery Section
                 const SectionHeader(
                   title: 'System & Battery',
-                  subtitle: 'Optimizations to prevent Android from killing background prayer services',
+                  subtitle:
+                      'Optimizations to prevent Android from killing background prayer services',
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: cardBg,
                     borderRadius: BorderRadius.circular(18),
@@ -352,7 +376,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                         subTextColor: subTextColor,
                       ),
                       Divider(height: 1, color: cardBorder),
-                      _buildToggleItem( 
+                      _buildToggleItem(
                         title: 'Vibration & Haptics',
                         subtitle:
                             'Tactile vibration feedback for Adhkar counter taps and silent reminders.',
@@ -384,9 +408,10 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     required Color subTextColor,
   }) {
     final isGranted = status?.isGranted ?? false;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
-      onTap: onTap, 
+      onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -424,7 +449,25 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                   child: Switch(
                     value: isGranted,
                     onChanged: (_) => onTap(),
-                    activeTrackColor: const Color(0xFF2A531D),
+                    activeTrackColor: isDark
+                        ? const Color(0xFF166534)
+                        : const Color(0xFF2A531D),
+                    activeThumbColor: isDark
+                        ? const Color(0xFF18A74C)
+                        : Colors.white,
+                    inactiveThumbColor: isDark
+                        ? const Color(0xFF94A3B8)
+                        : Colors.grey.shade400,
+                    inactiveTrackColor: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFE2E8F0),
+                    trackOutlineColor: WidgetStateProperty.resolveWith(
+                      (states) => states.contains(WidgetState.selected)
+                          ? Colors.transparent
+                          : (isDark
+                                ? const Color(0xFF3F3F46)
+                                : const Color(0xFFCBD5E1)),
+                    ),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ),
@@ -458,6 +501,8 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     required Color textColor,
     required Color subTextColor,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: () => onChanged(!isEnabled),
       borderRadius: BorderRadius.circular(16),
@@ -497,7 +542,25 @@ class _PermissionsScreenState extends State<PermissionsScreen>
                   child: Switch(
                     value: isEnabled,
                     onChanged: onChanged,
-                    activeTrackColor: const Color(0xFF2A531D),
+                    activeTrackColor: isDark
+                        ? const Color(0xFF166534)
+                        : const Color(0xFF2A531D),
+                    activeThumbColor: isDark
+                        ? const Color(0xFF18A74C)
+                        : Colors.white,
+                    inactiveThumbColor: isDark
+                        ? const Color(0xFF94A3B8)
+                        : Colors.grey.shade400,
+                    inactiveTrackColor: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFE2E8F0),
+                    trackOutlineColor: WidgetStateProperty.resolveWith(
+                      (states) => states.contains(WidgetState.selected)
+                          ? Colors.transparent
+                          : (isDark
+                                ? const Color(0xFF3F3F46)
+                                : const Color(0xFFCBD5E1)),
+                    ),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ),
@@ -531,7 +594,7 @@ class _SectionDivider extends StatelessWidget {
     return Container(
       height: 6,
       margin: const EdgeInsets.symmetric(vertical: 10),
-      color: isDark ? const Color(0xFF18241D) : const Color(0xFFF1F5F9),
+      color: isDark ? const Color(0xFF27272A) : const Color(0xFFF1F5F9),
     );
   }
 }

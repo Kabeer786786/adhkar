@@ -112,7 +112,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
     final amount = double.tryParse(amountText) ?? 0.0;
 
     if (amount <= 0) {
-      AppFloatingToast.showError(context, message: 'Please enter a valid donation amount.');
+      AppFloatingToast.showError(
+        context,
+        message: 'Please enter a valid donation amount.',
+      );
       return;
     }
 
@@ -130,7 +133,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
     final phone = _phoneController.text.trim();
 
     if (name.isEmpty || email.isEmpty) {
-      AppFloatingToast.showError(context, message: 'Please enter your name and email address.');
+      AppFloatingToast.showError(
+        context,
+        message: 'Please enter your name and email address.',
+      );
       return;
     }
 
@@ -222,9 +228,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
   Widget _buildCelebrationView(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final currencySymbol = _successCurrency == 'INR' ? '₹' : '\$';
-    final dateStr = DateFormat('dd MMM yyyy, hh:mm a').format(
-      _successDate ?? DateTime.now(),
-    );
+    final dateStr = DateFormat(
+      'dd MMM yyyy, hh:mm a',
+    ).format(_successDate ?? DateTime.now());
 
     return Container(
       constraints: BoxConstraints(
@@ -265,15 +271,20 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
 
             // Arabic Blessing Calligraphy
             Text(
-              'جَزَاكَ ٱللَّٰهُ خَيْرًا',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.amiri(
-                fontSize: 34,
-                fontWeight: FontWeight.bold,
-                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF1B3D14),
-                height: 1.3,
-              ),
-            ).animate().fadeIn(duration: 500.ms).scale(
+                  'جَزَاكَ ٱللَّٰهُ خَيْرًا',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.amiri(
+                    fontSize: 34,
+                    fontWeight: FontWeight.bold,
+                    color: isDark
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFF1B3D14),
+                    height: 1.3,
+                  ),
+                )
+                .animate()
+                .fadeIn(duration: 500.ms)
+                .scale(
                   begin: const Offset(0.9, 0.9),
                   end: const Offset(1, 1),
                   curve: Curves.easeOutBack,
@@ -312,299 +323,353 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
 
             // DONATION RECEIPT CARD
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF6FAF5),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isDark ? const Color(0xFF27272A) : const Color(0xFFD4E7D2),
-                  width: 1.3,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF2A531D).withValues(alpha: isDark ? 0.02 : 0.05),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Receipt Header Pill
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.check_rounded,
-                              size: 13,
-                              color: isDark ? const Color(0xFF0F0F12) : Colors.white,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Donation Receipt',
-                            style: GoogleFonts.outfit(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : const Color(0xFF2A531D),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE8F5E9),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: isDark ? const Color(0xFF3F3F46) : const Color(0xFFA5D6A7),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.verified_rounded,
-                              size: 13,
-                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2E7D32),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Verified',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2E7D32),
-                              ),
-                            ),
-                          ],
-                        ),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF0F0F12)
+                        : const Color(0xFFF6FAF5),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFD4E7D2),
+                      width: 1.3,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(
+                          0xFF2A531D,
+                        ).withValues(alpha: isDark ? 0.02 : 0.05),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 14),
-
-                  // Amount Box
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF18181B) : Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Amount Donated',
-                              style: GoogleFonts.outfit(
-                                fontSize: 12,
-                                color: isDark ? Colors.white70 : Colors.grey.shade600,
+                  child: Column(
+                    children: [
+                      // Receipt Header Pill
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(0xFF18A74C)
+                                      : const Color(0xFF2A531D),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.check_rounded,
+                                  size: 13,
+                                  color: isDark
+                                      ? const Color(0xFF0F0F12)
+                                      : Colors.white,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Online Sadqa Support',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                color: isDark ? Colors.white38 : const Color(0xFF9CA3AF),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          '$currencySymbol${_successAmount.toStringAsFixed(0)} $_successCurrency',
-                          style: GoogleFonts.outfit(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Transaction ID Row with One-Tap Copy
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF18181B) : Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _successOrderId.isNotEmpty
-                                  ? 'Transaction & Order Reference'
-                                  : 'Transaction ID',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11.5,
-                                color: isDark ? Colors.white70 : Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              _successPaymentId.isNotEmpty
-                                  ? _successPaymentId
-                                  : 'Verified via Razorpay',
-                              style: GoogleFonts.outfit(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : const Color(0xFF1F2937),
-                              ),
-                            ),
-                            if (_successOrderId.isNotEmpty) ...[
-                              const SizedBox(height: 2),
+                              const SizedBox(width: 8),
                               Text(
-                                'Order: $_successOrderId',
+                                'Donation Receipt',
                                 style: GoogleFonts.outfit(
-                                  fontSize: 11,
-                                  color: isDark ? Colors.white38 : Colors.grey.shade500,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF2A531D),
                                 ),
                               ),
                             ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(0xFF27272A)
+                                  : const Color(0xFFE8F5E9),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isDark
+                                    ? const Color(0xFF3F3F46)
+                                    : const Color(0xFFA5D6A7),
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.verified_rounded,
+                                  size: 13,
+                                  color: isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : const Color(0xFF2E7D32),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Verified',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark
+                                        ? const Color(0xFF86EFAC)
+                                        : const Color(0xFF2E7D32),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 14),
+
+                      // Amount Box
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF18181B)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF27272A)
+                                : const Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Amount Donated',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : Colors.grey.shade600,
+                                  ),
+                                ),
+                                Text(
+                                  'Online Sadqa Support',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 11,
+                                    color: isDark
+                                        ? Colors.white38
+                                        : const Color(0xFF9CA3AF),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              '$currencySymbol${_successAmount.toStringAsFixed(0)} $_successCurrency',
+                              style: GoogleFonts.outfit(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : const Color(0xFF2A531D),
+                              ),
+                            ),
                           ],
                         ),
-                        if (_successPaymentId.isNotEmpty)
-                          IconButton(
-                            icon: Icon(
-                              Icons.copy_rounded,
-                              size: 18,
-                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                            ),
-                            tooltip: 'Copy Txn ID',
-                            visualDensity: VisualDensity.compact,
-                            onPressed: () {
-                              Clipboard.setData(
-                                ClipboardData(text: _successPaymentId),
-                              );
-                              HapticFeedback.lightImpact();
-                              AppFloatingToast.showSuccess(
-                                context,
-                                message: 'Transaction ID copied!',
-                                icon: Icons.copy_rounded,
-                              );
-                            },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Transaction ID Row with One-Tap Copy
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF18181B)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF27272A)
+                                : const Color(0xFFE5E7EB),
                           ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Date & Sadqa Tracker Tag
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        dateStr,
-                        style: GoogleFonts.outfit(
-                          fontSize: 11.5,
-                          color: isDark ? Colors.white60 : Colors.grey.shade600,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _successOrderId.isNotEmpty
+                                      ? 'Transaction & Order Reference'
+                                      : 'Transaction ID',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 11.5,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : Colors.grey.shade600,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _successPaymentId.isNotEmpty
+                                      ? _successPaymentId
+                                      : 'Verified via Razorpay',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF1F2937),
+                                  ),
+                                ),
+                                if (_successOrderId.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Order: $_successOrderId',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 11,
+                                      color: isDark
+                                          ? Colors.white38
+                                          : Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            if (_successPaymentId.isNotEmpty)
+                              IconButton(
+                                icon: Icon(
+                                  Icons.copy_rounded,
+                                  size: 18,
+                                  color: isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : const Color(0xFF2A531D),
+                                ),
+                                tooltip: 'Copy Txn ID',
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () {
+                                  Clipboard.setData(
+                                    ClipboardData(text: _successPaymentId),
+                                  );
+                                  HapticFeedback.lightImpact();
+                                  AppFloatingToast.showSuccess(
+                                    context,
+                                    message: 'Transaction ID copied!',
+                                    icon: Icons.copy_rounded,
+                                  );
+                                },
+                              ),
+                          ],
                         ),
                       ),
+
+                      const SizedBox(height: 10),
+
+                      // Date & Sadqa Tracker Tag
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(
-                            Icons.bookmark_added_rounded,
-                            size: 14,
-                            color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
-                          ),
-                          const SizedBox(width: 4),
                           Text(
-                            'Saved in Sadqa Tracker',
+                            dateStr,
                             style: GoogleFonts.outfit(
                               fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                              color: isDark
+                                  ? Colors.white60
+                                  : Colors.grey.shade600,
                             ),
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.bookmark_added_rounded,
+                                size: 14,
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : const Color(0xFF2A531D),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Saved in Sadqa Tracker',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : const Color(0xFF2A531D),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ).animate().fadeIn(delay: 350.ms, duration: 500.ms).slideY(
-                  begin: 0.12,
-                  end: 0,
-                  curve: Curves.easeOutCubic,
-                ),
+                )
+                .animate()
+                .fadeIn(delay: 350.ms, duration: 500.ms)
+                .slideY(begin: 0.12, end: 0, curve: Curves.easeOutCubic),
 
             const SizedBox(height: 22),
 
             // PRIMARY DONE ACTION BUTTON
             SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: () {
-                  HapticFeedback.lightImpact();
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D),
-                  foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
-                  elevation: 4,
-                  shadowColor: isDark
-                      ? Colors.black26
-                      : const Color(0xFF2A531D).withValues(alpha: 0.35),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.done_all_rounded, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Alhamdulillah • Done',
-                      style: GoogleFonts.outfit(
-                        fontSize: 16.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.3,
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDark
+                          ? const Color(0xFF18A74C)
+                          : const Color(0xFF2A531D),
+                      foregroundColor: isDark
+                          ? const Color(0xFF0F0F12)
+                          : Colors.white,
+                      elevation: 4,
+                      shadowColor: isDark
+                          ? Colors.black26
+                          : const Color(0xFF2A531D).withValues(alpha: 0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ).animate().fadeIn(delay: 500.ms, duration: 450.ms).scale(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.done_all_rounded, size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Alhamdulillah • Done',
+                          style: GoogleFonts.outfit(
+                            fontSize: 16.5,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .animate()
+                .fadeIn(delay: 500.ms, duration: 450.ms)
+                .scale(
                   begin: const Offset(0.95, 0.95),
                   end: const Offset(1, 1),
                   curve: Curves.easeOutBack,
@@ -753,20 +818,20 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? (isDark
-                                  ? const Color(0xFF22C55E)
-                                  : const Color(0xFF2A531D))
+                                    ? const Color(0xFF18A74C)
+                                    : const Color(0xFF2A531D))
                               : (isDark
-                                  ? const Color(0xFF27272A)
-                                  : const Color(0xFFF4FAF3)),
+                                    ? const Color(0xFF27272A)
+                                    : const Color(0xFFF4FAF3)),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
                                 ? (isDark
-                                    ? const Color(0xFF22C55E)
-                                    : const Color(0xFF2A531D))
+                                      ? const Color(0xFF18A74C)
+                                      : const Color(0xFF2A531D))
                                 : (isDark
-                                    ? const Color(0xFF3F3F46)
-                                    : const Color(0xFFE5E7EB)),
+                                      ? const Color(0xFF3F3F46)
+                                      : const Color(0xFFE5E7EB)),
                             width: isSelected ? 1.8 : 1.0,
                           ),
                         ),
@@ -778,11 +843,11 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                             fontWeight: FontWeight.bold,
                             color: isSelected
                                 ? (isDark
-                                    ? const Color(0xFF0F0F12)
-                                    : Colors.white)
+                                      ? const Color(0xFF0F0F12)
+                                      : Colors.white)
                                 : (isDark
-                                    ? Colors.white
-                                    : const Color(0xFF2A531D)),
+                                      ? Colors.white
+                                      : const Color(0xFF2A531D)),
                           ),
                         ),
                       ),
@@ -799,11 +864,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: false,
                 ),
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-                cursorColor:
-                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                cursorColor: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Custom Donation Amount ($currencySymbol)',
                   labelStyle: TextStyle(
@@ -814,8 +878,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                     color: isDark ? Colors.white38 : Colors.grey.shade400,
                   ),
                   filled: true,
-                  fillColor:
-                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+                  fillColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : const Color(0xFFF9FAFB),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Text(
@@ -894,11 +959,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               // Donor Name Input Field
               TextFormField(
                 controller: _nameController,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-                cursorColor:
-                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                cursorColor: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Full Name',
                   labelStyle: TextStyle(
@@ -909,8 +973,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                     color: isDark ? Colors.white38 : Colors.grey.shade400,
                   ),
                   filled: true,
-                  fillColor:
-                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+                  fillColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : const Color(0xFFF9FAFB),
                   prefixIcon: Icon(
                     Icons.person_outline_rounded,
                     color: isDark
@@ -957,11 +1022,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-                cursorColor:
-                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                cursorColor: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Email Address',
                   labelStyle: TextStyle(
@@ -972,8 +1036,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                     color: isDark ? Colors.white38 : Colors.grey.shade400,
                   ),
                   filled: true,
-                  fillColor:
-                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+                  fillColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : const Color(0xFFF9FAFB),
                   prefixIcon: Icon(
                     Icons.email_outlined,
                     color: isDark
@@ -1020,11 +1085,10 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-                cursorColor:
-                    isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                cursorColor: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
                 decoration: InputDecoration(
                   labelText: 'Phone Number (Optional)',
                   labelStyle: TextStyle(
@@ -1035,8 +1099,9 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                     color: isDark ? Colors.white38 : Colors.grey.shade400,
                   ),
                   filled: true,
-                  fillColor:
-                      isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
+                  fillColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : const Color(0xFFF9FAFB),
                   prefixIcon: Icon(
                     Icons.phone_outlined,
                     color: isDark
@@ -1081,15 +1146,17 @@ class _OnlineDonationModalState extends ConsumerState<OnlineDonationModal> {
                   onPressed: _isLoading ? null : _startRazorpayPayment,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isDark
-                        ? const Color(0xFF22C55E)
+                        ? const Color(0xFF18A74C)
                         : const Color(0xFF2A531D),
-                    foregroundColor:
-                        isDark ? const Color(0xFF0F0F12) : Colors.white,
+                    foregroundColor: isDark
+                        ? const Color(0xFF0F0F12)
+                        : Colors.white,
                     elevation: 3,
-                    shadowColor: (isDark
-                            ? const Color(0xFF22C55E)
-                            : const Color(0xFF2A531D))
-                        .withValues(alpha: 0.35),
+                    shadowColor:
+                        (isDark
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF2A531D))
+                            .withValues(alpha: 0.35),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -1194,18 +1261,57 @@ class _SpreadingCelebrationBadgeState extends State<_SpreadingCelebrationBadge>
     final scale = 0.85 + rng.nextDouble() * 0.45;
     final size = 18.0 + rng.nextDouble() * 12.0;
     final spinDelta =
-        (rng.nextBool() ? 1.0 : -1.0) * (math.pi * 0.6 + rng.nextDouble() * math.pi);
+        (rng.nextBool() ? 1.0 : -1.0) *
+        (math.pi * 0.6 + rng.nextDouble() * math.pi);
     final floatPhase = rng.nextDouble() * 2 * math.pi;
     final floatSpeed = 0.8 + rng.nextDouble() * 1.3;
 
     // Harmonious mix of flowers and glowing stars
     const chars = [
-      '🌸', '✨', '🌺', '⭐', '🌼', '🌟', '🌷', '💫',
-      '🌹', '✦', '🌿', '✨', '🌸', '🌟', '🌺', '⭐',
-      '🌼', '💫', '🌷', '✦', '🏵️', '✨', '🌹', '🌟',
-      '🌿', '⭐', '🌸', '💫', '🌺', '✦', '🌼', '✨',
-      '🌷', '🌟', '🌹', '⭐', '🌿', '💫', '🌸', '✨',
-      '🌺', '🌟', '🌼', '💫',
+      '🌸',
+      '✨',
+      '🌺',
+      '⭐',
+      '🌼',
+      '🌟',
+      '🌷',
+      '💫',
+      '🌹',
+      '✦',
+      '🌿',
+      '✨',
+      '🌸',
+      '🌟',
+      '🌺',
+      '⭐',
+      '🌼',
+      '💫',
+      '🌷',
+      '✦',
+      '🏵️',
+      '✨',
+      '🌹',
+      '🌟',
+      '🌿',
+      '⭐',
+      '🌸',
+      '💫',
+      '🌺',
+      '✦',
+      '🌼',
+      '✨',
+      '🌷',
+      '🌟',
+      '🌹',
+      '⭐',
+      '🌿',
+      '💫',
+      '🌸',
+      '✨',
+      '🌺',
+      '🌟',
+      '🌼',
+      '💫',
     ];
     final char = chars[i % chars.length];
 
@@ -1296,8 +1402,10 @@ class _SpreadingCelebrationBadgeState extends State<_SpreadingCelebrationBadge>
                 clipBehavior: Clip.none,
                 children: _particles.map((p) {
                   final dist = p.distance * burstProgress;
-                  final flutter = math.sin(
-                        (ambientVal * 2 * math.pi) * p.floatSpeed + p.floatPhase,
+                  final flutter =
+                      math.sin(
+                        (ambientVal * 2 * math.pi) * p.floatSpeed +
+                            p.floatPhase,
                       ) *
                       6.0;
 
@@ -1305,19 +1413,17 @@ class _SpreadingCelebrationBadgeState extends State<_SpreadingCelebrationBadge>
                   final dy = dist * math.sin(p.angle) + flutter;
 
                   // Pop up scale quickly at start, then gently pulse
-                  final scaleProgress = (burstProgress < 0.25
-                          ? (burstProgress / 0.25)
-                          : 1.0) *
+                  final scaleProgress =
+                      (burstProgress < 0.25 ? (burstProgress / 0.25) : 1.0) *
                       p.scale *
                       (0.92 + 0.08 * math.sin(ambientVal * math.pi));
 
                   final rotation =
                       (p.spinDelta * burstProgress) + (ambientVal * 0.2);
 
-                  final opacity = (burstProgress < 0.15
-                          ? (burstProgress / 0.15)
-                          : 1.0)
-                      .clamp(0.0, 1.0);
+                  final opacity =
+                      (burstProgress < 0.15 ? (burstProgress / 0.15) : 1.0)
+                          .clamp(0.0, 1.0);
 
                   return Transform.translate(
                     offset: Offset(dx, dy),
@@ -1338,8 +1444,9 @@ class _SpreadingCelebrationBadgeState extends State<_SpreadingCelebrationBadge>
                                   blurRadius: 4,
                                 ),
                                 Shadow(
-                                  color: const Color(0xFF2A531D)
-                                      .withValues(alpha: 0.25),
+                                  color: const Color(
+                                    0xFF2A531D,
+                                  ).withValues(alpha: 0.25),
                                   blurRadius: 6,
                                 ),
                               ],
@@ -1372,10 +1479,7 @@ class _SpreadingCelebrationBadgeState extends State<_SpreadingCelebrationBadge>
                 ),
               ],
             ),
-          ).animate().scale(
-                duration: 650.ms,
-                curve: Curves.elasticOut,
-              ),
+          ).animate().scale(duration: 650.ms, curve: Curves.elasticOut),
 
           // Central Victory Emerald Checkmark Circle
           Container(
@@ -1388,10 +1492,7 @@ class _SpreadingCelebrationBadgeState extends State<_SpreadingCelebrationBadge>
                 end: Alignment.bottomRight,
               ),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: const Color(0xFFA3E635),
-                width: 3.2,
-              ),
+              border: Border.all(color: const Color(0xFFA3E635), width: 3.2),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF2A531D).withValues(alpha: 0.40),
@@ -1401,16 +1502,9 @@ class _SpreadingCelebrationBadgeState extends State<_SpreadingCelebrationBadge>
               ],
             ),
             child: const Center(
-              child: Icon(
-                Icons.check_rounded,
-                size: 50,
-                color: Colors.white,
-              ),
+              child: Icon(Icons.check_rounded, size: 50, color: Colors.white),
             ),
-          ).animate().scale(
-                duration: 700.ms,
-                curve: Curves.elasticOut,
-              ),
+          ).animate().scale(duration: 700.ms, curve: Curves.elasticOut),
         ],
       ),
     );
@@ -1422,10 +1516,8 @@ class _RadiantStarlightPainter extends CustomPainter {
   final Animation<double> animation;
   final Animation<double> ambient;
 
-  _RadiantStarlightPainter({
-    required this.animation,
-    required this.ambient,
-  }) : super(repaint: Listenable.merge([animation, ambient]));
+  _RadiantStarlightPainter({required this.animation, required this.ambient})
+    : super(repaint: Listenable.merge([animation, ambient]));
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1434,9 +1526,9 @@ class _RadiantStarlightPainter extends CustomPainter {
     if (progress <= 0.05) return;
 
     final paintBeam = Paint()
-      ..color = const Color(0xFFFBBF24).withValues(
-        alpha: 0.45 * (1.0 - progress * 0.3),
-      )
+      ..color = const Color(
+        0xFFFBBF24,
+      ).withValues(alpha: 0.45 * (1.0 - progress * 0.3))
       ..strokeWidth = 1.8
       ..strokeCap = StrokeCap.round;
 
