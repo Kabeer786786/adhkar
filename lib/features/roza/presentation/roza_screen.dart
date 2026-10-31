@@ -98,7 +98,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
 
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF192520) : Colors.white,
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           padding: const EdgeInsets.all(24),
@@ -109,16 +109,20 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.3),
+                  color: isDark
+                      ? const Color(0xFF3F3F46)
+                      : Colors.grey.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_today_rounded,
-                    color: Color(0xFF2A531D),
+                    color: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF2A531D),
                   ),
                   const SizedBox(width: 10),
                   Column(
@@ -126,17 +130,19 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                     children: [
                       Text(
                         DateFormat('EEEE, MMMM d, yyyy').format(date),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                         ),
                       ),
                       Text(
                         hijriStr,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey,
+                          color: isDark ? Colors.white60 : Colors.grey,
                         ),
                       ),
                     ],
@@ -150,31 +156,35 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3FAF2),
+                        color: isDark
+                            ? const Color(0xFF0F0F12)
+                            : const Color(0xFFF3FAF2),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(
-                            0xFF2A531D,
-                          ).withValues(alpha: 0.15),
+                          color: isDark
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFF2A531D).withValues(alpha: 0.15),
                         ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 CupertinoIcons.sunrise_fill,
                                 size: 18,
                                 color: Color(0xFFD97724),
                               ),
-                              SizedBox(width: 6),
+                              const SizedBox(width: 6),
                               Text(
                                 'Sehri Ends',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF8C6D53),
+                                  color: isDark
+                                      ? Colors.white70
+                                      : const Color(0xFF8C6D53),
                                 ),
                               ),
                             ],
@@ -185,7 +195,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                             style: GoogleFonts.oxanium(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF2A531D),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF2A531D),
                             ),
                           ),
                         ],
@@ -197,31 +209,35 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3FAF2),
+                        color: isDark
+                            ? const Color(0xFF0F0F12)
+                            : const Color(0xFFF3FAF2),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(
-                            0xFF2A531D,
-                          ).withValues(alpha: 0.15),
+                          color: isDark
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFF2A531D).withValues(alpha: 0.15),
                         ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 CupertinoIcons.sunset_fill,
                                 size: 18,
                                 color: Color(0xFFEA580C),
                               ),
-                              SizedBox(width: 6),
+                              const SizedBox(width: 6),
                               Text(
                                 'Iftar Time',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF8C6D53),
+                                  color: isDark
+                                      ? Colors.white70
+                                      : const Color(0xFF8C6D53),
                                 ),
                               ),
                             ],
@@ -232,7 +248,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                             style: GoogleFonts.oxanium(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF2A531D),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF2A531D),
                             ),
                           ),
                         ],
@@ -246,29 +264,37 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFEF3C7),
+                  color: isDark
+                      ? const Color(0xFF2E2211)
+                      : const Color(0xFFFEF3C7),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                    color: isDark
+                        ? const Color(0xFF78350F)
+                        : const Color(0xFFF59E0B).withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(
                           Icons.timer_outlined,
-                          color: Color(0xFFB45309),
+                          color: isDark
+                              ? const Color(0xFFFDE68A)
+                              : const Color(0xFFB45309),
                           size: 20,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
                           'Total Fasting Duration:',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFFB45309),
+                            color: isDark
+                                ? const Color(0xFFFDE68A)
+                                : const Color(0xFFB45309),
                           ),
                         ),
                       ],
@@ -278,7 +304,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                       style: GoogleFonts.oxanium(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF92400E),
+                        color: isDark ? Colors.white : const Color(0xFF92400E),
                       ),
                     ),
                   ],
@@ -432,6 +458,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final prayerTimes = ref.watch(prayerTimesProvider);
     final storage = ref.watch(storageServiceProvider);
     final now = DateTime.now();
@@ -747,13 +774,13 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
 
               const SizedBox(height: 12),
 
-              // 2. Lower Half Sheet Container (White / Light sheet containing Duas & Fasting Highlights)
+              // 2. Lower Half Sheet Container (White / Dark sheet containing Duas & Fasting Highlights)
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0F0F12) : Colors.white,
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(32),
                     ),
                   ),
@@ -770,10 +797,10 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                             gradient: LinearGradient(
                               colors: [
                                 todayFastingInfo.primaryColor.withValues(
-                                  alpha: 0.12,
+                                  alpha: isDark ? 0.25 : 0.12,
                                 ),
                                 todayFastingInfo.primaryColor.withValues(
-                                  alpha: 0.04,
+                                  alpha: isDark ? 0.1 : 0.04,
                                 ),
                               ],
                               begin: Alignment.topLeft,
@@ -817,7 +844,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: todayFastingInfo.primaryColor,
+                                  color: isDark
+                                      ? Colors.white
+                                      : todayFastingInfo.primaryColor,
                                 ),
                               ),
                               Text(
@@ -825,8 +854,10 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: todayFastingInfo.primaryColor
-                                      .withValues(alpha: 0.8),
+                                  color: isDark
+                                      ? Colors.white70
+                                      : todayFastingInfo.primaryColor
+                                            .withValues(alpha: 0.8),
                                 ),
                               ),
                               const SizedBox(height: 6),
@@ -834,7 +865,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                 todayFastingInfo.description,
                                 style: GoogleFonts.lexend(
                                   fontSize: 12,
-                                  color: const Color(0xFF374151),
+                                  color: isDark
+                                      ? Colors.white70
+                                      : const Color(0xFF374151),
                                   height: 1.35,
                                 ),
                               ),
@@ -907,18 +940,20 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
     required bool isExpanded,
     required VoidCallback onTap,
   }) {
+    final isDark = context.isDarkMode;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: const Color(0xFFF9FAFB),
+          color: isDark ? const Color(0xFF18181B) : const Color(0xFFF9FAFB),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isExpanded
-                ? badgeColor.withValues(alpha: 0.4)
-                : const Color(0xFFE5E7EB),
+                ? badgeColor.withValues(alpha: isDark ? 0.6 : 0.4)
+                : (isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB)),
             width: 1.2,
           ),
           boxShadow: [
@@ -978,7 +1013,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                 style: AppTypography.arabicBody(
                   fontSize: 24,
                   height: 1.6,
-                  color: const Color(0xFF1E3816),
+                  color: isDark ? Colors.white : const Color(0xFF1E3816),
                 ),
               ),
             ),
@@ -990,7 +1025,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
               style: GoogleFonts.lexend(
                 fontSize: 13.5,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF2A531D),
+                color: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
               ),
             ),
 
@@ -1001,9 +1038,15 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: badgeColor.withValues(alpha: 0.07),
+                  color: isDark
+                      ? const Color(0xFF0F0F12)
+                      : badgeColor.withValues(alpha: 0.07),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: badgeColor.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : badgeColor.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Text(
                   translation,
@@ -1011,7 +1054,7 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     fontStyle: FontStyle.italic,
-                    color: const Color(0xFF374151),
+                    color: isDark ? Colors.white70 : const Color(0xFF374151),
                   ),
                 ),
               ),
@@ -1024,32 +1067,36 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
 
   Widget _buildSignificantFastingDaysSection(BuildContext context) {
     final occasions = FastingHelper.getSignificantOccasionsList();
+    final isDark = context.isDarkMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.auto_awesome_rounded,
-              color: Color(0xFF2A531D),
+              color: isDark ? Colors.white : const Color(0xFF2A531D),
               size: 20,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               'Significant Fasting Days in Islam',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2A531D),
+                color: isDark ? Colors.white : const Color(0xFF2A531D),
               ),
             ),
           ],
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Tap on any occasion to explore its virtues and Hadiths',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
+          style: TextStyle(
+            fontSize: 12,
+            color: isDark ? Colors.white60 : Colors.grey,
+          ),
         ),
         const SizedBox(height: 12),
 
@@ -1072,12 +1119,18 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
               child: Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: occ.primaryColor.withValues(alpha: 0.05),
+                  color: isDark
+                      ? const Color(0xFF18181B)
+                      : occ.primaryColor.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: occ.primaryColor.withValues(
-                      alpha: isExpanded ? 0.4 : 0.15,
-                    ),
+                    color: isDark
+                        ? (isExpanded
+                              ? occ.primaryColor.withValues(alpha: 0.6)
+                              : const Color(0xFF27272A))
+                        : occ.primaryColor.withValues(
+                            alpha: isExpanded ? 0.4 : 0.15,
+                          ),
                     width: 1.2,
                   ),
                 ),
@@ -1108,15 +1161,19 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                                 style: TextStyle(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.bold,
-                                  color: occ.primaryColor,
+                                  color: isDark
+                                      ? Colors.white
+                                      : occ.primaryColor,
                                 ),
                               ),
                               Text(
                                 occ.subtitle,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF6B7280),
+                                  color: isDark
+                                      ? Colors.white60
+                                      : const Color(0xFF6B7280),
                                 ),
                               ),
                             ],
@@ -1152,7 +1209,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                         occ.description,
                         style: GoogleFonts.lexend(
                           fontSize: 12,
-                          color: const Color(0xFF374151),
+                          color: isDark
+                              ? Colors.white70
+                              : const Color(0xFF374151),
                           height: 1.4,
                         ),
                       ),
@@ -1162,7 +1221,9 @@ class _RozaScreenState extends ConsumerState<RozaScreen> {
                         style: GoogleFonts.lexend(
                           fontSize: 11.5,
                           fontStyle: FontStyle.italic,
-                          color: occ.primaryColor,
+                          color: isDark
+                              ? const Color(0xFFFDE68A)
+                              : occ.primaryColor,
                           height: 1.4,
                         ),
                       ),
@@ -1273,7 +1334,7 @@ class _RozaCalendarModalContentState
     return Container(
       height: MediaQuery.of(context).size.height * 0.65,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF192520) : Colors.white,
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -1285,7 +1346,9 @@ class _RozaCalendarModalContentState
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
+                color: isDark
+                    ? const Color(0xFF3F3F46)
+                    : Colors.grey.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -1297,9 +1360,11 @@ class _RozaCalendarModalContentState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.chevron_left_rounded,
-                  color: Color(0xFF2A531D),
+                  color: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
                   size: 28,
                 ),
                 tooltip: 'Previous Month',
@@ -1327,19 +1392,23 @@ class _RozaCalendarModalContentState
                     children: [
                       Text(
                         gregorianMonthStr,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         hijriMid.monthName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFD97724),
+                          color: isDark
+                              ? const Color(0xFFFDE68A)
+                              : const Color(0xFFD97724),
                         ),
                       ),
                     ],
@@ -1348,9 +1417,11 @@ class _RozaCalendarModalContentState
               ),
 
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.chevron_right_rounded,
-                  color: Color(0xFF2A531D),
+                  color: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
                   size: 28,
                 ),
                 tooltip: 'Next Month',
@@ -1375,10 +1446,10 @@ class _RozaCalendarModalContentState
                 child: Center(
                   child: Text(
                     day,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF8C6D53),
+                      color: isDark ? Colors.white60 : const Color(0xFF8C6D53),
                     ),
                   ),
                 ),
@@ -1453,8 +1524,12 @@ class _RozaCalendarModalContentState
                     double borderWidth = 1.0;
 
                     if (isToday) {
-                      bg = const Color(0xFF2A531D);
-                      borderColor = const Color(0xFF15803D);
+                      bg = isDark
+                          ? const Color(0xFF18A74C)
+                          : const Color(0xFF2A531D);
+                      borderColor = isDark
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFF15803D);
                       borderWidth = 2.0;
                     } else if (isProhibitedDay) {
                       bg = isDark
@@ -1464,19 +1539,19 @@ class _RozaCalendarModalContentState
                       borderWidth = 1.5;
                     } else if (isSpecialFastingDay) {
                       bg = isDark
-                          ? fastingInfo.primaryColor.withValues(alpha: 0.2)
+                          ? fastingInfo.primaryColor.withValues(alpha: 0.25)
                           : fastingInfo.primaryColor.withValues(alpha: 0.08);
                       borderColor = fastingInfo.primaryColor.withValues(
-                        alpha: 0.6,
+                        alpha: isDark ? 0.7 : 0.6,
                       );
                       borderWidth = 1.5;
                     } else {
                       bg = isDark
-                          ? const Color(0xFF23322B)
+                          ? const Color(0xFF0F0F12)
                           : const Color(0xFFF3FAF2);
-                      borderColor = const Color(
-                        0xFF2A531D,
-                      ).withValues(alpha: 0.15);
+                      borderColor = isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFF2A531D).withValues(alpha: 0.15);
                     }
 
                     return InkWell(
@@ -1503,7 +1578,9 @@ class _RozaCalendarModalContentState
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                   color: isToday
-                                      ? Colors.white
+                                      ? (isDark
+                                            ? const Color(0xFF0F0F12)
+                                            : Colors.white)
                                       : (isSpecialFastingDay
                                             ? fastingInfo.primaryColor
                                             : (isProhibitedDay
@@ -1527,7 +1604,9 @@ class _RozaCalendarModalContentState
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
                                   color: isToday
-                                      ? const Color(0xFFFACC15)
+                                      ? (isDark
+                                            ? const Color(0xFF0F0F12)
+                                            : const Color(0xFFFACC15))
                                       : (isSpecialFastingDay
                                             ? fastingInfo.primaryColor
                                             : (isDark

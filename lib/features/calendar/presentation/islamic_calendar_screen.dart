@@ -239,7 +239,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
         case 'miracle':
           return const Color(0xFF818CF8);
         default:
-          return const Color(0xFF22C55E);
+          return const Color(0xFF18A74C);
       }
     } else {
       switch (type) {
@@ -287,11 +287,13 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final primaryColor =
-        isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
-    final cardBorder =
-        isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
 
     final todayAsync = ref.watch(todayHijriProvider);
     final todayData = todayAsync.value;
@@ -299,8 +301,9 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
     final isAladhan = todayData?.isAladhan ?? false;
 
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF0F0F12)
+          : const Color(0xFFF8FAFC),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppHeaderBar(
@@ -340,7 +343,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: isDark
-                    ? const Color(0xFF22C55E).withValues(alpha: 0.3)
+                    ? const Color(0xFF18A74C).withValues(alpha: 0.3)
                     : Colors.transparent,
               ),
               boxShadow: [
@@ -363,7 +366,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF22C55E).withValues(alpha: 0.2)
+                        ? const Color(0xFF18A74C).withValues(alpha: 0.2)
                         : Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -420,7 +423,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: isDark
-                    ? const Color(0xFF22C55E).withValues(alpha: 0.4)
+                    ? const Color(0xFF18A74C).withValues(alpha: 0.4)
                     : const Color(0xFF86EFAC).withValues(alpha: 0.6),
               ),
             ),
@@ -467,7 +470,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isDark
-                        ? const Color(0xFF22C55E)
+                        ? const Color(0xFF18A74C)
                         : const Color(0xFF2A531D),
                     foregroundColor: isDark
                         ? const Color(0xFF0F0F12)
@@ -495,10 +498,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: primaryColor,
-                    side: BorderSide(
-                      color: primaryColor,
-                      width: 1.5,
-                    ),
+                    side: BorderSide(color: primaryColor, width: 1.5),
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -537,15 +537,13 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (isDark
-                          ? const Color(0xFFFBBF24)
-                          : const Color(0xFFD97724))
-                      .withValues(alpha: 0.12),
+                  color:
+                      (isDark
+                              ? const Color(0xFFFBBF24)
+                              : const Color(0xFFD97724))
+                          .withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -730,11 +728,7 @@ class _IslamicCalendarScreenState extends ConsumerState<IslamicCalendarScreen> {
                           width: 1,
                         ),
                       ),
-                      child: Icon(
-                        eventIcon,
-                        size: 20,
-                        color: eventColor,
-                      ),
+                      child: Icon(eventIcon, size: 20, color: eventColor),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -857,7 +851,7 @@ class _GregorianToHijriModalState
           data: isDark
               ? ThemeData.dark().copyWith(
                   colorScheme: const ColorScheme.dark(
-                    primary: Color(0xFF22C55E),
+                    primary: Color(0xFF18A74C),
                     onPrimary: Color(0xFF0F0F12),
                     surface: Color(0xFF18181B),
                     onSurface: Colors.white,
@@ -889,11 +883,13 @@ class _GregorianToHijriModalState
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final primaryColor =
-        isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
-    final cardBorder =
-        isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
 
     final location = ref.watch(currentLocationProvider).value;
     final isSubcontinent = HijriService.isChandKiTarikhRegion(
@@ -959,7 +955,9 @@ class _GregorianToHijriModalState
                     : const Color(0xFFF4FAF3),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isDark ? cardBorder : primaryColor.withValues(alpha: 0.3),
+                  color: isDark
+                      ? cardBorder
+                      : primaryColor.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
@@ -1040,7 +1038,7 @@ class _GregorianToHijriModalState
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
                   color: isDark
-                      ? const Color(0xFF22C55E).withValues(alpha: 0.3)
+                      ? const Color(0xFF18A74C).withValues(alpha: 0.3)
                       : Colors.transparent,
                 ),
                 boxShadow: [
@@ -1065,7 +1063,7 @@ class _GregorianToHijriModalState
                         ),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF22C55E).withValues(alpha: 0.2)
+                              ? const Color(0xFF18A74C).withValues(alpha: 0.2)
                               : Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -1127,18 +1125,18 @@ class _GregorianToHijriModalState
               decoration: BoxDecoration(
                 color: isSubcontinent
                     ? (isDark
-                        ? const Color(0xFFFBBF24).withValues(alpha: 0.1)
-                        : const Color(0xFFD97724).withValues(alpha: 0.1))
+                          ? const Color(0xFFFBBF24).withValues(alpha: 0.1)
+                          : const Color(0xFFD97724).withValues(alpha: 0.1))
                     : (isDark
-                        ? const Color(0xFF60A5FA).withValues(alpha: 0.1)
-                        : const Color(0xFF2563EB).withValues(alpha: 0.1)),
+                          ? const Color(0xFF60A5FA).withValues(alpha: 0.1)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.1)),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: isDark
                       ? cardBorder
                       : (isSubcontinent
-                          ? const Color(0xFFD97724).withValues(alpha: 0.3)
-                          : const Color(0xFF2563EB).withValues(alpha: 0.3)),
+                            ? const Color(0xFFD97724).withValues(alpha: 0.3)
+                            : const Color(0xFF2563EB).withValues(alpha: 0.3)),
                 ),
               ),
               child: Row(
@@ -1149,11 +1147,11 @@ class _GregorianToHijriModalState
                     size: 16,
                     color: isSubcontinent
                         ? (isDark
-                            ? const Color(0xFFFBBF24)
-                            : const Color(0xFFD97724))
+                              ? const Color(0xFFFBBF24)
+                              : const Color(0xFFD97724))
                         : (isDark
-                            ? const Color(0xFF60A5FA)
-                            : const Color(0xFF2563EB)),
+                              ? const Color(0xFF60A5FA)
+                              : const Color(0xFF2563EB)),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -1184,7 +1182,7 @@ class _GregorianToHijriModalState
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark
-                    ? const Color(0xFF22C55E)
+                    ? const Color(0xFF18A74C)
                     : const Color(0xFFE8F4E5),
                 foregroundColor: isDark
                     ? const Color(0xFF0F0F12)

@@ -20,10 +20,15 @@ class TasbeehDescriptionModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+    final itemColor = (isDark && item.color.value == 0xFF2A531D)
+        ? const Color(0xFF18A74C)
+        : item.color;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: context.isDarkMode ? const Color(0xFF192520) : Colors.white,
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
@@ -36,7 +41,9 @@ class TasbeehDescriptionModal extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
+                color: isDark
+                    ? const Color(0xFF3F3F46)
+                    : Colors.grey.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -49,13 +56,13 @@ class TasbeehDescriptionModal extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: item.color.withValues(alpha: 0.12),
+                  color: itemColor.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.auto_awesome_rounded,
                   size: 22,
-                  color: item.color,
+                  color: itemColor,
                 ),
               ),
               const SizedBox(width: 12),
@@ -66,8 +73,8 @@ class TasbeehDescriptionModal extends StatelessWidget {
                     Text(
                       item.textEn,
                       style: context.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: item.color,
+                        fontWeight: FontWeight.w600,
+                        color: itemColor,
                       ),
                     ),
                     Text(
@@ -76,9 +83,7 @@ class TasbeehDescriptionModal extends StatelessWidget {
                       style: AppTypography.arabicBody(
                         fontSize: 22,
                         height: 1.7,
-                        color: context.isDarkMode
-                            ? Colors.white70
-                            : const Color(0xFF1E3816),
+                        color: isDark ? Colors.white : const Color(0xFF1E3816),
                       ),
                     ),
                   ],
@@ -90,7 +95,7 @@ class TasbeehDescriptionModal extends StatelessWidget {
 
           Divider(
             height: 1,
-            color: Colors.grey.shade300,
+            color: isDark ? const Color(0xFF27272A) : Colors.grey.shade300,
           ),
           const SizedBox(height: 16),
 
@@ -100,7 +105,9 @@ class TasbeehDescriptionModal extends StatelessWidget {
               Icon(
                 Icons.menu_book_rounded,
                 size: 18,
-                color: context.colorScheme.onSurfaceVariant,
+                color: isDark
+                    ? const Color(0xFF86EFAC)
+                    : context.colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 8),
               Text(
@@ -109,7 +116,9 @@ class TasbeehDescriptionModal extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.8,
-                  color: context.colorScheme.onSurfaceVariant,
+                  color: isDark
+                      ? const Color(0xFF86EFAC)
+                      : context.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -125,7 +134,7 @@ class TasbeehDescriptionModal extends StatelessWidget {
               fontSize: 14.5,
               height: 1.55,
               fontWeight: FontWeight.w400,
-              color: context.colorScheme.onSurface,
+              color: isDark ? Colors.white70 : context.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 24),
@@ -134,16 +143,26 @@ class TasbeehDescriptionModal extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: item.color.withValues(alpha: 0.08),
+              color: isDark
+                  ? const Color(0xFF0F0F12)
+                  : itemColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: item.color.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : itemColor.withValues(alpha: 0.2),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Recommended Target:',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -151,15 +170,17 @@ class TasbeehDescriptionModal extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: item.color,
+                    color: itemColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${item.targetGoal} Times',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: isDark && item.color.value == 0xFF2A531D
+                          ? const Color(0xFF0F0F12)
+                          : Colors.white,
                     ),
                   ),
                 ),
@@ -174,8 +195,10 @@ class TasbeehDescriptionModal extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: item.color,
-                foregroundColor: Colors.white,
+                backgroundColor: itemColor,
+                foregroundColor: isDark && item.color.value == 0xFF2A531D
+                    ? const Color(0xFF0F0F12)
+                    : Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),

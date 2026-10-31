@@ -1567,12 +1567,19 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
   ) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
-        return Padding(
+        return Container(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: isDark
+                ? const Border(
+                    top: BorderSide(color: Color(0xFF27272A), width: 1),
+                  )
+                : null,
+          ),
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1583,7 +1590,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : Colors.grey.shade300,
+                    color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -1594,12 +1601,16 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2A531D).withValues(alpha: 0.15),
+                      color: isDark
+                          ? const Color(0xFF143820)
+                          : const Color(0xFF2A531D).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       FlutterIslamicIcons.quran2,
-                      color: Color(0xFF2A531D),
+                      color: isDark
+                          ? const Color(0xFF18A74C)
+                          : const Color(0xFF2A531D),
                       size: 24,
                     ),
                   ),
@@ -1620,7 +1631,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           juz.nameArabic,
                           style: TextStyle(
                             fontSize: 14,
-                            color: isDark ? Colors.white70 : const Color(0xFF2A531D),
+                            color: isDark
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF2A531D),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -1633,18 +1646,24 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                  color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isDark ? Colors.white10 : Colors.grey.shade200,
+                    color: isDark ? const Color(0xFF27272A) : Colors.grey.shade200,
                   ),
                 ),
                 child: Column(
                   children: [
                     _buildJuzInfoRow('Surah Range', juz.surahRange, isDark),
-                    const Divider(height: 16),
+                    Divider(
+                      height: 16,
+                      color: isDark ? const Color(0xFF27272A) : Colors.grey.shade200,
+                    ),
                     _buildJuzInfoRow('Total Verses in Juz', '${ayahs.length} Ayahs', isDark),
-                    const Divider(height: 16),
+                    Divider(
+                      height: 16,
+                      color: isDark ? const Color(0xFF27272A) : Colors.grey.shade200,
+                    ),
                     _buildJuzInfoRow('Mushaf Page Range', 'Page ${juz.startPage} - ${juz.endPage}', isDark),
                   ],
                 ),
@@ -1664,7 +1683,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: isDark ? Colors.white60 : Colors.grey.shade600,
+            color: isDark ? Colors.white70 : Colors.grey.shade600,
           ),
         ),
         Text(

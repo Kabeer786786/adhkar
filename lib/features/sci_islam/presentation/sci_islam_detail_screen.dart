@@ -79,7 +79,7 @@ class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
                       ? Icons.palette_rounded
                       : Icons.palette_outlined,
                   color: isDark ? Colors.white : const Color(0xFF2A531D),
-                  size: 23,
+                  size: 22,
                 ),
                 tooltip: 'Reading Theme',
                 onPressed: () {
@@ -218,7 +218,7 @@ class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
 
                           Divider(
                             color: isDark
-                                ? Colors.white.withValues(alpha: 0.12)
+                                ? const Color(0xFF27272A)
                                 : const Color(0xFFE2E8F0),
                             thickness: 1.0,
                           ),
@@ -271,15 +271,15 @@ class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
                           const SizedBox(height: 24),
 
                           // Key Scientific Takeaways Section Header
-                          const Text(
+                          Text(
                             'KEY SCIENTIFIC TAKEAWAYS',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.6,
-                              color: Color(0xFF16A34A),
+                              color: isDark ? const Color(0xFF18A74C) : const Color(0xFF16A34A),
                               decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFF16A34A),
+                              decorationColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF16A34A),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -290,9 +290,9 @@ class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.check_circle_rounded,
-                                    color: Color(0xFF16A34A),
+                                    color: isDark ? const Color(0xFF18A74C) : const Color(0xFF16A34A),
                                     size: 18,
                                   ),
                                   const SizedBox(width: 10),
@@ -317,15 +317,15 @@ class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
                           const SizedBox(height: 24),
 
                           // Academic & Scientific References Section Header
-                          const Text(
+                          Text(
                             'ACADEMIC & SCIENTIFIC REFERENCES',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.6,
-                              color: Color(0xFF2563EB),
+                              color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB),
                               decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFF2563EB),
+                              decorationColor: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -338,10 +338,10 @@ class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
                                 children: [
                                   Text(
                                     ref.source.toUpperCase(),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2563EB),
+                                      color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB),
                                     ),
                                   ),
                                   const SizedBox(height: 2),
@@ -392,11 +392,11 @@ class _SciIslamDetailScreenState extends ConsumerState<SciIslamDetailScreen> {
                   width: 250,
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF18181C) : Colors.white,
+                    color: isDark ? const Color(0xFF18181B) : Colors.white,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: isDark
-                          ? Colors.white.withValues(alpha: 0.15)
+                          ? const Color(0xFF27272A)
                           : Colors.black.withValues(alpha: 0.1),
                       width: 1,
                     ),

@@ -11,24 +11,28 @@ class WhatIsIslamScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final primaryColor =
-        isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
-    final cardBorder =
-        isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor:
-            isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC),
+        backgroundColor: isDark
+            ? const Color(0xFF0F0F12)
+            : const Color(0xFFF8FAFC),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
             title: 'WHAT IS ISLAM',
             showBackButton: true,
-            systemOverlayStyle:
-                isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+            systemOverlayStyle: isDark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
             backgroundColor: cardBg,
             iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
             titleWidget: Text(
@@ -60,7 +64,7 @@ class WhatIsIslamScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
                   color: isDark
-                      ? const Color(0xFF22C55E).withValues(alpha: 0.3)
+                      ? const Color(0xFF18A74C).withValues(alpha: 0.3)
                       : Colors.transparent,
                 ),
                 boxShadow: [
@@ -83,7 +87,7 @@ class WhatIsIslamScreen extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF22C55E).withValues(alpha: 0.2)
+                          ? const Color(0xFF18A74C).withValues(alpha: 0.2)
                           : Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -215,7 +219,9 @@ class WhatIsIslamScreen extends StatelessWidget {
                 Icon(
                   Icons.stars_rounded,
                   size: 18,
-                  color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB),
+                  color: isDark
+                      ? const Color(0xFF60A5FA)
+                      : const Color(0xFF2563EB),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -323,7 +329,9 @@ class WhatIsIslamScreen extends StatelessWidget {
                 Icon(
                   Icons.format_quote_rounded,
                   size: 18,
-                  color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97724),
+                  color: isDark
+                      ? const Color(0xFFFBBF24)
+                      : const Color(0xFFD97724),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -385,10 +393,11 @@ class WhatIsIslamScreen extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: (isDark
-                                ? const Color(0xFFFBBF24)
-                                : const Color(0xFFD97724))
-                            .withValues(alpha: 0.12),
+                        color:
+                            (isDark
+                                    ? const Color(0xFFFBBF24)
+                                    : const Color(0xFFD97724))
+                                .withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -442,10 +451,7 @@ class WhatIsIslamScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.14),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: color.withValues(alpha: 0.3),
-                width: 1,
-              ),
+              border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
             ),
             child: Stack(
               alignment: Alignment.center,

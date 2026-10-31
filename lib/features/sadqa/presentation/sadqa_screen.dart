@@ -189,8 +189,12 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
             ? null
             : FloatingActionButton(
                 onPressed: () => _openAddModal(context),
-                backgroundColor: const Color(0xFF16A34A),
-                foregroundColor: Colors.white,
+                backgroundColor: isDark
+                    ? const Color(0xFF18A74C)
+                    : const Color(0xFF16A34A),
+                foregroundColor: isDark
+                    ? const Color(0xFF0F0F12)
+                    : Colors.white,
                 elevation: 3,
                 shape: const CircleBorder(),
                 child: const Icon(Icons.add_rounded, size: 32),
@@ -506,7 +510,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF192520) : Colors.white,
+                    color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(32),
                     ),
@@ -526,12 +530,12 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF131D18)
+                                  ? const Color(0xFF18181B)
                                   : const Color(0xFFF1F5F9),
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
                                 color: isDark
-                                    ? Colors.white12
+                                    ? const Color(0xFF27272A)
                                     : const Color(0xFFE2E8F0),
                               ),
                             ),
@@ -541,7 +545,9 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                                 _buildFilterPill(
                                   label: 'All Logs',
                                   isSelected: _filterType == null,
-                                  activeColor: const Color(0xFF2A531D),
+                                  activeColor: isDark
+                                      ? const Color(0xFF18A74C)
+                                      : const Color(0xFF2A531D),
                                   onTap: () =>
                                       setState(() => _filterType = null),
                                   isDark: isDark,
@@ -655,7 +661,9 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
             Icon(
               Icons.volunteer_activism_rounded,
               size: 56,
-              color: const Color(0xFF2A531D).withValues(alpha: 0.3),
+              color: isDark
+                  ? Colors.white38
+                  : const Color(0xFF2A531D).withValues(alpha: 0.3),
             ),
             const SizedBox(height: 12),
             Text(
@@ -678,17 +686,24 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
             const SizedBox(height: 16),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2A531D),
-                foregroundColor: Colors.white,
+                backgroundColor: isDark
+                    ? const Color(0xFF18A74C)
+                    : const Color(0xFF2A531D),
+                foregroundColor: isDark
+                    ? const Color(0xFF0F0F12)
+                    : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              icon: const Icon(Icons.add_rounded, color: Colors.white),
-              label: const Text(
+              icon: Icon(
+                Icons.add_rounded,
+                color: isDark ? const Color(0xFF0F0F12) : Colors.white,
+              ),
+              label: Text(
                 'Log First Payment',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -713,10 +728,10 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
+        color: isDark ? const Color(0xFF18181B) : const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isDark ? const Color(0xFF2E4237) : const Color(0xFFE2E8F0),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
           width: 1.0,
         ),
         boxShadow: [
@@ -871,7 +886,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
                           Divider(
                             height: 1,
                             color: isDark
-                                ? Colors.white12
+                                ? const Color(0xFF27272A)
                                 : const Color(0xFFE2E8F0),
                           ),
                           const SizedBox(height: 8),
@@ -917,7 +932,7 @@ class _SadqaScreenState extends ConsumerState<SadqaScreen> {
               // 3 Dots at top right corner absolute (comes over the amount)
               Positioned(
                 top: 0,
-                right: 0, 
+                right: 0,
                 child: AppActionPopupMenu<String>(
                   items: const [
                     AppActionMenuItem(

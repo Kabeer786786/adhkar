@@ -60,7 +60,7 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF131E18)
+          ? const Color(0xFF0F0F12)
           : const Color(0xFFFCFBF7),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -72,7 +72,7 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
           systemOverlayStyle: isDark
               ? SystemUiOverlayStyle.light
               : SystemUiOverlayStyle.dark,
-          backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
           titleWidget: Row(
             mainAxisSize: MainAxisSize.min,
@@ -81,11 +81,13 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF233827)
+                      ? const Color(0xFF143820)
                       : const Color(0xFFE8F5E9),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                    color: isDark
+                        ? const Color(0xFF18A74C).withValues(alpha: 0.3)
+                        : const Color(0xFF2A531D).withValues(alpha: 0.2),
                   ),
                 ),
                 child: Text(
@@ -94,7 +96,7 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: isDark
-                        ? const Color(0xFFA3E635)
+                        ? const Color(0xFF18A74C)
                         : const Color(0xFF2A531D),
                   ),
                 ),
@@ -175,15 +177,20 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [const Color(0xFF1E3A15), const Color(0xFF0F1A0E)]
+              ? [const Color(0xFF18181B), const Color(0xFF142E1B)]
               : [const Color(0xFF437A2C), const Color(0xFF204616)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
+        border: isDark
+            ? Border.all(color: const Color(0xFF27272A), width: 1.2)
+            : null,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2A531D).withValues(alpha: 0.3),
+            color: (isDark ? Colors.black : const Color(0xFF2A531D)).withValues(
+              alpha: isDark ? 0.35 : 0.25,
+            ),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -230,14 +237,19 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                 style: AppTypography.arabicHeader(
                   arabicFont: arabicFont,
                   fontSize: 28,
-                  color: const Color(0xFFD1FFBE),
+                  color: isDark
+                      ? const Color(0xFF86EFAC)
+                      : const Color(0xFFD1FFBE),
                   height: 1.2,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          const Divider(color: Colors.white24, height: 1),
+          Divider(
+            color: isDark ? const Color(0xFF27272A) : Colors.white24,
+            height: 1,
+          ),
           const SizedBox(height: 14),
 
           // Metadata Pills Wrap (Revelation Place, Order, Total Verses)
@@ -251,8 +263,15 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                     ? FlutterIslamicIcons.kaaba
                     : FlutterIslamicIcons.solidMosque,
                 label: isMakkah ? 'Makki (Makkah)' : 'Madani (Madinah)',
-                bgColor: Colors.white.withValues(alpha: 0.15),
-                textColor: const Color(0xFFD1FFBE),
+                bgColor: isDark
+                    ? const Color(0xFF18181B).withValues(alpha: 0.85)
+                    : Colors.white.withValues(alpha: 0.15),
+                textColor: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFFD1FFBE),
+                borderColor: isDark
+                    ? const Color(0xFF27272A)
+                    : Colors.white.withValues(alpha: 0.1),
               ),
 
               // Revelation Chronological Order Badge
@@ -261,23 +280,38 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                 _buildMetaBadge(
                   icon: Icons.menu_book_rounded,
                   label: 'Surah #${surah.number} of 114',
-                  bgColor: Colors.white.withValues(alpha: 0.15),
+                  bgColor: isDark
+                      ? const Color(0xFF18181B).withValues(alpha: 0.85)
+                      : Colors.white.withValues(alpha: 0.15),
                   textColor: Colors.white,
+                  borderColor: isDark
+                      ? const Color(0xFF27272A)
+                      : Colors.white.withValues(alpha: 0.1),
                 ),
 
               _buildMetaBadge(
                 icon: Icons.history_edu_rounded,
                 label: 'Revelation Order: #$revelationOrder',
-                bgColor: Colors.white.withValues(alpha: 0.15),
+                bgColor: isDark
+                    ? const Color(0xFF18181B).withValues(alpha: 0.85)
+                    : Colors.white.withValues(alpha: 0.15),
                 textColor: Colors.white,
+                borderColor: isDark
+                    ? const Color(0xFF27272A)
+                    : Colors.white.withValues(alpha: 0.1),
               ),
 
               // Total Verses Badge
               _buildMetaBadge(
                 icon: Icons.format_list_numbered_rounded,
                 label: '$totalVerses Verses',
-                bgColor: Colors.white.withValues(alpha: 0.15),
+                bgColor: isDark
+                    ? const Color(0xFF18181B).withValues(alpha: 0.85)
+                    : Colors.white.withValues(alpha: 0.15),
                 textColor: Colors.white,
+                borderColor: isDark
+                    ? const Color(0xFF27272A)
+                    : Colors.white.withValues(alpha: 0.1),
               ),
             ],
           ),
@@ -291,13 +325,16 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
     required String label,
     required Color bgColor,
     required Color textColor,
+    Color? borderColor,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: borderColor ?? Colors.white.withValues(alpha: 0.1),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -321,11 +358,11 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E2D24) : Colors.grey.shade200,
+        color: isDark ? const Color(0xFF18181B) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark
-              ? Colors.white10
+              ? const Color(0xFF27272A)
               : const Color(0xFF2A531D).withValues(alpha: 0.08),
         ),
       ),
@@ -373,13 +410,13 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark ? const Color(0xFF2A531D) : Colors.white)
+              ? (isDark ? const Color(0xFF18A74C) : Colors.white)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -393,8 +430,8 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
               fontSize: 13,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               color: isSelected
-                  ? (isDark ? const Color(0xFFD1FFBE) : const Color(0xFF2A531D))
-                  : (isDark ? Colors.white60 : Colors.grey.shade700),
+                  ? Colors.white
+                  : (isDark ? const Color(0xFFA1A1AA) : Colors.grey.shade700),
             ),
             textAlign: TextAlign.center,
           ),
@@ -411,10 +448,13 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1B2B20) : const Color(0xFFF1F8EE),
+        color: isDark ? const Color(0xFF18181B) : const Color(0xFFF1F8EE),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: const Color(0xFF2A531D).withValues(alpha: 0.25),
+          color: isDark
+              ? const Color(0xFF27272A)
+              : const Color(0xFF2A531D).withValues(alpha: 0.25),
+          width: 1.2,
         ),
       ),
       child: Column(
@@ -431,7 +471,7 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                 Icons.lightbulb_outline_rounded,
                 size: 18,
                 color: isDark
-                    ? const Color(0xFFA3E635)
+                    ? const Color(0xFF18A74C)
                     : const Color(0xFF2A531D),
               ),
               const SizedBox(width: 6),
@@ -441,7 +481,7 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                   fontSize: 13.5,
                   fontWeight: FontWeight.bold,
                   color: isDark
-                      ? const Color(0xFFA3E635)
+                      ? const Color(0xFF18A74C)
                       : const Color(0xFF2A531D),
                 ),
               ),
@@ -456,14 +496,14 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
                     fontSize: 15.5,
                     height: 1.8,
                     color: isDark
-                        ? const Color(0xFFE2E8F0)
+                        ? const Color(0xFFE4E4E7)
                         : const Color(0xFF1E293B),
                   )
                 : TextStyle(
                     fontSize: 14,
                     height: 1.55,
                     color: isDark
-                        ? const Color(0xFFE2E8F0)
+                        ? const Color(0xFFE4E4E7)
                         : const Color(0xFF334155),
                   ),
           ),
@@ -481,10 +521,10 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF192520) : Colors.white,
+          color: isDark ? const Color(0xFF18181B) : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade200,
+            color: isDark ? const Color(0xFF27272A) : Colors.grey.shade200,
           ),
         ),
         child: Column(
@@ -512,10 +552,10 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
 
     // Colors for HTML rendering
     final textColor = isDark
-        ? const Color(0xFFE2E8F0)
+        ? const Color(0xFFE4E4E7)
         : const Color(0xFF1E293B);
     final headerColor = isDark
-        ? const Color(0xFF86EFAC)
+        ? const Color(0xFF18A74C)
         : const Color(0xFF2A531D);
     final linkColor = isDark
         ? const Color(0xFF60A5FA)
@@ -524,16 +564,17 @@ class _SurahInfoScreenState extends ConsumerState<SurahInfoScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF192520) : Colors.white,
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: isDark
-              ? Colors.white10
+              ? const Color(0xFF27272A)
               : const Color(0xFF2A531D).withValues(alpha: 0.1),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

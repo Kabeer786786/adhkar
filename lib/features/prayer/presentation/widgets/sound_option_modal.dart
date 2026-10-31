@@ -149,7 +149,9 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.colorScheme.surface,
+        color: context.isDarkMode
+            ? const Color(0xFF18181B)
+            : context.colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       constraints: BoxConstraints(
@@ -172,7 +174,9 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.colorScheme.outlineVariant,
+                  color: context.isDarkMode
+                      ? const Color(0xFF3F3F46)
+                      : context.colorScheme.outlineVariant,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -201,12 +205,15 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                         '${widget.prayerName} Notification Settings',
                         style: context.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: context.isDarkMode ? Colors.white : null,
                         ),
                       ),
                       Text(
                         'Customize alert modes, sound and alarm days',
                         style: context.textTheme.bodySmall?.copyWith(
-                          color: context.colorScheme.onSurfaceVariant,
+                          color: context.isDarkMode
+                              ? Colors.white60
+                              : context.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -215,14 +222,21 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
               ],
             ),
             const SizedBox(height: 20),
-            const Divider(height: 1, color: Color(0xFFE7E7E7)),
+            Divider(
+              height: 1,
+              color: context.isDarkMode
+                  ? const Color(0xFF27272A)
+                  : const Color(0xFFE7E7E7),
+            ),
             const SizedBox(height: 16),
 
             Text(
               'Alert Modes (Select Multiple)',
               style: context.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: context.colorScheme.primary,
+                color: context.isDarkMode
+                    ? const Color(0xFF18A74C)
+                    : context.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 8),
@@ -280,7 +294,9 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
               'Repeat Days (Alarm Active Days)',
               style: context.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: context.colorScheme.primary,
+                color: context.isDarkMode
+                    ? const Color(0xFF18A74C)
+                    : context.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 8),
@@ -307,19 +323,32 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? context.colorScheme.primary
-                          : context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                          ? (context.isDarkMode
+                                ? const Color(0xFF18A74C)
+                                : context.colorScheme.primary)
+                          : (context.isDarkMode
+                                ? const Color(0xFF27272A)
+                                : context.colorScheme.surfaceContainerHighest
+                                      .withValues(alpha: 0.4)),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected
-                            ? context.colorScheme.primary
-                            : const Color(0xFFE7E7E7),
+                            ? (context.isDarkMode
+                                  ? const Color(0xFF18A74C)
+                                  : context.colorScheme.primary)
+                            : (context.isDarkMode
+                                  ? const Color(0xFF3F3F46)
+                                  : const Color(0xFFE7E7E7)),
                         width: 1.5,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: context.colorScheme.primary.withValues(alpha: 0.2),
+                                color:
+                                    (context.isDarkMode
+                                            ? const Color(0xFF18A74C)
+                                            : context.colorScheme.primary)
+                                        .withValues(alpha: 0.2),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -332,8 +361,12 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                         color: isSelected
-                            ? context.colorScheme.onPrimary
-                            : context.colorScheme.onSurfaceVariant,
+                            ? (context.isDarkMode
+                                  ? const Color(0xFF0F0F12)
+                                  : context.colorScheme.onPrimary)
+                            : (context.isDarkMode
+                                  ? Colors.white70
+                                  : context.colorScheme.onSurfaceVariant),
                       ),
                     ),
                   ),
@@ -345,15 +378,21 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 InkWell(
-                  onTap: () => setState(() => _selectedDays = {1, 2, 3, 4, 5, 6, 7}),
+                  onTap: () =>
+                      setState(() => _selectedDays = {1, 2, 3, 4, 5, 6, 7}),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
                     child: Text(
                       'All Days',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: context.colorScheme.primary,
+                        color: context.isDarkMode
+                            ? const Color(0xFF18A74C)
+                            : context.colorScheme.primary,
                       ),
                     ),
                   ),
@@ -362,13 +401,18 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                 InkWell(
                   onTap: () => setState(() => _selectedDays = {1, 2, 3, 4, 5}),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
                     child: Text(
                       'Weekdays',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: context.colorScheme.primary,
+                        color: context.isDarkMode
+                            ? const Color(0xFF18A74C)
+                            : context.colorScheme.primary,
                       ),
                     ),
                   ),
@@ -377,13 +421,18 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                 InkWell(
                   onTap: () => setState(() => _selectedDays = {6, 7}),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
                     child: Text(
                       'Weekends',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: context.colorScheme.primary,
+                        color: context.isDarkMode
+                            ? const Color(0xFF18A74C)
+                            : context.colorScheme.primary,
                       ),
                     ),
                   ),
@@ -397,7 +446,9 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                 Expanded(
                   child: AppDropdown<String>(
                     label: 'Azaan / Sound Type',
-                    value: _soundTypes.contains(_soundType) ? _soundType : 'Makkah Azaan',
+                    value: _soundTypes.contains(_soundType)
+                        ? _soundType
+                        : 'Makkah Azaan',
                     items: _soundTypes.map((type) {
                       return AppDropdownItem<String>(
                         value: type,
@@ -422,24 +473,43 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                 Container(
                   margin: const EdgeInsets.only(top: 14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                    color:
+                        (context.isDarkMode
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF2A531D))
+                            .withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFF2A531D).withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color:
+                          (context.isDarkMode
+                                  ? const Color(0xFF18A74C)
+                                  : const Color(0xFF2A531D))
+                              .withValues(alpha: 0.4),
+                    ),
                   ),
                   child: IconButton(
-                    tooltip: _isPlayingPreview ? 'Stop Preview' : 'Play Preview',
+                    tooltip: _isPlayingPreview
+                        ? 'Stop Preview'
+                        : 'Play Preview',
                     onPressed: _isLoadingPreview ? null : _toggleAudioPreview,
                     icon: _isLoadingPreview
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2.5),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: context.isDarkMode
+                                  ? const Color(0xFF18A74C)
+                                  : const Color(0xFF2A531D),
+                            ),
                           )
                         : Icon(
                             _isPlayingPreview
                                 ? Icons.stop_circle_rounded
                                 : Icons.play_circle_fill_rounded,
-                            color: const Color(0xFF2A531D),
+                            color: context.isDarkMode
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF2A531D),
                             size: 26,
                           ),
                   ),
@@ -459,12 +529,21 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                       Navigator.of(context).pop();
                     },
                     style: OutlinedButton.styleFrom(
+                      side: context.isDarkMode
+                          ? const BorderSide(color: Color(0xFF27272A))
+                          : null,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text('Cancel', style: TextStyle(fontSize: 14)),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: context.isDarkMode ? Colors.white70 : null,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -484,12 +563,24 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                       Navigator.of(context).pop();
                     },
                     style: FilledButton.styleFrom(
+                      backgroundColor: context.isDarkMode
+                          ? const Color(0xFF18A74C)
+                          : null,
+                      foregroundColor: context.isDarkMode
+                          ? const Color(0xFF0F0F12)
+                          : null,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text('Save Settings', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'Save Settings',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -514,7 +605,13 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: context.colorScheme.onSurfaceVariant),
+            Icon(
+              icon,
+              size: 20,
+              color: context.isDarkMode
+                  ? Colors.white70
+                  : context.colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -524,12 +621,15 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
                     title,
                     style: context.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: context.isDarkMode ? Colors.white : null,
                     ),
                   ),
                   Text(
                     subtitle,
                     style: context.textTheme.bodySmall?.copyWith(
-                      color: context.colorScheme.onSurfaceVariant,
+                      color: context.isDarkMode
+                          ? Colors.white60
+                          : context.colorScheme.onSurfaceVariant,
                       fontSize: 12,
                     ),
                   ),
@@ -542,7 +642,9 @@ class _SoundOptionModalState extends State<SoundOptionModal> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
-              activeColor: context.colorScheme.primary,
+              activeColor: context.isDarkMode
+                  ? const Color(0xFF18A74C)
+                  : context.colorScheme.primary,
             ),
           ],
         ),

@@ -62,7 +62,8 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
           _isBuffering = state.isBuffering;
         });
         if (playing) {
-          if (!_waveController.isAnimating) _waveController.repeat(reverse: true);
+          if (!_waveController.isAnimating)
+            _waveController.repeat(reverse: true);
         } else {
           if (_waveController.isAnimating) _waveController.stop();
         }
@@ -123,27 +124,40 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
     }
   }
 
-  void _confirmDelete(BuildContext context) {
+  void _confirmDelete(BuildContext context, [bool isDark = false]) {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: isDark
+              ? const BorderSide(color: Color(0xFF27272A))
+              : BorderSide.none,
+        ),
         title: Row(
           children: [
             const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
             const SizedBox(width: 8),
-            Text(_dua.isCustom ? 'Delete Dua?' : 'Remove Dua?'),
+            Text(
+              _dua.isCustom ? 'Delete Dua?' : 'Remove Dua?',
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+            ),
           ],
         ),
         content: Text(
           _dua.isCustom
               ? 'Are you sure you want to delete "${_dua.title}" permanently?'
               : 'Are you sure you want to remove "${_dua.title}"? You can re-add it anytime from the Dua Library.',
+          style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: isDark ? Colors.white60 : Colors.grey),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -180,7 +194,30 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
     );
   }
 
-  static Color _getCategoryTextColor(String category) {
+  static Color _getCategoryTextColor(String category, [bool isDark = false]) {
+    if (isDark) {
+      switch (category.trim().toLowerCase()) {
+        case 'morning':
+        case 'food':
+          return const Color(0xFFFDE68A);
+        case 'sleep':
+          return const Color(0xFFBAE6FD);
+        case 'hygiene':
+          return const Color(0xFFFBCFE8);
+        case 'travel':
+          return const Color(0xFF86EFAC);
+        case 'protection':
+          return const Color(0xFFE9D5FF);
+        case 'prayer':
+        case 'adhan':
+        case 'mosque':
+          return const Color(0xFF86EFAC);
+        case 'forgiveness':
+          return const Color(0xFF99F6E4);
+        default:
+          return const Color(0xFF86EFAC);
+      }
+    }
     switch (category.trim().toLowerCase()) {
       case 'morning':
       case 'food':
@@ -206,10 +243,11 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final themeColor = _getCategoryTextColor(_dua.category);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeColor = _getCategoryTextColor(_dua.category, isDark);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppHeaderBar(
@@ -217,13 +255,15 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
           showBackButton: true,
           centerTitle: true,
           titleSpacing: 0,
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
           actions: [
             // Edit Dua
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit_outlined,
-                color: Color(0xFF2A531D),
+                color: isDark
+                    ? const Color(0xFF18A74C)
+                    : const Color(0xFF2A531D),
               ),
               tooltip: 'Edit Dua',
               onPressed: _openEditModal,
@@ -236,7 +276,7 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                 color: Colors.redAccent,
               ),
               tooltip: _dua.isCustom ? 'Delete Custom Dua' : 'Remove Dua',
-              onPressed: () => _confirmDelete(context),
+              onPressed: () => _confirmDelete(context, isDark),
             ),
             const SizedBox(width: 4),
           ],
@@ -270,8 +310,7 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
             Positioned.fill(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding:
-                    const EdgeInsets.fromLTRB(20, 16, 20, 96),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -287,8 +326,18 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                                 vertical: 5,
                               ),
                               decoration: BoxDecoration(
-                                color: themeColor.withValues(alpha: 0.1),
+                                color: themeColor.withValues(
+                                  alpha: isDark ? 0.2 : 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
+                                border: isDark
+                                    ? Border.all(
+                                        color: themeColor.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        width: 1,
+                                      )
+                                    : null,
                               ),
                               child: Text(
                                 _dua.category.toUpperCase(),
@@ -327,13 +376,13 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                         // Language Switcher Chips
                         Row(
                           children: [
-                            _buildLangChip('en', 'EN'),
+                            _buildLangChip('en', 'EN', isDark),
                             const SizedBox(width: 4),
-                            _buildLangChip('ur', 'UR'),
+                            _buildLangChip('ur', 'UR', isDark),
                             const SizedBox(width: 4),
-                            _buildLangChip('hi', 'HI'),
+                            _buildLangChip('hi', 'HI', isDark),
                             const SizedBox(width: 4),
-                            _buildLangChip('te', 'TE'),
+                            _buildLangChip('te', 'TE', isDark),
                           ],
                         ),
                       ],
@@ -347,7 +396,7 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                         fontSize: 19,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0,
-                        color: themeColor,
+                        color: isDark ? Colors.white : themeColor,
                         height: 1.25,
                       ),
                     ),
@@ -361,13 +410,15 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                       style: AppTypography.arabicHeader(
                         fontSize: 27,
                         height: 1.8,
-                        color: const Color(0xFF1A3512),
+                        color: isDark ? Colors.white : const Color(0xFF1A3512),
                       ),
                     ),
                     const SizedBox(height: 12),
 
-                    const Divider(
-                      color: Color(0xFFE2E8F0),
+                    Divider(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE2E8F0),
                       thickness: 1.0,
                     ),
                     const SizedBox(height: 12),
@@ -376,13 +427,15 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                     if (_dua.getTransliteration(_currentLang).isNotEmpty) ...[
                       SelectableText(
                         _dua.getTransliteration(_currentLang),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15.5,
                           height: 1.45,
                           letterSpacing: 0,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF334155),
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : const Color(0xFF334155),
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -396,31 +449,37 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
                         height: 1.45,
                         letterSpacing: -0.4,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF1B5E20),
+                        color: isDark
+                            ? Colors.white70
+                            : const Color(0xFF1B5E20),
                       ),
                     ),
                     const SizedBox(height: 20),
 
                     // Reference Section
                     if (_dua.reference.isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'REFERENCE',
                         style: TextStyle(
                           fontSize: 14.5,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.8,
-                          color: Color(0xFFD97724),
+                          color: isDark
+                              ? const Color(0xFFFDE68A)
+                              : const Color(0xFFD97724),
                         ),
                       ),
                       const SizedBox(height: 8),
                       SelectableText(
                         _dua.reference,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16.0,
                           height: 1.55,
                           letterSpacing: -0.1,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF4A3728),
+                          color: isDark
+                              ? const Color(0xFFFEF3C7)
+                              : const Color(0xFF4A3728),
                         ),
                       ),
                       const SizedBox(height: 22),
@@ -428,24 +487,28 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
 
                     // Spiritual Benefits Section
                     if (_dua.getBenefits(_currentLang).isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'SPIRITUAL & PRACTICAL BENEFITS',
                         style: TextStyle(
                           fontSize: 14.5,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.8,
-                          color: Color(0xFF9333EA),
+                          color: isDark
+                              ? const Color(0xFFE9D5FF)
+                              : const Color(0xFF9333EA),
                         ),
                       ),
                       const SizedBox(height: 8),
                       SelectableText(
                         _dua.getBenefits(_currentLang),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16.0,
                           height: 1.55,
                           letterSpacing: -0.1,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF3B0764),
+                          color: isDark
+                              ? const Color(0xFFF3E8FF)
+                              : const Color(0xFF3B0764),
                         ),
                       ),
                       const SizedBox(height: 36),
@@ -457,14 +520,14 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
 
             // Absolute Floating Audio Player at Left Bottom Corner
             if (_dua.audioUrl != null && _dua.audioUrl!.isNotEmpty)
-              _buildFloatingAudioPlayer(),
+              _buildFloatingAudioPlayer(isDark),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFloatingAudioPlayer() {
+  Widget _buildFloatingAudioPlayer(bool isDark) {
     final hasAudio = _dua.audioUrl != null && _dua.audioUrl!.isNotEmpty;
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
@@ -481,15 +544,21 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: _isPlaying
-                    ? const [Color(0xFF1F4A18), Color(0xFF13360E)]
-                    : const [Color(0xFF2A531D), Color(0xFF1B3D14)],
+                colors: isDark
+                    ? (_isPlaying
+                          ? const [Color(0xFF143820), Color(0xFF0F0F12)]
+                          : const [Color(0xFF142E18), Color(0xFF18181B)])
+                    : (_isPlaying
+                          ? const [Color(0xFF1F4A18), Color(0xFF13360E)]
+                          : const [Color(0xFF2A531D), Color(0xFF1B3D14)]),
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: Colors.white.withValues(alpha: _isPlaying ? 0.35 : 0.2),
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : Colors.white.withValues(alpha: _isPlaying ? 0.35 : 0.2),
                 width: 1.2,
               ),
             ),
@@ -616,7 +685,7 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
     } catch (_) {}
   }
 
-  Widget _buildLangChip(String langCode, String label) {
+  Widget _buildLangChip(String langCode, String label, bool isDark) {
     final isSelected = _currentLang == langCode;
     return InkWell(
       borderRadius: BorderRadius.circular(10),
@@ -636,16 +705,24 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2A531D) : const Color(0xFFF1F5F9),
+          color: isSelected
+              ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+              : (isDark ? const Color(0xFF18181B) : const Color(0xFFF1F5F9)),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2A531D) : const Color(0xFFE2E8F0),
+            color: isSelected
+                ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                : (isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0)),
             width: 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                    color:
+                        (isDark
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF2A531D))
+                            .withValues(alpha: isDark ? 0.3 : 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -658,7 +735,9 @@ class _DuaDetailScreenState extends ConsumerState<DuaDetailScreen>
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.2,
-            color: isSelected ? Colors.white : const Color(0xFF475569),
+            color: isSelected
+                ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                : (isDark ? Colors.white70 : const Color(0xFF475569)),
           ),
         ),
       ),

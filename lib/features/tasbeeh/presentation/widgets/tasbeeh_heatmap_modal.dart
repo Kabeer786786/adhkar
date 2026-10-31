@@ -24,10 +24,8 @@ class TasbeehHeatmapModal extends StatefulWidget {
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => TasbeehHeatmapModal(
-        storage: storage,
-        tasbeehItems: tasbeehItems,
-      ),
+      builder: (context) =>
+          TasbeehHeatmapModal(storage: storage, tasbeehItems: tasbeehItems),
     );
   }
 
@@ -47,25 +45,43 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
 
   void _changeMonth(int delta) {
     setState(() {
-      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + delta, 1);
+      _selectedMonth = DateTime(
+        _selectedMonth.year,
+        _selectedMonth.month + delta,
+        1,
+      );
     });
   }
 
   void _showDayDetails(DateTime date, Map<String, int> countsMap) {
     final dateStr = DateFormat('EEEE, MMMM d, yyyy').format(date);
+    final isDark = context.isDarkMode;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           title: Row(
             children: [
-              const Icon(Icons.calendar_today_rounded, color: Color(0xFF2A531D), size: 20),
+              Icon(
+                Icons.calendar_today_rounded,
+                color: isDark
+                    ? const Color(0xFF18A74C)
+                    : const Color(0xFF2A531D),
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   dateStr,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
                 ),
               ),
             ],
@@ -75,6 +91,9 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
             children: widget.tasbeehItems.map((item) {
               final count = countsMap[item.id] ?? 0;
               final isDone = count >= item.targetGoal;
+              final itemColor = (isDark && item.color.value == 0xFF2A531D)
+                  ? const Color(0xFF18A74C)
+                  : item.color;
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Row(
@@ -83,7 +102,7 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                       width: 10,
                       height: 10,
                       decoration: BoxDecoration(
-                        color: item.color,
+                        color: itemColor,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -91,7 +110,11 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                     Expanded(
                       child: Text(
                         item.textEn,
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13.5,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
                       ),
                     ),
                     Text(
@@ -99,14 +122,20 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13.5,
-                        color: isDone ? const Color(0xFF16A34A) : Colors.grey,
+                        color: isDone
+                            ? const Color(0xFF16A34A)
+                            : (isDark ? Colors.white60 : Colors.grey),
                       ),
                     ),
                     const SizedBox(width: 6),
                     Icon(
-                      isDone ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                      isDone
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
                       size: 16,
-                      color: isDone ? const Color(0xFF16A34A) : Colors.grey,
+                      color: isDone
+                          ? const Color(0xFF16A34A)
+                          : (isDark ? Colors.white38 : Colors.grey),
                     ),
                   ],
                 ),
@@ -116,7 +145,15 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close', style: TextStyle(color: Color(0xFF2A531D), fontWeight: FontWeight.bold)),
+              child: Text(
+                'Close',
+                style: TextStyle(
+                  color: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );
@@ -126,8 +163,20 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
 
   @override
   Widget build(BuildContext context) {
-    final daysInMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0).day;
-    final firstWeekday = DateTime(_selectedMonth.year, _selectedMonth.month, 1).weekday; // 1 = Mon, 7 = Sun
+    final isDark = context.isDarkMode;
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+    final daysInMonth = DateTime(
+      _selectedMonth.year,
+      _selectedMonth.month + 1,
+      0,
+    ).day;
+    final firstWeekday = DateTime(
+      _selectedMonth.year,
+      _selectedMonth.month,
+      1,
+    ).weekday; // 1 = Mon, 7 = Sun
 
     final monthTitle = DateFormat('MMMM yyyy').format(_selectedMonth);
     final today = DateTime.now();
@@ -135,9 +184,10 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.65, // Fitted modal height
+        height:
+            MediaQuery.of(context).size.height * 0.65, // Fitted modal height
         decoration: BoxDecoration(
-          color: context.isDarkMode ? const Color(0xFF192520) : Colors.white,
+          color: isDark ? const Color(0xFF18181B) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -150,7 +200,9 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.3),
+                  color: isDark
+                      ? const Color(0xFF3F3F46)
+                      : Colors.grey.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -163,19 +215,27 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.local_fire_department_rounded, color: Color(0xFFD97724), size: 24),
+                    const Icon(
+                      Icons.local_fire_department_rounded,
+                      color: Color(0xFFD97724),
+                      size: 24,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Tasbeeh Heatmap',
                       style: context.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF2A531D),
+                        color: isDark ? Colors.white : const Color(0xFF2A531D),
                       ),
                     ),
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 20),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                  ),
                   onPressed: () => Navigator.pop(context),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -187,10 +247,18 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
             // Line 2 (Dedicated New Line): Month Selector Controls (< Month Year >)
             Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: context.isDarkMode ? Colors.white10 : const Color(0xFFF3F4F6),
+                  color: isDark
+                      ? const Color(0xFF0F0F12)
+                      : const Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(14),
+                  border: isDark
+                      ? Border.all(color: const Color(0xFF27272A))
+                      : null,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -198,24 +266,36 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                     InkWell(
                       onTap: () => _changeMonth(-1),
                       borderRadius: BorderRadius.circular(10),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(Icons.chevron_left_rounded, size: 22),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.chevron_left_rounded,
+                          size: 22,
+                          color: isDark ? primaryColor : Colors.black87,
+                        ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         monthTitle,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
                       ),
                     ),
                     InkWell(
                       onTap: () => _changeMonth(1),
                       borderRadius: BorderRadius.circular(10),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(Icons.chevron_right_rounded, size: 22),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.chevron_right_rounded,
+                          size: 22,
+                          color: isDark ? primaryColor : Colors.black87,
+                        ),
                       ),
                     ),
                   ],
@@ -232,11 +312,16 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                 children: widget.tasbeehItems.map((item) {
                   return Container(
                     margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: item.color.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: item.color.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: item.color.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -313,25 +398,40 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                     }
 
                     final dayNumber = dayOffset + 1;
-                    final date = DateTime(_selectedMonth.year, _selectedMonth.month, dayNumber);
+                    final date = DateTime(
+                      _selectedMonth.year,
+                      _selectedMonth.month,
+                      dayNumber,
+                    );
                     final dateKey = DateFormat('yyyy-MM-dd').format(date);
-                    final isToday = date.year == today.year && date.month == today.month && date.day == today.day;
+                    final isToday =
+                        date.year == today.year &&
+                        date.month == today.month &&
+                        date.day == today.day;
                     final isFuture = date.isAfter(today);
 
-                    final dailyCounts = widget.storage.getDailyTasbeehCountsMap(dateKey);
+                    final dailyCounts = widget.storage.getDailyTasbeehCountsMap(
+                      dateKey,
+                    );
 
                     return GestureDetector(
-                      onTap: isFuture ? null : () => _showDayDetails(date, dailyCounts),
+                      onTap: isFuture
+                          ? null
+                          : () => _showDayDetails(date, dailyCounts),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: context.isDarkMode
-                              ? const Color(0xFF23322B)
+                          color: isDark
+                              ? const Color(0xFF0F0F12)
                               : const Color(0xFFF3FAF2),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: isToday
-                                ? const Color(0xFF2A531D)
-                                : (context.isDarkMode ? Colors.white10 : Colors.black.withValues(alpha: 0.05)),
+                                ? (isDark
+                                      ? const Color(0xFF18A74C)
+                                      : const Color(0xFF2A531D))
+                                : (isDark
+                                      ? const Color(0xFF27272A)
+                                      : Colors.black.withValues(alpha: 0.05)),
                             width: isToday ? 2.0 : 1.0,
                           ),
                         ),
@@ -344,10 +444,16 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 10,
-                                fontWeight: isToday ? FontWeight.w900 : FontWeight.bold,
+                                fontWeight: isToday
+                                    ? FontWeight.w900
+                                    : FontWeight.bold,
                                 color: isToday
-                                    ? const Color(0xFF2A531D)
-                                    : context.colorScheme.onSurface,
+                                    ? (isDark
+                                          ? const Color(0xFF18A74C)
+                                          : const Color(0xFF2A531D))
+                                    : (isDark
+                                          ? Colors.white
+                                          : context.colorScheme.onSurface),
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -364,7 +470,9 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
                                     if (isDone) {
                                       sliceColor = item.color;
                                     } else if (hasProgress) {
-                                      sliceColor = item.color.withValues(alpha: 0.45);
+                                      sliceColor = item.color.withValues(
+                                        alpha: 0.45,
+                                      );
                                     } else {
                                       sliceColor = context.isDarkMode
                                           ? Colors.white.withValues(alpha: 0.06)
@@ -373,10 +481,16 @@ class _TasbeehHeatmapModalState extends State<TasbeehHeatmapModal> {
 
                                     return Expanded(
                                       child: Container(
-                                        margin: const EdgeInsets.only(bottom: 1.0),
+                                        margin: const EdgeInsets.only(
+                                          bottom: 1.0,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: isFuture ? Colors.transparent : sliceColor,
-                                          borderRadius: BorderRadius.circular(1.5),
+                                          color: isFuture
+                                              ? Colors.transparent
+                                              : sliceColor,
+                                          borderRadius: BorderRadius.circular(
+                                            1.5,
+                                          ),
                                         ),
                                       ),
                                     );

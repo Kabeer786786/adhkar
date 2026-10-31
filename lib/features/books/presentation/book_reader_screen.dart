@@ -359,7 +359,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
             preferredSize: const Size.fromHeight(1),
             child: Container(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
+                  ? const Color(0xFF27272A)
                   : Colors.black.withValues(alpha: 0.06),
               height: 1,
             ),
@@ -464,11 +464,11 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                   width: 250,
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF18181C) : Colors.white,
+                    color: isDark ? const Color(0xFF18181B) : Colors.white,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: isDark
-                          ? Colors.white.withValues(alpha: 0.15)
+                          ? const Color(0xFF27272A)
                           : Colors.black.withValues(alpha: 0.1),
                       width: 1,
                     ),
@@ -650,7 +650,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       width: double.infinity,
       margin: EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E2822) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
       ),
     );
   }
@@ -739,7 +739,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
             maxHeight: MediaQuery.of(context).size.height * 0.72,
           ),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF18181C) : Colors.white,
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
@@ -757,7 +757,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: textColor.withValues(alpha: 0.2),
+                  color: isDark ? const Color(0xFF3F3F46) : textColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -786,14 +786,14 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                 ),
               ),
               Divider(
-                color: isDark ? Colors.white12 : Colors.black12,
+                color: isDark ? const Color(0xFF27272A) : Colors.black12,
                 height: 1,
               ),
               Flexible(
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.only(bottom: 60, top: 12, left: 12, right: 12),
                   itemCount: chapters.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 8),
                   itemBuilder: (context, idx) {
@@ -810,11 +810,13 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? accentColor.withValues(alpha: isDark ? 0.2 : 0.1)
-                              : (isDark ? const Color(0xFF22242A) : const Color(0xFFF8FAFC)),
+                              : (isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC)),
                           borderRadius: BorderRadius.circular(12),
                           border: isSelected
                               ? Border.all(color: accentColor, width: 1.5)
-                              : null,
+                              : (isDark
+                                  ? Border.all(color: const Color(0xFF27272A), width: 1.0)
+                                  : null),
                         ),
                         child: Row(
                           children: [

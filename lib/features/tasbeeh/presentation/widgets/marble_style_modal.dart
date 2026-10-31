@@ -21,10 +21,8 @@ class MarbleStyleModal extends StatefulWidget {
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => MarbleStyleModal(
-        currentAsset: currentAsset,
-        onSelect: onSelect,
-      ),
+      builder: (context) =>
+          MarbleStyleModal(currentAsset: currentAsset, onSelect: onSelect),
     );
   }
 
@@ -51,12 +49,17 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: context.isDarkMode ? const Color(0xFF192520) : Colors.white,
+          color: isDark ? const Color(0xFF18181B) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
@@ -69,7 +72,9 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.3),
+                  color: isDark
+                      ? const Color(0xFF3F3F46)
+                      : Colors.grey.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -82,12 +87,14 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.12),
+                    color: isDark
+                        ? const Color(0xFF143820)
+                        : const Color(0xFF2A531D).withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.palette_outlined,
-                    color: Color(0xFF2A531D),
+                    color: primaryColor,
                     size: 22,
                   ),
                 ),
@@ -96,7 +103,7 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                   'Select Marble Bead Style',
                   style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2A531D),
+                    color: isDark ? Colors.white : const Color(0xFF2A531D),
                   ),
                 ),
               ],
@@ -127,12 +134,14 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                         children: [
                           Container(
                             width: 56,
-                            height: 56, 
+                            height: 56,
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: isSelected ? const Color(0xFF2A531D) : Colors.transparent,
+                                color: isSelected
+                                    ? primaryColor
+                                    : Colors.transparent,
                                 width: 2,
                               ),
                             ),
@@ -141,12 +150,13 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                               fit: BoxFit.contain,
                               cacheWidth: 160,
                               cacheHeight: 160,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Color(0xFF2A531D), 
-                                ), 
-                              ),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: primaryColor,
+                                    ),
+                                  ),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -154,8 +164,14 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                             name,
                             style: TextStyle(
                               fontSize: 11,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                              color: isSelected ? const Color(0xFF2A531D) : context.colorScheme.onSurfaceVariant,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.w500,
+                              color: isSelected
+                                  ? primaryColor
+                                  : (isDark
+                                        ? Colors.white70
+                                        : context.colorScheme.onSurfaceVariant),
                             ),
                           ),
                         ],
@@ -177,8 +193,8 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                       Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF2A531D),
-                      side: const BorderSide(color: Color(0xFF2A531D)),
+                      foregroundColor: primaryColor,
+                      side: BorderSide(color: primaryColor),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -186,7 +202,10 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                     ),
                     child: const Text(
                       'Apply to This Only',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),
@@ -198,8 +217,10 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2A531D),
-                      foregroundColor: Colors.white,
+                      backgroundColor: primaryColor,
+                      foregroundColor: isDark
+                          ? const Color(0xFF0F0F12)
+                          : Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -207,7 +228,10 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                     ),
                     child: const Text(
                       'Apply to All',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),

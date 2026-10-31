@@ -168,6 +168,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
   }
 
   void _showBookPreviewModal(BuildContext context, BookModel book, bool isAdded) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -175,9 +176,9 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
       builder: (context) {
         return Container(
           padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -187,7 +188,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -206,15 +207,17 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                  color: isDark
+                      ? const Color(0xFF18A74C).withValues(alpha: 0.15)
+                      : const Color(0xFF2A531D).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   book.category.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2A531D),
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -225,10 +228,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
               Text(
                 book.title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
               const SizedBox(height: 4),
@@ -237,10 +240,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
               Text(
                 'By ${book.author}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
-                  color: Color(0xFF64748B),
+                  color: isDark ? Colors.white70 : const Color(0xFF64748B),
                 ),
               ),
               const SizedBox(height: 14),
@@ -251,9 +254,9 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                     ? book.description
                     : 'Classic Islamic literature text available in your digital library bookshelf.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF475569),
+                  color: isDark ? Colors.white70 : const Color(0xFF475569),
                   height: 1.4,
                 ),
                 maxLines: 4,
@@ -276,14 +279,14 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                             : Icons.add_circle_outline_rounded,
                         color: isAdded
                             ? const Color(0xFF16A34A)
-                            : const Color(0xFF2A531D),
+                            : (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D)),
                       ),
                       label: Text(
                         isAdded ? 'Added to Shelf' : 'Add to Shelf',
                         style: TextStyle(
                           color: isAdded
                               ? const Color(0xFF16A34A)
-                              : const Color(0xFF2A531D),
+                              : (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D)),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -295,7 +298,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                         side: BorderSide(
                           color: isAdded
                               ? const Color(0xFF16A34A)
-                              : const Color(0xFF2A531D),
+                              : (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D)),
                         ),
                       ),
                     ),
@@ -313,8 +316,8 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2A531D),
-                        foregroundColor: Colors.white,
+                        backgroundColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                        foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -334,14 +337,15 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final userBooksState = ref.watch(userBooksProvider);
     final userBooks = userBooksState.value ?? [];
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         children: [
@@ -351,7 +355,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -363,16 +367,19 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Add Books to Shelf',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2A531D),
+                    color: isDark ? Colors.white : const Color(0xFF2A531D),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: isDark ? Colors.white70 : Colors.grey.shade700,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -382,9 +389,9 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
           // Tab Bar
           TabBar(
             controller: _tabController,
-            labelColor: const Color(0xFF2A531D),
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: const Color(0xFF2A531D),
+            labelColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+            unselectedLabelColor: isDark ? Colors.white38 : Colors.grey,
+            indicatorColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
             indicatorWeight: 3,
             labelStyle: const TextStyle(
               fontWeight: FontWeight.w600,
@@ -401,10 +408,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
               controller: _tabController,
               children: [
                 // Tab 1: Pre-built Islamic Library
-                _buildLibraryTab(userBooks),
+                _buildLibraryTab(userBooks, isDark),
 
                 // Tab 2: Custom Book Upload Form
-                _buildCustomUploadTab(),
+                _buildCustomUploadTab(isDark),
               ],
             ),
           ),
@@ -413,7 +420,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
     );
   }
 
-  Widget _buildLibraryTab(List<BookModel> userBooks) {
+  Widget _buildLibraryTab(List<BookModel> userBooks, bool isDark) {
     final prebuiltList = BooksRepository.prebuiltLibrary;
     final query = _librarySearchController.text.trim().toLowerCase();
 
@@ -431,24 +438,36 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
           child: Container(
             height: 50,
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+              color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(12),
+              border: isDark ? Border.all(color: const Color(0xFF27272A)) : null,
             ),
             child: TextField(
               controller: _librarySearchController,
               textAlignVertical: TextAlignVertical.center,
+              style: TextStyle(
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                fontSize: 14,
+              ),
               onChanged: (val) => setState(() {}),
               decoration: InputDecoration(
                 hintText: 'Search library books by title or author...',
-                hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-                prefixIcon: const Icon(
+                hintStyle: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.white60 : Colors.grey.shade500,
+                ),
+                prefixIcon: Icon(
                   Icons.search_rounded,
-                  color: Color(0xFF2A531D),
+                  color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                   size: 18,
                 ),
                 suffixIcon: _librarySearchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 16),
+                        icon: Icon(
+                          Icons.clear_rounded,
+                          size: 16,
+                          color: isDark ? Colors.white70 : Colors.grey,
+                        ),
                         onPressed: () {
                           _librarySearchController.clear();
                           setState(() {});
@@ -478,17 +497,19 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
 
               return Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isAdded
-                        ? const Color(0xFF2A531D).withValues(alpha: 0.3)
-                        : const Color(0xFFE2E8F0),
+                        ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D).withValues(alpha: 0.3))
+                        : (isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0)),
                     width: 1.2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.2)
+                          : Colors.black.withValues(alpha: 0.03),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -520,10 +541,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                               children: [
                                 Text(
                                   book.title,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0F172A),
+                                    color: isDark ? Colors.white : const Color(0xFF0F172A),
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -531,10 +552,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                                 const SizedBox(height: 3),
                                 Text(
                                   book.author,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
-                                    color: Color(0xFF64748B),
+                                    color: isDark ? Colors.white60 : const Color(0xFF64748B),
                                     fontStyle: FontStyle.italic,
                                   ),
                                   maxLines: 3,
@@ -556,8 +577,8 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                                     : Icons.circle_outlined,
                                 size: 26,
                                 color: isAdded
-                                    ? const Color(0xFF2A531D)
-                                    : Colors.grey.shade400,
+                                    ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                                    : (isDark ? Colors.white24 : Colors.grey.shade400),
                               ),
                             ),
                           ),
@@ -574,23 +595,28 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
     );
   }
 
-  Widget _buildCustomUploadTab() {
+  Widget _buildCustomUploadTab(bool isDark) {
     final hasDocument = _selectedDocumentPath != null;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top:20, 
+        bottom: 60
+      ),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Prominent Document Upload Picker Card
-            const Text(
+            Text(
               'Document / Book File *',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 8),
@@ -603,13 +629,13 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: hasDocument
-                      ? const Color(0xFFF0FDF4)
-                      : const Color(0xFFF8FAFC),
+                      ? (isDark ? const Color(0xFF14532D).withValues(alpha: 0.3) : const Color(0xFFF0FDF4))
+                      : (isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC)),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: hasDocument
-                        ? const Color(0xFF16A34A)
-                        : const Color(0xFFCBD5E1),
+                        ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF16A34A))
+                        : (isDark ? const Color(0xFF27272A) : const Color(0xFFCBD5E1)),
                     width: hasDocument ? 1.8 : 1.2,
                   ),
                 ),
@@ -619,14 +645,16 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFDCFCE7),
+                              color: isDark
+                                  ? const Color(0xFF166534).withValues(alpha: 0.4)
+                                  : const Color(0xFFDCFCE7),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
                               _selectedDocumentName!.toLowerCase().endsWith('.pdf')
                                   ? Icons.picture_as_pdf_rounded
                                   : Icons.description_rounded,
-                              color: const Color(0xFF16A34A),
+                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A),
                               size: 26,
                             ),
                           ),
@@ -637,10 +665,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                               children: [
                                 Text(
                                   _selectedDocumentName ?? 'Selected Document',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0F172A),
+                                    color: isDark ? Colors.white : const Color(0xFF0F172A),
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -650,9 +678,9 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                                   _selectedDocumentSize != null
                                       ? '${(_selectedDocumentSize! / (1024 * 1024)).toStringAsFixed(2)} MB • Ready to upload'
                                       : 'Document Attached',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
-                                    color: Color(0xFF16A34A),
+                                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -660,8 +688,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.swap_horiz_rounded,
-                                color: Color(0xFF16A34A)),
+                            icon: Icon(
+                              Icons.swap_horiz_rounded,
+                              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A),
+                            ),
                             onPressed: _pickDocumentFile,
                             tooltip: 'Change Document',
                           ),
@@ -669,18 +699,18 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                       )
                     : Column(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.cloud_upload_rounded,
                             size: 38,
-                            color: Color(0xFF2A531D),
+                            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Click to Upload PDF, Word, or Text File',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E293B),
+                              color: isDark ? Colors.white : const Color(0xFF1E293B),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -688,7 +718,7 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                             'Supports PDF, DOC, DOCX, TXT formats from device',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey.shade600,
+                              color: isDark ? Colors.white60 : Colors.grey.shade600,
                             ),
                           ),
                         ],
@@ -700,10 +730,31 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             // Title Input
             TextFormField(
               controller: _titleController,
+              style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
               decoration: InputDecoration(
+                filled: true,
+                fillColor: isDark ? const Color(0xFF0F0F12) : null,
                 labelText: 'Book Title *',
+                labelStyle: TextStyle(color: isDark ? Colors.white70 : null),
                 hintText: 'e.g. Sahih Fiqh as-Sunnah',
-                prefixIcon: const Icon(Icons.book_rounded),
+                hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
+                prefixIcon: Icon(
+                  Icons.book_rounded,
+                  color: isDark ? const Color(0xFF18A74C) : null,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFCBD5E1),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                    width: 1.5,
+                  ),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -716,10 +767,31 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             // Author Input
             TextFormField(
               controller: _authorController,
+              style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
               decoration: InputDecoration(
+                filled: true,
+                fillColor: isDark ? const Color(0xFF0F0F12) : null,
                 labelText: 'Author Name (Optional)',
+                labelStyle: TextStyle(color: isDark ? Colors.white70 : null),
                 hintText: 'e.g. Scholar Name',
-                prefixIcon: const Icon(Icons.person_outline_rounded),
+                hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
+                prefixIcon: Icon(
+                  Icons.person_outline_rounded,
+                  color: isDark ? const Color(0xFF18A74C) : null,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFCBD5E1),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                    width: 1.5,
+                  ),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -773,10 +845,31 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             TextFormField(
               controller: _descriptionController,
               maxLines: 2,
+              style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
               decoration: InputDecoration(
+                filled: true,
+                fillColor: isDark ? const Color(0xFF0F0F12) : null,
                 labelText: 'Description / Notes (Optional)',
+                labelStyle: TextStyle(color: isDark ? Colors.white70 : null),
                 hintText: 'Brief summary of the book...',
-                prefixIcon: const Icon(Icons.notes_rounded),
+                hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
+                prefixIcon: Icon(
+                  Icons.notes_rounded,
+                  color: isDark ? const Color(0xFF18A74C) : null,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFCBD5E1),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                    width: 1.5,
+                  ),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -785,12 +878,12 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             const SizedBox(height: 18),
 
             // Cover Image Selection
-            const Text(
+            Text(
               'Book Cover Styling',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 8),
@@ -799,13 +892,20 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
               children: [
                 OutlinedButton.icon(
                   onPressed: _pickCoverImage,
-                  icon: const Icon(Icons.image_search_rounded),
+                  icon: Icon(
+                    Icons.image_search_rounded,
+                    color: isDark ? const Color(0xFF18A74C) : null,
+                  ),
                   label: Text(
                     _customCoverImagePath != null
                         ? 'Image Selected'
                         : 'Pick Cover Image',
+                    style: TextStyle(color: isDark ? Colors.white : null),
                   ),
                   style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: isDark ? const Color(0xFF27272A) : const Color(0xFFCBD5E1),
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -816,9 +916,12 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
             const SizedBox(height: 12),
 
             // Gradient Palette Selection
-            const Text(
+            Text(
               'Or Pick Preset 3D Cover Color:',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? Colors.white60 : Colors.grey,
+              ),
             ),
             const SizedBox(height: 8),
 
@@ -842,7 +945,10 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                         colors: _presetGradients[index],
                       ),
                       border: isSelected
-                          ? Border.all(color: Colors.black, width: 3)
+                          ? Border.all(
+                              color: isDark ? const Color(0xFF18A74C) : Colors.black,
+                              width: 3,
+                            )
                           : null,
                     ),
                     child: isSelected
@@ -867,8 +973,8 @@ class _AddBookModalState extends ConsumerState<AddBookModal>
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2A531D),
-                  foregroundColor: Colors.white,
+                  backgroundColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                  foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

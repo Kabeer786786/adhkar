@@ -67,7 +67,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     });
   }
 
-  void _triggerScrollToActive() { 
+  void _triggerScrollToActive() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final ctx = _activeCardKey.currentContext;
@@ -139,26 +139,40 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     final isApiSuccess = fetchResult?.source == PrayerTimeSource.apiRemote;
 
     return Scaffold(
+      backgroundColor: context.isDarkMode ? const Color(0xFF0F0F12) : null,
       appBar: AppBar(
+        backgroundColor: context.isDarkMode ? const Color(0xFF0F0F12) : null,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         title: Text(
           'Prayer Timetable',
           style: context.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             letterSpacing: 0.75,
+            color: context.isDarkMode ? Colors.white : null,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_location_alt_rounded),
+            icon: Icon(
+              Icons.edit_location_alt_rounded,
+              color: context.isDarkMode ? const Color(0xFF18A74C) : null,
+            ),
             tooltip: 'Change City / Location',
             onPressed: () => LocationSelectionModal.show(context),
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: context.colorScheme.primary,
-          labelColor: context.colorScheme.primary,
-          unselectedLabelColor: context.colorScheme.onSurfaceVariant,
+          indicatorColor: context.isDarkMode
+              ? const Color(0xFF18A74C)
+              : context.colorScheme.primary,
+          labelColor: context.isDarkMode
+              ? const Color(0xFF18A74C)
+              : context.colorScheme.primary,
+          unselectedLabelColor: context.isDarkMode
+              ? Colors.white60
+              : context.colorScheme.onSurfaceVariant,
           dividerColor: Colors.transparent,
           labelStyle: context.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
@@ -282,7 +296,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
         : location.city;
 
     return RefreshIndicator(
-      color: const Color(0xFF2A531D),
+      color: context.isDarkMode
+          ? const Color(0xFF18A74C)
+          : const Color(0xFF2A531D),
       onRefresh: () async {
         ref.invalidate(aladhanPrayerTimesProvider(_selectedDate));
         ref.invalidate(prayerTimesProvider);
@@ -314,12 +330,14 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: context.colorScheme.primaryContainer.withValues(
-                alpha: 0.4,
-              ),
+              color: context.isDarkMode
+                  ? const Color(0xFF18181B)
+                  : context.colorScheme.primaryContainer.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: context.colorScheme.primary.withValues(alpha: 0.2),
+                color: context.isDarkMode
+                    ? const Color(0xFF27272A)
+                    : context.colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
             child: Row(
@@ -327,7 +345,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                 Icon(
                   Icons.location_on_rounded,
                   size: 20,
-                  color: context.colorScheme.primary,
+                  color: context.isDarkMode
+                      ? const Color(0xFF18A74C)
+                      : context.colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -338,6 +358,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                         locationDisplayName,
                         style: context.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
+                          color: context.isDarkMode ? Colors.white : null,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -352,7 +373,11 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                  icon: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color: context.isDarkMode ? Colors.white60 : null,
+                  ),
                   onPressed: () => LocationSelectionModal.show(context),
                 ),
               ],
@@ -386,6 +411,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                                 style: context.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 18,
+                                  color: context.isDarkMode
+                                      ? Colors.white
+                                      : null,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -393,7 +421,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                             const SizedBox(width: 4),
                             Icon(
                               Icons.arrow_drop_down_rounded,
-                              color: context.colorScheme.onSurface,
+                              color: context.isDarkMode
+                                  ? Colors.white
+                                  : context.colorScheme.onSurface,
                               size: 28,
                             ),
                           ],
@@ -421,7 +451,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                     child: Icon(
                       Icons.calendar_month,
                       size: 28,
-                      color: context.colorScheme.onSurface,
+                      color: context.isDarkMode
+                          ? Colors.white
+                          : context.colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -435,13 +467,21 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
               decoration: BoxDecoration(
-                color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                color:
+                    (context.isDarkMode
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF2A531D))
+                        .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.25),
+                  color:
+                      (context.isDarkMode
+                              ? const Color(0xFF18A74C)
+                              : const Color(0xFF2A531D))
+                          .withValues(alpha: 0.25),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
@@ -449,16 +489,20 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Color(0xFF2A531D),
+                      color: context.isDarkMode
+                          ? const Color(0xFF18A74C)
+                          : const Color(0xFF2A531D),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Text(
                     'Updating prayer timings for selected date...',
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2A531D),
+                      color: context.isDarkMode
+                          ? const Color(0xFF18A74C)
+                          : const Color(0xFF2A531D),
                     ),
                   ),
                 ],
@@ -558,7 +602,12 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                 : [const Color(0xFFDCFCE7), const Color(0xFFFEFCE8)],
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF10B981), width: 2.0),
+          border: Border.all(
+            color: context.isDarkMode
+                ? const Color(0xFF18A74C)
+                : const Color(0xFF10B981),
+            width: 2.0,
+          ),
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF10B981).withValues(alpha: 0.28),
@@ -570,10 +619,15 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
       } else {
         cardDecoration = BoxDecoration(
           color: context.isDarkMode
-              ? const Color(0xFF163E2E)
+              ? const Color(0xFF143820)
               : const Color(0xFFE8F5E9),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF10B981), width: 1.5),
+          border: Border.all(
+            color: context.isDarkMode
+                ? const Color(0xFF18A74C)
+                : const Color(0xFF10B981),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF10B981).withValues(alpha: 0.1),
@@ -586,9 +640,12 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
     } else {
       cardDecoration = BoxDecoration(
         color: context.isDarkMode
-            ? const Color(0xFF1A2818)
+            ? const Color(0xFF18181B)
             : const Color(0xFFF9F9F9),
         borderRadius: BorderRadius.circular(16),
+        border: context.isDarkMode
+            ? Border.all(color: const Color(0xFF27272A))
+            : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -641,7 +698,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                 Icon(
                   prayer.icon,
                   color: isHighlight
-                      ? const Color(0xFF047857)
+                      ? (context.isDarkMode
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF047857))
                       : _getPrayerIconColor(
                           prayer.key,
                           context,
@@ -667,10 +726,12 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                                   ? (context.isDarkMode
                                         ? Colors.white
                                         : const Color(0xFF064E3B))
-                                  : context.colorScheme.onSurface,
+                                  : (context.isDarkMode
+                                        ? Colors.white
+                                        : context.colorScheme.onSurface),
                             ),
                           ),
-                          
+
                           if (isFridayJumma) ...[
                             const SizedBox(width: 8),
                             Container(
@@ -720,7 +781,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                         ? (context.isDarkMode
                               ? Colors.white
                               : const Color(0xFF064E3B))
-                        : context.colorScheme.onSurface,
+                        : (context.isDarkMode
+                              ? Colors.white
+                              : context.colorScheme.onSurface),
                   ),
                 ),
               ],
@@ -769,7 +832,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
       times.qiyam.minute,
     );
 
-    return [ 
+    return [
       PrayerDetail(
         key: 'Tahajjud',
         title: 'Tahajjud',
@@ -951,7 +1014,9 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                   Icon(
                     Icons.filter_list_rounded,
                     size: 20,
-                    color: context.colorScheme.primary,
+                    color: context.isDarkMode
+                        ? const Color(0xFF18A74C)
+                        : context.colorScheme.primary,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -959,6 +1024,7 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                     style: context.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
+                      color: context.isDarkMode ? Colors.white : null,
                     ),
                   ),
                 ],
@@ -970,9 +1036,14 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen>
                 ),
                 decoration: BoxDecoration(
                   color: (context.isDarkMode
-                      ? const Color(0xFF1A2818)
+                      ? const Color(0xFF18181B)
                       : const Color(0xFFF9F9F9)),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: context.isDarkMode
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFE5E7EB),
+                  ),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<int>(

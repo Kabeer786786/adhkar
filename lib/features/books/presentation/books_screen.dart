@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../widgets/app_header_bar.dart';
 import '../../../shared/widgets/app_floating_toast.dart';
@@ -14,6 +15,7 @@ class BooksScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final booksAsync = ref.watch(userBooksProvider);
     final searchQuery = ref.watch(bookSearchQueryProvider);
     final selectedCategory = ref.watch(selectedBookCategoryProvider);
@@ -21,26 +23,39 @@ class BooksScreen extends ConsumerWidget {
 
     final isFilterActive = selectedCategory != 'All' || sortOption != 'Default';
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF), // Studio light wall background
-      appBar: AppHeaderBar(
-        title: 'MY BOOKSHELF',
-        showBackButton: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.add_circle_outline_rounded,
-              color: Color(0xFF2A531D),
-              size: 26,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFFFFFFF),
+        appBar: AppHeaderBar(
+          title: 'MY BOOKSHELF',
+          showBackButton: true,
+          systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+          backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.transparent,
+          elevation: 0,
+          iconColor: isDark ? Colors.white: const Color(0xFF2A531D),
+          titleWidget: Text(
+            'MY BOOKSHELF',
+            style: TextStyle(
+              color: isDark ? Colors.white : const Color(0xFF2A531D),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              letterSpacing: 0.8,
             ),
-            tooltip: 'Add Books to Shelf',
-            onPressed: () => AddBookModal.show(context),
           ),
-          const SizedBox(width: 8),
-        ],
-      ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.add_circle_outline_rounded,
+                color: isDark ?Colors.white : const Color(0xFF2A531D),
+                size: 26,
+              ),
+              tooltip: 'Add Books to Shelf',
+              onPressed: () => AddBookModal.show(context),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
       body: SafeArea(
         child: Column(
           children: [
@@ -59,15 +74,19 @@ class BooksScreen extends ConsumerWidget {
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? const Color(0xFF18181B) : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: const Color(0xFFD1D5DB).withValues(alpha: 0.7),
+                          color: isDark
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFD1D5DB).withValues(alpha: 0.7),
                           width: 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: isDark
+                                ? Colors.black.withValues(alpha: 0.2)
+                                : Colors.black.withValues(alpha: 0.03),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
@@ -75,6 +94,10 @@ class BooksScreen extends ConsumerWidget {
                       ),
                       child: TextField(
                         textAlignVertical: TextAlignVertical.center,
+                        style: TextStyle(
+                          color: isDark ? Colors.white : const Color(0xFF1F2937),
+                          fontSize: 14,
+                        ),
                         onChanged: (val) {
                           ref.read(bookSearchQueryProvider.notifier).state =
                               val;
@@ -83,18 +106,19 @@ class BooksScreen extends ConsumerWidget {
                           hintText: 'Search books by title or author...',
                           hintStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey.shade400,
+                            color: isDark ? Colors.white60 : Colors.grey.shade400,
                           ),
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.search_rounded,
-                            color: Color(0xFF2A531D),
+                            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                             size: 19,
                           ),
                           suffixIcon: searchQuery.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.clear_rounded,
                                     size: 16,
+                                    color: isDark ? Colors.white70 : Colors.grey,
                                   ),
                                   onPressed: () {
                                     ref
@@ -125,18 +149,20 @@ class BooksScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
                         color: isFilterActive
-                            ? const Color(0xFF2A531D)
-                            : Colors.white,
+                            ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                            : (isDark ? const Color(0xFF18181B) : Colors.white),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isFilterActive
-                              ? const Color(0xFF2A531D)
-                              : const Color(0xFFD1D5DB).withValues(alpha: 0.7),
+                              ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                              : (isDark ? const Color(0xFF27272A) : const Color(0xFFD1D5DB).withValues(alpha: 0.7)),
                           width: 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: isDark
+                                ? Colors.black.withValues(alpha: 0.2)
+                                : Colors.black.withValues(alpha: 0.03),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
@@ -149,8 +175,8 @@ class BooksScreen extends ConsumerWidget {
                             Icons.tune_rounded,
                             size: 18,
                             color: isFilterActive
-                                ? Colors.white
-                                : const Color(0xFF2A531D),
+                                ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                                : (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D)),
                           ),
                           const SizedBox(width: 5),
                           Text(
@@ -161,8 +187,8 @@ class BooksScreen extends ConsumerWidget {
                               fontSize: 12.5,
                               fontWeight: FontWeight.w600,
                               color: isFilterActive
-                                  ? Colors.white
-                                  : const Color(0xFF334155),
+                                  ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                                  : (isDark ? Colors.white : const Color(0xFF334155)),
                             ),
                           ),
                           if (isFilterActive) ...[
@@ -187,8 +213,10 @@ class BooksScreen extends ConsumerWidget {
             // 3D Bookshelf Cabinet Grid Area
             Expanded(
               child: booksAsync.when(
-                loading: () => const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF2A531D)),
+                loading: () => Center(
+                  child: CircularProgressIndicator(
+                    color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                  ),
                 ),
                 error: (err, _) => Center(
                   child: Text(
@@ -245,6 +273,7 @@ class BooksScreen extends ConsumerWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -253,17 +282,17 @@ class BooksScreen extends ConsumerWidget {
     WidgetRef ref,
     BookModel book,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
-
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
           padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -273,7 +302,7 @@ class BooksScreen extends ConsumerWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -293,15 +322,17 @@ class BooksScreen extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                  color: isDark
+                      ? const Color(0xFF18A74C).withValues(alpha: 0.15)
+                      : const Color(0xFF2A531D).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   book.category.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2A531D),
+                    color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -312,10 +343,10 @@ class BooksScreen extends ConsumerWidget {
               Text(
                 book.title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
               const SizedBox(height: 4),
@@ -324,10 +355,10 @@ class BooksScreen extends ConsumerWidget {
               Text(
                 'By ${book.author}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
-                  color: Color(0xFF64748B),
+                  color: isDark ? Colors.white70 : const Color(0xFF64748B),
                 ),
               ),
               const SizedBox(height: 14),
@@ -338,9 +369,9 @@ class BooksScreen extends ConsumerWidget {
                     ? book.description
                     : 'Classic Islamic literature text available in your digital library bookshelf.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF475569),
+                  color: isDark ? Colors.white70 : const Color(0xFF475569),
                   height: 1.4,
                 ),
                 maxLines: 4,
@@ -389,8 +420,8 @@ class BooksScreen extends ConsumerWidget {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2A531D),
-                          foregroundColor: Colors.white,
+                          backgroundColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                          foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -417,8 +448,8 @@ class BooksScreen extends ConsumerWidget {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2A531D),
-                          foregroundColor: Colors.white,
+                          backgroundColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                          foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -434,15 +465,15 @@ class BooksScreen extends ConsumerWidget {
                           Navigator.pop(context);
                           BookReaderScreen.openExternal(context, book.fileUrl);
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.open_in_new_rounded,
                           size: 16,
-                          color: Color(0xFF2A531D),
+                          color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                         ),
-                        label: const Text(
+                        label: Text(
                           'External App',
                           style: TextStyle(
-                            color: Color(0xFF2A531D),
+                            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                             fontWeight: FontWeight.bold,
                             fontSize: 12.5,
                           ),
@@ -452,7 +483,9 @@ class BooksScreen extends ConsumerWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          side: const BorderSide(color: Color(0xFF2A531D)),
+                          side: BorderSide(
+                            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                          ),
                         ),
                       ),
                     ),
@@ -475,8 +508,8 @@ class BooksScreen extends ConsumerWidget {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2A531D),
-                          foregroundColor: Colors.white,
+                          backgroundColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                          foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),

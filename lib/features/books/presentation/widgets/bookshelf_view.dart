@@ -162,6 +162,7 @@ class BookshelfView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (books.isEmpty) {
       return Center(
         child: Column(
@@ -170,15 +171,15 @@ class BookshelfView extends StatelessWidget {
             Icon(
               Icons.collections_bookmark_rounded,
               size: 64,
-              color: Colors.grey.shade400,
+              color: isDark ? Colors.white38 : Colors.grey.shade400,
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Your Bookshelf is Empty',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2A531D),
+                color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
               ),
             ),
             const SizedBox(height: 6),
@@ -187,7 +188,10 @@ class BookshelfView extends StatelessWidget {
               child: Text(
                 'Tap "+ Add Books" in the top header to add books from the Islamic Library or upload your own custom books.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: isDark ? Colors.white70 : Colors.grey.shade600,
+                ),
               ),
             ),
           ],
@@ -208,12 +212,12 @@ class BookshelfView extends StatelessWidget {
       itemCount: shelves.length,
       itemBuilder: (context, shelfIndex) {
         final shelfBooks = shelves[shelfIndex];
-        return _buildSingleShelf(context, shelfBooks);
+        return _buildSingleShelf(context, shelfBooks, isDark);
       },
     );
   }
 
-  Widget _buildSingleShelf(BuildContext context, List<BookModel> shelfBooks) {
+  Widget _buildSingleShelf(BuildContext context, List<BookModel> shelfBooks, bool isDark) {
     const double shelfBoxHeight = 82.0;
     const double rimThickness = 10.0;
 
@@ -231,11 +235,11 @@ class BookshelfView extends StatelessWidget {
             height: shelfBoxHeight,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFE4EAF4), // Cavity backdrop wall
+                color: isDark ? const Color(0xFF18181B) : const Color(0xFFE4EAF4), // Cavity backdrop wall
                 borderRadius: BorderRadius.circular(5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.08),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
@@ -356,6 +360,7 @@ class BookshelfView extends StatelessWidget {
                   ledgeHeight: 10.0,
                   bottomRadius: 5.0,
                   topRadius: 1,
+                  isDark: isDark,
                 ),
               ),
             ),
@@ -636,6 +641,7 @@ class _UShelfRimPainter extends CustomPainter {
   final double ledgeHeight;
   final double bottomRadius;
   final double topRadius;
+  final bool isDark;
 
   _UShelfRimPainter({
     required this.sideHeight,
@@ -643,6 +649,7 @@ class _UShelfRimPainter extends CustomPainter {
     required this.ledgeHeight,
     this.bottomRadius = 5.0,
     this.topRadius = 4.0,
+    this.isDark = false,
   });
 
   @override
@@ -682,17 +689,21 @@ class _UShelfRimPainter extends CustomPainter {
 
     // 2. Continuous 3D gradient fill across the entire U-shape
     final rimPaint = Paint()
-      ..shader = const LinearGradient(
+      ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [Color(0xFFF8FAFC), Color(0xFFCBD5E1), Color(0xFF94A3B8)],
+        colors: isDark
+            ? const [Color(0xFF2E2E33), Color(0xFF222227), Color(0xFF18181B)]
+            : const [Color(0xFFF8FAFC), Color(0xFFCBD5E1), Color(0xFF94A3B8)],
       ).createShader(Rect.fromLTWH(0, h - sideHeight, w, sideHeight));
 
     canvas.drawPath(uPath, rimPaint);
 
     // 3. Top surface white sheen highlight lines on the rim top caps & side edges
     final highlightPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.95)
+      ..color = isDark
+          ? Colors.white.withValues(alpha: 0.15)
+          : Colors.white.withValues(alpha: 0.95)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
@@ -733,7 +744,9 @@ class _UShelfRimPainter extends CustomPainter {
 
     // 4. Subtle crisp 3D edge stroke around the U-rim
     final borderPaint = Paint()
-      ..color = const Color(0xFF94A3B8).withValues(alpha: 0.5)
+      ..color = isDark
+          ? const Color(0xFF3F3F46).withValues(alpha: 0.6)
+          : const Color(0xFF94A3B8).withValues(alpha: 0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 

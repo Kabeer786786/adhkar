@@ -144,30 +144,43 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
   }
 
   InputDecoration _inputDecoration(String label, String hint, IconData icon) {
+    final isDark = context.isDarkMode;
     return InputDecoration(
       labelText: label,
+      labelStyle: TextStyle(
+        color: isDark ? Colors.white70 : const Color(0xFF64748B),
+        fontSize: 14,
+      ),
       hintText: hint,
-      prefixIcon: Icon(icon, color: const Color(0xFF2A531D)),
+      hintStyle: TextStyle(
+        color: isDark ? Colors.white38 : Colors.grey.shade400,
+        fontSize: 13.5,
+      ),
+      prefixIcon: Icon(
+        icon,
+        color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+      ),
       filled: true,
-      fillColor: context.isDarkMode
-          ? const Color(0xFF23322B)
-          : const Color(0xFFF9FAFB),
+      fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
-          color: context.isDarkMode ? Colors.white12 : const Color(0xFFE5E7EB),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
-          color: context.isDarkMode ? Colors.white12 : const Color(0xFFE5E7EB),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF2A531D), width: 1.8),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+          width: 1.8,
+        ),
       ),
     );
   }
@@ -176,7 +189,9 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
   Widget build(BuildContext context) {
     final isEditing = widget.initialDua != null;
     final isDark = context.isDarkMode;
-    const primaryColor = Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
 
     final formContent = Column(
       mainAxisSize: MainAxisSize.min,
@@ -190,7 +205,7 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
               height: 4.5,
               margin: const EdgeInsets.only(top: 12, bottom: 12),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : Colors.grey.shade300,
+                color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -220,184 +235,208 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
             ],
           ),
         ),
-            const SizedBox(height: 2),
+        const SizedBox(height: 2),
 
-            Divider(
-              height: 1,
-              thickness: 1,
-              color: isDark ? Colors.white12 : const Color(0xFFF1F5F9),
-            ),
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFF1F5F9),
+        ),
 
-            // Scrollable Form Fields
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Title
-                    TextField(
-                      controller: _titleController,
-                      decoration: _inputDecoration(
-                        'Dua Title *',
-                        'e.g. Dua for Peace & Protection',
-                        Icons.title_rounded,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
+        // Scrollable Form Fields
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Title
+                TextField(
+                  controller: _titleController,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14.5,
+                  ),
+                  decoration: _inputDecoration(
+                    'Dua Title *',
+                    'e.g. Dua for Peace & Protection',
+                    Icons.title_rounded,
+                  ),
+                ),
+                const SizedBox(height: 14),
 
-                    // Category Selector (No icons for categories)
-                    AppDropdown<String>(
-                      label: 'Category',
-                      value: _selectedCategory,
-                      prefixIcon: null,
-                      onAddCustomCategory: () async {
-                        final newCatName =
-                            await AppDropdown.showAddCustomCategoryDialog(
+                // Category Selector (No icons for categories)
+                AppDropdown<String>(
+                  label: 'Category',
+                  value: _selectedCategory,
+                  prefixIcon: null,
+                  onAddCustomCategory: () async {
+                    final newCatName =
+                        await AppDropdown.showAddCustomCategoryDialog(
                           context,
                           title: 'Add Custom Category',
                           hintText: 'e.g. Travel & Protection',
                           icon: Icons.menu_book_rounded,
                         );
-                        if (newCatName != null && newCatName.isNotEmpty) {
-                          ref
-                              .read(storageServiceProvider)
-                              .saveCustomCategory('dua', newCatName);
-                          setState(() {
-                            if (!_categories.contains(newCatName)) {
-                              _categories.add(newCatName);
-                            }
-                            _selectedCategory = newCatName;
-                          });
+                    if (newCatName != null && newCatName.isNotEmpty) {
+                      ref
+                          .read(storageServiceProvider)
+                          .saveCustomCategory('dua', newCatName);
+                      setState(() {
+                        if (!_categories.contains(newCatName)) {
+                          _categories.add(newCatName);
                         }
-                        return newCatName;
-                      },
-                      items: _categories.map((cat) {
-                        return AppDropdownItem<String>(
-                          value: cat,
-                          label: cat,
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            _selectedCategory = val;
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Arabic Text
-                    TextField(
-                      controller: _arabicController,
-                      textDirection: TextDirection.rtl,
-                      maxLines: 2,
-                      style: AppTypography.arabicBody(fontSize: 20),
-                      decoration: _inputDecoration(
-                        'Arabic Text *',
-                        'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً',
-                        Icons.auto_awesome_rounded,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Transliteration
-                    TextField(
-                      controller: _transliterationController,
-                      decoration: _inputDecoration(
-                        'Transliteration',
-                        'e.g. Allahumma hasibni hisaban yasira',
-                        Icons.text_fields_rounded,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Translation
-                    TextField(
-                      controller: _translationController,
-                      maxLines: 2,
-                      decoration: _inputDecoration(
-                        'English Translation',
-                        'e.g. O Allah, grant me an easy accounting.',
-                        Icons.translate_rounded,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Hadith Reference
-                    TextField(
-                      controller: _referenceController,
-                      decoration: _inputDecoration(
-                        'Hadith / Book Reference',
-                        'e.g. Musnad Ahmad & Sahih Ibn Hibban',
-                        Icons.menu_book_rounded,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Benefits
-                    TextField(
-                      controller: _benefitsController,
-                      maxLines: 2,
-                      decoration: _inputDecoration(
-                        'Spiritual & Practical Benefits',
-                        'e.g. Grants ease on the Day of Judgment.',
-                        Icons.info_outline_rounded,
-                      ),
-                    ),
-                  ],
+                        _selectedCategory = newCatName;
+                      });
+                    }
+                    return newCatName;
+                  },
+                  items: _categories.map((cat) {
+                    return AppDropdownItem<String>(value: cat, label: cat);
+                  }).toList(),
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() {
+                        _selectedCategory = val;
+                      });
+                    }
+                  },
                 ),
+                const SizedBox(height: 14),
+
+                // Arabic Text
+                TextField(
+                  controller: _arabicController,
+                  textDirection: TextDirection.rtl,
+                  maxLines: 2,
+                  style: AppTypography.arabicBody(
+                    fontSize: 20,
+                    color: isDark ? Colors.white : const Color(0xFF1B5E20),
+                  ),
+                  decoration: _inputDecoration(
+                    'Arabic Text *',
+                    'اَللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً',
+                    Icons.auto_awesome_rounded,
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // Transliteration
+                TextField(
+                  controller: _transliterationController,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
+                  decoration: _inputDecoration(
+                    'Transliteration',
+                    'e.g. Allahumma hasibni hisaban yasira',
+                    Icons.text_fields_rounded,
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // Translation
+                TextField(
+                  controller: _translationController,
+                  maxLines: 2,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
+                  decoration: _inputDecoration(
+                    'English Translation',
+                    'e.g. O Allah, grant me an easy accounting.',
+                    Icons.translate_rounded,
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // Hadith Reference
+                TextField(
+                  controller: _referenceController,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
+                  decoration: _inputDecoration(
+                    'Hadith / Book Reference',
+                    'e.g. Musnad Ahmad & Sahih Ibn Hibban',
+                    Icons.menu_book_rounded,
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // Benefits
+                TextField(
+                  controller: _benefitsController,
+                  maxLines: 2,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
+                  decoration: _inputDecoration(
+                    'Spiritual & Practical Benefits',
+                    'e.g. Grants ease on the Day of Judgment.',
+                    Icons.info_outline_rounded,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Bottom Actions Bar (Only Save Button with decreased bottom padding)
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
+            border: Border(
+              top: BorderSide(
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE2E8F0),
+                width: 1.0,
               ),
             ),
-
-            // Bottom Actions Bar (Only Save Button with decreased bottom padding)
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF192520) : Colors.white,
-                border: Border(
-                  top: BorderSide(
-                    color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
-                    width: 1.0,
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _submit,
+                icon: Icon(
+                  isEditing
+                      ? Icons.check_circle_rounded
+                      : Icons.bookmark_added_rounded,
+                  size: 19,
+                ),
+                label: Text(
+                  isEditing ? 'Save Changes' : 'Save Custom Dua',
+                  style: GoogleFonts.lexend(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
               ),
-              child: SafeArea(
-                top: false,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _submit,
-                    icon: Icon(
-                      isEditing
-                          ? Icons.check_circle_rounded
-                          : Icons.bookmark_added_rounded,
-                      size: 19,
-                    ),
-                    label: Text(
-                      isEditing ? 'Save Changes' : 'Save Custom Dua',
-                      style: GoogleFonts.lexend(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ),
-          ],
-        );
+          ),
+        ),
+      ],
+    );
 
     if (widget.isEmbedded) {
       return formContent;
@@ -412,7 +451,7 @@ class _AddDuaModalState extends ConsumerState<AddDuaModal> {
           maxHeight: MediaQuery.of(context).size.height * 0.88,
         ),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF192520) : Colors.white,
+          color: isDark ? const Color(0xFF18181B) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: formContent,

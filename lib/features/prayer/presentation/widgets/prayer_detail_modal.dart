@@ -65,7 +65,9 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.colorScheme.surface,
+        color: context.isDarkMode
+            ? const Color(0xFF18181B)
+            : context.colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.only(
@@ -84,7 +86,9 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: context.colorScheme.outlineVariant,
+                color: context.isDarkMode
+                    ? const Color(0xFF3F3F46)
+                    : context.colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -102,27 +106,37 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
                     '${widget.prayerTitle} Prayer Checklist',
                     style: context.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: context.isDarkMode ? Colors.white : null,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     'Mark completed Sunnat, Farz & Nafl rak\'ats',
                     style: context.textTheme.bodySmall?.copyWith(
-                      color: context.colorScheme.onSurfaceVariant, 
+                      color: context.isDarkMode
+                          ? Colors.white60
+                          : context.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: context.colorScheme.primaryContainer,
+                  color: context.isDarkMode
+                      ? const Color(0xFF143820)
+                      : context.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '$_completedCount / ${widget.subPrayers.length}',
                   style: context.textTheme.labelMedium?.copyWith(
-                    color: context.colorScheme.onPrimaryContainer,
+                    color: context.isDarkMode
+                        ? const Color(0xFF86EFAC)
+                        : context.colorScheme.onPrimaryContainer,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -131,7 +145,12 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
           ),
 
           const SizedBox(height: 16),
-          const Divider(height: 1,color: Color(0xFFE7E7E7),),
+          Divider(
+            height: 1,
+            color: context.isDarkMode
+                ? const Color(0xFF27272A)
+                : const Color(0xFFE7E7E7),
+          ),
           const SizedBox(height: 12),
 
           if (widget.isFuture)
@@ -145,7 +164,11 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.lock_clock_outlined, size: 18, color: Colors.amber),
+                  Icon(
+                    Icons.lock_clock_outlined,
+                    size: 18,
+                    color: Colors.amber,
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -169,13 +192,26 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
               margin: const EdgeInsets.only(bottom: 8),
               decoration: BoxDecoration(
                 color: isChecked
-                    ? context.colorScheme.primaryContainer.withValues(alpha: 0.25)
-                    : context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                    ? (context.isDarkMode
+                          ? const Color(0xFF143820)
+                          : context.colorScheme.primaryContainer.withValues(
+                              alpha: 0.25,
+                            ))
+                    : (context.isDarkMode
+                          ? const Color(0xFF202024)
+                          : context.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.4)),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isChecked
-                      ? context.colorScheme.primary.withValues(alpha: 0.5)
-                      : const Color(0xFFE7E7E7),
+                      ? (context.isDarkMode
+                            ? const Color(0xFF18A74C)
+                            : context.colorScheme.primary.withValues(
+                                alpha: 0.5,
+                              ))
+                      : (context.isDarkMode
+                            ? const Color(0xFF27272A)
+                            : const Color(0xFFE7E7E7)),
                 ),
               ),
               child: CheckboxListTile(
@@ -190,27 +226,37 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                activeColor: context.colorScheme.primary,
+                activeColor: context.isDarkMode
+                    ? const Color(0xFF18A74C)
+                    : context.colorScheme.primary,
                 title: Row(
                   children: [
                     Text(
                       item.title,
                       style: context.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
+                        color: context.isDarkMode ? Colors.white : null,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color: context.colorScheme.surfaceContainerHighest,
+                        color: context.isDarkMode
+                            ? const Color(0xFF27272A)
+                            : context.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '${item.rakats} Rak\'at',
                         style: context.textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: context.colorScheme.onSurfaceVariant,
+                          color: context.isDarkMode
+                              ? Colors.white70
+                              : context.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -229,6 +275,9 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: OutlinedButton.styleFrom(
+                    side: context.isDarkMode
+                        ? const BorderSide(color: Color(0xFF27272A))
+                        : null,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -236,7 +285,10 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
                   ),
                   child: Text(
                     widget.isFuture ? 'Close' : 'Cancel',
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.isDarkMode ? Colors.white70 : null,
+                    ),
                   ),
                 ),
               ),
@@ -253,12 +305,24 @@ class _PrayerDetailModalState extends State<PrayerDetailModal> {
                       Navigator.of(context).pop();
                     },
                     style: FilledButton.styleFrom(
+                      backgroundColor: context.isDarkMode
+                          ? const Color(0xFF18A74C)
+                          : null,
+                      foregroundColor: context.isDarkMode
+                          ? const Color(0xFF0F0F12)
+                          : null,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text('Save', style: TextStyle(fontSize: 14)),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -19,24 +19,28 @@ class AppInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final primaryColor =
-        isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
-    final cardBorder =
-        isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor:
-            isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC),
+        backgroundColor: isDark
+            ? const Color(0xFF0F0F12)
+            : const Color(0xFFF8FAFC),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
             title: 'APP INFO',
             showBackButton: true,
-            systemOverlayStyle:
-                isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+            systemOverlayStyle: isDark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
             backgroundColor: cardBg,
             iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
             titleWidget: Text(
@@ -68,7 +72,7 @@ class AppInfoScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
                   color: isDark
-                      ? const Color(0xFF22C55E).withValues(alpha: 0.3)
+                      ? const Color(0xFF18A74C).withValues(alpha: 0.3)
                       : Colors.transparent,
                 ),
                 boxShadow: [
@@ -140,7 +144,7 @@ class AppInfoScreen extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF22C55E).withValues(alpha: 0.2)
+                              ? const Color(0xFF18A74C).withValues(alpha: 0.2)
                               : Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -296,11 +300,7 @@ class AppInfoScreen extends StatelessWidget {
             // Features Grid
             Row(
               children: [
-                Icon(
-                  Icons.grid_view_rounded,
-                  size: 18,
-                  color: primaryColor,
-                ),
+                Icon(Icons.grid_view_rounded, size: 18, color: primaryColor),
                 const SizedBox(width: 8),
                 Text(
                   'KEY FEATURES AT A GLANCE',
@@ -491,10 +491,7 @@ class AppInfoScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Divider(
-                    height: 1,
-                    color: cardBorder,
-                  ),
+                  Divider(height: 1, color: cardBorder),
                   const SizedBox(height: 14),
                   Row(
                     children: [

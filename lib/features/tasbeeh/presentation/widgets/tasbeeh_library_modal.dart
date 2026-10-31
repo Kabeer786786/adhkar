@@ -16,7 +16,7 @@ class TasbeehLibraryModal extends StatefulWidget {
 
   const TasbeehLibraryModal({
     super.key,
-    required this.currentItems, 
+    required this.currentItems,
     required this.onAddItem,
     required this.onRemoveItem,
     required this.onCreateCustom,
@@ -33,7 +33,7 @@ class TasbeehLibraryModal extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -43,7 +43,7 @@ class TasbeehLibraryModal extends StatefulWidget {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          color: isDark ? const Color(0xFF18181B) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: TasbeehLibraryModal(
@@ -125,7 +125,9 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
             width: 60,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF3F3F46)
+                  : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -138,15 +140,12 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
             duration: const Duration(milliseconds: 200),
             layoutBuilder:
                 (Widget? currentChild, List<Widget> previousChildren) {
-              return Stack(
-                fit: StackFit.expand,
-                alignment: Alignment.topCenter,
-                children: <Widget>[
-                  ...previousChildren,
-                  ?currentChild,
-                ],
-              );
-            },
+                  return Stack(
+                    fit: StackFit.expand,
+                    alignment: Alignment.topCenter,
+                    children: <Widget>[...previousChildren, ?currentChild],
+                  );
+                },
             child: _buildCurrentViewContent(),
           ),
         ),
@@ -217,8 +216,12 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                 icon: const Icon(Icons.add_rounded, size: 18),
                 label: const Text('Create Tasbeeh'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2A531D),
-                  foregroundColor: Colors.white,
+                  backgroundColor: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
+                  foregroundColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
@@ -236,17 +239,21 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
           // Search Field
           TextField(
             controller: _searchController,
+            style: TextStyle(color: isDark ? Colors.white : null),
             onChanged: (val) => setState(() {}),
             decoration: InputDecoration(
               hintText: 'Search Tasbeeh counters...',
-              prefixIcon: const Icon(
+              hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
+              prefixIcon: Icon(
                 Icons.search_rounded,
-                color: Color(0xFF2A531D),
+                color: isDark
+                    ? const Color(0xFF18A74C)
+                    : const Color(0xFF2A531D),
               ),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear_rounded, size: 18),
-                      color: Colors.grey.shade600,
+                      color: isDark ? Colors.white60 : Colors.grey.shade600,
                       onPressed: () {
                         _searchController.clear();
                         setState(() {});
@@ -255,7 +262,7 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                   : null,
               filled: true,
               fillColor: isDark
-                  ? const Color(0xFF23322B)
+                  ? const Color(0xFF0F0F12)
                   : const Color(0xFFF9F9F9),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
@@ -264,19 +271,25 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
-                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
-                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(
-                  color: Color(0xFF2A531D),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
                   width: 1.5,
                 ),
               ),
@@ -307,14 +320,14 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                               padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                               clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
-                                color: item.color.withValues(
-                                  alpha: isDark ? 0.12 : 0.04,
-                                ),
+                                color: isDark
+                                    ? const Color(0xFF0F0F12)
+                                    : item.color.withValues(alpha: 0.04),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: item.color.withValues(
-                                    alpha: isDark ? 0.25 : 0.15,
-                                  ),
+                                  color: isDark
+                                      ? const Color(0xFF27272A)
+                                      : item.color.withValues(alpha: 0.15),
                                   width: 1.0,
                                 ),
                               ),
@@ -327,8 +340,9 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                                     child: GestureDetector(
                                       onTap: () => _toggleItem(item),
                                       child: AnimatedContainer(
-                                        duration:
-                                            const Duration(milliseconds: 200),
+                                        duration: const Duration(
+                                          milliseconds: 200,
+                                        ),
                                         padding: const EdgeInsets.all(2),
                                         child: Icon(
                                           isPinned
@@ -379,7 +393,8 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                                             color: item.color,
                                           ),
                                         ),
-                                        if (item.effectiveTranslation
+                                        if (item
+                                            .effectiveTranslation
                                             .isNotEmpty) ...[
                                           const SizedBox(height: 3),
                                           Text(
@@ -425,15 +440,18 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: item.color.withValues(
-                                          alpha: 0.12,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(12),
+                                        color: isDark
+                                            ? const Color(0xFF18181B)
+                                            : item.color.withValues(
+                                                alpha: 0.12,
+                                              ),
+                                        borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: item.color.withValues(
-                                            alpha: 0.2,
-                                          ),
+                                          color: isDark
+                                              ? const Color(0xFF27272A)
+                                              : item.color.withValues(
+                                                  alpha: 0.2,
+                                                ),
                                           width: 1.0,
                                         ),
                                       ),
@@ -522,8 +540,12 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Create Custom Tasbeeh'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2A531D),
-                foregroundColor: Colors.white,
+                backgroundColor: isDark
+                    ? const Color(0xFF18A74C)
+                    : const Color(0xFF2A531D),
+                foregroundColor: isDark
+                    ? const Color(0xFF0F0F12)
+                    : Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 11,
@@ -555,9 +577,11 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
           child: Row(
             children: [
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.arrow_back_rounded,
-                  color: Color(0xFF2A531D),
+                  color: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
                   size: 22,
                 ),
                 onPressed: () {
@@ -584,7 +608,7 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
         ),
         Divider(
           height: 1,
-          color: isDark ? Colors.white12 : Colors.grey.shade300,
+          color: isDark ? const Color(0xFF27272A) : Colors.grey.shade300,
         ),
 
         // Scrollable Content
@@ -628,12 +652,12 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF23322B)
+                          ? const Color(0xFF0F0F12)
                           : const Color(0xFFF8FAFC),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isDark
-                            ? Colors.white10
+                            ? const Color(0xFF27272A)
                             : const Color(0xFFE2E8F0),
                       ),
                     ),
@@ -693,10 +717,12 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
         Container(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF192520) : Colors.white,
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
             border: Border(
               top: BorderSide(
-                color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE2E8F0),
                 width: 1.0,
               ),
             ),
@@ -728,8 +754,12 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isPinned
                       ? Colors.red.shade700
-                      : const Color(0xFF2A531D),
-                  foregroundColor: Colors.white,
+                      : (isDark
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF2A531D)),
+                  foregroundColor: isPinned
+                      ? Colors.white
+                      : (isDark ? const Color(0xFF0F0F12) : Colors.white),
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   elevation: 0,
                   shape: RoundedRectangleBorder(

@@ -249,7 +249,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                           border: Border.all(
                             color: isAdded
                                 ? (isDark
-                                      ? const Color(0xFF86EFAC)
+                                      ? const Color(0xFF18A74C)
                                       : primaryGreen)
                                 : cardBorder,
                             width: isAdded ? 1.5 : 1,
@@ -302,7 +302,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                           Icons.access_time_filled_rounded,
                                           size: 15,
                                           color: isDark
-                                              ? const Color(0xFF86EFAC)
+                                              ? const Color(0xFF18A74C)
                                               : primaryGreen,
                                         ),
                                         const SizedBox(width: 6),
@@ -312,7 +312,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                             color: isDark
-                                                ? const Color(0xFF86EFAC)
+                                                ? const Color(0xFF18A74C)
                                                 : primaryGreen,
                                           ),
                                         ),
@@ -335,7 +335,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                                   size: 28,
                                   color: isAdded
                                       ? (isDark
-                                            ? const Color(0xFF86EFAC)
+                                            ? const Color(0xFF18A74C)
                                             : primaryGreen)
                                       : (isDark
                                             ? Colors.white54
@@ -610,7 +610,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
             fontSize: 11,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
-            color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+            color: isDark ? const Color(0xFF18A74C) : primaryGreen,
           ),
         ),
         const SizedBox(height: 6),
@@ -640,8 +640,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
-                width: 1.5,
+                color: isDark ? const Color(0xFF18A74C) : primaryGreen,
               ),
             ),
           ),
@@ -680,8 +679,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
-                width: 1.5,
+                color: isDark ? const Color(0xFF18A74C) : primaryGreen,
               ),
             ),
           ),
@@ -718,7 +716,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                             Icons.play_circle_outline_rounded,
                             size: 15,
                             color: isDark
-                                ? const Color(0xFF86EFAC)
+                                ? const Color(0xFF18A74C)
                                 : const Color(0xFF16A34A),
                           ),
                           const SizedBox(width: 6),
@@ -728,7 +726,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                               color: isDark
-                                  ? const Color(0xFF86EFAC)
+                                  ? const Color(0xFF18A74C)
                                   : const Color(0xFF16A34A),
                             ),
                           ),
@@ -741,7 +739,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
                           color: isDark
-                              ? const Color(0xFF86EFAC)
+                              ? const Color(0xFF18A74C)
                               : primaryGreen,
                         ),
                       ),
@@ -895,7 +893,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                   style: GoogleFonts.lexend(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                    color: isDark ? const Color(0xFF18A74C) : primaryGreen,
                   ),
                 ),
               ),
@@ -912,7 +910,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                   style: GoogleFonts.lexend(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                    color: isDark ? const Color(0xFF18A74C) : primaryGreen,
                   ),
                 ),
               ),
@@ -929,7 +927,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                   style: GoogleFonts.lexend(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? const Color(0xFF86EFAC) : primaryGreen,
+                    color: isDark ? const Color(0xFF18A74C) : primaryGreen,
                   ),
                 ),
               ),

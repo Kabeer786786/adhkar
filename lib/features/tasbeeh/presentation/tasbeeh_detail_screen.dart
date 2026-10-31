@@ -64,6 +64,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
   }
 
   void _openSwipeConfigModal() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) {
@@ -73,16 +74,26 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
-              title: const Row(
+              title: Row(
                 children: [
-                  Icon(Icons.tune_rounded, color: Color(0xFF2A531D)),
-                  SizedBox(width: 10),
+                  Icon(
+                    Icons.tune_rounded,
+                    color: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF2A531D),
+                  ),
+                  const SizedBox(width: 10),
                   Text(
                     'Swipe Direction',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
                   ),
                 ],
               ),
@@ -90,12 +101,12 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Choose which direction to swipe the marble beads to count:',
                     style: TextStyle(
                       fontSize: 13,
                       height: 1.4,
-                      color: Colors.grey,
+                      color: isDark ? Colors.white70 : Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -129,15 +140,21 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
+                  child: Text(
                     'Cancel',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(
+                      color: isDark ? Colors.white60 : Colors.grey,
+                    ),
                   ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2A531D),
-                    foregroundColor: Colors.white,
+                    backgroundColor: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF2A531D),
+                    foregroundColor: isDark
+                        ? const Color(0xFF0F0F12)
+                        : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -169,6 +186,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
     required String groupValue,
     required VoidCallback onTap,
   }) {
+    final isDark = context.isDarkMode;
     final isSelected = value == groupValue;
     return InkWell(
       onTap: onTap,
@@ -177,15 +195,15 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF2A531D).withValues(alpha: 0.08)
-              : (context.isDarkMode ? Colors.white10 : const Color(0xFFF8FAFC)),
+              ? (isDark
+                    ? const Color(0xFF143820)
+                    : const Color(0xFF2A531D).withValues(alpha: 0.08))
+              : (isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC)),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF2A531D)
-                : (context.isDarkMode
-                      ? Colors.white12
-                      : const Color(0xFFE2E8F0)),
+                ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                : (isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0)),
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -193,7 +211,9 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
           children: [
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? const Color(0xFF2A531D) : Colors.grey,
+              color: isSelected
+                  ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
+                  : (isDark ? Colors.white38 : Colors.grey),
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -206,7 +226,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: context.isDarkMode ? Colors.white : Colors.black87,
+                      color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -214,7 +234,9 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: context.colorScheme.onSurfaceVariant,
+                      color: isDark
+                          ? Colors.white60
+                          : context.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -252,29 +274,43 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
   }
 
   void _resetCount() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.refresh_rounded, color: Color(0xFF2A531D)),
-            SizedBox(width: 8),
-            Text('Reset Counter?'),
+            Icon(
+              Icons.refresh_rounded,
+              color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Reset Counter?',
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+            ),
           ],
         ),
         content: Text(
           'Are you sure you want to reset today\'s count for "${_item.textEn}" back to 0?',
+          style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: isDark ? Colors.white60 : Colors.grey),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2A531D),
-              foregroundColor: Colors.white,
+              backgroundColor: isDark
+                  ? const Color(0xFF18A74C)
+                  : const Color(0xFF2A531D),
+              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -296,26 +332,35 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
   }
 
   void _confirmDeleteTasbeeh(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
             const SizedBox(width: 8),
-            Text(_item.isCustom ? 'Delete Tasbeeh?' : 'Remove Tasbeeh?'),
+            Text(
+              _item.isCustom ? 'Delete Tasbeeh?' : 'Remove Tasbeeh?',
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+            ),
           ],
         ),
         content: Text(
           _item.isCustom
               ? 'Are you sure you want to delete "${_item.textEn}" permanently?'
               : 'Are you sure you want to remove "${_item.textEn}"? You can re-import it anytime from the Tasbeeh Library.',
+          style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: isDark ? Colors.white60 : Colors.grey),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -381,6 +426,10 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
     final storage = ref.watch(storageServiceProvider);
     final rawLifetime = storage.getLifetimeTasbeehCount(_item.id);
     final lifetimeCount = math.max(rawLifetime, _count);
+    final isDark = context.isDarkMode;
+    final itemColor = (isDark && _item.color.value == 0xFF2A531D)
+        ? const Color(0xFF18A74C)
+        : _item.color;
 
     final progress = _targetGoal > 0
         ? (_count / _targetGoal).clamp(0.0, 1.0)
@@ -388,9 +437,8 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
     final isCompleted = _count >= _targetGoal;
 
     return Scaffold(
-      // Light color theme background for detail screen
-      backgroundColor: context.isDarkMode
-          ? const Color(0xFF14201B)
+      backgroundColor: isDark
+          ? const Color(0xFF0F0F12)
           : const Color(0xFFF9F9F9),
 
       appBar: PreferredSize(
@@ -426,361 +474,397 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
           },
           child: SizedBox.expand(
             child: Column(
-            children: [
-              // Top Content: Tasbeeh Card & Target Goal Chips
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                child: Column(
-                  children: [
-                    // 1. Top Main Tasbeeh Card with Edit/Delete Top-Right & Info (i) Icon at Bottom-Right
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: context.isDarkMode
-                            ? const Color(0xFF1E2923)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: _item.color.withValues(alpha: 0.3),
-                          width: 1.2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
+              children: [
+                // Top Content: Tasbeeh Card & Target Goal Chips
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  child: Column(
+                    children: [
+                      // 1. Top Main Tasbeeh Card with Edit/Delete Top-Right & Info (i) Icon at Bottom-Right
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF18181B)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF27272A)
+                                : _item.color.withValues(alpha: 0.3),
+                            width: 1.2,
                           ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          // 1. Vertically Scrollable Centered Content capped at max height
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height * 0.35,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-                              child: SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        _item.textAr,
-                                        textAlign: TextAlign.center,
-                                        textDirection: TextDirection.rtl,
-                                        style: AppTypography.arabicBody(
-                                          fontSize: 28,
-                                          height: 1.9,
-                                          color: context.isDarkMode
-                                              ? Colors.white
-                                              : const Color(0xFF1E3816),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-
-                                      // Transliteration
-                                      Text(
-                                        _item.textEn,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: _item.color,
-                                        ),
-                                      ),
-
-                                      // Translation below Transliteration
-                                      if (_item
-                                          .effectiveTranslation
-                                          .isNotEmpty) ...[
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          _item.effectiveTranslation,
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.lexend(
-                                            fontSize: 13.5,
-                                            height: 1.4,
-                                            fontWeight: FontWeight.w500,
-                                            fontStyle: FontStyle.italic,
-                                            color: context
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          // 2. Info (i) Icon Button at Bottom Right Corner
-                          Positioned(
-                            bottom: 6,
-                            right: 6,
-                            child: IconButton(
-                              icon: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: _item.color.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.info_outline_rounded,
-                                  size: 17,
-                                  color: _item.color,
-                                ),
-                              ),
-                              tooltip: 'Why Recite This? (Virtues & Benefits)',
-                              onPressed: _openDescriptionModal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // 2. Clean Inline Target Goal Selector (No Box Container!)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Target Goal:',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: context.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          Row(
-                            children: [33, 99, 100, 1000].map((goal) {
-                              final isSelected = _targetGoal == goal;
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 6),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _targetGoal = goal;
-                                    });
-                                  },
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? _item.color
-                                          : (context.isDarkMode
-                                                ? Colors.white10
-                                                : Colors.white),
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: isSelected
-                                          ? null
-                                          : Border.all(
-                                              color: context.isDarkMode
-                                                  ? Colors.white12
-                                                  : const Color(0xFFE2E8F0),
-                                            ),
-                                    ),
-                                    child: Text(
-                                      '$goal',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : context.colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Spacer pushing 3D Marbles & Bottom Counter justified to the bottom
-              const Spacer(),
-
-              // 3. 3D Marbles Tasbeeh (rendered with selected marbleAsset)
-              MarbleBeadsCounter(
-                key: _marbleCounterKey,
-                onIncrement: _incrementCount,
-                onDecrement: _decrementCount,
-                height: 160,
-                marbleAsset: _item.marbleAsset,
-                swipeLeftToRight: _swipeLeftToRight,
-              ),
-
-              // 4. Counter & Progress Section at the VERY BOTTOM (directly below 3D Marbles)
-              Padding(
-                padding: const EdgeInsets.only(left: 36, right: 36, bottom: 28),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          '$_count',
-                          style: GoogleFonts.oxanium(
-                            fontSize: 52,
-                            fontWeight: FontWeight.bold,
-                            color: isCompleted
-                                ? _item.color
-                                : (context.isDarkMode
-                                      ? Colors.white
-                                      : const Color(0xFF1E3816)),
-                          ),
-                        ),
-                        Text(
-                          ' / $_targetGoal',
-                          style: GoogleFonts.oxanium(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Config Row: Swipe direction on Left, Reset & Color Icons on Right
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: _openSwipeConfigModal,
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _item.color.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: _item.color.withValues(alpha: 0.25),
-                                width: 0.8,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.tune_rounded,
-                                  size: 14,
-                                  color: _item.color,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  _swipeLeftToRight
-                                      ? 'Swipe Right (→)'
-                                      : 'Swipe Left (←)',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: _item.color,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        // Right Corner: Marble Color Style & Reset Counter Icons
-                        Row(
-                          children: [
-                            IconButton(
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              icon: Icon(
-                                Icons.palette_outlined,
-                                size: 20,
-                                color: _item.color,
-                              ),
-                              tooltip: 'Change Marble Bead Style',
-                              onPressed: _openMarbleStyleModal,
-                            ),
-                            IconButton(
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              icon: Icon(
-                                Icons.refresh_rounded,
-                                size: 20,
-                                color: _item.color,
-                              ),
-                              tooltip: 'Reset Today\'s Count',
-                              onPressed: _resetCount,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 3),
+                        child: Stack(
+                          children: [
+                            // 1. Vertically Scrollable Centered Content capped at max height
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.35,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  24,
+                                  20,
+                                  24,
+                                  20,
+                                ),
+                                child: SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          _item.textAr,
+                                          textAlign: TextAlign.center,
+                                          textDirection: TextDirection.rtl,
+                                          style: AppTypography.arabicBody(
+                                            fontSize: 28,
+                                            height: 1.9,
+                                            color: isDark
+                                                ? Colors.white
+                                                : const Color(0xFF1E3816),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
 
-                    // Linear Progress Bar
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 8,
-                        backgroundColor: _item.color.withValues(alpha: 0.15),
-                        valueColor: AlwaysStoppedAnimation<Color>(_item.color),
+                                        // Transliteration
+                                        Text(
+                                          _item.textEn,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: itemColor,
+                                          ),
+                                        ),
+
+                                        // Translation below Transliteration
+                                        if (_item
+                                            .effectiveTranslation
+                                            .isNotEmpty) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            _item.effectiveTranslation,
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.lexend(
+                                              fontSize: 13.5,
+                                              height: 1.4,
+                                              fontWeight: FontWeight.w500,
+                                              fontStyle: FontStyle.italic,
+                                              color: isDark
+                                                  ? Colors.white70
+                                                  : context
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // 2. Info (i) Icon Button at Bottom Right Corner
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: IconButton(
+                                icon: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: itemColor.withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.info_outline_rounded,
+                                    size: 17,
+                                    color: itemColor,
+                                  ),
+                                ),
+                                tooltip:
+                                    'Why Recite This? (Virtues & Benefits)',
+                                onPressed: _openDescriptionModal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
 
-                    // Count Info Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Today\'s Count',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
+                      const SizedBox(height: 14),
+
+                      // 2. Clean Inline Target Goal Selector (No Box Container!)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Target Goal:',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: isDark
+                                    ? Colors.white70
+                                    : context.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Row(
+                              children: [33, 99, 100, 1000].map((goal) {
+                                final isSelected = _targetGoal == goal;
+                                return Padding(
+                                  padding: const EdgeInsets.only(left: 6),
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _targetGoal = goal;
+                                      });
+                                    },
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? itemColor
+                                            : (isDark
+                                                  ? const Color(0xFF18181B)
+                                                  : Colors.white),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: isSelected
+                                            ? null
+                                            : Border.all(
+                                                color: isDark
+                                                    ? const Color(0xFF27272A)
+                                                    : const Color(0xFFE2E8F0),
+                                              ),
+                                      ),
+                                      child: Text(
+                                        '$goal',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSelected
+                                              ? (isDark &&
+                                                        _item.color.value ==
+                                                            0xFF2A531D
+                                                    ? const Color(0xFF0F0F12)
+                                                    : Colors.white)
+                                              : (isDark
+                                                    ? Colors.white
+                                                    : context
+                                                          .colorScheme
+                                                          .onSurface),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Lifetime: $lifetimeCount',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+
+                // Spacer pushing 3D Marbles & Bottom Counter justified to the bottom
+                const Spacer(),
+
+                // 3. 3D Marbles Tasbeeh (rendered with selected marbleAsset)
+                MarbleBeadsCounter(
+                  key: _marbleCounterKey,
+                  onIncrement: _incrementCount,
+                  onDecrement: _decrementCount,
+                  height: 160,
+                  marbleAsset: _item.marbleAsset,
+                  swipeLeftToRight: _swipeLeftToRight,
+                ),
+
+                // 4. Counter & Progress Section at the VERY BOTTOM (directly below 3D Marbles)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 36,
+                    right: 36,
+                    bottom: 28,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            '$_count',
+                            style: GoogleFonts.oxanium(
+                              fontSize: 52,
+                              fontWeight: FontWeight.bold,
+                              color: isCompleted
+                                  ? itemColor
+                                  : (isDark
+                                        ? Colors.white
+                                        : const Color(0xFF1E3816)),
+                            ),
+                          ),
+                          Text(
+                            ' / $_targetGoal',
+                            style: GoogleFonts.oxanium(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white60
+                                  : context.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Config Row: Swipe direction on Left, Reset & Color Icons on Right
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: _openSwipeConfigModal,
+                            borderRadius: BorderRadius.circular(10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: itemColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: itemColor.withValues(alpha: 0.25),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.tune_rounded,
+                                    size: 14,
+                                    color: itemColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    _swipeLeftToRight
+                                        ? 'Swipe Right (→)'
+                                        : 'Swipe Left (←)',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: itemColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // Right Corner: Marble Color Style & Reset Counter Icons
+                          Row(
+                            children: [
+                              IconButton(
+                                constraints: const BoxConstraints(),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                icon: Icon(
+                                  Icons.palette_outlined,
+                                  size: 20,
+                                  color: itemColor,
+                                ),
+                                tooltip: 'Change Marble Bead Style',
+                                onPressed: _openMarbleStyleModal,
+                              ),
+                              IconButton(
+                                constraints: const BoxConstraints(),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                icon: Icon(
+                                  Icons.refresh_rounded,
+                                  size: 20,
+                                  color: itemColor,
+                                ),
+                                tooltip: 'Reset Today\'s Count',
+                                onPressed: _resetCount,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+
+                      // Linear Progress Bar
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          minHeight: 8,
+                          backgroundColor: itemColor.withValues(alpha: 0.15),
+                          valueColor: AlwaysStoppedAnimation<Color>(itemColor),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Count Info Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Today\'s Count',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white60
+                                  : context.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          Text(
+                            'Lifetime: $lifetimeCount',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white70
+                                  : context.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
   }
 }

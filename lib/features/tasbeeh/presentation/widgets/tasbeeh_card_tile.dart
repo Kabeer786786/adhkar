@@ -28,20 +28,27 @@ class TasbeehCardTile extends StatelessWidget {
         ? (currentCount / item.targetGoal).clamp(0.0, 1.0)
         : 0.0;
     final isCompleted = currentCount >= item.targetGoal;
+    final itemColor = (context.isDarkMode && item.color.value == 0xFF2A531D)
+        ? const Color(0xFF18A74C)
+        : item.color;
 
     final cardBgColor = isSelected
         ? (context.isDarkMode
-            ? const Color(0xFF243B2C)
-            : const Color(0xFFF0FDF4))
+              ? const Color(0xFF143820)
+              : const Color(0xFFF0FDF4))
         : (context.isDarkMode
-            ? const Color(0xFF1E2923)
-            : const Color(0xFFF9F9F9));
+              ? const Color(0xFF18181B)
+              : const Color(0xFFF9F9F9));
 
     final borderColor = isSelected
-        ? const Color(0xFF2A531D)
+        ? (context.isDarkMode
+              ? const Color(0xFF18A74C)
+              : const Color(0xFF2A531D))
         : (isCompleted
-            ? item.color.withValues(alpha: 0.6)
-            : (context.isDarkMode ? Colors.white10 : const Color(0xFFE2ECE0)));
+              ? itemColor.withValues(alpha: 0.6)
+              : (context.isDarkMode
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE2ECE0)));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -80,20 +87,32 @@ class TasbeehCardTile extends StatelessWidget {
                     width: 22,
                     height: 22,
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF2A531D) : Colors.white,
+                      color: isSelected
+                          ? (context.isDarkMode
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF2A531D))
+                          : (context.isDarkMode
+                                ? const Color(0xFF18181B)
+                                : Colors.white),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF2A531D)
-                            : Colors.grey.shade400,
+                            ? (context.isDarkMode
+                                  ? const Color(0xFF18A74C)
+                                  : const Color(0xFF2A531D))
+                            : (context.isDarkMode
+                                  ? const Color(0xFF3F3F46)
+                                  : Colors.grey.shade400),
                         width: 1.8,
                       ),
                     ),
                     child: isSelected
-                        ? const Icon(
+                        ? Icon(
                             Icons.check_rounded,
                             size: 14,
-                            color: Colors.white,
+                            color: context.isDarkMode
+                                ? const Color(0xFF0F0F12)
+                                : Colors.white,
                           )
                         : null,
                   ),
@@ -124,25 +143,11 @@ class TasbeehCardTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: item.color,
+                          color: itemColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      // if (item.effectiveTranslation.isNotEmpty) ...[
-                      //   const SizedBox(height: 3),
-                      //   Text(
-                      //     item.effectiveTranslation,
-                      //     style: GoogleFonts.lexend(
-                      //       fontSize: 12.5,
-                      //       fontWeight: FontWeight.w400,
-                      //       fontStyle: FontStyle.italic,
-                      //       color: context.colorScheme.onSurfaceVariant,
-                      //     ),
-                      //     maxLines: 2,
-                      //     overflow: TextOverflow.ellipsis,
-                      //   ),
-                      // ],
                     ],
                   ),
                 ),
@@ -159,8 +164,8 @@ class TasbeehCardTile extends StatelessWidget {
                       child: CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 4.5,
-                        backgroundColor: item.color.withValues(alpha: 0.15),
-                        valueColor: AlwaysStoppedAnimation<Color>(item.color),
+                        backgroundColor: itemColor.withValues(alpha: 0.15),
+                        valueColor: AlwaysStoppedAnimation<Color>(itemColor),
                         strokeCap: StrokeCap.round,
                       ),
                     ),
@@ -171,7 +176,7 @@ class TasbeehCardTile extends StatelessWidget {
                           Icon(
                             Icons.check_circle_rounded,
                             size: 22,
-                            color: item.color,
+                            color: itemColor,
                           )
                         else ...[
                           Text(
@@ -179,7 +184,9 @@ class TasbeehCardTile extends StatelessWidget {
                             style: GoogleFonts.oxanium(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: context.colorScheme.onSurface,
+                              color: context.isDarkMode
+                                  ? Colors.white
+                                  : context.colorScheme.onSurface,
                             ),
                           ),
                           Text(
@@ -187,7 +194,9 @@ class TasbeehCardTile extends StatelessWidget {
                             style: GoogleFonts.oxanium(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w600,
-                              color: context.colorScheme.onSurfaceVariant,
+                              color: context.isDarkMode
+                                  ? Colors.white70
+                                  : context.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],

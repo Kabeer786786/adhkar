@@ -150,6 +150,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
       }
     });
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = screenWidth > 600 ? 5 : 3;
     final isPlayerActive = audioController.currentIndex >= 0;
@@ -157,16 +158,18 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
     return Stack(
       children: [
         Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
             elevation: 0,
             scrolledUnderElevation: 0,
             titleSpacing: 0,
             leading: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.arrow_back_rounded,
-                color: Color(0xFF1A3512),
+                color: isDark
+                    ? Colors.white
+                    : const Color(0xFF1A3512),
               ),
               onPressed: () => Navigator.pop(context),
               tooltip: 'Back',
@@ -184,7 +187,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                         textDirection: TextDirection.rtl,
                         style: AppTypography.arabicHeader(
                           fontSize: 18,
-                          color: const Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                         ),
                       ),
                     ),
@@ -195,7 +200,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1A3512),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF1A3512),
                         ),
                       ),
                     ),
@@ -206,9 +213,11 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
             actions: [
               if (_hasCheckedDownloadStatus && !_isAllDownloaded)
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.download_for_offline_rounded,
-                    color: Color(0xFF1A3512),
+                    color: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF1A3512),
                     size: 22,
                   ),
                   onPressed: () => AsmaDownloadDialog.show(context, ref),
@@ -219,7 +228,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   _isGridView
                       ? Icons.view_headline_rounded
                       : Icons.grid_view_rounded,
-                  color: const Color(0xFF1A3512),
+                  color: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF1A3512),
                   size: 22,
                 ),
                 onPressed: () {
@@ -327,21 +338,29 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
   Widget _buildHeaderCard() {
     final isPlayingAny = _audioController.isPlaying;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       key: _headerKey,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFFDCFCE7),
-            const Color(0xFFFEF3C7).withValues(alpha: 0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: isDark
+            ? const LinearGradient(
+                colors: [Color(0xFF143820), Color(0xFF18181B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : LinearGradient(
+                colors: [
+                  const Color(0xFFDCFCE7),
+                  const Color(0xFFFEF3C7).withValues(alpha: 0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
         borderRadius: BorderRadius.circular(20),
+        border: isDark ? Border.all(color: const Color(0xFF27272A)) : null,
       ),
       child: Stack(
         children: [
@@ -350,9 +369,11 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.auto_awesome_rounded,
-                    color: Color(0xFF2A531D),
+                    color: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF2A531D),
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -361,7 +382,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF2A531D).withValues(alpha: 0.8),
+                      color: isDark
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFF2A531D).withValues(alpha: 0.8),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -373,7 +396,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                 style: GoogleFonts.outfit(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A3512),
+                  color: isDark ? Colors.white : const Color(0xFF1A3512),
                 ),
               ),
               const SizedBox(height: 4),
@@ -383,7 +406,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   'Discover and memorize the 99 Beautiful Names of Almighty Allah.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: const Color(0xFF1A3512).withValues(alpha: 0.8),
+                    color: isDark
+                        ? Colors.white70
+                        : const Color(0xFF1A3512).withValues(alpha: 0.8),
                     height: 1.35,
                   ),
                 ),
@@ -410,21 +435,18 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A3512),
+                    color: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF1A3512),
                     shape: BoxShape.circle,
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: const Color(0xFF1A3512).withValues(alpha: 0.3),
-                    //     blurRadius: 8,
-                    //     offset: const Offset(0, 3),
-                    //   ),
-                    // ],
                   ),
                   child: Icon(
                     isPlayingAny
                         ? Icons.pause_rounded
                         : Icons.play_arrow_rounded,
-                    color: const Color(0xFFD4AF37),
+                    color: isDark
+                        ? const Color(0xFF0F0F12)
+                        : const Color(0xFFD4AF37),
                     size: 22,
                   ),
                 ),
@@ -437,6 +459,8 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   }
 
   Widget _buildGridCard(AsmaUlHusna item, int index, bool isSelected) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       key: _itemKeys.putIfAbsent(index, () => GlobalKey()),
       onTap: () {
@@ -453,26 +477,40 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           gradient: isSelected
-              ? const LinearGradient(
-                  colors: [
-                    Color(0xFFE8F5E9),
-                    Color(0xFFFEF9C3),
-                    Color(0xFFDCFCE7),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
+              ? (isDark
+                    ? const LinearGradient(
+                        colors: [Color(0xFF143820), Color(0xFF1B3322)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : const LinearGradient(
+                        colors: [
+                          Color(0xFFE8F5E9),
+                          Color(0xFFFEF9C3),
+                          Color(0xFFDCFCE7),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ))
               : null,
-          color: isSelected ? null : const Color(0xFFF3F4F6),
+          color: isSelected
+              ? null
+              : (isDark ? const Color(0xFF18181B) : const Color(0xFFF3F4F6)),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: isSelected ? const Color(0xFF16A34A) : Colors.transparent,
-            width: isSelected ? 2.5 : 0.0,
+            color: isSelected
+                ? const Color(0xFF18A74C)
+                : (isDark ? const Color(0xFF27272A) : Colors.transparent),
+            width: isSelected ? 2.5 : (isDark ? 1.0 : 0.0),
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF16A34A).withValues(alpha: 0.12),
+                    color:
+                        (isDark
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF16A34A))
+                            .withValues(alpha: isDark ? 0.2 : 0.12),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -491,7 +529,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     : const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                 decoration: isSelected
                     ? BoxDecoration(
-                        color: const Color(0xFF16A34A),
+                        color: isDark
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF16A34A),
                         borderRadius: BorderRadius.circular(6),
                       )
                     : null,
@@ -500,10 +540,10 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     if (isSelected) ...[
-                      const Icon(
+                      Icon(
                         Icons.graphic_eq_rounded,
                         size: 9.5,
-                        color: Colors.white,
+                        color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                       ),
                       const SizedBox(width: 2),
                     ],
@@ -514,7 +554,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                         fontWeight: isSelected
                             ? FontWeight.w700
                             : FontWeight.w600,
-                        color: isSelected ? Colors.white : Colors.grey.shade400,
+                        color: isSelected
+                            ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                            : (isDark ? Colors.white60 : Colors.grey.shade400),
                         height: 1.1,
                       ),
                     ),
@@ -536,8 +578,10 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                       style: AppTypography.arabicHeader(
                         fontSize: isSelected ? 34 : 26,
                         color: isSelected
-                            ? const Color(0xFF15803D)
-                            : const Color(0xFF1A3512),
+                            ? (isDark
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFF15803D))
+                            : (isDark ? Colors.white : const Color(0xFF1A3512)),
                         height: 1.6,
                       ),
                     ),
@@ -554,8 +598,12 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                           ? FontWeight.bold
                           : FontWeight.w600,
                       color: isSelected
-                          ? const Color(0xFF15803D)
-                          : const Color(0xFF6B533E),
+                          ? (isDark
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFF15803D))
+                          : (isDark
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFF6B533E)),
                     ),
                   ),
                 ],
@@ -568,6 +616,8 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
   }
 
   Widget _buildListCard(AsmaUlHusna item, int index, bool isSelected) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       key: _itemKeys.putIfAbsent(index, () => GlobalKey()),
       padding: const EdgeInsets.only(bottom: 10),
@@ -587,26 +637,40 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             gradient: isSelected
-                ? const LinearGradient(
-                    colors: [
-                      Color(0xFFE8F5E9),
-                      Color(0xFFFEF9C3),
-                      Color(0xFFDCFCE7),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
+                ? (isDark
+                      ? const LinearGradient(
+                          colors: [Color(0xFF143820), Color(0xFF1B3322)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                      : const LinearGradient(
+                          colors: [
+                            Color(0xFFE8F5E9),
+                            Color(0xFFFEF9C3),
+                            Color(0xFFDCFCE7),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ))
                 : null,
-            color: isSelected ? null : const Color(0xFFF3F4F6),
+            color: isSelected
+                ? null
+                : (isDark ? const Color(0xFF18181B) : const Color(0xFFF3F4F6)),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: isSelected ? const Color(0xFF16A34A) : Colors.transparent,
-              width: isSelected ? 2.5 : 0.0,
+              color: isSelected
+                  ? const Color(0xFF18A74C)
+                  : (isDark ? const Color(0xFF27272A) : Colors.transparent),
+              width: isSelected ? 2.5 : (isDark ? 1.0 : 0.0),
             ),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF16A34A).withValues(alpha: 0.12),
+                      color:
+                          (isDark
+                                  ? const Color(0xFF18A74C)
+                                  : const Color(0xFF16A34A))
+                              .withValues(alpha: isDark ? 0.2 : 0.12),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -627,7 +691,9 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                       : null,
                   color: isSelected
                       ? null
-                      : const Color(0xFF2A531D).withValues(alpha: 0.1),
+                      : (isDark
+                            ? const Color(0xFF202024)
+                            : const Color(0xFF2A531D).withValues(alpha: 0.1)),
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -639,10 +705,12 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                       )
                     : Text(
                         '${item.number}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF1A3512),
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : const Color(0xFF1A3512),
                         ),
                       ),
               ),
@@ -660,8 +728,10 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                         fontSize: 15.5,
                         fontWeight: FontWeight.w700,
                         color: isSelected
-                            ? const Color(0xFF15803D)
-                            : const Color(0xFF2A531D),
+                            ? (isDark
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFF15803D))
+                            : (isDark ? Colors.white : const Color(0xFF2A531D)),
                       ),
                     ),
                     const SizedBox(height: 1),
@@ -673,8 +743,14 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: isSelected
-                            ? const Color(0xFF15803D).withValues(alpha: 0.85)
-                            : Colors.grey.shade700,
+                            ? (isDark
+                                  ? const Color(
+                                      0xFF86EFAC,
+                                    ).withValues(alpha: 0.85)
+                                  : const Color(
+                                      0xFF15803D,
+                                    ).withValues(alpha: 0.85))
+                            : (isDark ? Colors.white70 : Colors.grey.shade700),
                       ),
                     ),
                   ],
@@ -692,8 +768,10 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   style: AppTypography.arabicHeader(
                     fontSize: isSelected ? 34 : 26,
                     color: isSelected
-                        ? const Color(0xFF15803D)
-                        : const Color(0xFF1A3512),
+                        ? (isDark
+                              ? const Color(0xFF86EFAC)
+                              : const Color(0xFF15803D))
+                        : (isDark ? Colors.white : const Color(0xFF1A3512)),
                   ),
                 ),
               ),

@@ -38,7 +38,9 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
     final savedItemMaps = storage.getSavedTasbeehItems();
 
     if (savedItemMaps != null && savedItemMaps.isNotEmpty) {
-      _tasbeehItems = savedItemMaps.map((m) => TasbeehItem.fromJson(m)).toList();
+      _tasbeehItems = savedItemMaps
+          .map((m) => TasbeehItem.fromJson(m))
+          .toList();
     } else {
       _tasbeehItems = List.from(TasbeehItem.defaults);
       _persistItems();
@@ -65,7 +67,9 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
 
   void _applyMarbleToAll(String selectedAsset) {
     setState(() {
-      _tasbeehItems = _tasbeehItems.map((i) => i.copyWith(marbleAsset: selectedAsset)).toList();
+      _tasbeehItems = _tasbeehItems
+          .map((i) => i.copyWith(marbleAsset: selectedAsset))
+          .toList();
     });
     _persistItems();
   }
@@ -87,7 +91,7 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -198,7 +202,7 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
   ) {
     if (_isSelectionMode) {
       return AppBar(
-        backgroundColor: isDark ? const Color(0xFF1E2D24) : Colors.white,
+        backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
         elevation: 1,
         leading: IconButton(
           icon: Icon(Icons.close_rounded, color: textColor),
@@ -241,9 +245,9 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
         showDrawerButton: false,
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.touch_app_rounded,
-              color: Color(0xFF2A531D),
+              color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
               size: 26,
             ),
             tooltip: 'Tasbeeh Counter',
@@ -257,9 +261,9 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.calendar_month_rounded,
-              color: Color(0xFF2A531D),
+              color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
               size: 26,
             ),
             tooltip: 'Tasbeeh Heatmap Calendar',
@@ -275,13 +279,17 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
   Widget build(BuildContext context) {
     final storage = ref.watch(storageServiceProvider);
     final isDark = context.isDarkMode;
-    const primaryGreen = Color(0xFF2A531D);
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final isAllSelected = _tasbeehItems.isNotEmpty &&
-        _selectedIds.length == _tasbeehItems.length;
+    final isAllSelected =
+        _tasbeehItems.isNotEmpty && _selectedIds.length == _tasbeehItems.length;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121B17) : const Color(0xFFFFFFFF),
+      backgroundColor: isDark
+          ? const Color(0xFF0F0F12)
+          : const Color(0xFFFFFFFF),
       appBar: _buildAppBar(context, isDark, textColor, primaryGreen),
       body: SafeArea(
         child: ListView(
@@ -300,7 +308,9 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.6,
-                        color: isDark ? Colors.white60 : const Color(0xFF64748B),
+                        color: isDark
+                            ? Colors.white60
+                            : const Color(0xFF64748B),
                       ),
                     ),
                     InkWell(
@@ -315,7 +325,10 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
                       },
                       borderRadius: BorderRadius.circular(8),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 4,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -329,7 +342,7 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
                             const SizedBox(width: 6),
                             Text(
                               isAllSelected ? 'Deselect All' : 'Select All',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.bold,
                                 color: primaryGreen,
@@ -344,7 +357,10 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
               ),
             ],
             ..._tasbeehItems.map((item) {
-              final currentCount = storage.getDailyTasbeehCount(_todayKey, item.id);
+              final currentCount = storage.getDailyTasbeehCount(
+                _todayKey,
+                item.id,
+              );
               final isSelected = _selectedIds.contains(item.id);
 
               return TasbeehCardTile(
@@ -390,8 +406,10 @@ class _TasbeehScreenState extends ConsumerState<TasbeehScreen> {
           ? null
           : FloatingActionButton.extended(
               onPressed: _openTasbeehLibraryModal,
-              backgroundColor: const Color(0xFF2A531D),
-              foregroundColor: Colors.white,
+              backgroundColor: isDark
+                  ? const Color(0xFF18A74C)
+                  : const Color(0xFF2A531D),
+              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
               icon: const Icon(Icons.add_rounded),
               label: const Text(
                 'Add Tasbeeh',

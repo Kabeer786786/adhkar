@@ -46,7 +46,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -66,7 +66,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white24 : Colors.grey.shade300,
+                        color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -75,12 +75,12 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Select Categories',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2A531D),
+                          color: isDark ? Colors.white : const Color(0xFF2A531D),
                         ),
                       ),
                       TextButton(
@@ -95,10 +95,10 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                         },
                         child: Text(
                           allSelected ? 'Clear All' : 'Select All',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2A531D),
+                            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                           ),
                         ),
                       ),
@@ -119,22 +119,22 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                               ? FontWeight.bold
                               : FontWeight.w500,
                           color: isSelected
-                              ? Colors.white
+                              ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
                               : (isDark
                                     ? Colors.white70
                                     : const Color(0xFF334155)),
                         ),
                         selected: isSelected,
-                        selectedColor: const Color(0xFF2A531D),
+                        selectedColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                         backgroundColor: isDark
-                            ? const Color(0xFF23322B)
+                            ? const Color(0xFF0F0F12)
                             : const Color(0xFFF8FAFC),
-                        checkmarkColor: Colors.white,
+                        checkmarkColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                         side: BorderSide(
                           color: isSelected
-                              ? const Color(0xFF2A531D)
+                              ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
                               : (isDark
-                                    ? Colors.white12
+                                    ? const Color(0xFF27272A)
                                     : const Color(0xFFE2E8F0)),
                           width: isSelected ? 1.5 : 1.0,
                         ),
@@ -163,8 +163,8 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2A531D),
-                      foregroundColor: Colors.white,
+                      backgroundColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                      foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -210,7 +210,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: isDark
-            ? const Color(0xFF17241E)
+            ? const Color(0xFF0F0F12)
             : const Color(0xFFF9F9F9),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -220,7 +220,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
             systemOverlayStyle: isDark
                 ? SystemUiOverlayStyle.light
                 : SystemUiOverlayStyle.dark,
-            backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
+            backgroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
             iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
             titleWidget: Text(
               'SCIENTIFIC ISLAM',
@@ -237,7 +237,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
           children: [
             // Search & Filter Header Container
             Container(
-              color: isDark ? const Color(0xFF192520) : Colors.white,
+              color: isDark ? const Color(0xFF0F0F12) : Colors.white,
               padding: const EdgeInsets.only(
                 left: 16,
                 right: 16,
@@ -261,9 +261,9 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                           fontSize: 15,
                           color: isDark ? Colors.white60 : Colors.grey.shade500,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search_rounded,
-                          color: Color(0xFF2A531D),
+                          color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                         ),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
@@ -279,7 +279,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                             : null,
                         filled: true,
                         fillColor: isDark
-                            ? const Color(0xFF23322B)
+                            ? const Color(0xFF18181B)
                             : const Color(0xFFF9F9F9),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -293,15 +293,15 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
                             color: isDark
-                                ? Colors.white12
+                                ? const Color(0xFF27272A)
                                 : const Color(0xFFE2E8F0),
                             width: 1.0,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF2A531D),
+                          borderSide: BorderSide(
+                            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                             width: 1.5,
                           ),
                         ),
@@ -318,14 +318,14 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF23322B)
+                            ? const Color(0xFF18181B)
                             : const Color(0xFFF9F9F9),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: _selectedCategories.isNotEmpty
-                              ? const Color(0xFF2A531D)
+                              ? (isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D))
                               : (isDark
-                                    ? Colors.white12
+                                    ? const Color(0xFF27272A)
                                     : const Color(0xFFE2E8F0)),
                           width: _selectedCategories.isNotEmpty ? 1.5 : 1.0,
                         ),
@@ -333,9 +333,9 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.tune_rounded,
-                            color: Color(0xFF2A531D),
+                            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                             size: 22,
                           ),
                           if (_selectedCategories.isNotEmpty)
@@ -380,7 +380,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: isDark
-                                  ? Colors.white70
+                                  ? const Color(0xFF18A74C)
                                   : const Color(0xFF2A531D),
                             ),
                           ),
@@ -422,17 +422,17 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF192520) : Colors.white,
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
+              ? const Color(0xFF27272A)
               : const Color(0xFF2A531D).withValues(alpha: 0.12),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withValues(alpha: 0.2)
+                ? Colors.black.withValues(alpha: 0.25)
                 : const Color(0xFF2A531D).withValues(alpha: 0.06),
             blurRadius: 8,
             offset: const Offset(0, 3),
@@ -506,7 +506,7 @@ class _SciIslamScreenState extends State<SciIslamScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark
-                              ? Colors.white60
+                              ? Colors.white70
                               : const Color(0xFF4B5563),
                           height: 1.35,
                         ),

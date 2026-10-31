@@ -40,12 +40,14 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final primaryColor = const Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.90, // 90% screen height
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF192520) : Colors.white,
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
       ),
       padding: const EdgeInsets.only(top: 16),
@@ -57,7 +59,9 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
               width: 42,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
+                color: isDark
+                    ? const Color(0xFF3F3F46)
+                    : Colors.grey.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -86,12 +90,14 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Islamic Charity Guidelines',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                         ),
                       ),
                       Text(
@@ -105,7 +111,10 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: isDark ? Colors.white70 : null,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -148,24 +157,17 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                       color: isSelected
                           ? primaryColor
                           : (isDark
-                                ? const Color(0xFF23322B)
+                                ? const Color(0xFF0F0F12)
                                 : const Color(0xFFF3FAF2)),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected
                             ? primaryColor
-                            : primaryColor.withValues(alpha: 0.2),
+                            : (isDark
+                                  ? const Color(0xFF27272A)
+                                  : primaryColor.withValues(alpha: 0.2)),
                         width: isSelected ? 2.0 : 1.0,
                       ),
-                      // boxShadow: isSelected
-                      //     ? [
-                      //         BoxShadow(
-                      //           color: primaryColor.withValues(alpha: 0.3),
-                      //           blurRadius: 6,
-                      //           offset: const Offset(0, 3),
-                      //         ),
-                      //       ]
-                      //     : [],
                     ),
                     child: Row(
                       children: [
@@ -173,14 +175,22 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? Colors.white.withValues(alpha: 0.2)
+                                ? (isDark
+                                      ? const Color(
+                                          0xFF0F0F12,
+                                        ).withValues(alpha: 0.25)
+                                      : Colors.white.withValues(alpha: 0.2))
                                 : primaryColor.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             iconData,
                             size: 16,
-                            color: isSelected ? Colors.white : primaryColor,
+                            color: isSelected
+                                ? (isDark
+                                      ? const Color(0xFF0F0F12)
+                                      : Colors.white)
+                                : primaryColor,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -191,7 +201,9 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                               fontSize: 11.5,
                               fontWeight: FontWeight.bold,
                               color: isSelected
-                                  ? Colors.white
+                                  ? (isDark
+                                        ? const Color(0xFF0F0F12)
+                                        : Colors.white)
                                   : (isDark
                                         ? Colors.white
                                         : const Color(0xFF2A531D)),
@@ -227,14 +239,16 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
 
   Widget _buildVirtuesTab(bool isDark) {
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 60),
       physics: const BouncingScrollPhysics(),
       children: [
         // Highlight Quranic Verse Box
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFFDF8F0),
+            color: isDark
+                ? const Color(0xFF1F1804).withValues(alpha: 0.5)
+                : const Color(0xFFFDF8F0),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: const Color(0xFFEAB308).withValues(alpha: 0.3),
@@ -249,7 +263,9 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                   textDirection: TextDirection.rtl,
                   style: AppTypography.arabicBody(
                     fontSize: 20,
-                    color: const Color(0xFF78350F),
+                    color: isDark
+                        ? const Color(0xFFEAB308).withValues(alpha: 0.8)
+                        : const Color(0xFF78350F),
                   ),
                 ),
               ),
@@ -259,7 +275,9 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                 style: GoogleFonts.lexend(
                   fontSize: 12.5,
                   fontStyle: FontStyle.italic,
-                  color: const Color(0xFF92400E),
+                  color: isDark
+                      ? const Color(0xFFEAB308).withValues(alpha: 0.6)
+                      : const Color(0xFF78350F),
                   height: 1.4,
                 ),
               ),
@@ -318,14 +336,16 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
 
   Widget _buildWarningsTab(bool isDark) {
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 60),
       physics: const BouncingScrollPhysics(),
       children: [
         // Warning Header Box
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFFEF2F2),
+            color: isDark
+                ? Color(0xFF421F1F).withValues(alpha: 0.3)
+                : const Color(0xFFFEF2F2),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: const Color(0xFFEF4444).withValues(alpha: 0.3),
@@ -357,7 +377,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                 'Zakat is one of the 5 Pillars of Islam. Withholding Zakat after reaching Nisab is a major sin and brings severe spiritual consequences in both this world and the Hereafter.',
                 style: GoogleFonts.lexend(
                   fontSize: 12,
-                  color: const Color(0xFF991B1B),
+                  color: Color(0xFFDC2626).withOpacity(0.6),
                   height: 1.4,
                 ),
               ),
@@ -379,12 +399,12 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Quranic Warning (Surah At-Tawbah 9:34-35)',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFDC2626),
+                  color: Color(0xFFDC2626).withOpacity(0.6),
                 ),
               ),
               const SizedBox(height: 8),
@@ -395,7 +415,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                   textDirection: TextDirection.rtl,
                   style: AppTypography.arabicBody(
                     fontSize: 18,
-                    color: const Color(0xFF7F1D1D),
+                    color: Color(0xFFDC2626).withOpacity(0.9),
                   ),
                 ),
               ),
@@ -454,15 +474,15 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
 
   Widget _buildComparisonTab(bool isDark) {
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 60),
       physics: const BouncingScrollPhysics(),
       children: [
-        const Text(
+        Text(
           'Difference between Sadaqah & Zakat',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2A531D),
+            color: isDark ? Colors.white70 : Color(0xFF2A531D),
           ),
         ),
         const SizedBox(height: 12),
@@ -561,16 +581,18 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
     ];
 
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 60),
       physics: const BouncingScrollPhysics(),
       children: [
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3FAF2),
+            color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF3FAF2),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+              color: isDark
+                  ? const Color(0xFF27272A)
+                  : const Color(0xFF2A531D).withValues(alpha: 0.2),
             ),
           ),
           child: Text(
@@ -578,7 +600,7 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
             style: GoogleFonts.lexend(
               fontSize: 12,
               fontStyle: FontStyle.italic,
-              color: const Color(0xFF2A531D),
+              color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF2A531D),
               height: 1.4,
             ),
           ),
@@ -592,11 +614,13 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF23322B)
+                    ? const Color(0xFF0F0F12)
                     : const Color(0xFFF9FAFB),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isDark ? Colors.white12 : const Color(0xFFE5E7EB),
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE5E7EB),
                 ),
               ),
               child: Row(
@@ -605,12 +629,18 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2A531D).withValues(alpha: 0.12),
+                      color:
+                          (isDark
+                                  ? const Color(0xFF18A74C)
+                                  : const Color(0xFF2A531D))
+                              .withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       r['icon'] as IconData,
-                      color: const Color(0xFF2A531D),
+                      color: isDark
+                          ? const Color(0xFF18A74C)
+                          : const Color(0xFF2A531D),
                       size: 18,
                     ),
                   ),
@@ -621,10 +651,12 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
                       children: [
                         Text(
                           r['title'] as String,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2A531D),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF2A531D),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -659,12 +691,12 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
     required bool isDark,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 60),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
+        color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isDark ? Colors.white10 : const Color(0xFFE5E7EB),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
         ),
       ),
       child: Column(
@@ -701,7 +733,9 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
               textDirection: TextDirection.rtl,
               style: AppTypography.arabicBody(
                 fontSize: 18,
-                color: const Color(0xFF2A531D),
+                color: isDark
+                    ? const Color(0xFF86EFAC)
+                    : const Color(0xFF2A531D),
               ),
             ),
           ),
@@ -726,12 +760,12 @@ class _IslamicCharityInfoModalState extends State<IslamicCharityInfoModal> {
     required bool isDark,
   }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 60),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
+        color: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Colors.white10 : const Color(0xFFE5E7EB),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
         ),
       ),
       child: Column(

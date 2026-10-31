@@ -71,19 +71,22 @@ class SurahHeaderCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: isDark
-                  ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
+                  ? [const Color(0xFF18181B), const Color(0xFF142E1B)]
                   : [const Color(0xFF669f1d), const Color(0xFF2A531D)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: const Color(0xFFd1ffbe).withValues(alpha: 0.35),
+              color: isDark
+                  ? const Color(0xFF27272A)
+                  : const Color(0xFFd1ffbe).withValues(alpha: 0.35),
               width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF2A531D).withValues(
+                color: (isDark ? Colors.black : const Color(0xFF2A531D))
+                    .withValues(
                   alpha: isDark ? 0.35 : 0.25,
                 ),
                 blurRadius: 16,
@@ -100,16 +103,20 @@ class SurahHeaderCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         FlutterIslamicIcons.quran2,
                         size: 14,
-                        color: Color(0xFFd1ffbe),
+                        color: isDark
+                            ? const Color(0xFF86EFAC)
+                            : const Color(0xFFd1ffbe),
                       ),
                       const SizedBox(width: 6),
                       Text(
                         isJuzMode ? 'JUZ DETAILS' : 'SURAH DETAILS',
-                        style: const TextStyle(
-                          color: Color(0xFFd1ffbe),
+                        style: TextStyle(
+                          color: isDark
+                              ? const Color(0xFF86EFAC)
+                              : const Color(0xFFd1ffbe),
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                           letterSpacing: 0.8,
@@ -129,26 +136,34 @@ class SurahHeaderCard extends StatelessWidget {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.15),
+                            color: isDark
+                                ? const Color(0xFF18A74C).withValues(alpha: 0.15)
+                                : Colors.white.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: const Color(0xFFd1ffbe).withValues(alpha: 0.4),
+                              color: isDark
+                                  ? const Color(0xFF18A74C).withValues(alpha: 0.4)
+                                  : const Color(0xFFd1ffbe).withValues(alpha: 0.4),
                               width: 0.8,
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 Icons.info_outline_rounded,
                                 size: 13,
-                                color: Color(0xFFd1ffbe),
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : const Color(0xFFd1ffbe),
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
                                 'Context & Info',
                                 style: TextStyle(
-                                  color: Color(0xFFd1ffbe),
+                                  color: isDark
+                                      ? const Color(0xFF86EFAC)
+                                      : const Color(0xFFd1ffbe),
                                   fontWeight: FontWeight.w600,
                                   fontSize: 10.5,
                                   letterSpacing: 0.2,
@@ -384,7 +399,7 @@ class SurahHeaderCard extends StatelessWidget {
                 arabicFont: arabicFont,
                 fontSize: 24,
                 color: isDark
-                    ? const Color(0xFFA3E635)
+                    ? const Color(0xFF18A74C)
                     : const Color(0xFF2A531D),
                 height: 1.5,
               ),

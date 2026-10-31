@@ -53,11 +53,18 @@ class SurahDownloadDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: isDark
+            ? const Border(
+                top: BorderSide(color: Color(0xFF27272A), width: 1),
+              ) 
+            : null,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -66,7 +73,7 @@ class SurahDownloadDialog extends ConsumerWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: isDark ? const Color(0xFF3F3F46) : Colors.grey[300],
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -74,12 +81,14 @@ class SurahDownloadDialog extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A3512).withValues(alpha: 0.08),
+              color: isDark
+                  ? const Color(0xFF143820)
+                  : const Color(0xFF1A3512).withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.graphic_eq_rounded,
-              color: Color(0xFF1A3512),
+              color: isDark ? const Color(0xFF18A74C) : const Color(0xFF1A3512),
               size: 36,
             ),
           ),
@@ -90,7 +99,7 @@ class SurahDownloadDialog extends ConsumerWidget {
             style: GoogleFonts.outfit(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A3512),
+              color: isDark ? Colors.white : const Color(0xFF1A3512),
             ),
           ),
           const SizedBox(height: 8),
@@ -99,7 +108,7 @@ class SurahDownloadDialog extends ConsumerWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
               fontSize: 14,
-              color: Colors.black87,
+              color: isDark ? Colors.white70 : Colors.black87,
               height: 1.4,
             ),
           ),
@@ -111,7 +120,9 @@ class SurahDownloadDialog extends ConsumerWidget {
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(color: Colors.black26),
+                    side: BorderSide(
+                      color: isDark ? const Color(0xFF27272A) : Colors.black26,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -119,7 +130,7 @@ class SurahDownloadDialog extends ConsumerWidget {
                   child: Text(
                     'Read Only',
                     style: GoogleFonts.outfit(
-                      color: Colors.black87,
+                      color: isDark ? Colors.white70 : Colors.black87,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -136,7 +147,9 @@ class SurahDownloadDialog extends ConsumerWidget {
                         );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1A3512),
+                    backgroundColor: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF1A3512),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -145,7 +158,7 @@ class SurahDownloadDialog extends ConsumerWidget {
                   child: Text(
                     'Download Audio',
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFFD4AF37),
+                      color: isDark ? Colors.white : const Color(0xFFD4AF37),
                       fontWeight: FontWeight.bold,
                     ),
                   ),

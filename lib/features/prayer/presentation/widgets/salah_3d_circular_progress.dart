@@ -39,7 +39,9 @@ class Salah3DCircularProgress extends StatelessWidget {
                   progress: ratio,
                   primaryColor: primaryColor,
                   secondaryColor: secondaryColor,
-                  trackColor: const Color(0xFFE7E7E7),
+                  trackColor: context.isDarkMode
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE7E7E7),
                 ),
               ),
               Column(
@@ -50,7 +52,9 @@ class Salah3DCircularProgress extends StatelessWidget {
                     style: context.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       fontSize: 11,
-                      color: context.colorScheme.onSurface,
+                      color: context.isDarkMode
+                          ? Colors.white
+                          : context.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -64,7 +68,9 @@ class Salah3DCircularProgress extends StatelessWidget {
           style: context.textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 12,
-            color: context.colorScheme.onSurfaceVariant,
+            color: context.isDarkMode
+                ? Colors.white70
+                : context.colorScheme.onSurfaceVariant,
           ),
         ),
       ],

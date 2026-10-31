@@ -53,9 +53,14 @@ class SalahHistoryCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: context.isDarkMode
-                  ? const Color(0xFF1A2818)
+                  ? const Color(0xFF18181B)
                   : const Color(0xFFF9F9F9),
-              borderRadius: BorderRadius.circular(16), 
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: context.isDarkMode
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE5E7EB),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.02),
@@ -76,7 +81,9 @@ class SalahHistoryCard extends StatelessWidget {
                       style: context.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 13.5,
-                        color: context.colorScheme.onSurface,
+                        color: context.isDarkMode
+                            ? Colors.white
+                            : context.colorScheme.onSurface,
                       ),
                     ),
                     Icon(

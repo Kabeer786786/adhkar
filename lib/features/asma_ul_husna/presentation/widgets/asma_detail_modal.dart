@@ -80,16 +80,17 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
     }
   }
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     final maxModalHeight = MediaQuery.of(context).size.height * 0.8;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxModalHeight),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 20, spreadRadius: 2),
         ],
       ),
@@ -102,7 +103,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
             width: 44,
             height: 4.5,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -120,28 +121,34 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.1),
+                    color: isDark
+                        ? const Color(0xFF143820)
+                        : const Color(0xFF2A531D).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
                     'NAME ${widget.item.number} OF 99',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.5,
-                      color: Color(0xFF2A531D),
+                      color: isDark
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFF2A531D),
                     ),
                   ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close_rounded,
-                    color: Colors.grey,
+                    color: isDark ? Colors.white70 : Colors.grey,
                     size: 20,
                   ),
                   style: IconButton.styleFrom(
-                    backgroundColor: Colors.grey.shade100,
+                    backgroundColor: isDark
+                        ? const Color(0xFF27272A)
+                        : Colors.grey.shade100,
                     padding: const EdgeInsets.all(8),
                   ),
                   constraints: const BoxConstraints(),
@@ -164,14 +171,22 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFE8F4E5), Color(0xFFF4FAF3)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      gradient: isDark
+                          ? const LinearGradient(
+                              colors: [Color(0xFF143820), Color(0xFF18181B)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                          : const LinearGradient(
+                              colors: [Color(0xFFE8F4E5), Color(0xFFF4FAF3)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: const Color(0xFFC8E6C9),
+                        color: isDark
+                            ? const Color(0xFF27272A)
+                            : const Color(0xFFC8E6C9),
                         width: 1,
                       ),
                     ),
@@ -187,7 +202,9 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                               textDirection: TextDirection.rtl,
                               style: AppTypography.arabicHeader(
                                 fontSize: 42,
-                                color: const Color(0xFF1A3512),
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1A3512),
                                 height: 1.4,
                               ),
                             ),
@@ -204,25 +221,31 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                               duration: const Duration(milliseconds: 200),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF2A531D),
+                                color: isDark
+                                    ? const Color(0xFF18A74C)
+                                    : const Color(0xFF2A531D),
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(
-                                      0xFF2A531D,
-                                    ).withValues(alpha: 0.3),
+                                    color:
+                                        (isDark
+                                                ? const Color(0xFF18A74C)
+                                                : const Color(0xFF2A531D))
+                                            .withValues(alpha: 0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   ),
                                 ],
                               ),
                               child: _isLoading
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.2,
-                                        color: Colors.white,
+                                        color: isDark
+                                            ? const Color(0xFF0F0F12)
+                                            : Colors.white,
                                       ),
                                     )
                                   : Icon(
@@ -230,7 +253,9 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                                           ? Icons.pause_rounded
                                           : Icons.volume_up_rounded,
                                       size: 20,
-                                      color: Colors.white,
+                                      color: isDark
+                                          ? const Color(0xFF0F0F12)
+                                          : Colors.white,
                                     ),
                             ),
                           ),
@@ -245,28 +270,38 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAF7),
+                      color: isDark
+                          ? const Color(0xFF0F0F12)
+                          : const Color(0xFFF8FAF7),
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF27272A)
+                            : const Color(0xFFE2E8F0),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
                             Icon(
                               FlutterIslamicIcons.solidAllah,
                               size: 16,
-                              color: Color(0xFFD97724),
+                              color: isDark
+                                  ? const Color(0xFFFDE68A)
+                                  : const Color(0xFFD97724),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
                               'TRANSLITERATION',
                               style: TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.6,
-                                color: Color(0xFF8C6D53),
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : const Color(0xFF8C6D53),
                               ),
                             ),
                           ],
@@ -274,33 +309,43 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                         const SizedBox(height: 6),
                         SelectableText(
                           widget.item.transliteration,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF2A531D),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF2A531D),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Divider(height: 1, thickness: 0.8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Divider(
+                            height: 1,
+                            thickness: 0.8,
+                            color: isDark ? const Color(0xFF27272A) : null,
+                          ),
                         ),
 
                         // Short Meaning Section
-                        const Row(
+                        Row(
                           children: [
                             Icon(
                               Icons.translate_rounded,
                               size: 15,
-                              color: Color(0xFF16A34A),
+                              color: isDark
+                                  ? const Color(0xFF18A74C)
+                                  : const Color(0xFF16A34A),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
                               'SHORT MEANING',
                               style: TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.6,
-                                color: Color(0xFF8C6D53),
+                                color: isDark
+                                    ? const Color(0xFF86EFAC)
+                                    : const Color(0xFF8C6D53),
                               ),
                             ),
                           ],
@@ -311,7 +356,9 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A3512),
+                            color: isDark
+                                ? Colors.white70
+                                : const Color(0xFF1A3512),
                           ),
                         ),
                       ],
@@ -324,28 +371,38 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFFDF5),
+                      color: isDark
+                          ? const Color(0xFF1C1A14)
+                          : const Color(0xFFFFFDF5),
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xFFFEF08A)),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF3E3620)
+                            : const Color(0xFFFEF08A),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
                             Icon(
                               Icons.description_outlined,
                               size: 16,
-                              color: Color(0xFFD97724),
+                              color: isDark
+                                  ? const Color(0xFFFDE68A)
+                                  : const Color(0xFFD97724),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
                               'DETAILED MEANING & DESCRIPTION',
                               style: TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.6,
-                                color: Color(0xFFD97724),
+                                color: isDark
+                                    ? const Color(0xFFFDE68A)
+                                    : const Color(0xFFD97724),
                               ),
                             ),
                           ],
@@ -357,7 +414,9 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                             fontSize: 14,
                             height: 1.5,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xFF4A3728),
+                            color: isDark
+                                ? const Color(0xFFFEF3C7)
+                                : const Color(0xFF4A3728),
                           ),
                         ),
                       ],
@@ -384,8 +443,12 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2A531D),
-                          foregroundColor: Colors.white,
+                          backgroundColor: isDark
+                              ? const Color(0xFF18A74C)
+                              : const Color(0xFF2A531D),
+                          foregroundColor: isDark
+                              ? const Color(0xFF0F0F12)
+                              : Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),

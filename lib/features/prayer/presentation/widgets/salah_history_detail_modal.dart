@@ -49,7 +49,9 @@ class SalahHistoryDetailModal extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
       decoration: BoxDecoration(
-        color: context.colorScheme.surface,
+        color: context.isDarkMode
+            ? const Color(0xFF18181B)
+            : context.colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.only(
@@ -68,7 +70,9 @@ class SalahHistoryDetailModal extends StatelessWidget {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: context.colorScheme.outlineVariant,
+                color: context.isDarkMode
+                    ? const Color(0xFF3F3F46)
+                    : context.colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -88,13 +92,16 @@ class SalahHistoryDetailModal extends StatelessWidget {
                       style: context.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 17,
+                        color: context.isDarkMode ? Colors.white : null,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       hijriStr,
                       style: context.textTheme.bodyMedium?.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
+                        color: context.isDarkMode
+                            ? Colors.white60
+                            : context.colorScheme.onSurfaceVariant,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -102,25 +109,16 @@ class SalahHistoryDetailModal extends StatelessWidget {
                   ],
                 ),
               ),
-              // Container(
-              //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              //   decoration: BoxDecoration(
-              //     color: context.colorScheme.primaryContainer,
-              //     borderRadius: BorderRadius.circular(10),
-              //   ),
-              //   child: Text(
-              //     'View Only',
-              //     style: context.textTheme.labelSmall?.copyWith(
-              //       color: context.colorScheme.onPrimaryContainer,
-              //       fontWeight: FontWeight.w600,
-              //     ),
-              //   ),
-              // ),
             ],
           ),
 
           const SizedBox(height: 14),
-          const Divider(height: 1, color: Color(0xFFE7E7E7)),
+          Divider(
+            height: 1,
+            color: context.isDarkMode
+                ? const Color(0xFF27272A)
+                : const Color(0xFFE7E7E7),
+          ),
           const SizedBox(height: 12),
 
           // Sequential Prayer Breakdown List
@@ -143,12 +141,21 @@ class SalahHistoryDetailModal extends StatelessWidget {
             child: FilledButton(
               onPressed: () => Navigator.of(context).pop(),
               style: FilledButton.styleFrom(
+                backgroundColor: context.isDarkMode
+                    ? const Color(0xFF18A74C)
+                    : null,
+                foregroundColor: context.isDarkMode
+                    ? const Color(0xFF0F0F12)
+                    : null,
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Close', style: TextStyle(fontSize: 14)),
+              child: const Text(
+                'Close',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -164,9 +171,14 @@ class SalahHistoryDetailModal extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: (context.isDarkMode
-            ? const Color(0xFF1A2818)
+            ? const Color(0xFF0F0F12)
             : const Color(0xFFF9F9F9)),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: context.isDarkMode
+              ? const Color(0xFF27272A)
+              : const Color(0xFFE5E7EB),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,13 +193,16 @@ class SalahHistoryDetailModal extends StatelessWidget {
                 style: context.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
+                  color: context.isDarkMode ? Colors.white : null,
                 ),
               ),
               const SizedBox(width: 6),
               Text(
                 '(${group.subtitle})',
                 style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colorScheme.onSurfaceVariant,
+                  color: context.isDarkMode
+                      ? Colors.white60
+                      : context.colorScheme.onSurfaceVariant,
                   fontSize: 12,
                 ),
               ),
@@ -196,8 +211,12 @@ class SalahHistoryDetailModal extends StatelessWidget {
                 '$completedCount / ${group.items.length}',
                 style: context.textTheme.labelSmall?.copyWith(
                   color: completedCount == group.items.length
-                      ? const Color(0xFF069B69)
-                      : context.colorScheme.onSurfaceVariant,
+                      ? (context.isDarkMode
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF069B69))
+                      : (context.isDarkMode
+                            ? Colors.white60
+                            : context.colorScheme.onSurfaceVariant),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -218,8 +237,12 @@ class SalahHistoryDetailModal extends StatelessWidget {
                         : Icons.radio_button_unchecked_rounded,
                     size: 18,
                     color: item.isCompleted
-                        ? const Color(0xFF069B69)
-                        : context.colorScheme.outlineVariant,
+                        ? (context.isDarkMode
+                              ? const Color(0xFF18A74C)
+                              : const Color(0xFF069B69))
+                        : (context.isDarkMode
+                              ? const Color(0xFF3F3F46)
+                              : context.colorScheme.outlineVariant),
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -227,7 +250,9 @@ class SalahHistoryDetailModal extends StatelessWidget {
                     style: context.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
-                      color: context.colorScheme.onSurface,
+                      color: context.isDarkMode
+                          ? Colors.white
+                          : context.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -237,15 +262,19 @@ class SalahHistoryDetailModal extends StatelessWidget {
                       vertical: 1,
                     ),
                     decoration: BoxDecoration(
-                      color: context.colorScheme.surfaceContainerHighest
-                          .withValues(alpha: 0.6),
+                      color: context.isDarkMode
+                          ? const Color(0xFF27272A)
+                          : context.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       '${item.rakats} R',
                       style: context.textTheme.labelSmall?.copyWith(
                         fontSize: 10,
-                        color: context.colorScheme.onSurfaceVariant,
+                        color: context.isDarkMode
+                            ? Colors.white70
+                            : context.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -256,10 +285,13 @@ class SalahHistoryDetailModal extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       fontSize: 11,
                       color: item.isCompleted
-                          ? const Color(0xFF069B69)
-                          : context.colorScheme.onSurfaceVariant.withValues(
-                              alpha: 0.6,
-                            ),
+                          ? (context.isDarkMode
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF069B69))
+                          : (context.isDarkMode
+                                ? Colors.white38
+                                : context.colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.6)),
                     ),
                   ),
                 ],
@@ -278,7 +310,8 @@ class SalahHistoryDetailModal extends StatelessWidget {
     ) {
       final completedSubIds = [
         ...storage.getSubPrayerRecords(dateKey, prayerKey),
-        if (prayerKey == 'Ishraq') ...storage.getSubPrayerRecords(dateKey, 'Shuruq'),
+        if (prayerKey == 'Ishraq')
+          ...storage.getSubPrayerRecords(dateKey, 'Shuruq'),
       ];
       return defs.map((def) {
         return _PrayerGroupItem(
@@ -324,7 +357,9 @@ class SalahHistoryDetailModal extends StatelessWidget {
       _PrayerGroup(
         title: isFriday ? 'Jumma' : 'Dhuhr',
         subtitle: isFriday ? 'Friday Prayer' : 'Noon',
-        icon: isFriday ? FlutterIslamicIcons.solidKaaba : CupertinoIcons.sun_max_fill,
+        icon: isFriday
+            ? FlutterIslamicIcons.solidKaaba
+            : CupertinoIcons.sun_max_fill,
         iconColor: isFriday ? const Color(0xFF047857) : const Color(0xFFD97706),
         items: isFriday
             ? getSubItems('Dhuhr', const [

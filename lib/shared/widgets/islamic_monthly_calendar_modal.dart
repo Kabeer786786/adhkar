@@ -114,11 +114,13 @@ class _IslamicMonthlyCalendarModalState
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final primaryColor =
-        isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
-    final cardBorder =
-        isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0);
+    final cardBorder = isDark
+        ? const Color(0xFF27272A)
+        : const Color(0xFFE2E8F0);
 
     final todayAsync = ref.watch(todayHijriProvider);
     final todayData = todayAsync.value;
@@ -246,12 +248,14 @@ class _IslamicMonthlyCalendarModalState
                     decoration: isFriHeader
                         ? BoxDecoration(
                             color: isDark
-                                ? const Color(0xFF22C55E).withValues(alpha: 0.2)
+                                ? const Color(0xFF18A74C).withValues(alpha: 0.2)
                                 : const Color(0xFFDCFCE7),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: isDark
-                                  ? const Color(0xFF22C55E).withValues(alpha: 0.4)
+                                  ? const Color(
+                                      0xFF18A74C,
+                                    ).withValues(alpha: 0.4)
                                   : const Color(0xFF86EFAC),
                               width: 1,
                             ),
@@ -264,8 +268,8 @@ class _IslamicMonthlyCalendarModalState
                         fontWeight: FontWeight.bold,
                         color: isFriHeader
                             ? (isDark
-                                ? const Color(0xFF86EFAC)
-                                : const Color(0xFF15803D))
+                                  ? const Color(0xFF86EFAC)
+                                  : const Color(0xFF15803D))
                             : (isDark ? Colors.white60 : Colors.grey.shade600),
                       ),
                     ),
@@ -281,153 +285,147 @@ class _IslamicMonthlyCalendarModalState
           // Scrollable Grid Area
           Expanded(
             child: _isLoadingMonth
-                ? Center(
-                    child: CircularProgressIndicator(color: primaryColor),
-                  )
+                ? Center(child: CircularProgressIndicator(color: primaryColor))
                 : (_cachedMonthData != null &&
-                        _cachedMonthData!.days.isNotEmpty)
-                    ? GridView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                      _cachedMonthData!.days.isNotEmpty)
+                ? GridView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 7,
                           childAspectRatio: 0.85,
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 6,
                         ),
-                        itemCount: _calculateGridTotalCount(_cachedMonthData!),
-                        itemBuilder: (context, index) {
-                          final firstDayOffset =
-                              _cachedMonthData!.days.first.dayOfWeek;
-                          if (index < firstDayOffset) {
-                            return const SizedBox.shrink();
-                          }
+                    itemCount: _calculateGridTotalCount(_cachedMonthData!),
+                    itemBuilder: (context, index) {
+                      final firstDayOffset =
+                          _cachedMonthData!.days.first.dayOfWeek;
+                      if (index < firstDayOffset) {
+                        return const SizedBox.shrink();
+                      }
 
-                          final dayIndex = index - firstDayOffset;
-                          if (dayIndex >= _cachedMonthData!.days.length) {
-                            return const SizedBox.shrink();
-                          }
+                      final dayIndex = index - firstDayOffset;
+                      if (dayIndex >= _cachedMonthData!.days.length) {
+                        return const SizedBox.shrink();
+                      }
 
-                          final dayData = _cachedMonthData!.days[dayIndex];
-                          final isToday = todayData != null &&
-                              todayData.monthNumber ==
-                                  (_currentMonthIndex + 1) &&
-                              todayData.day == dayData.hijriDay;
-                          final isFriday = (index % 7 == 5);
+                      final dayData = _cachedMonthData!.days[dayIndex];
+                      final isToday =
+                          todayData != null &&
+                          todayData.monthNumber == (_currentMonthIndex + 1) &&
+                          todayData.day == dayData.hijriDay;
+                      final isFriday = (index % 7 == 5);
 
-                          Color cellBgColor;
-                          Color cellBorderColor;
-                          Color hijriTextColor;
-                          Color gregorianTextColor;
+                      Color cellBgColor;
+                      Color cellBorderColor;
+                      Color hijriTextColor;
+                      Color gregorianTextColor;
 
-                          if (isToday) {
-                            cellBgColor = isDark
-                                ? const Color(0xFF22C55E)
-                                : const Color(0xFF2A531D);
-                            cellBorderColor = isFriday
-                                ? (isDark
-                                    ? const Color(0xFFFDE047)
-                                    : const Color(0xFFFDE047))
-                                : cellBgColor;
-                            hijriTextColor = isDark
-                                ? const Color(0xFF0F0F12)
-                                : Colors.white;
-                            gregorianTextColor = isDark
-                                ? const Color(0xFF0F0F12)
-                                    .withValues(alpha: 0.85)
-                                : Colors.white.withValues(alpha: 0.9);
-                          } else if (isFriday) {
-                            cellBgColor = isDark
-                                ? const Color(0xFF143820)
-                                    .withValues(alpha: 0.5)
-                                : const Color(0xFFECFDF5);
-                            cellBorderColor = isDark
-                                ? const Color(0xFF22C55E)
-                                    .withValues(alpha: 0.4)
-                                : const Color(0xFFA7F3D0);
-                            hijriTextColor = isDark
-                                ? const Color(0xFF86EFAC)
-                                : const Color(0xFF047857);
-                            gregorianTextColor = isDark
-                                ? const Color(0xFF86EFAC)
-                                    .withValues(alpha: 0.8)
-                                : const Color(0xFF065F46);
-                          } else {
-                            cellBgColor = isDark
-                                ? const Color(0xFF0F0F12)
-                                : const Color(0xFFF8FAFC);
-                            cellBorderColor = cardBorder;
-                            hijriTextColor = isDark
-                                ? Colors.white
-                                : const Color(0xFF1F2937);
-                            gregorianTextColor = isDark
-                                ? Colors.white54
-                                : Colors.grey.shade600;
-                          }
+                      if (isToday) {
+                        cellBgColor = isDark
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF2A531D);
+                        cellBorderColor = isFriday
+                            ? (isDark
+                                  ? const Color(0xFFFDE047)
+                                  : const Color(0xFFFDE047))
+                            : cellBgColor;
+                        hijriTextColor = isDark
+                            ? const Color(0xFF0F0F12)
+                            : Colors.white;
+                        gregorianTextColor = isDark
+                            ? const Color(0xFF0F0F12).withValues(alpha: 0.85)
+                            : Colors.white.withValues(alpha: 0.9);
+                      } else if (isFriday) {
+                        cellBgColor = isDark
+                            ? const Color(0xFF143820).withValues(alpha: 0.5)
+                            : const Color(0xFFECFDF5);
+                        cellBorderColor = isDark
+                            ? const Color(0xFF18A74C).withValues(alpha: 0.4)
+                            : const Color(0xFFA7F3D0);
+                        hijriTextColor = isDark
+                            ? const Color(0xFF86EFAC)
+                            : const Color(0xFF047857);
+                        gregorianTextColor = isDark
+                            ? const Color(0xFF86EFAC).withValues(alpha: 0.8)
+                            : const Color(0xFF065F46);
+                      } else {
+                        cellBgColor = isDark
+                            ? const Color(0xFF0F0F12)
+                            : const Color(0xFFF8FAFC);
+                        cellBorderColor = cardBorder;
+                        hijriTextColor = isDark
+                            ? Colors.white
+                            : const Color(0xFF1F2937);
+                        gregorianTextColor = isDark
+                            ? Colors.white54
+                            : Colors.grey.shade600;
+                      }
 
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: cellBgColor,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: cellBorderColor,
-                                width: isToday ? 2 : 1,
-                              ),
-                            ),
-                            child: Stack(
-                              children: [
-                                if (isFriday && !isToday)
-                                  Positioned(
-                                    top: 4,
-                                    right: 5,
-                                    child: Container(
-                                      width: 5,
-                                      height: 5,
-                                      decoration: BoxDecoration(
-                                        color: isDark
-                                            ? const Color(0xFF4ADE80)
-                                            : const Color(0xFF10B981),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        '${dayData.hijriDay}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: hijriTextColor,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        '${dayData.gregorianDay} ${dayData.gregorianMonth.substring(0, dayData.gregorianMonth.length >= 3 ? 3 : dayData.gregorianMonth.length)}',
-                                        style: TextStyle(
-                                          fontSize: 9.5,
-                                          fontWeight: FontWeight.w600,
-                                          color: gregorianTextColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    : Center(
-                        child: Text(
-                          'No calendar data available',
-                          style: TextStyle(
-                            color: isDark ? Colors.white60 : Colors.grey,
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: cellBgColor,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: cellBorderColor,
+                            width: isToday ? 2 : 1,
                           ),
                         ),
+                        child: Stack(
+                          children: [
+                            if (isFriday && !isToday)
+                              Positioned(
+                                top: 4,
+                                right: 5,
+                                child: Container(
+                                  width: 5,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? const Color(0xFF4ADE80)
+                                        : const Color(0xFF10B981),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${dayData.hijriDay}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: hijriTextColor,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${dayData.gregorianDay} ${dayData.gregorianMonth.substring(0, dayData.gregorianMonth.length >= 3 ? 3 : dayData.gregorianMonth.length)}',
+                                    style: TextStyle(
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: gregorianTextColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                : Center(
+                    child: Text(
+                      'No calendar data available',
+                      style: TextStyle(
+                        color: isDark ? Colors.white60 : Colors.grey,
                       ),
+                    ),
+                  ),
           ),
 
           const SizedBox(height: 12),
@@ -438,18 +436,18 @@ class _IslamicMonthlyCalendarModalState
             decoration: BoxDecoration(
               color: isSubcontinent
                   ? (isDark
-                      ? const Color(0xFFFBBF24).withValues(alpha: 0.1)
-                      : const Color(0xFFD97724).withValues(alpha: 0.1))
+                        ? const Color(0xFFFBBF24).withValues(alpha: 0.1)
+                        : const Color(0xFFD97724).withValues(alpha: 0.1))
                   : (isDark
-                      ? const Color(0xFF60A5FA).withValues(alpha: 0.1)
-                      : const Color(0xFF2563EB).withValues(alpha: 0.1)),
+                        ? const Color(0xFF60A5FA).withValues(alpha: 0.1)
+                        : const Color(0xFF2563EB).withValues(alpha: 0.1)),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: isDark
                     ? cardBorder
                     : (isSubcontinent
-                        ? const Color(0xFFD97724).withValues(alpha: 0.3)
-                        : const Color(0xFF2563EB).withValues(alpha: 0.3)),
+                          ? const Color(0xFFD97724).withValues(alpha: 0.3)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.3)),
               ),
             ),
             child: Row(
@@ -460,11 +458,11 @@ class _IslamicMonthlyCalendarModalState
                   size: 16,
                   color: isSubcontinent
                       ? (isDark
-                          ? const Color(0xFFFBBF24)
-                          : const Color(0xFFD97724))
+                            ? const Color(0xFFFBBF24)
+                            : const Color(0xFFD97724))
                       : (isDark
-                          ? const Color(0xFF60A5FA)
-                          : const Color(0xFF2563EB)),
+                            ? const Color(0xFF60A5FA)
+                            : const Color(0xFF2563EB)),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -493,7 +491,7 @@ class _IslamicMonthlyCalendarModalState
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark
-                    ? const Color(0xFF22C55E)
+                    ? const Color(0xFF18A74C)
                     : const Color(0xFFE8F4E5),
                 foregroundColor: isDark
                     ? const Color(0xFF0F0F12)

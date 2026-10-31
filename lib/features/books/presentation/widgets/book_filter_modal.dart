@@ -47,10 +47,11 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -63,7 +64,7 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -74,26 +75,29 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(
                     Icons.tune_rounded,
-                    color: Color(0xFF2A531D),
+                    color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
                     size: 22,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     'Filter & Preferences',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.close_rounded),
+                icon: Icon(
+                  Icons.close_rounded,
+                  color: isDark ? Colors.white70 : Colors.grey.shade700,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -101,12 +105,12 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
           const SizedBox(height: 16),
 
           // Section 1: Book Category
-          const Text(
+          Text(
             'Select Category',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF475569),
+              color: isDark ? Colors.white70 : const Color(0xFF475569),
             ),
           ),
           const SizedBox(height: 10),
@@ -117,15 +121,22 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
               final isSelected = _selectedCat == cat;
               return ChoiceChip(
                 showCheckmark: true,
-                checkmarkColor: Colors.white,
+                checkmarkColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                 label: Text(cat),
                 selected: isSelected,
-                selectedColor: const Color(0xFF2A531D),
-                backgroundColor: const Color(0xFFF1F5F9),
+                selectedColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                backgroundColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF1F5F9),
+                side: BorderSide(
+                  color: isDark
+                      ? (isSelected ? const Color(0xFF18A74C) : const Color(0xFF27272A))
+                      : (isSelected ? const Color(0xFF2A531D) : Colors.transparent),
+                ),
                 labelStyle: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.white : const Color(0xFF334155),
+                  color: isSelected
+                      ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                      : (isDark ? Colors.white70 : const Color(0xFF334155)),
                 ),
                 onSelected: (val) {
                   if (val) {
@@ -138,12 +149,12 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
           const SizedBox(height: 20),
 
           // Section 2: Sort By
-          const Text(
+          Text(
             'Sort Order',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF475569),
+              color: isDark ? Colors.white70 : const Color(0xFF475569),
             ),
           ),
           const SizedBox(height: 10),
@@ -154,15 +165,22 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
               final isSelected = _selectedSort == opt;
               return ChoiceChip(
                 showCheckmark: true,
-                checkmarkColor: Colors.white,
+                checkmarkColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                 label: Text(opt),
                 selected: isSelected,
-                selectedColor: const Color(0xFFD97724),
-                backgroundColor: const Color(0xFFF1F5F9),
+                selectedColor: isDark ? const Color(0xFFF59E0B) : const Color(0xFFD97724),
+                backgroundColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF1F5F9),
+                side: BorderSide(
+                  color: isDark
+                      ? (isSelected ? const Color(0xFFF59E0B) : const Color(0xFF27272A))
+                      : (isSelected ? const Color(0xFFD97724) : Colors.transparent),
+                ),
                 labelStyle: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.white : const Color(0xFF334155),
+                  color: isSelected
+                      ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                      : (isDark ? Colors.white70 : const Color(0xFF334155)),
                 ),
                 onSelected: (val) {
                   if (val) {
@@ -186,8 +204,8 @@ class _BookFilterModalState extends ConsumerState<BookFilterModal> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2A531D),
-                foregroundColor: Colors.white,
+                backgroundColor: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+                foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),

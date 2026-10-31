@@ -12,7 +12,8 @@ class ZakatCalculatorModal extends ConsumerStatefulWidget {
   const ZakatCalculatorModal({super.key});
 
   @override
-  ConsumerState<ZakatCalculatorModal> createState() => _ZakatCalculatorModalState();
+  ConsumerState<ZakatCalculatorModal> createState() =>
+      _ZakatCalculatorModalState();
 }
 
 class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
@@ -51,10 +52,14 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
       text: model.investments > 0 ? model.investments.toStringAsFixed(0) : '',
     );
     _businessGoodsController = TextEditingController(
-      text: model.businessGoods > 0 ? model.businessGoods.toStringAsFixed(0) : '',
+      text: model.businessGoods > 0
+          ? model.businessGoods.toStringAsFixed(0)
+          : '',
     );
     _moneyOwedController = TextEditingController(
-      text: model.moneyOwedToYou > 0 ? model.moneyOwedToYou.toStringAsFixed(0) : '',
+      text: model.moneyOwedToYou > 0
+          ? model.moneyOwedToYou.toStringAsFixed(0)
+          : '',
     );
     _liabilitiesController = TextEditingController(
       text: model.liabilities > 0 ? model.liabilities.toStringAsFixed(0) : '',
@@ -127,7 +132,7 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.89,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF192520) : Colors.white,
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: const EdgeInsets.only(top: 16),
@@ -139,7 +144,9 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
+                color: isDark
+                    ? const Color(0xFF3F3F46)
+                    : Colors.grey.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -164,7 +171,7 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -173,18 +180,26 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                         ),
                       ),
                       Text(
                         'Calculate 2.5% Zakat on net eligible wealth',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white60 : Colors.grey,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: isDark ? Colors.white70 : null,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -201,27 +216,36 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF23322B) : const Color(0xFFF3FAF2),
+                    color: isDark
+                        ? const Color(0xFF0F0F12)
+                        : const Color(0xFFF3FAF2),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: const Color(0xFF2A531D).withValues(alpha: 0.2),
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFF2A531D).withValues(alpha: 0.2),
                     ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Nisab Standard',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2A531D),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF2A531D),
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         'Select benchmark threshold (Silver Nisab is recommended as it benefits more poor people):',
-                        style: TextStyle(fontSize: 11.5, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: isDark ? Colors.white60 : Colors.grey,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -229,20 +253,34 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                           Expanded(
                             child: ChoiceChip(
                               label: const Text('Silver Nisab (612.36g)'),
-                              selected: model.nisabStandard == NisabStandard.silver,
-                              selectedColor: const Color(0xFF2A531D),
-                              checkmarkColor: Colors.white,
+                              selected:
+                                  model.nisabStandard == NisabStandard.silver,
+                              selectedColor: isDark
+                                  ? const Color(0xFF18A74C)
+                                  : const Color(0xFF2A531D),
+                              checkmarkColor: isDark
+                                  ? const Color(0xFF0F0F12)
+                                  : Colors.white,
                               labelStyle: TextStyle(
-                                color: model.nisabStandard == NisabStandard.silver
-                                    ? Colors.white
-                                    : const Color(0xFF2A531D),
+                                color:
+                                    model.nisabStandard == NisabStandard.silver
+                                    ? (isDark
+                                          ? const Color(0xFF0F0F12)
+                                          : Colors.white)
+                                    : (isDark
+                                          ? Colors.white70
+                                          : const Color(0xFF2A531D)),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
                               onSelected: (selected) {
                                 if (selected) {
-                                  ref.read(zakatCalculatorProvider.notifier).updateState( 
-                                        model.copyWith(nisabStandard: NisabStandard.silver),
+                                  ref
+                                      .read(zakatCalculatorProvider.notifier)
+                                      .updateState(
+                                        model.copyWith(
+                                          nisabStandard: NisabStandard.silver,
+                                        ),
                                       );
                                 }
                               },
@@ -252,20 +290,31 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                           Expanded(
                             child: ChoiceChip(
                               label: const Text('Gold Nisab (87.48g)'),
-                              selected: model.nisabStandard == NisabStandard.gold,
+                              selected:
+                                  model.nisabStandard == NisabStandard.gold,
                               selectedColor: const Color(0xFFEAB308),
-                              checkmarkColor: Colors.white,
+                              checkmarkColor: isDark
+                                  ? const Color(0xFF0F0F12)
+                                  : Colors.white,
                               labelStyle: TextStyle(
                                 color: model.nisabStandard == NisabStandard.gold
-                                    ? Colors.white
-                                    : const Color(0xFFEAB308),
+                                    ? (isDark
+                                          ? const Color(0xFF0F0F12)
+                                          : Colors.white)
+                                    : (isDark
+                                          ? const Color(0xFFFDE68A)
+                                          : const Color(0xFFEAB308)),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
                               onSelected: (selected) {
                                 if (selected) {
-                                  ref.read(zakatCalculatorProvider.notifier).updateState(
-                                        model.copyWith(nisabStandard: NisabStandard.gold),
+                                  ref
+                                      .read(zakatCalculatorProvider.notifier)
+                                      .updateState(
+                                        model.copyWith(
+                                          nisabStandard: NisabStandard.gold,
+                                        ),
                                       );
                                 }
                               },
@@ -279,7 +328,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                 const SizedBox(height: 20),
 
                 // Section 1: Cash & Savings
-                _buildSectionHeader('1. Cash & Bank Balances', Icons.account_balance_rounded),
+                _buildSectionHeader(
+                  '1. Cash & Bank Balances',
+                  Icons.account_balance_rounded,
+                ),
                 const SizedBox(height: 8),
                 _buildInputField(
                   controller: _cashController,
@@ -291,7 +343,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                 const SizedBox(height: 18),
 
                 // Section 2: Gold & Silver
-                _buildSectionHeader('2. Gold & Silver Assets', Icons.workspace_premium_rounded),
+                _buildSectionHeader(
+                  '2. Gold & Silver Assets',
+                  Icons.workspace_premium_rounded,
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -343,7 +398,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                 const SizedBox(height: 18),
 
                 // Section 3: Investments & Business
-                _buildSectionHeader('3. Investments & Business Merchandise', Icons.show_chart_rounded),
+                _buildSectionHeader(
+                  '3. Investments & Business Merchandise',
+                  Icons.show_chart_rounded,
+                ),
                 const SizedBox(height: 8),
                 _buildInputField(
                   controller: _investmentsController,
@@ -371,7 +429,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                 const SizedBox(height: 18),
 
                 // Section 4: Liabilities & Deductions
-                _buildSectionHeader('4. Liabilities & Debts Owed', Icons.money_off_rounded),
+                _buildSectionHeader(
+                  '4. Liabilities & Debts Owed',
+                  Icons.money_off_rounded,
+                ),
                 const SizedBox(height: 8),
                 _buildInputField(
                   controller: _liabilitiesController,
@@ -396,8 +457,11 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: (model.isNisabReached ? const Color(0xFF15803D) : Colors.black)
-                            .withValues(alpha: 0.2),
+                        color:
+                            (model.isNisabReached
+                                    ? const Color(0xFF15803D)
+                                    : Colors.black)
+                                .withValues(alpha: 0.2),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -410,7 +474,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                         children: [
                           const Text(
                             'Gross Zakatable Wealth:',
-                            style: TextStyle(fontSize: 12, color: Colors.white70),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
                           ),
                           Text(
                             '$symbol ${currencyFormatter.format(model.grossZakatableAssets)}',
@@ -428,7 +495,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                         children: [
                           const Text(
                             'Liabilities Deducted:',
-                            style: TextStyle(fontSize: 12, color: Colors.white70),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
                           ),
                           Text(
                             '- $symbol ${currencyFormatter.format(model.liabilities)}',
@@ -468,7 +538,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                         children: [
                           Text(
                             'Nisab Threshold (${model.nisabStandard.name.toUpperCase()}):',
-                            style: const TextStyle(fontSize: 11, color: Colors.white60),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.white60,
+                            ),
                           ),
                           Text(
                             '$symbol ${currencyFormatter.format(model.nisabThreshold)}',
@@ -483,7 +556,10 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
 
                       // Status Badge
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
@@ -552,10 +628,16 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
                               ),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
-                            icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
+                            icon: const Icon(
+                              Icons.add_circle_outline_rounded,
+                              size: 18,
+                            ),
                             label: const Text(
                               'Record as Paid Zakat',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             onPressed: () {
                               _recordAsPaidZakat(model.zakatPayable, symbol);
@@ -575,16 +657,21 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {
+    final isDark = context.isDarkMode;
     return Row(
       children: [
-        Icon(icon, size: 18, color: const Color(0xFF2A531D)),
+        Icon(
+          icon,
+          size: 18,
+          color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+        ),
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2A531D),
+            color: isDark ? Colors.white : const Color(0xFF2A531D),
           ),
         ),
       ],
@@ -620,25 +707,46 @@ class _ZakatCalculatorModalState extends ConsumerState<ZakatCalculatorModal> {
           ),
           decoration: InputDecoration(
             hintText: '0',
+            hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
             prefixIcon: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
               child: Text(
                 symbol,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2A531D),
+                  color: isDark
+                      ? const Color(0xFF18A74C)
+                      : const Color(0xFF2A531D),
                 ),
               ),
             ),
-            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 0,
+              minHeight: 0,
+            ),
             filled: true,
-            fillColor: isDark ? const Color(0xFF23322B) : const Color(0xFFF9FAFB),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            fillColor: isDark
+                ? const Color(0xFF0F0F12)
+                : const Color(0xFFF9FAFB),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: isDark ? Colors.white12 : const Color(0xFFE5E7EB),
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE5E7EB),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE5E7EB),
               ),
             ),
           ),

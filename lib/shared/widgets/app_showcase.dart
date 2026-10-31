@@ -58,10 +58,7 @@ class AppShowcase extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
                   borderRadius: isCircle ? null : effectiveRadius,
-                  border: Border.all(
-                    color: const Color(0xFF22C55E),
-                    width: 2,
-                  ),
+                  border: Border.all(color: const Color(0xFF18A74C), width: 2),
                 ),
               ),
             ),
@@ -111,7 +108,9 @@ class _ShowcaseTooltipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = (stepIndex / totalSteps).clamp(0.0, 1.0);
-    final primaryGreen = isDark ? const Color(0xFF22C55E) : const Color(0xFF2A531D);
+    final primaryGreen = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.86,
@@ -212,7 +211,7 @@ class _ShowcaseTooltipCard extends StatelessWidget {
                           ? const Color(0xFF27272A)
                           : const Color(0xFFE8F4E5),
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        isDark ? const Color(0xFF22C55E) : primaryGreen,
+                        isDark ? const Color(0xFF18A74C) : primaryGreen,
                       ),
                     ),
                   ),
@@ -305,12 +304,10 @@ class _ShowcaseTooltipCard extends StatelessWidget {
                             : Icons.arrow_forward_rounded,
                         size: 15,
                       ),
-                      label: Text(
-                        stepIndex == totalSteps ? 'Got It!' : 'Next',
-                      ),
+                      label: Text(stepIndex == totalSteps ? 'Got It!' : 'Next'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isDark
-                            ? const Color(0xFF22C55E)
+                            ? const Color(0xFF18A74C)
                             : primaryGreen,
                         foregroundColor: isDark
                             ? const Color(0xFF0F0F12)

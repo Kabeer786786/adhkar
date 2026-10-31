@@ -129,30 +129,37 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
   }
 
   InputDecoration _inputDecoration(String label, String hint, IconData icon) {
+    final isDark = context.isDarkMode;
     return InputDecoration(
       labelText: label,
+      labelStyle: TextStyle(color: isDark ? Colors.white70 : null),
       hintText: hint,
-      prefixIcon: Icon(icon, color: const Color(0xFF2A531D)),
+      hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
+      prefixIcon: Icon(
+        icon,
+        color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+      ),
       filled: true,
-      fillColor: context.isDarkMode
-          ? const Color(0xFF23322B)
-          : const Color(0xFFF9FAFB),
+      fillColor: isDark ? const Color(0xFF0F0F12) : const Color(0xFFF9FAFB),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
-          color: context.isDarkMode ? Colors.white12 : const Color(0xFFE5E7EB),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
-          color: context.isDarkMode ? Colors.white12 : const Color(0xFFE5E7EB),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFE5E7EB),
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF2A531D), width: 1.8),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+          width: 1.8,
+        ),
       ),
     );
   }
@@ -161,7 +168,9 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
   Widget build(BuildContext context) {
     final isEdit = widget.existingItem != null;
     final isDark = context.isDarkMode;
-    const primaryColor = Color(0xFF2A531D);
+    final primaryColor = isDark
+        ? const Color(0xFF18A74C)
+        : const Color(0xFF2A531D);
 
     final formContent = Column(
       mainAxisSize: MainAxisSize.min,
@@ -175,7 +184,7 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
               height: 4.5,
               margin: const EdgeInsets.only(top: 12, bottom: 12),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : Colors.grey.shade300,
+                color: isDark ? const Color(0xFF3F3F46) : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -222,7 +231,7 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
         Divider(
           height: 1,
           thickness: 1,
-          color: isDark ? Colors.white12 : const Color(0xFFF1F5F9),
+          color: isDark ? const Color(0xFF27272A) : const Color(0xFFF1F5F9),
         ),
 
         // Scrollable Form Fields
@@ -237,7 +246,10 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                 TextField(
                   controller: _textArController,
                   textDirection: TextDirection.rtl,
-                  style: AppTypography.arabicBody(fontSize: 20),
+                  style: AppTypography.arabicBody(
+                    fontSize: 20,
+                    color: isDark ? Colors.white : null,
+                  ),
                   decoration: _inputDecoration(
                     'Arabic Text *',
                     'سُبْحَانَ اللَّهِ',
@@ -249,6 +261,7 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                 // English Transliteration Field
                 TextField(
                   controller: _textEnController,
+                  style: TextStyle(color: isDark ? Colors.white : null),
                   decoration: _inputDecoration(
                     'English Transliteration / Title *',
                     'SubhanAllah',
@@ -260,6 +273,7 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                 // English Translation Field
                 TextField(
                   controller: _translationController,
+                  style: TextStyle(color: isDark ? Colors.white : null),
                   decoration: _inputDecoration(
                     'English Translation / Meaning',
                     'Glory be to Allah',
@@ -272,6 +286,7 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                 TextField(
                   controller: _targetController,
                   keyboardType: TextInputType.number,
+                  style: TextStyle(color: isDark ? Colors.white : null),
                   decoration: _inputDecoration(
                     'Target Count (Goal)',
                     '33',
@@ -284,6 +299,7 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                 TextField(
                   controller: _descController,
                   maxLines: 3,
+                  style: TextStyle(color: isDark ? Colors.white : null),
                   decoration: _inputDecoration(
                     'Description / Benefits',
                     'Enter virtues or why this Tasbeeh is recited...',
@@ -297,7 +313,9 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                   'Theme Color',
                   style: context.textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: context.colorScheme.onSurfaceVariant,
+                    color: isDark
+                        ? Colors.white70
+                        : context.colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -347,10 +365,12 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
         Container(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF192520) : Colors.white,
+            color: isDark ? const Color(0xFF18181B) : Colors.white,
             border: Border(
               top: BorderSide(
-                color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF27272A)
+                    : const Color(0xFFE2E8F0),
                 width: 1.0,
               ),
             ),
@@ -363,7 +383,9 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
                 onPressed: _handleSave,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
+                  foregroundColor: isDark
+                      ? const Color(0xFF0F0F12)
+                      : Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -397,7 +419,7 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
           maxHeight: MediaQuery.of(context).size.height * 0.88,
         ),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF192520) : Colors.white,
+          color: isDark ? const Color(0xFF18181B) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: formContent,

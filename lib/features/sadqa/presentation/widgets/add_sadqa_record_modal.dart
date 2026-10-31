@@ -23,7 +23,8 @@ class AddSadqaRecordModal extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddSadqaRecordModal> createState() => _AddSadqaRecordModalState();
+  ConsumerState<AddSadqaRecordModal> createState() =>
+      _AddSadqaRecordModalState();
 }
 
 class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
@@ -41,7 +42,8 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
     super.initState();
     final rec = widget.initialRecord;
     _type = rec?.type ?? widget.defaultType ?? CharityType.sadaqah;
-    _category = rec?.category ??
+    _category =
+        rec?.category ??
         (_type == CharityType.zakat
             ? SadaqahCategory.zakatAlMal
             : SadaqahCategory.general);
@@ -58,11 +60,15 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
 
     final userLoc = ref.read(userProfileProvider).location.toLowerCase();
     final gpsLoc = ref.read(currentLocationProvider).value;
-    final combinedLoc = '$userLoc ${gpsLoc?.country ?? ''} ${gpsLoc?.city ?? ''}'.toLowerCase();
+    final combinedLoc =
+        '$userLoc ${gpsLoc?.country ?? ''} ${gpsLoc?.city ?? ''}'.toLowerCase();
 
     if (rec != null) {
       _currency = rec.currency;
-    } else if (combinedLoc.contains('usa') || combinedLoc.contains('united states') || combinedLoc.contains('america') || combinedLoc.contains('usd')) {
+    } else if (combinedLoc.contains('usa') ||
+        combinedLoc.contains('united states') ||
+        combinedLoc.contains('america') ||
+        combinedLoc.contains('usd')) {
       _currency = '\$';
     } else {
       _currency = '₹';
@@ -81,7 +87,8 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
     if (_formKey.currentState!.validate()) {
       final amount = double.tryParse(_amountController.text) ?? 0.0;
       final record = SadqaRecord(
-        id: widget.initialRecord?.id ??
+        id:
+            widget.initialRecord?.id ??
             DateTime.now().millisecondsSinceEpoch.toString(),
         type: _type,
         category: _category,
@@ -96,8 +103,8 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
       final isEdit = widget.initialRecord != null;
       final msg = isEdit
           ? (_type == CharityType.zakat
-              ? 'Zakat record updated'
-              : 'Sadaqah record updated')
+                ? 'Zakat record updated'
+                : 'Sadaqah record updated')
           : (_type == CharityType.zakat ? 'Zakat added' : 'Sadaqah added');
       AppFloatingToast.showSuccess(context, message: msg);
     }
@@ -111,11 +118,19 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
       lastDate: DateTime(2100),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF2A531D),
-            ),
-          ),
+          data: context.isDarkMode
+              ? ThemeData.dark().copyWith(
+                  colorScheme: const ColorScheme.dark(
+                    primary: Color(0xFF18A74C),
+                    surface: Color(0xFF18181B),
+                    onPrimary: Color(0xFF0F0F12),
+                  ),
+                )
+              : Theme.of(context).copyWith(
+                  colorScheme: const ColorScheme.light(
+                    primary: Color(0xFF2A531D),
+                  ),
+                ),
           child: child!,
         );
       },
@@ -133,7 +148,7 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF192520) : Colors.white,
+        color: isDark ? const Color(0xFF18181B) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.only(
@@ -155,7 +170,9 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.3),
+                    color: isDark
+                        ? const Color(0xFF3F3F46)
+                        : Colors.grey.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -170,14 +187,17 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                     widget.initialRecord != null
                         ? 'Edit Record'
                         : 'Record Payment',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2A531D),
+                      color: isDark ? Colors.white : const Color(0xFF2A531D),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: isDark ? Colors.white70 : null,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -189,10 +209,14 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF23322B) : const Color(0xFFF3FAF2),
+                  color: isDark
+                      ? const Color(0xFF0F0F12)
+                      : const Color(0xFFF3FAF2),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: const Color(0xFF2A531D).withValues(alpha: 0.15),
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFF2A531D).withValues(alpha: 0.15),
                   ),
                 ),
                 child: Row(
@@ -210,7 +234,9 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
                             color: _type == CharityType.sadaqah
-                                ? const Color(0xFF16A34A)
+                                ? (isDark
+                                      ? const Color(0xFF18A74C)
+                                      : const Color(0xFF16A34A))
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -222,8 +248,12 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                                   Icons.volunteer_activism_rounded,
                                   size: 16,
                                   color: _type == CharityType.sadaqah
-                                      ? Colors.white
-                                      : const Color(0xFF16A34A),
+                                      ? (isDark
+                                            ? const Color(0xFF0F0F12)
+                                            : Colors.white)
+                                      : (isDark
+                                            ? const Color(0xFF18A74C)
+                                            : const Color(0xFF16A34A)),
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
@@ -232,8 +262,12 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: _type == CharityType.sadaqah
-                                        ? Colors.white
-                                        : const Color(0xFF16A34A),
+                                        ? (isDark
+                                              ? const Color(0xFF0F0F12)
+                                              : Colors.white)
+                                        : (isDark
+                                              ? const Color(0xFF18A74C)
+                                              : const Color(0xFF16A34A)),
                                   ),
                                 ),
                               ],
@@ -267,7 +301,7 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                                   Icons.account_balance_wallet_rounded,
                                   size: 16,
                                   color: _type == CharityType.zakat
-                                      ? Colors.white
+                                      ? const Color(0xFF0F0F12)
                                       : const Color(0xFFEAB308),
                                 ),
                                 const SizedBox(width: 6),
@@ -277,7 +311,7 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: _type == CharityType.zakat
-                                        ? Colors.white
+                                        ? const Color(0xFF0F0F12)
                                         : const Color(0xFFEAB308),
                                   ),
                                 ),
@@ -297,14 +331,17 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                 label: 'Category',
                 value: _category,
                 onAddCustomCategory: () async {
-                  final newCatName = await AppDropdown.showAddCustomCategoryDialog(
-                    context,
-                    title: 'Add Custom Category',
-                    hintText: 'e.g. Water Well Project',
-                    icon: Icons.favorite_border_rounded,
-                  );
+                  final newCatName =
+                      await AppDropdown.showAddCustomCategoryDialog(
+                        context,
+                        title: 'Add Custom Category',
+                        hintText: 'e.g. Water Well Project',
+                        icon: Icons.favorite_border_rounded,
+                      );
                   if (newCatName != null && newCatName.isNotEmpty) {
-                    ref.read(storageServiceProvider).saveCustomCategory('sadqa', newCatName);
+                    ref
+                        .read(storageServiceProvider)
+                        .saveCustomCategory('sadqa', newCatName);
                     setState(() {
                       _category = SadaqahCategory.other;
                       if (_noteController.text.isEmpty) {
@@ -322,19 +359,63 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                 },
                 items: _type == CharityType.sadaqah
                     ? const [
-                        AppDropdownItem(value: SadaqahCategory.general, label: 'General Sadaqah', icon: Icons.volunteer_activism_rounded),
-                        AppDropdownItem(value: SadaqahCategory.sadaqahJariyah, label: 'Sadaqah Jariyah (Continuous)', icon: Icons.all_inclusive_rounded),
-                        AppDropdownItem(value: SadaqahCategory.foodClothing, label: 'Food & Clothing', icon: Icons.shopping_bag_outlined),
-                        AppDropdownItem(value: SadaqahCategory.orphanSupport, label: 'Orphan Support', icon: Icons.child_care_rounded),
-                        AppDropdownItem(value: SadaqahCategory.medicalHelp, label: 'Medical Help', icon: Icons.local_hospital_outlined),
-                        AppDropdownItem(value: SadaqahCategory.education, label: 'Education & Books', icon: Icons.school_outlined),
-                        AppDropdownItem(value: SadaqahCategory.mosqueCommunity, label: 'Mosque & Community', icon: Icons.mosque_rounded),
-                        AppDropdownItem(value: SadaqahCategory.other, label: 'Other', icon: Icons.more_horiz_rounded),
+                        AppDropdownItem(
+                          value: SadaqahCategory.general,
+                          label: 'General Sadaqah',
+                          icon: Icons.volunteer_activism_rounded,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.sadaqahJariyah,
+                          label: 'Sadaqah Jariyah (Continuous)',
+                          icon: Icons.all_inclusive_rounded,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.foodClothing,
+                          label: 'Food & Clothing',
+                          icon: Icons.shopping_bag_outlined,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.orphanSupport,
+                          label: 'Orphan Support',
+                          icon: Icons.child_care_rounded,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.medicalHelp,
+                          label: 'Medical Help',
+                          icon: Icons.local_hospital_outlined,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.education,
+                          label: 'Education & Books',
+                          icon: Icons.school_outlined,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.mosqueCommunity,
+                          label: 'Mosque & Community',
+                          icon: Icons.mosque_rounded,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.other,
+                          label: 'Other',
+                          icon: Icons.more_horiz_rounded,
+                        ),
                       ]
                     : const [
-                        AppDropdownItem(value: SadaqahCategory.zakatAlMal, label: 'Zakat al-Mal (Annual Wealth)', icon: Icons.account_balance_wallet_outlined),
-                        AppDropdownItem(value: SadaqahCategory.zakatAlFitr, label: 'Zakat al-Fitr (Fitrana)', icon: Icons.rice_bowl_outlined),
-                        AppDropdownItem(value: SadaqahCategory.other, label: 'Other Zakat', icon: Icons.more_horiz_rounded),
+                        AppDropdownItem(
+                          value: SadaqahCategory.zakatAlMal,
+                          label: 'Zakat al-Mal (Annual Wealth)',
+                          icon: Icons.account_balance_wallet_outlined,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.zakatAlFitr,
+                          label: 'Zakat al-Fitr (Fitrana)',
+                          icon: Icons.rice_bowl_outlined,
+                        ),
+                        AppDropdownItem(
+                          value: SadaqahCategory.other,
+                          label: 'Other Zakat',
+                          icon: Icons.more_horiz_rounded,
+                        ),
                       ],
                 onChanged: (val) {
                   if (val != null) {
@@ -348,20 +429,26 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Amount',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF8C6D53),
+                      color: isDark ? Colors.white70 : const Color(0xFF8C6D53),
                     ),
                   ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _amountController,
                     keyboardType: TextInputType.number,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'e.g. 1000',
+                      hintStyle: TextStyle(
+                        color: isDark ? Colors.white38 : null,
+                      ),
                       prefixIcon: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -369,46 +456,61 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                         ),
                         child: Text(
                           _currency,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2A531D),
+                            color: isDark
+                                ? const Color(0xFF18A74C)
+                                : const Color(0xFF2A531D),
                           ),
                         ),
                       ),
                       filled: true,
                       fillColor: isDark
-                          ? const Color(0xFF23322B)
+                          ? const Color(0xFF0F0F12)
                           : const Color(0xFFF9FAFB),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 12,
                       ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          validator: (val) {
-                            if (val == null || val.trim().isEmpty) {
-                              return 'Enter amount';
-                            }
-                            if (double.tryParse(val.trim()) == null) {
-                              return 'Valid number required';
-                            }
-                            return null;
-                          },
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFE5E7EB),
                         ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFE5E7EB),
+                        ),
+                      ),
+                    ),
+                    validator: (val) {
+                      if (val == null || val.trim().isEmpty) {
+                        return 'Enter amount';
+                      }
+                      if (double.tryParse(val.trim()) == null) {
+                        return 'Valid number required';
+                      }
+                      return null;
+                    },
+                  ),
                 ],
               ),
               const SizedBox(height: 14),
 
               // Date Picker Field
-              const Text(
+              Text(
                 'Date',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF8C6D53),
+                  color: isDark ? Colors.white70 : const Color(0xFF8C6D53),
                 ),
               ),
               const SizedBox(height: 6),
@@ -423,19 +525,23 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF23322B)
+                        ? const Color(0xFF0F0F12)
                         : const Color(0xFFF9FAFB),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: isDark ? Colors.white12 : const Color(0xFFE5E7EB),
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
                     ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.calendar_today_rounded,
                         size: 18,
-                        color: Color(0xFF2A531D),
+                        color: isDark
+                            ? const Color(0xFF18A74C)
+                            : const Color(0xFF2A531D),
                       ),
                       const SizedBox(width: 10),
                       Text(
@@ -455,22 +561,24 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
               const SizedBox(height: 14),
 
               // Recipient / Cause
-              const Text(
+              Text(
                 'Recipient / Cause (Optional)',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF8C6D53),
+                  color: isDark ? Colors.white70 : const Color(0xFF8C6D53),
                 ),
               ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _recipientController,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
                   hintText: 'e.g. Local Mosque, Needy Neighbor, Orphanage',
+                  hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
                   filled: true,
                   fillColor: isDark
-                      ? const Color(0xFF23322B)
+                      ? const Color(0xFF0F0F12)
                       : const Color(0xFFF9FAFB),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14,
@@ -478,33 +586,61 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 14),
 
               // Notes / Comments
-              const Text(
+              Text(
                 'Note / Intention (Optional)',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF8C6D53),
+                  color: isDark ? Colors.white70 : const Color(0xFF8C6D53),
                 ),
               ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _noteController,
                 maxLines: 2,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
                   hintText: 'Add notes or intention details...',
+                  hintStyle: TextStyle(color: isDark ? Colors.white38 : null),
                   filled: true,
                   fillColor: isDark
-                      ? const Color(0xFF23322B)
+                      ? const Color(0xFF0F0F12)
                       : const Color(0xFFF9FAFB),
                   contentPadding: const EdgeInsets.all(12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF27272A)
+                          : const Color(0xFFE5E7EB),
+                    ),
                   ),
                 ),
               ),
@@ -516,7 +652,12 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2A531D),
+                    backgroundColor: isDark
+                        ? const Color(0xFF18A74C)
+                        : const Color(0xFF2A531D),
+                    foregroundColor: isDark
+                        ? const Color(0xFF0F0F12)
+                        : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -527,10 +668,10 @@ class _AddSadqaRecordModalState extends ConsumerState<AddSadqaRecordModal> {
                     widget.initialRecord != null
                         ? 'Update Record'
                         : 'Save Charity Record',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: isDark ? const Color(0xFF0F0F12) : Colors.white,
                     ),
                   ),
                 ),
