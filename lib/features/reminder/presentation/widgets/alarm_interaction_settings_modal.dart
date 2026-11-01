@@ -85,9 +85,7 @@ class _AlarmInteractionSettingsModalState
         : const Color(0xFFE2E8F0);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
     final subTextColor = isDark ? Colors.white70 : const Color(0xFF64748B);
-    final primaryGreen = isDark
-        ? const Color(0xFF18A74C)
-        : const Color(0xFF2A531D);
+    final primaryGreen = const Color(0xFF2A531D);
 
     return Container(
       constraints: BoxConstraints(
@@ -291,9 +289,7 @@ class _AlarmInteractionSettingsModalState
                   onPressed: _saveSettings,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryGreen,
-                    foregroundColor: isDark
-                        ? const Color(0xFF0F0F12)
-                        : Colors.white,
+                    foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(

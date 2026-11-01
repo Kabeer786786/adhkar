@@ -363,12 +363,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                 icon: const Icon(Icons.add_rounded, size: 18),
                 label: const Text('Create Dua'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark
-                      ? const Color(0xFF18A74C)
-                      : const Color(0xFF2A531D),
-                  foregroundColor: isDark
-                      ? const Color(0xFF0F0F12)
-                      : Colors.white,
+                  backgroundColor: const Color(0xFF2A531D),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
@@ -710,12 +706,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Create Custom Dua'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark
-                    ? const Color(0xFF18A74C)
-                    : const Color(0xFF2A531D),
-                foregroundColor: isDark
-                    ? const Color(0xFF0F0F12)
-                    : Colors.white,
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 11,
@@ -995,12 +987,8 @@ class _DuaLibraryModalState extends ConsumerState<DuaLibraryModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isSelected
                       ? Colors.red.shade700
-                      : (isDark
-                            ? const Color(0xFF18A74C)
-                            : const Color(0xFF2A531D)),
-                  foregroundColor: isSelected
-                      ? Colors.white
-                      : (isDark ? const Color(0xFF0F0F12) : Colors.white),
+                      : const Color(0xFF2A531D),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   elevation: 0,
                   shape: RoundedRectangleBorder(

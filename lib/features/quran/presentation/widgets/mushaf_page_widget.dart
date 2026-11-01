@@ -396,13 +396,13 @@ class MushafPageWidget extends StatelessWidget {
       juzNumber: juzNumber,
     );
     final bool isSelected = selectedAyahIndex != null && selectedAyahIndex == fullIndex;
+    final sp = juzNumber != null ? storage.getStopPointForJuz(juzNumber!) : null;
+    final targetResumeSurah = sp?['resumeSurahNumber'] ?? sp?['surahNumber'];
     final bool isResumeHighlight = highlightResumeAyahNumber != null &&
         highlightResumeAyahNumber == ayah.numberInSurah &&
         (juzNumber == null ||
-            (storage.getStopPointForJuz(
-                  juzNumber!,
-                )?['surahNumber'] ==
-                surahNum));
+            targetResumeSurah == null ||
+            surahNum == targetResumeSurah);
 
     final bool isHighlighted = isPlayingThis || isSelected || isResumeHighlight;
 

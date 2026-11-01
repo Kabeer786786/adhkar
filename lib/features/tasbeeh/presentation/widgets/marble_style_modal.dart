@@ -217,10 +217,8 @@ class _MarbleStyleModalState extends State<MarbleStyleModal> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: isDark
-                          ? const Color(0xFF0F0F12)
-                          : Colors.white,
+                      backgroundColor: const Color(0xFF2A531D),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

@@ -377,14 +377,14 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
               onPressed: () {
                 ReminderLibraryModal.show(context);
               },
-              backgroundColor: isDark ? const Color(0xFF18A74C) : primaryGreen,
-              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+              backgroundColor: const Color(0xFF2A531D),
+              foregroundColor: Colors.white,
               icon: const Icon(Icons.add_rounded),
               label: Text(
                 'Add Reminder',
                 style: GoogleFonts.lexend(
                   fontWeight: FontWeight.w600,
-                  fontSize: 13.5,
+                  fontSize: 13.5, 
                 ),
               ),
             ),
@@ -447,12 +447,8 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen>
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Add Reminder'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark
-                    ? const Color(0xFF18A74C)
-                    : primaryGreen,
-                foregroundColor: isDark
-                    ? const Color(0xFF0F0F12)
-                    : Colors.white,
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,

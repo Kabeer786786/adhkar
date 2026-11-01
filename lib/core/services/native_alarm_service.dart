@@ -370,4 +370,32 @@ class NativeAlarmService {
       debugPrint('[NativeAlarmService] notifyAlarmStopped error: $e');
     }
   }
+
+  /// Triggers full-power hardware vibration using native platform motor (notification style).
+  static Future<bool> vibrate({
+    List<int>? pattern,
+    int durationMillis = 600,
+  }) async {
+    if (defaultTargetPlatform != TargetPlatform.android) return false;
+    try {
+      final res = await _channel.invokeMethod<bool>('vibrate', {
+        'pattern': pattern,
+        'duration': durationMillis,
+      });
+      return res ?? true;
+    } catch (e) {
+      debugPrint('[NativeAlarmService] vibrate error: $e');
+      return false;
+    }
+  }
+
+  /// Immediately cancels any ongoing native vibration.
+  static Future<void> cancelVibration() async {
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+    try {
+      await _channel.invokeMethod('cancelVibration');
+    } catch (e) {
+      debugPrint('[NativeAlarmService] cancelVibration error: $e');
+    }
+  }
 }

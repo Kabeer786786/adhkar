@@ -593,12 +593,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                     ElevatedButton(
                       onPressed: () => Navigator.pop(ctx),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark
-                            ? const Color(0xFF18A74C)
-                            : const Color(0xFF2A531D),
-                        foregroundColor: isDark
-                            ? const Color(0xFF0F0F12)
-                            : Colors.white,
+                        backgroundColor: const Color(0xFF2A531D),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
@@ -655,9 +651,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? (isDark
-                                ? const Color(0xFF18A74C)
-                                : const Color(0xFF2A531D))
+                          ? const Color(0xFF2A531D)
                           : (isDark
                                 ? const Color(0xFF0F0F12)
                                 : const Color(0xFFF8FAFC)),
@@ -693,9 +687,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                           icon,
                           size: 18,
                           color: isSelected
-                              ? (isDark
-                                    ? const Color(0xFF0F0F12)
-                                    : Colors.white)
+                              ? Colors.white
                               : (isDark
                                     ? Colors.white70
                                     : const Color(0xFF475569)),
@@ -712,9 +704,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                   ? FontWeight.bold
                                   : FontWeight.w600,
                               color: isSelected
-                                  ? (isDark
-                                        ? const Color(0xFF0F0F12)
-                                        : Colors.white)
+                                  ? Colors.white
                                   : (isDark
                                         ? Colors.white70
                                         : const Color(0xFF334155)),
@@ -960,12 +950,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark
-                            ? const Color(0xFF18A74C)
-                            : const Color(0xFF2A531D),
-                        foregroundColor: isDark
-                            ? const Color(0xFF0F0F12)
-                            : Colors.white,
+                        backgroundColor: const Color(0xFF2A531D),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -1043,7 +1029,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
         IconButton(
           icon: Icon(
             Icons.translate_rounded,
-            color: isDark ? const Color(0xFF18A74C) : const Color(0xFF2A531D),
+            color: isDark ? Colors.white : const Color(0xFF2A531D),
             size: 22,
           ),
           tooltip: 'Language Preferences',
@@ -1247,9 +1233,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                         color:
                             (_selectedCategories.isNotEmpty ||
                                 _sortBy != 'recentAdded')
-                            ? (isDark
-                                  ? const Color(0xFF18A74C)
-                                  : const Color(0xFF2A531D))
+                            ? const Color(0xFF2A531D)
                             : (isDark
                                   ? const Color(0xFF18181B)
                                   : const Color(0xFFF9F9F9)),
@@ -1276,9 +1260,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                             color:
                                 (_selectedCategories.isNotEmpty ||
                                     _sortBy != 'recentAdded')
-                                ? (isDark
-                                      ? const Color(0xFF0F0F12)
-                                      : Colors.white)
+                                ? Colors.white
                                 : (isDark
                                       ? const Color(0xFF18A74C)
                                       : const Color(0xFF2A531D)),
@@ -1408,13 +1390,17 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          'Tap + Add Dua to browse library or create custom Dua',
-                          style: TextStyle(
-                            color: isDark
-                                ? Colors.white60
-                                : Colors.grey.shade600,
-                            fontSize: 13,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 48),
+                          child: Text(
+                            'Tap + Add Dua to browse library or create custom Dua',
+                             textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: isDark
+                                  ? Colors.white60
+                                  : Colors.grey.shade600,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -1423,12 +1409,8 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                           icon: const Icon(Icons.add_rounded),
                           label: const Text('Add Dua'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark
-                                ? const Color(0xFF18A74C)
-                                : const Color(0xFF2A531D),
-                            foregroundColor: isDark
-                                ? const Color(0xFF0F0F12)
-                                : Colors.white,
+                            backgroundColor: const Color(0xFF2A531D),
+                            foregroundColor: Colors.white,
                           ),
                         ),
                       ],
@@ -1547,7 +1529,7 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
-                               border: Border.all(
+                                border: Border.all(
                                   color: isSelected
                                       ? primaryGreen
                                       : (isDark
@@ -1742,14 +1724,12 @@ class _DuaScreenState extends ConsumerState<DuaScreen> {
       ),
 
       // Add Dua Floating Action Button (hidden in selection mode)
-      floatingActionButton: _isSelectionMode
+      floatingActionButton:(_isSelectionMode || _filteredDuas.isEmpty)
           ? null
           : FloatingActionButton.extended(
               onPressed: _openDuaLibraryModal,
-              backgroundColor: isDark
-                  ? const Color(0xFF18A74C)
-                  : const Color(0xFF2A531D),
-              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+              backgroundColor: const Color(0xFF2A531D),
+              foregroundColor: Colors.white,
               icon: const Icon(Icons.add_rounded),
               label: const Text(
                 'Add Dua',

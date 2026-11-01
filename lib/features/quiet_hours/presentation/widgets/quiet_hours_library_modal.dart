@@ -63,9 +63,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryGreen = isDark
-        ? const Color(0xFF18A74C)
-        : const Color(0xFF2A531D);
+    final primaryGreen =const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
     final cardBorder = isDark
         ? const Color(0xFF27272A)
@@ -187,7 +185,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                   borderRadius: BorderRadius.circular(10),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+                labelColor: Colors.white,
                 unselectedLabelColor: subTextColor,
                 labelStyle: GoogleFonts.lexend(
                   fontSize: 13,
@@ -248,9 +246,7 @@ class _QuietHoursLibraryModalState extends ConsumerState<QuietHoursLibraryModal>
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isAdded
-                                ? (isDark
-                                      ? const Color(0xFF18A74C)
-                                      : primaryGreen)
+                                ? primaryGreen
                                 : cardBorder,
                             width: isAdded ? 1.5 : 1,
                           ),
@@ -591,9 +587,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryGreen = isDark
-        ? const Color(0xFF18A74C)
-        : const Color(0xFF2A531D);
+    final primaryGreen =  const Color(0xFF2A531D);
     final cardBorder = isDark
         ? const Color(0xFF27272A)
         : const Color(0xFFE2E8F0);
@@ -870,7 +864,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                     color: isSelected
-                        ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                        ? Colors.white
                         : (isDark ? Colors.white70 : const Color(0xFF475569)),
                   ),
                 ),
@@ -942,7 +936,7 @@ class _CustomQuietHoursFormState extends State<_CustomQuietHoursForm> {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryGreen,
-              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+              foregroundColor: Colors.white,
               elevation: 2,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

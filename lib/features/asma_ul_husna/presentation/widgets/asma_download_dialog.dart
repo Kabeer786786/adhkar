@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/providers/media_download_provider.dart';
 import '../../../../core/services/media_download_service.dart';
@@ -10,6 +11,8 @@ class AsmaDownloadDialog extends ConsumerWidget {
   final List<MediaDownloadItem> items;
 
   const AsmaDownloadDialog({super.key, required this.items});
+
+  static const String _lastPromptDateKey = 'asma_download_last_prompt_date';
 
   static List<MediaDownloadItem> _buildDefaultItems() {
     return asmaUlHusnaList.map((item) {
@@ -24,24 +27,37 @@ class AsmaDownloadDialog extends ConsumerWidget {
     }).toList();
   }
 
-  /// Check if 99 names are downloaded or if prompt was already dismissed.
-  /// If not, prompt user.
-  static Future<void> showIfFirstTime(
+  /// Check if 99 names are downloaded or if prompt was already shown today.
+  /// If not, prompt user once in a day.
+  static Future<void> showOncePerDay(
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool alreadyPrompted =
-        prefs.getBool('asma_download_prompt_dismissed') ?? false;
-
     final defaultItems = _buildDefaultItems();
     final isAllDownloaded = await MediaDownloadService.instance
         .isBatchDownloaded(defaultItems.map((e) => e.relativePath).toList());
 
-    if (!alreadyPrompted && !isAllDownloaded && context.mounted) {
+    if (isAllDownloaded) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final lastPromptDate = prefs.getString(_lastPromptDateKey);
+
+    if (lastPromptDate == todayKey) return;
+
+    await prefs.setString(_lastPromptDateKey, todayKey);
+
+    if (context.mounted) {
       show(context, ref, items: defaultItems);
     }
   }
+
+  /// Backward-compatible alias for showOncePerDay.
+  static Future<void> showIfFirstTime(
+    BuildContext context,
+    WidgetRef ref,
+  ) =>
+      showOncePerDay(context, ref);
 
   /// Show download prompt dialog.
   static void show(
@@ -61,7 +77,8 @@ class AsmaDownloadDialog extends ConsumerWidget {
 
   static Future<void> _markPromptDismissed() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('asma_download_prompt_dismissed', true);
+    final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    await prefs.setString(_lastPromptDateKey, todayKey);
   }
 
   @override
@@ -160,9 +177,8 @@ class AsmaDownloadDialog extends ConsumerWidget {
                         );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark
-                        ? const Color(0xFF18A74C)
-                        : const Color(0xFF1A3512),
+                    backgroundColor: const Color(0xFF2A531D),
+                    // foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -171,9 +187,7 @@ class AsmaDownloadDialog extends ConsumerWidget {
                   child: Text(
                     'Download All',
                     style: GoogleFonts.outfit(
-                      color: isDark
-                          ? const Color(0xFF0F0F12)
-                          : const Color(0xFFD4AF37),
+                      color:const Color(0xFFD4AF37),
                       fontWeight: FontWeight.bold,
                     ),
                   ),

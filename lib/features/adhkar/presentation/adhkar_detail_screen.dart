@@ -20,7 +20,9 @@ import '../../dua/domain/dua_item.dart';
 import '../../quran/repositories/quran_repository.dart';
 import '../../quran/presentation/surah_detail_screen.dart';
 import '../../tasbeeh/presentation/tasbeeh_detail_screen.dart';
+import '../../tasbeeh/utils/tasbeeh_vibration_helper.dart';
 import '../repositories/adhkar_repository.dart';
+import 'widgets/swipable_status_pill.dart';
 
 class AdhkarDetailScreen extends ConsumerStatefulWidget {
   final String categoryId;
@@ -76,6 +78,7 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
 
   @override
   void dispose() {
+    TasbeehVibrationHelper.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _pageController.dispose();
     _playerStateSub?.cancel();
@@ -161,7 +164,7 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
       storage.saveDailyAdhkarCount(_todayDateKey, id, newCount);
 
       if (newCount == target) {
-        HapticFeedback.heavyImpact();
+        TasbeehVibrationHelper.triggerCompletionAlarmVibration();
         // Smoothly scroll to next dhikr after 450ms if target reached
         if (_currentIndex < _categoryAdhkar.length - 1) {
           Future.delayed(const Duration(milliseconds: 450), () {
@@ -180,6 +183,7 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
   }
 
   void _resetCount(String id) {
+    TasbeehVibrationHelper.cancel();
     final storage = ref.read(storageServiceProvider);
     _checkDateAndRefresh();
     setState(() {
@@ -188,6 +192,32 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
     storage.saveDailyAdhkarCount(_todayDateKey, id, 0);
     HapticFeedback.mediumImpact();
     AppFloatingToast.showRemoved(context, message: 'Count reset to 0');
+  }
+
+  void _completeItem(String id, int target) {
+    final storage = ref.read(storageServiceProvider);
+    _checkDateAndRefresh();
+    final current = _dailyCounts[id] ?? 0;
+    if (current >= target) {
+      _resetCount(id);
+      return;
+    }
+    setState(() {
+      _dailyCounts[id] = target;
+    });
+    storage.saveDailyAdhkarCount(_todayDateKey, id, target);
+    TasbeehVibrationHelper.triggerCompletionAlarmVibration();
+    // Smoothly scroll to next dhikr after 450ms if target reached
+    if (_currentIndex < _categoryAdhkar.length - 1) {
+      Future.delayed(const Duration(milliseconds: 450), () {
+        if (mounted && _pageController.hasClients) {
+          _pageController.nextPage(
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
   }
 
   void _saveOrUpdateDhikr(DhikrItem item) {
@@ -1187,12 +1217,8 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark
-                              ? const Color(0xFF18A74C)
-                              : const Color(0xFF2A531D),
-                          foregroundColor: isDark
-                              ? const Color(0xFF0F0F12)
-                              : Colors.white,
+                          backgroundColor: const Color(0xFF2A531D),
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -1387,12 +1413,8 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark
-                              ? const Color(0xFF18A74C)
-                              : const Color(0xFF2A531D),
-                          foregroundColor: isDark
-                              ? const Color(0xFF0F0F12)
-                              : Colors.white,
+                          backgroundColor:  const Color(0xFF2A531D),
+                          foregroundColor:  Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 26,
                             vertical: 14,
@@ -1670,153 +1692,176 @@ class _AdhkarDetailScreenState extends ConsumerState<AdhkarDetailScreen>
                                     ),
                                   ),
 
-                                // 3. FLOATING BOTTOM BUTTONS: RESET & CYLINDRICAL COUNTER
+                                // 3. FLOATING BOTTOM ACTION BAR: [RESET] [SWIPABLE PENDING/DONE PILL] [PLUS BUTTON (>1)]
                                 Positioned(
                                   bottom: 14,
+                                  left: 14,
                                   right: 14,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      // Floating Reset Button
-                                      Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () {
-                                            HapticFeedback.lightImpact();
-                                            _resetCount(item.id);
-                                          },
-                                          borderRadius: BorderRadius.circular(
-                                            22,
-                                          ),
-                                          child: Container(
-                                            width: 44,
-                                            height: 44,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: isDark
-                                                  ? const Color(0xFF18181B)
-                                                  : Colors.white,
-                                              border: Border.all(
-                                                color: isDark
-                                                    ? const Color(0xFF27272A)
-                                                    : const Color(0xFFE5E7EB),
-                                                width: 1.2,
-                                              ),
-                                              // boxShadow: [
-                                              //   BoxShadow(
-                                              //     color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.09),
-                                              //     blurRadius: 10,
-                                              //     offset: const Offset(0, 3),
-                                              //   ),
-                                              // ],
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        // 3a. Left: Circular Reset Button
+                                        Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            onTap: () {
+                                              HapticFeedback.lightImpact();
+                                              _resetCount(item.id);
+                                            },
+                                            borderRadius: BorderRadius.circular(
+                                              23,
                                             ),
-                                            child: Icon(
-                                              Icons.refresh_rounded,
-                                              size: 20,
-                                              color: isDark
-                                                  ? Colors.white70
-                                                  : const Color(0xFF4B5563),
+                                            child: Container(
+                                              width: 46,
+                                              height: 46,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: isDark
+                                                    ? const Color(0xFF18181B)
+                                                    : Colors.white,
+                                                border: Border.all(
+                                                  color: isDark
+                                                      ? const Color(0xFF27272A)
+                                                      : const Color(0xFFE5E7EB),
+                                                  width: 1.2,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.refresh_rounded,
+                                                size: 20,
+                                                color: isDark
+                                                    ? Colors.white70
+                                                    : const Color(0xFF4B5563),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 10),
 
-                                      // Floating Cylindrical Counter Button (Yellow Pending -> Green Complete)
-                                      Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () => _incrementCount(
+                                        const SizedBox(width: 10),
+
+                                        // 3b. Middle: Swipable / Clickable Pending -> Done Pill
+                                        SwipableStatusPill(
+                                          isDone: isDone,
+                                          isDark: isDark,
+                                          onComplete: () => _completeItem(
                                             item.id,
                                             item.countTarget,
                                           ),
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 250,
-                                            ),
-                                            height: 48,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 20,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(24),
-                                              gradient: isDone
-                                                  ? const LinearGradient(
-                                                      colors: [
-                                                        Color(0xFF166534),
-                                                        Color(0xFF14532D),
-                                                      ],
-                                                      begin: Alignment.topLeft,
-                                                      end:
-                                                          Alignment.bottomRight,
-                                                    )
-                                                  : const LinearGradient(
-                                                      colors: [
-                                                        Color(0xFFFBBF24),
-                                                        Color(0xFFEAB308),
-                                                      ],
-                                                      begin: Alignment.topLeft,
-                                                      end:
-                                                          Alignment.bottomRight,
-                                                    ),
-                                              border: Border.all(
-                                                color: isDone
-                                                    ? const Color(
-                                                        0xFF15803D,
-                                                      ).withValues(alpha: 0.8)
-                                                    : const Color(
-                                                        0xFFFDE68A,
-                                                      ).withValues(alpha: 0.6),
-                                                width: 1.2,
-                                              ),
-                                              // boxShadow: [
-                                              //   BoxShadow(
-                                              //     color: (isDone
-                                              //             ? const Color(0xFF16A34A)
-                                              //             : const Color(0xFFEAB308))
-                                              //         .withValues(alpha: 0.45),
-                                              //     blurRadius: 14,
-                                              //     offset: const Offset(0, 4),
-                                              //   ),
-                                              // ],
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  isDone
-                                                      ? Icons
-                                                            .check_circle_rounded
-                                                      : Icons.add_rounded,
-                                                  size: 21,
-                                                  color: isDone
-                                                      ? Colors.white
-                                                      : const Color(0xFF78350F),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  '$currentCount / ${item.countTarget}',
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isDone
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFF78350F,
-                                                          ),
-                                                    letterSpacing: 0.3,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                          onReset: () => _resetCount(item.id),
                                         ),
-                                      ),
-                                    ],
+
+                                        // 3c. Right: Circular Plus Button (only if countTarget > 1)
+                                        if (item.countTarget > 1) ...[
+                                          const SizedBox(width: 10),
+                                          Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              onTap: isDone
+                                                  ? null
+                                                  : () => _incrementCount(
+                                                        item.id,
+                                                        item.countTarget,
+                                                      ),
+                                              borderRadius:
+                                                  BorderRadius.circular(23),
+                                              child: Stack(
+                                                clipBehavior: Clip.none,
+                                                children: [
+                                                  Container(
+                                                    width: 46,
+                                                    height: 46,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: isDark
+                                                          ? const Color(
+                                                              0xFF18181B,
+                                                            )
+                                                          : Colors.white,
+                                                      border: Border.all(
+                                                        color: isDark
+                                                            ? const Color(
+                                                                0xFF27272A,
+                                                              )
+                                                            : const Color(
+                                                                0xFFE5E7EB,
+                                                              ),
+                                                        width: 1.2,
+                                                      ),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.add_rounded,
+                                                      size: 24,
+                                                      color: isDone
+                                                          ? (isDark
+                                                              ? Colors.white24
+                                                              : const Color(
+                                                                  0xFF9CA3AF,
+                                                                ))
+                                                          : (isDark
+                                                              ? const Color(
+                                                                  0xFF4ADE80,
+                                                                )
+                                                              : const Color(
+                                                                  0xFF15803D,
+                                                                )),
+                                                    ),
+                                                  ),
+                                                  if (currentCount > 0 &&
+                                                      !isDone)
+                                                    Positioned(
+                                                      top: -3,
+                                                      right: -3,
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 5,
+                                                          vertical: 2,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: isDark
+                                                              ? const Color(
+                                                                  0xFF16A34A,
+                                                                )
+                                                              : const Color(
+                                                                  0xFF15803D,
+                                                                ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          border: Border.all(
+                                                            color: isDark
+                                                                ? const Color(
+                                                                    0xFF18181B,
+                                                                  )
+                                                                : Colors.white,
+                                                            width: 1.5,
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          '$currentCount',
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors.white,
+                                                            height: 1,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

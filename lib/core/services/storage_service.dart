@@ -430,15 +430,27 @@ class StorageService {
     required int markedAyahNumber,
     required int totalAyahs,
     int? page,
+    int? resumeSurahNumber,
+    String? resumeSurahNameEnglish,
+    String? resumeSurahNameArabic,
+    int? resumeJuzNumber,
+    int? resumeAyahNumber,
+    bool isLastOfQuran = false,
   }) async {
     final currentList = getQuranStopPoints();
     final String id = juzNumber != null
         ? 'juz_$juzNumber'
         : 'surah_$surahNumber';
 
-    final resumeAyah = markedAyahNumber < totalAyahs
-        ? markedAyahNumber + 1
-        : markedAyahNumber;
+    final effectiveResumeAyah = resumeAyahNumber ??
+        (markedAyahNumber < totalAyahs
+            ? markedAyahNumber + 1
+            : markedAyahNumber);
+
+    final effectiveResumeSurah = resumeSurahNumber ?? surahNumber;
+    final effectiveResumeSurahEnglish = resumeSurahNameEnglish ?? surahNameEnglish;
+    final effectiveResumeSurahArabic = resumeSurahNameArabic ?? surahNameArabic;
+    final effectiveResumeJuz = resumeJuzNumber ?? juzNumber;
 
     final entry = {
       'id': id,
@@ -447,7 +459,12 @@ class StorageService {
       'surahNameArabic': surahNameArabic,
       'juzNumber': juzNumber,
       'markedAyahNumber': markedAyahNumber,
-      'resumeAyahNumber': resumeAyah,
+      'resumeSurahNumber': effectiveResumeSurah,
+      'resumeSurahNameEnglish': effectiveResumeSurahEnglish,
+      'resumeSurahNameArabic': effectiveResumeSurahArabic,
+      'resumeJuzNumber': effectiveResumeJuz,
+      'resumeAyahNumber': effectiveResumeAyah,
+      'isLastOfQuran': isLastOfQuran,
       'totalAyahs': totalAyahs,
       'page': page ?? 1,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
@@ -458,10 +475,10 @@ class StorageService {
     await _bookmarksBox.put('quran_stop_points', currentList);
 
     // Also update classic last read
-    if (juzNumber != null) {
-      await setLastReadJuz(juzNumber);
+    if (effectiveResumeJuz != null) {
+      await setLastReadJuz(effectiveResumeJuz);
     } else {
-      await setLastRead(surahNumber, markedAyahNumber);
+      await setLastRead(effectiveResumeSurah, effectiveResumeAyah);
     }
   }
 

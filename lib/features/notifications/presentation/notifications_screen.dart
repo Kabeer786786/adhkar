@@ -39,7 +39,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     },
     {
       'title': 'Friday Surah Al-Kahf',
-      'body': 'Don\'t forget to recite Surah Al-Kahf today for light between Fridays.',
+      'body':
+          'Don\'t forget to recite Surah Al-Kahf today for light between Fridays.',
       'time': 'Friday, 07:00 AM',
       'type': 'kahf',
     },
@@ -52,13 +53,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF17241E) : const Color(0xFFF9F9F9),
+        backgroundColor: isDark
+            ? const Color(0xFF18181B)
+            : const Color(0xFFF9F9F9),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppHeaderBar(
             title: 'NOTIFICATIONS',
             showBackButton: true,
-            systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+            systemOverlayStyle: isDark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
             backgroundColor: isDark ? const Color(0xFF192520) : Colors.white,
             iconColor: isDark ? Colors.white : const Color(0xFF2A531D),
             titleWidget: Text(
@@ -83,11 +88,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 color: isDark ? const Color(0xFF192520) : Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isDark ? Colors.white10 : const Color(0xFF2A531D).withValues(alpha: 0.15),
+                  color: isDark
+                      ? Colors.white10
+                      : const Color(0xFF2A531D).withValues(alpha: 0.15),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: isDark ? Colors.black26 : const Color(0xFF2A531D).withValues(alpha: 0.05),
+                    color: isDark
+                        ? Colors.black26
+                        : const Color(0xFF2A531D).withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -152,7 +161,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 children: [
                   _buildToggleTile(
                     title: 'Adhan & Prayer Time Alerts',
-                    subtitle: 'Notifications at Fajr, Dhuhr, Asr, Maghrib, and Isha',
+                    subtitle:
+                        'Notifications at Fajr, Dhuhr, Asr, Maghrib, and Isha',
                     icon: Icons.access_time_filled_rounded,
                     iconColor: const Color(0xFF16A34A),
                     value: _adhanAlerts,
@@ -182,7 +192,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   const Divider(height: 1, indent: 56),
                   _buildToggleTile(
                     title: 'Sunnah Fasting Reminders',
-                    subtitle: 'Mondays, Thursdays & White Days (13th, 14th, 15th)',
+                    subtitle:
+                        'Mondays, Thursdays & White Days (13th, 14th, 15th)',
                     icon: Icons.nightlight_round,
                     iconColor: const Color(0xFF9333EA),
                     value: _fastingReminders,
@@ -270,7 +281,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2A531D).withValues(alpha: 0.12),
+                          color: const Color(
+                            0xFF2A531D,
+                          ).withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -293,7 +306,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      color: isDark ? Colors.white : const Color(0xFF1F2937),
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF1F2937),
                                     ),
                                   ),
                                 ),
@@ -312,7 +327,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               log['body']!,
                               style: TextStyle(
                                 fontSize: 12.5,
-                                color: isDark ? Colors.white60 : const Color(0xFF4B5563),
+                                color: isDark
+                                    ? Colors.white60
+                                    : const Color(0xFF4B5563),
                                 height: 1.35,
                               ),
                             ),
@@ -347,7 +364,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       secondary: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: iconColor.withValues(alpha: 0.12), 
+          color: iconColor.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: iconColor, size: 20),

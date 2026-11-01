@@ -8,6 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.provider.Settings
 import android.view.WindowManager
 import com.ryanheise.audioservice.AudioServiceActivity
@@ -287,6 +290,47 @@ class MainActivity : AudioServiceActivity() {
                 "notifyAlarmStopped" -> {
                     val reason = call.argument<String>("reason") ?: "FlutterAlarmStopped"
                     AlarmStateManager.stopActiveAlarm(this, reason)
+                    result.success(true)
+                }
+                "vibrate" -> {
+                    val duration = (call.argument<Number>("duration"))?.toLong() ?: 600L
+                    val patternList = call.argument<List<Number>>("pattern")
+                    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                        vm?.defaultVibrator ?: (getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                    }
+                    if (vibrator != null && vibrator.hasVibrator()) {
+                        if (patternList != null && patternList.isNotEmpty()) {
+                            val pattern = patternList.map { it.toLong() }.toLongArray()
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1))
+                            } else {
+                                @Suppress("DEPRECATION")
+                                vibrator.vibrate(pattern, -1)
+                            }
+                        } else {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
+                            } else {
+                                @Suppress("DEPRECATION")
+                                vibrator.vibrate(duration)
+                            }
+                        }
+                    }
+                    result.success(true)
+                }
+                "cancelVibration" -> {
+                    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                        vm?.defaultVibrator ?: (getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                    }
+                    vibrator?.cancel()
                     result.success(true)
                 }
                 else -> result.notImplemented()

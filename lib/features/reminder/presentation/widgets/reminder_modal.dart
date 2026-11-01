@@ -429,10 +429,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryGreen,
-                    foregroundColor: isDark
-                        ? const Color(0xFF0F0F12)
-                        : Colors.white,
+                    backgroundColor: const Color(0xFF2A531D),
+                    foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -751,8 +749,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF18A74C),
-                    onPrimary: Color(0xFF0F0F12),
+                    primary: Color(0xFF2A531D),
+                    onPrimary: Colors.white,
                     surface: Color(0xFF18181B),
                     onSurface: Colors.white,
                   )
@@ -788,8 +786,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? const ColorScheme.dark(
-                    primary: Color(0xFF18A74C),
-                    onPrimary: Color(0xFF0F0F12),
+                    primary: Color(0xFF2A531D),
+                    onPrimary: Colors.white,
                     surface: Color(0xFF18181B),
                     onSurface: Colors.white,
                   )
@@ -849,12 +847,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(ctx),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark
-                    ? const Color(0xFF18A74C)
-                    : const Color(0xFF2A531D),
-                foregroundColor: isDark
-                    ? const Color(0xFF0F0F12)
-                    : Colors.white,
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -981,9 +975,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryGreen = isDark
-        ? const Color(0xFF18A74C)
-        : const Color(0xFF2A531D);
+    final primaryGreen = const Color(0xFF2A531D);
     final secondaryGreen = isDark
         ? const Color(0xFF18A74C)
         : const Color(0xFF2A531D);
@@ -1040,7 +1032,27 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: cardBorder),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -1081,7 +1093,27 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: cardBorder),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -1195,9 +1227,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                           Icons.repeat_rounded,
                           size: 15,
                           color: _frequency != ReminderFrequency.once
-                              ? (isDark
-                                    ? const Color(0xFF0F0F12)
-                                    : Colors.white)
+                              ? Colors.white
                               : (isDark
                                     ? Colors.white70
                                     : const Color(0xFF475569)),
@@ -1209,9 +1239,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: _frequency != ReminderFrequency.once
-                                ? (isDark
-                                      ? const Color(0xFF0F0F12)
-                                      : Colors.white)
+                                ? Colors.white
                                 : (isDark
                                       ? Colors.white70
                                       : const Color(0xFF475569)),
@@ -1253,9 +1281,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                           Icons.calendar_today_rounded,
                           size: 14,
                           color: _frequency == ReminderFrequency.once
-                              ? (isDark
-                                    ? const Color(0xFF0F0F12)
-                                    : Colors.white)
+                              ? Colors.white
                               : (isDark
                                     ? Colors.white70
                                     : const Color(0xFF475569)),
@@ -1267,9 +1293,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: _frequency == ReminderFrequency.once
-                                ? (isDark
-                                      ? const Color(0xFF0F0F12)
-                                      : Colors.white)
+                                ? Colors.white
                                 : (isDark
                                       ? Colors.white70
                                       : const Color(0xFF475569)),
@@ -1344,7 +1368,7 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                         color: isSelected
-                            ? (isDark ? const Color(0xFF0F0F12) : Colors.white)
+                            ? Colors.white
                             : (isDark
                                   ? Colors.white70
                                   : const Color(0xFF475569)),
@@ -1506,7 +1530,27 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: cardBorder),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE2E8F0),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -1624,8 +1668,28 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                                 vertical: 8,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: cardBorder),
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: isDark
+                                      ? const Color(0xFF27272A)
+                                      : const Color(0xFFE2E8F0),
+                                ),
+                              ),
+                              disabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: isDark
+                                      ? const Color(0xFF27272A)
+                                      : const Color(0xFFE2E8F0),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: isDark
+                                      ? const Color(0xFF27272A)
+                                      : const Color(0xFFE2E8F0),
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -1961,9 +2025,13 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
                         icon: const Icon(Icons.visibility_outlined, size: 15),
                         label: const Text('Preview'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: primaryGreen,
+                          foregroundColor: isDark
+                              ? const Color(0xFF86EFAC)
+                              : primaryGreen,
                           side: BorderSide(
-                            color: primaryGreen.withValues(alpha: 0.5),
+                            color: isDark
+                                ? const Color(0xFF86EFAC)
+                                : primaryGreen.withValues(alpha: 0.5),
                             width: 1,
                           ),
                           padding: const EdgeInsets.symmetric(
@@ -2424,8 +2492,8 @@ class _ReminderModalState extends ConsumerState<ReminderModal> {
           child: ElevatedButton(
             onPressed: _save,
             style: ElevatedButton.styleFrom(
-              backgroundColor: primaryGreen,
-              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+              backgroundColor: const Color(0xFF2A531D),
+              foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

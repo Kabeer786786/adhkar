@@ -382,10 +382,8 @@ class _AddTasbeehModalState extends State<AddTasbeehModal> {
               child: ElevatedButton(
                 onPressed: _handleSave,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: isDark
-                      ? const Color(0xFF0F0F12)
-                      : Colors.white,
+                  backgroundColor: const Color(0xFF2A531D),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
                   shape: RoundedRectangleBorder(

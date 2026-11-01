@@ -88,14 +88,24 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
         : storage.getStopPointForSurah(widget.surahNumber);
 
     int? targetAyahNum;
+    int? targetSurahNum;
+
     if (widget.initialAyahNumber != null) {
       targetAyahNum = widget.initialAyahNumber;
+      targetSurahNum = widget.surahNumber;
       _highlightResumeAyahNumber = targetAyahNum;
     } else if (sp != null) {
-      targetAyahNum = sp['resumeAyahNumber'] as int?;
+      if (sp['isLastOfQuran'] == true) {
+        targetAyahNum = sp['markedAyahNumber'] as int?;
+        targetSurahNum = sp['surahNumber'] as int?;
+      } else {
+        targetAyahNum = sp['resumeAyahNumber'] as int?;
+        targetSurahNum = sp['resumeSurahNumber'] as int? ?? sp['surahNumber'] as int?;
+      }
       _highlightResumeAyahNumber = targetAyahNum;
     } else {
       targetAyahNum = null;
+      targetSurahNum = null;
       _highlightResumeAyahNumber = null;
     }
 
@@ -106,9 +116,6 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     int targetIdx = 0;
     int? targetAyahDisplayNum;
     if (targetAyahNum != null) {
-      final targetSurahNum = widget.juzNumber != null && sp != null
-          ? (sp['surahNumber'] as int?)
-          : widget.surahNumber;
       final found = ayahs.indexWhere(
         (a) =>
             a.numberInSurah == targetAyahNum &&
@@ -455,24 +462,131 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
       return;
     }
 
+    final bool isJuzMode = widget.juzNumber != null;
+    final allSurahsList = _repository.getSurahs();
+
+    // Determine if this ayah is the last ayah of the current Surah / Juz
+    bool isLastOfSurah = false;
+    bool isLastOfJuz = false;
+    bool isLastOfQuran = false;
+
+    int resumeSurahNum = surahNum;
+    String resumeSurahEnglish = currentSurah.nameEnglish;
+    String resumeSurahArabic = currentSurah.nameArabic;
+    int? resumeJuzNum = widget.juzNumber;
+    int resumeAyahNum = ayah.numberInSurah + 1;
+    String resumeDescription = '';
+
+    if (!isJuzMode) {
+      // Surah mode
+      isLastOfSurah = ayah.numberInSurah >= currentSurah.verseCount;
+      if (isLastOfSurah) {
+        if (currentSurah.number >= 114) {
+          // Last Surah of Quran (Surah 114, An-Nas)
+          isLastOfQuran = true;
+          resumeSurahNum = 114;
+          resumeAyahNum = ayah.numberInSurah; // Points to stop point without going to the first!
+          resumeSurahEnglish = currentSurah.nameEnglish;
+          resumeSurahArabic = currentSurah.nameArabic;
+          resumeDescription = 'Ayah $resumeAyahNum (End of Quran)';
+        } else {
+          // Open next Surah at Ayah 1
+          final nextSurah = allSurahsList.firstWhere(
+            (s) => s.number == currentSurah.number + 1,
+            orElse: () => currentSurah,
+          );
+          resumeSurahNum = nextSurah.number;
+          resumeAyahNum = 1;
+          resumeSurahEnglish = nextSurah.nameEnglish;
+          resumeSurahArabic = nextSurah.nameArabic;
+          resumeDescription = 'next Surah (${nextSurah.nameEnglish}, Ayah 1)';
+        }
+      } else {
+        resumeDescription = 'Ayah $resumeAyahNum';
+      }
+    } else {
+      // Juz mode
+      final juzAyahs = _repository.getAyahsForJuz(widget.juzNumber!);
+      final currIdx = juzAyahs.indexWhere(
+        (a) => a.number == ayah.number,
+      );
+      isLastOfJuz = (currIdx >= 0 && currIdx == juzAyahs.length - 1);
+
+      if (isLastOfJuz) {
+        if (widget.juzNumber! >= 30) {
+          // Last Juz of Quran (Juz 30)
+          isLastOfQuran = true;
+          resumeJuzNum = 30;
+          resumeSurahNum = surahNum;
+          resumeAyahNum = ayah.numberInSurah; // Points to stop point without going to first!
+          resumeSurahEnglish = currentSurah.nameEnglish;
+          resumeSurahArabic = currentSurah.nameArabic;
+          resumeDescription = 'Ayah $resumeAyahNum (End of Quran)';
+        } else {
+          // Open next Juz at its first ayah
+          final nextJuzNum = widget.juzNumber! + 1;
+          final nextJuzAyahs = _repository.getAyahsForJuz(nextJuzNum);
+          final firstAyahOfNextJuz = nextJuzAyahs.first;
+          final nextSurah = allSurahsList.firstWhere(
+            (s) => s.number == firstAyahOfNextJuz.surahNumber,
+            orElse: () => currentSurah,
+          );
+          resumeJuzNum = nextJuzNum;
+          resumeSurahNum = firstAyahOfNextJuz.surahNumber ?? nextSurah.number;
+          resumeAyahNum = firstAyahOfNextJuz.numberInSurah;
+          resumeSurahEnglish = nextSurah.nameEnglish;
+          resumeSurahArabic = nextSurah.nameArabic;
+          resumeDescription = 'next Juz (Juz $nextJuzNum, Ayah $resumeAyahNum)';
+        }
+      } else if (currIdx >= 0 && currIdx < juzAyahs.length - 1) {
+        final nextAyah = juzAyahs[currIdx + 1];
+        final nextAyahSurah = allSurahsList.firstWhere(
+          (s) => s.number == nextAyah.surahNumber,
+          orElse: () => currentSurah,
+        );
+        resumeJuzNum = widget.juzNumber;
+        resumeSurahNum = nextAyah.surahNumber ?? currentSurah.number;
+        resumeAyahNum = nextAyah.numberInSurah;
+        resumeSurahEnglish = nextAyahSurah.nameEnglish;
+        resumeSurahArabic = nextAyahSurah.nameArabic;
+        if (resumeSurahNum != surahNum) {
+          resumeDescription = 'next verse (${nextAyahSurah.nameEnglish}, Ayah $resumeAyahNum)';
+        } else {
+          resumeDescription = 'Ayah $resumeAyahNum';
+        }
+      } else {
+        resumeDescription = 'Ayah $resumeAyahNum';
+      }
+    }
+
+    final juzObj = isJuzMode
+        ? juzList.firstWhere(
+            (j) => j.number == widget.juzNumber,
+            orElse: () => juzList.first,
+          )
+        : null;
+
+    final String displayNameEnglish =
+        isJuzMode ? juzObj!.nameEnglish : currentSurah.nameEnglish;
+    final String displayNameArabic =
+        isJuzMode ? juzObj!.nameArabic : currentSurah.nameArabic;
+
     final existingSp = widget.juzNumber != null
         ? storage.getStopPointForJuz(widget.juzNumber!)
         : storage.getStopPointForSurah(surahNum);
 
     if (existingSp != null) {
       final int oldMarkedAyah = existingSp['markedAyahNumber'] ?? 1;
-      final int newResumeAyah = ayah.numberInSurah < totalAyahs
-          ? ayah.numberInSurah + 1
-          : ayah.numberInSurah;
       final bool isDark = _isReadingDarkMode;
 
       final bool? confirmed = await StopPointDialog.show(
         context: context,
         isDark: isDark,
-        surahName: currentSurah.nameEnglish,
+        surahName: displayNameEnglish,
         previousAyah: oldMarkedAyah,
         newAyah: ayah.numberInSurah,
-        newResumeAyah: newResumeAyah,
+        newResumeAyah: resumeAyahNum,
+        resumeTargetDescription: resumeDescription,
         isJuz: widget.juzNumber != null,
         juzNumber: widget.juzNumber,
       );
@@ -482,26 +596,39 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
 
     await storage.saveQuranStopPoint(
       surahNumber: surahNum,
-      surahNameEnglish: currentSurah.nameEnglish,
-      surahNameArabic: currentSurah.nameArabic,
+      surahNameEnglish: displayNameEnglish,
+      surahNameArabic: displayNameArabic,
       juzNumber: widget.juzNumber,
       markedAyahNumber: ayah.numberInSurah,
       totalAyahs: totalAyahs,
       page: ayah.page,
+      resumeSurahNumber: resumeSurahNum,
+      resumeSurahNameEnglish: resumeSurahEnglish,
+      resumeSurahNameArabic: resumeSurahArabic,
+      resumeJuzNumber: resumeJuzNum,
+      resumeAyahNumber: resumeAyahNum,
+      isLastOfQuran: isLastOfQuran,
     );
 
-    final resumeAyah = ayah.numberInSurah < totalAyahs
-        ? ayah.numberInSurah + 1
-        : ayah.numberInSurah;
-
     setState(() {
-      _highlightResumeAyahNumber = resumeAyah;
+      _highlightResumeAyahNumber = isLastOfQuran ? ayah.numberInSurah : resumeAyahNum;
     });
 
     if (mounted) {
+      String toastMessage;
+      if (isLastOfQuran) {
+        toastMessage = 'Stop point set at Ayah ${ayah.numberInSurah} (End of Quran)';
+      } else if (isLastOfSurah) {
+        toastMessage = 'Stop point set • Resumes from Surah $resumeSurahEnglish (Ayah 1)';
+      } else if (isLastOfJuz) {
+        toastMessage = 'Stop point set • Resumes from Juz $resumeJuzNum';
+      } else {
+        toastMessage = 'Stop point set at Ayah ${ayah.numberInSurah} (Resumes from Ayah $resumeAyahNum)';
+      }
+
       AppFloatingToast.showAdded(
         context,
-        message: 'Stop point set at Ayah $resumeAyah',
+        message: toastMessage,
         icon: Icons.flag_rounded,
       );
     }
@@ -963,15 +1090,16 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
     final sp = isJuzMode
         ? storage.getStopPointForJuz(widget.juzNumber!)
         : storage.getStopPointForSurah(widget.surahNumber);
-    final int? spAyahNum = sp?['resumeAyahNumber'] as int?;
+    final int? spAyahNum = (sp?['markedAyahNumber'] as int?) ?? (sp?['resumeAyahNumber'] as int?);
+    final int? spSurahNum = sp?['surahNumber'] as int?;
     final int spTargetIdx = (spAyahNum != null && sp != null)
         ? ayahs.indexWhere(
             (a) =>
                 a.numberInSurah == spAyahNum &&
                 (!isJuzMode ||
-                    sp['surahNumber'] == null ||
-                    a.surahNumber == null ||
-                    a.surahNumber == sp['surahNumber']),
+                    spSurahNum == null ||
+                    a.surahNumber == null || 
+                    a.surahNumber == spSurahNum),
           )
         : -1;
 
@@ -1022,19 +1150,23 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                               ? Colors.white
                               : const Color(0xFF2A531D),
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 17,
                         ),
                       ),
-                      Text(
-                        isJuzMode
-                            ? currentJuz!.nameArabic
-                            : currentSurah.nameArabic,
-                        style: AppTypography.arabicHeader(
-                          arabicFont: arabicFont,
-                          color: effectiveIsDark
-                              ? Colors.white
-                              : const Color(0xFF2A531D),
-                          fontSize: 21,
+                      Flexible(
+                        child: Text(
+                          isJuzMode
+                              ? currentJuz!.nameArabic
+                              : currentSurah.nameArabic,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.arabicHeader(
+                            arabicFont: arabicFont,
+                            color: effectiveIsDark
+                                ? Colors.white
+                                : const Color(0xFF2A531D),
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ],
@@ -1043,10 +1175,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                 actions: [
                   // Favorite Toggle for current Surah / Juz
                   IconButton(
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: const VisualDensity(horizontal: -3, vertical: -4),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
-                      minWidth: 32,
+                      minWidth: 26,
                       minHeight: 32,
                     ),
                     onPressed: () async {
@@ -1066,7 +1198,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                           : (effectiveIsDark
                                 ? const Color(0xFFF4F4F5)
                                 : const Color(0xFF2A531D)),
-                      size: 20,
+                      size: 19,
                     ),
                     tooltip: isFavorited
                         ? 'Remove from Favorites'
@@ -1075,10 +1207,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   // Stop Point Flag Button (Shown in Mode 0 & Mode 1, hidden in Continuous Mode 2)
                   if (_selectedMode != 2 && spAyahNum != null && spTargetIdx >= 0)
                     IconButton(
-                      visualDensity: VisualDensity.compact,
+                      visualDensity: const VisualDensity(horizontal: -3, vertical: -4),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(
-                        minWidth: 32,
+                        minWidth: 26,
                         minHeight: 32,
                       ),
                       onPressed: () => _navigateToStopPoint(
@@ -1089,17 +1221,17 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       icon: const Icon(
                         Icons.flag_rounded,
                         color: Color(0xFFD97706),
-                        size: 20,
+                        size: 19,
                       ),
                       tooltip: 'Go to Stop Point (Ayah $spAyahNum)',
                     ),
                   // Surah / Juz Information Button (Shown specifically in Page View Mode 1)
                   if (_selectedMode == 1)
                     IconButton(
-                      visualDensity: VisualDensity.compact,
+                      visualDensity: const VisualDensity(horizontal: -3, vertical: -4),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(
-                        minWidth: 32,
+                        minWidth: 26,
                         minHeight: 32,
                       ),
                       onPressed: () {
@@ -1125,7 +1257,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         color: effectiveIsDark
                             ? const Color(0xFFF4F4F5)
                             : const Color(0xFF2A531D),
-                        size: 20,
+                        size: 19,
                       ),
                       tooltip: isJuzMode
                           ? 'Juz Information'
@@ -1134,10 +1266,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   // Live Text Resize / Font Size Button (Available only in Mode 0 & Mode 2)
                   if (_selectedMode != 1)
                     IconButton(
-                      visualDensity: VisualDensity.compact,
+                      visualDensity: const VisualDensity(horizontal: -3, vertical: -4),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(
-                        minWidth: 32,
+                        minWidth: 26,
                         minHeight: 32,
                       ),
                       onPressed: () =>
@@ -1147,16 +1279,16 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                         color: effectiveIsDark
                             ? const Color(0xFFF4F4F5)
                             : const Color(0xFF2A531D),
-                        size: 20,
+                        size: 19,
                       ),
                       tooltip: 'Arabic Text Size',
                     ),
                   // Dark / Light Mode Toggle Button
                   IconButton(
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: const VisualDensity(horizontal: -3, vertical: -4),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
-                      minWidth: 32,
+                      minWidth: 26,
                       minHeight: 32,
                     ),
                     onPressed: () {
@@ -1176,7 +1308,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       color: effectiveIsDark
                           ? const Color(0xFFA3E635)
                           : const Color(0xFF2A531D),
-                      size: 20,
+                      size: 19,
                     ),
                     tooltip: effectiveIsDark
                         ? 'Switch to Light Mode'
@@ -1184,10 +1316,10 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   ),
                   // Unified Settings & Preferences Button (Includes Display Modes, Translations)
                   IconButton(
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: const VisualDensity(horizontal: -3, vertical: -4),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
-                      minWidth: 32,
+                      minWidth: 26,
                       minHeight: 32,
                     ),
                     onPressed: () =>
@@ -1197,11 +1329,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                       color: effectiveIsDark
                           ? const Color(0xFFF4F4F5)
                           : const Color(0xFF2A531D),
-                      size: 20,
+                      size: 19,
                     ),
                     tooltip: 'Reading Preferences & Settings',
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 12),
                 ],
               ),
             ),
@@ -1290,15 +1422,20 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                       ayah.numberInSurah,
                                       juzNumber: widget.juzNumber,
                                     );
+                                final spForJuz = widget.juzNumber != null
+                                    ? storage.getStopPointForJuz(widget.juzNumber!)
+                                    : null;
+                                final targetResumeSurah = isJuzMode
+                                    ? (spForJuz?['resumeSurahNumber'] ??
+                                        spForJuz?['surahNumber'])
+                                    : widget.surahNumber;
                                 final isResumeHighlight =
                                     _highlightResumeAyahNumber != null &&
                                     _highlightResumeAyahNumber ==
                                         ayah.numberInSurah &&
-                                    (widget.juzNumber == null ||
-                                        (storage.getStopPointForJuz(
-                                              widget.juzNumber!,
-                                            )?['surahNumber'] ==
-                                            surahNum));
+                                    (!isJuzMode ||
+                                        targetResumeSurah == null ||
+                                        surahNum == targetResumeSurah);
 
                                 return _buildVerseCard(
                                   ayah: ayah,
@@ -1942,14 +2079,20 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                   ayah.numberInSurah,
                   juzNumber: widget.juzNumber,
                 );
+                final bool isJuz = widget.juzNumber != null;
+                final spForJuz = isJuz
+                    ? storage.getStopPointForJuz(widget.juzNumber!)
+                    : null;
+                final targetResumeSurah = isJuz
+                    ? (spForJuz?['resumeSurahNumber'] ??
+                        spForJuz?['surahNumber'])
+                    : widget.surahNumber;
                 final bool isResumeHighlight =
                     _highlightResumeAyahNumber != null &&
                     _highlightResumeAyahNumber == ayah.numberInSurah &&
-                    (widget.juzNumber == null ||
-                        (storage.getStopPointForJuz(
-                              widget.juzNumber!,
-                            )?['surahNumber'] ==
-                            surahNum));
+                    (!isJuz ||
+                        targetResumeSurah == null ||
+                        surahNum == targetResumeSurah);
                 final bool isSelected = _selectedAyahForHighlight == index;
                 final bool isHighlighted =
                     isPlayingThis || isResumeHighlight || isSelected;

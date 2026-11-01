@@ -1139,9 +1139,9 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen>
               heroTag: 'add_category_fab',
               onPressed: () => _openAdhkarLibraryModal(),
               backgroundColor: isDark
-                  ? const Color(0xFF18A74C)
+                  ? const Color(0xFF2A531D)
                   : const Color(0xFF2A531D),
-              foregroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              foregroundColor:  Colors.white,
               elevation: 4,
               icon: const Icon(Icons.add_rounded, size: 24),
               label: const Text(

@@ -69,9 +69,12 @@ class QuranReadingSettingsModal {
                         children: [
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.tune_rounded,
-                                color: Color(0xFF2A531D),
+                                color: isDark
+                                    ? Color(0xFF18A74C)
+                                    : Color(0xFF2A531D),
+
                                 size: 22,
                               ),
                               const SizedBox(width: 8),
@@ -274,10 +277,12 @@ class QuranReadingSettingsModal {
                         ),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.spellcheck_rounded,
                               size: 20,
-                              color: Color(0xFF2A531D),
+                              color: isDark
+                                  ? Color(0xFF18A74C)
+                                  : Color(0xFF2A531D),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
@@ -372,8 +377,10 @@ class QuranReadingSettingsModal {
                                     : Icons.download_for_offline_rounded,
                                 size: 22,
                                 color: isDownloaded
-                                    ? const Color(0xFF18A74C)
-                                    : const Color(0xFF2A531D),
+                                    ? Color(0xFF18A74C)
+                                    : isDark
+                                        ? Color(0xFF18A74C)
+                                        : Color(0xFF2A531D),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -518,18 +525,18 @@ class QuranReadingSettingsModal {
               ),
             ),
             if (isLoading)
-              const SizedBox(
+              SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.2,
-                  color: Color(0xFF2A531D),
+                  color: isDark ? Color(0xFF18A74C) : Color(0xFF2A531D),
                 ),
               )
             else if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle_rounded,
-                color: Color(0xFF2A531D),
+                color: isDark ? Color(0xFF18A74C) : Color(0xFF2A531D),
                 size: 22,
               ),
           ],
@@ -612,9 +619,9 @@ class QuranReadingSettingsModal {
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle_rounded,
-                color: Color(0xFF2A531D),
+                color: isDark ? Color(0xFF18A74C) : Color(0xFF2A531D),
                 size: 20,
               ),
           ],

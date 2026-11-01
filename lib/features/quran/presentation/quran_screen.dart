@@ -144,9 +144,9 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
   }) {
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (context) { 
         return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E2D25) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF18181B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -165,9 +165,13 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Delete Stop Point?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : const Color(0xFF1F2937),
+                ),
               ),
             ],
           ),
@@ -357,31 +361,35 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                               final sp = activeStopPoints[idx];
                               final isJuz = sp['juzNumber'] != null;
 
-                              final String arabicName =
-                                  (sp['surahNameArabic'] as String?)
-                                          ?.isNotEmpty ==
-                                      true
-                                  ? sp['surahNameArabic']
-                                  : (isJuz
-                                        ? juzList
-                                              .firstWhere(
-                                                (j) =>
-                                                    j.number == sp['juzNumber'],
-                                                orElse: () => juzList.first,
-                                              )
-                                              .nameArabic
-                                        : allSurahs
-                                              .firstWhere(
-                                                (s) =>
-                                                    s.number ==
-                                                    sp['surahNumber'],
-                                                orElse: () => allSurahs.first,
-                                              )
-                                              .nameArabic);
+                              late final String englishTitle;
+                              late final String arabicName;
 
-                              final String englishTitle = isJuz
-                                  ? 'Juz ${sp['juzNumber']} - ${sp['surahNameEnglish'] ?? ''}'
-                                  : '${sp['surahNameEnglish'] ?? ''}';
+                              if (isJuz) {
+                                final int jNum = (sp['juzNumber'] as int?) ?? 1;
+                                final juzObj = juzList.firstWhere(
+                                  (j) => j.number == jNum,
+                                  orElse: () => juzList.first,
+                                );
+                                englishTitle = 'Juz $jNum - ${juzObj.nameEnglish}';
+                                arabicName = juzObj.nameArabic;
+                              } else {
+                                final sNum = (sp['surahNumber'] as int?) ?? 1;
+                                final surahObj = allSurahs.firstWhere(
+                                  (s) => s.number == sNum,
+                                  orElse: () => allSurahs.first,
+                                );
+                                englishTitle =
+                                    (sp['surahNameEnglish'] as String?)
+                                                ?.isNotEmpty ==
+                                            true
+                                        ? sp['surahNameEnglish']
+                                        : surahObj.nameEnglish;
+                                arabicName = (sp['surahNameArabic'] as String?)
+                                            ?.isNotEmpty ==
+                                        true
+                                    ? sp['surahNameArabic']
+                                    : surahObj.nameArabic;
+                              }
 
                               return Stack(
                                 children: [
@@ -493,95 +501,132 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
                                         const SizedBox(height: 8),
 
                                         // Bottom Row: Resume Info + Action Button
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Resume from Ayah ${sp['resumeAyahNumber']}',
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      color: isDark
-                                                          ? Colors.white
-                                                          : Color(0xFF2A531D),
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 2),
-                                                  Text(
-                                                    'Marked Ayah ${sp['markedAyahNumber']} of ${sp['totalAyahs'] ?? 0} Ayahs',
-                                                    style: TextStyle(
-                                                      fontSize: 11.5,
-                                                      color: isDark
-                                                          ? Colors.white60
-                                                          : Colors
-                                                                .grey
-                                                                .shade600,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
+                                        Builder(
+                                          builder: (context) {
+                                            final bool isLastOfQuran = sp['isLastOfQuran'] == true;
+                                            final bool opensNextSurah = !isJuz &&
+                                                (sp['resumeSurahNumber'] != null &&
+                                                    sp['resumeSurahNumber'] != sp['surahNumber']);
+                                            final bool opensNextJuz = isJuz &&
+                                                (sp['resumeJuzNumber'] != null &&
+                                                    sp['resumeJuzNumber'] != sp['juzNumber']);
 
-                                            ElevatedButton.icon(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: const Color(
-                                                  0xFF2A531D,
-                                                ),
-                                                foregroundColor: Colors.white,
-                                                elevation: 2,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 14,
-                                                      vertical: 8,
+                                            final resumeTitle = isLastOfQuran
+                                                ? 'Stop Point at last Ayah ${sp['markedAyahNumber']}'
+                                                : opensNextSurah
+                                                    ? 'Resume from ${sp['resumeSurahNameEnglish'] ?? 'Surah ${sp['resumeSurahNumber']}'} • Ayah ${sp['resumeAyahNumber']}'
+                                                    : opensNextJuz
+                                                        ? 'Resume from Juz ${sp['resumeJuzNumber']} • Ayah ${sp['resumeAyahNumber']}'
+                                                        : 'Resume from Ayah ${sp['resumeAyahNumber']}';
+
+                                            final resumeSubtitle = isLastOfQuran
+                                                ? 'Marked Ayah ${sp['markedAyahNumber']} of ${sp['totalAyahs'] ?? 0} Ayahs (End of Quran)'
+                                                : opensNextSurah
+                                                    ? 'Completed Surah ${sp['surahNameEnglish']} (Ayah ${sp['markedAyahNumber']})'
+                                                    : opensNextJuz
+                                                        ? 'Completed Juz ${sp['juzNumber']} (Ayah ${sp['markedAyahNumber']})'
+                                                        : 'Marked Ayah ${sp['markedAyahNumber']} of ${sp['totalAyahs'] ?? 0} Ayahs';
+
+                                            return Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        resumeTitle,
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          color: isDark
+                                                              ? Colors.white
+                                                              : const Color(0xFF2A531D),
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 2),
+                                                      Text(
+                                                        resumeSubtitle,
+                                                        style: TextStyle(
+                                                          fontSize: 11.5,
+                                                          color: isDark
+                                                              ? Colors.white60
+                                                              : Colors
+                                                                    .grey
+                                                                    .shade600,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
                                                     ),
-                                              ),
-                                              onPressed: () async {
-                                                Navigator.pop(context);
-                                                if (isJuz) {
-                                                  context.push(
-                                                    '/quran/surah?juz=${sp['juzNumber']}&name=${Uri.encodeComponent("Juz ${sp['juzNumber']} - ${sp['surahNameEnglish']}")}&startAyah=${sp['resumeAyahNumber']}',
-                                                  );
-                                                } else {
-                                                  context.push(
-                                                    '/quran/surah?num=${sp['surahNumber']}&name=${Uri.encodeComponent(sp['surahNameEnglish'])}&startAyah=${sp['resumeAyahNumber']}',
-                                                  );
-                                                }
-                                              },
-                                              icon: const Icon(
-                                                Icons.play_arrow_rounded,
-                                                size: 18,
-                                                color: Color(0xFFd1ffbe),
-                                              ),
-                                              label: const Text(
-                                                'Resume',
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                  fontWeight: FontWeight.bold,
-                                                  letterSpacing: 0.3,
+                                                  ],
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                              const SizedBox(width: 10),
+
+                                              ElevatedButton.icon(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(
+                                                    0xFF2A531D,
+                                                  ),
+                                                  foregroundColor: Colors.white,
+                                                  elevation: 2,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(12),
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 14,
+                                                        vertical: 8,
+                                                      ),
+                                                ),
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  final targetJuz = sp['resumeJuzNumber'] ?? sp['juzNumber'];
+                                                  final targetSurah = sp['resumeSurahNumber'] ?? sp['surahNumber'];
+                                                  final targetSurahName = sp['resumeSurahNameEnglish'] ?? sp['surahNameEnglish'] ?? '';
+                                                  final resumeAyah = sp['resumeAyahNumber'];
+
+                                                  if (isJuz && targetJuz != null) {
+                                                    final juzObj = juzList.firstWhere(
+                                                      (j) => j.number == targetJuz,
+                                                      orElse: () => juzList.first,
+                                                    );
+                                                    context.push(
+                                                      '/quran/surah?juz=$targetJuz&name=${Uri.encodeComponent("Juz $targetJuz - ${juzObj.nameEnglish}")}&startAyah=$resumeAyah&surah=$targetSurah',
+                                                    );
+                                                  } else {
+                                                    context.push(
+                                                      '/quran/surah?num=$targetSurah&name=${Uri.encodeComponent(targetSurahName)}&startAyah=$resumeAyah',
+                                                    );
+                                                  }
+                                                },
+                                                icon: const Icon(
+                                                  Icons.play_arrow_rounded,
+                                                  size: 18,
+                                                  color: Color(0xFFd1ffbe),
+                                                ),
+                                                label: const Text(
+                                                  'Resume',
+                                                  style: TextStyle(
+                                                    fontSize: 12.5,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 0.3,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
+                                ),
 
                                   // Absolute Top-Right Close / Delete Button
                                   Positioned(
@@ -1344,12 +1389,20 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     return GestureDetector(
       onTap: () {
         if (selectedTab == 1) {
+          final targetJuz = sp?['resumeJuzNumber'] ?? lastJuz.number;
+          final targetSurah = sp?['resumeSurahNumber'];
+          final juzObj = juzList.firstWhere(
+            (j) => j.number == targetJuz,
+            orElse: () => lastJuz,
+          );
           context.push(
-            '/quran/surah?juz=${lastJuz.number}&name=${Uri.encodeComponent("Juz ${lastJuz.number} - ${lastJuz.nameEnglish}")}${resumeAyahNum != null ? '&startAyah=$resumeAyahNum' : ''}',
+            '/quran/surah?juz=$targetJuz&name=${Uri.encodeComponent("Juz $targetJuz - ${juzObj.nameEnglish}")}${resumeAyahNum != null ? '&startAyah=$resumeAyahNum' : ''}${targetSurah != null ? '&surah=$targetSurah' : ''}',
           );
         } else {
+          final targetSurah = sp?['resumeSurahNumber'] ?? lastSurah.number;
+          final targetName = sp?['resumeSurahNameEnglish'] ?? lastSurah.nameEnglish;
           context.push(
-            '/quran/surah?num=${lastSurah.number}&name=${Uri.encodeComponent(lastSurah.nameEnglish)}${resumeAyahNum != null ? '&startAyah=$resumeAyahNum' : ''}',
+            '/quran/surah?num=$targetSurah&name=${Uri.encodeComponent(targetName)}${resumeAyahNum != null ? '&startAyah=$resumeAyahNum' : ''}',
           );
         }
       },
@@ -1758,7 +1811,9 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     final storage = ref.read(storageServiceProvider);
     final sp = storage.getStopPointForSurah(surah.number);
     final int? resumeAyah = sp != null
-        ? (sp['resumeAyahNumber'] as int?)
+        ? ((sp['resumeSurahNumber'] != null && sp['resumeSurahNumber'] != surah.number)
+            ? (sp['markedAyahNumber'] as int?)
+            : (sp['resumeAyahNumber'] as int?))
         : null;
 
     return Material(
@@ -1919,7 +1974,14 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
     final storage = ref.read(storageServiceProvider);
     final sp = storage.getStopPointForJuz(juz.number);
     final int? resumeAyah = sp != null
-        ? (sp['resumeAyahNumber'] as int?)
+        ? ((sp['resumeJuzNumber'] != null && sp['resumeJuzNumber'] != juz.number)
+            ? (sp['markedAyahNumber'] as int?)
+            : (sp['resumeAyahNumber'] as int?))
+        : null;
+    final int? resumeSurah = sp != null
+        ? ((sp['resumeJuzNumber'] != null && sp['resumeJuzNumber'] != juz.number)
+            ? (sp['surahNumber'] as int?)
+            : (sp['resumeSurahNumber'] as int? ?? sp['surahNumber'] as int?))
         : null;
 
     return Column(
@@ -1929,7 +1991,7 @@ class _QuranScreenState extends ConsumerState<QuranScreen> {
           color: Colors.transparent,
           child: InkWell(
             onTap: () => context.push(
-              '/quran/surah?juz=${juz.number}&name=${Uri.encodeComponent("Juz ${juz.number} - ${juz.nameEnglish}")}${resumeAyah != null ? '&startAyah=$resumeAyah' : ''}',
+              '/quran/surah?juz=${juz.number}&name=${Uri.encodeComponent("Juz ${juz.number} - ${juz.nameEnglish}")}${resumeAyah != null ? '&startAyah=$resumeAyah' : ''}${resumeSurah != null ? '&surah=$resumeSurah' : ''}',
             ),
             child: Padding(
               padding: const EdgeInsets.only(

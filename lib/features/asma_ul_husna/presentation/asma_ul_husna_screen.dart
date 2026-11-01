@@ -36,7 +36,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        AsmaDownloadDialog.showIfFirstTime(context, ref);
+        AsmaDownloadDialog.showOncePerDay(context, ref);
         _checkDownloadStatus();
       }
     });
@@ -216,7 +216,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   icon: Icon(
                     Icons.download_for_offline_rounded,
                     color: isDark
-                        ? const Color(0xFF18A74C)
+                        ? Colors.white
                         : const Color(0xFF1A3512),
                     size: 22,
                   ),
@@ -228,9 +228,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                   _isGridView
                       ? Icons.view_headline_rounded
                       : Icons.grid_view_rounded,
-                  color: isDark
-                      ? const Color(0xFF18A74C)
-                      : const Color(0xFF1A3512),
+                  color: isDark ? Colors.white : const Color(0xFF1A3512),
                   size: 22,
                 ),
                 onPressed: () {
@@ -444,9 +442,7 @@ class _AsmaUlHusnaScreenState extends ConsumerState<AsmaUlHusnaScreen> {
                     isPlayingAny
                         ? Icons.pause_rounded
                         : Icons.play_arrow_rounded,
-                    color: isDark
-                        ? const Color(0xFF0F0F12)
-                        : const Color(0xFFD4AF37),
+                    color: Colors.white,
                     size: 22,
                   ),
                 ),

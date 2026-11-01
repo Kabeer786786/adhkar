@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../utils/tasbeeh_vibration_helper.dart';
 
 class MarbleBeadsCounter extends StatefulWidget {
   final VoidCallback onIncrement;
@@ -69,7 +70,9 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
         } else {
           widget.onDecrement?.call();
         } 
-        HapticFeedback.lightImpact();
+        if (!TasbeehVibrationHelper.isVibrating) {
+          HapticFeedback.lightImpact();
+        }
       }
     });
   }
@@ -96,7 +99,9 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
         } else {
           widget.onDecrement?.call();
         }
-        HapticFeedback.lightImpact();
+        if (!TasbeehVibrationHelper.isVibrating) {
+          HapticFeedback.lightImpact();
+        }
       }
       _animController.reset();
       _isAnimating = false;
@@ -145,7 +150,9 @@ class MarbleBeadsCounterState extends State<MarbleBeadsCounter> with SingleTicke
         } else {
           widget.onDecrement?.call();
         }
-        HapticFeedback.lightImpact();
+        if (!TasbeehVibrationHelper.isVibrating) {
+          HapticFeedback.lightImpact();
+        }
       }
       _animController.reset();
       _isAnimating = false;

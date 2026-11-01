@@ -44,7 +44,7 @@ class AppDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final primaryColor = const Color(0xFF2A531D);
+    final primaryColor = isDark ? Colors.white : const Color(0xFF2A531D);
 
     final effectiveItemsList = List<AppDropdownItem<T>>.from(items);
     if (value != null && value is String && value.toString().isNotEmpty && !effectiveItemsList.any((item) => item.value == value)) {

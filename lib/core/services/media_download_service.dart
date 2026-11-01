@@ -23,6 +23,9 @@ class MediaDownloadService {
 
   Directory? _cachedAudioDir;
 
+  @visibleForTesting
+  set cachedAudioDir(Directory? dir) => _cachedAudioDir = dir;
+
   /// Get the root directory for storing downloaded audio assets.
   Future<Directory> get audioDirectory async {
     if (_cachedAudioDir != null) return _cachedAudioDir!;
@@ -46,7 +49,7 @@ class MediaDownloadService {
   /// Check if a specific file exists locally and is valid.
   Future<bool> isFileDownloaded(String relativePath) async {
     final file = await getLocalFile(relativePath);
-    return await file.exists() && (await file.length()) > 0;
+    return file.existsSync() && file.lengthSync() > 0;
   }
 
   /// Check if all files in a relative path list are downloaded.

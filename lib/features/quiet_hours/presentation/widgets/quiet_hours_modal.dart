@@ -171,9 +171,7 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryGreen = isDark
-        ? const Color(0xFF18A74C)
-        : const Color(0xFF2A531D);
+    final primaryGreen = const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
     final cardBorder = isDark
         ? const Color(0xFF27272A)
@@ -542,9 +540,7 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,
                                 color: isSelected
-                                    ? (isDark
-                                          ? const Color(0xFF0F0F12)
-                                          : Colors.white)
+                                    ? Colors.white
                                     : (isDark
                                           ? Colors.white70
                                           : const Color(0xFF475569)),
@@ -633,10 +629,8 @@ class _QuietHoursModalState extends State<QuietHoursModal> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryGreen,
-                          foregroundColor: isDark
-                              ? const Color(0xFF0F0F12)
-                              : Colors.white,
+                          backgroundColor: const Color(0xFF2A531D),
+                          foregroundColor: Colors.white,
                           elevation: 2,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(

@@ -9,6 +9,7 @@ import '../../../shared/providers/app_providers.dart';
 import '../../../widgets/app_header_bar.dart';
 import 'widgets/marble_beads_counter.dart';
 import 'widgets/marble_style_modal.dart';
+import '../utils/tasbeeh_vibration_helper.dart';
 
 class FreeTasbeehCounterScreen extends ConsumerStatefulWidget {
   const FreeTasbeehCounterScreen({super.key});
@@ -42,6 +43,12 @@ class _FreeTasbeehCounterScreenState
     });
   }
 
+  @override
+  void dispose() {
+    TasbeehVibrationHelper.cancel();
+    super.dispose();
+  }
+
   void _loadPreferences() {
     final storage = ref.read(storageServiceProvider);
     final direction = storage.getTasbeehSwipeDirection();
@@ -70,6 +77,9 @@ class _FreeTasbeehCounterScreenState
     });
     storage.setDailyTasbeehCount(_todayKey, 'free_tasbeeh_counter', _count);
     storage.incrementLifetimeTasbeeh('free_tasbeeh_counter');
+    if (_targetGoal > 0 && _count == _targetGoal) {
+      TasbeehVibrationHelper.triggerCompletionAlarmVibration();
+    }
   }
 
   void _decrementCount() {
@@ -163,10 +173,8 @@ class _FreeTasbeehCounterScreenState
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    foregroundColor: isDark
-                        ? const Color(0xFF0F0F12)
-                        : Colors.white,
+                    backgroundColor: const Color(0xFF2A531D),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -309,6 +317,7 @@ class _FreeTasbeehCounterScreenState
             ),
             onPressed: () {
               Navigator.pop(context);
+              TasbeehVibrationHelper.cancel();
               final storage = ref.read(storageServiceProvider);
               setState(() {
                 _count = 0;

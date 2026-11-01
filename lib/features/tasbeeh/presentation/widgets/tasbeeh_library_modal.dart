@@ -216,12 +216,8 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                 icon: const Icon(Icons.add_rounded, size: 18),
                 label: const Text('Create Tasbeeh'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark
-                      ? const Color(0xFF18A74C)
-                      : const Color(0xFF2A531D),
-                  foregroundColor: isDark
-                      ? const Color(0xFF0F0F12)
-                      : Colors.white,
+                  backgroundColor: const Color(0xFF2A531D),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
@@ -540,12 +536,8 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
               icon: const Icon(Icons.add_rounded, size: 18),
               label: const Text('Create Custom Tasbeeh'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark
-                    ? const Color(0xFF18A74C)
-                    : const Color(0xFF2A531D),
-                foregroundColor: isDark
-                    ? const Color(0xFF0F0F12)
-                    : Colors.white,
+                backgroundColor: const Color(0xFF2A531D),
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 11,
@@ -754,12 +746,8 @@ class _TasbeehLibraryModalState extends State<TasbeehLibraryModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isPinned
                       ? Colors.red.shade700
-                      : (isDark
-                            ? const Color(0xFF18A74C)
-                            : const Color(0xFF2A531D)),
-                  foregroundColor: isPinned
-                      ? Colors.white
-                      : (isDark ? const Color(0xFF0F0F12) : Colors.white),
+                      : const Color(0xFF2A531D),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   elevation: 0,
                   shape: RoundedRectangleBorder(

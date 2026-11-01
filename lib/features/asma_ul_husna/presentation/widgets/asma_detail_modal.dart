@@ -243,9 +243,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.2,
-                                        color: isDark
-                                            ? const Color(0xFF0F0F12)
-                                            : Colors.white,
+                                        color: Colors.white,
                                       ),
                                     )
                                   : Icon(
@@ -253,9 +251,7 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                                           ? Icons.pause_rounded
                                           : Icons.volume_up_rounded,
                                       size: 20,
-                                      color: isDark
-                                          ? const Color(0xFF0F0F12)
-                                          : Colors.white,
+                                      color:  Colors.white,
                                     ),
                             ),
                           ),
@@ -443,12 +439,8 @@ class _AsmaDetailModalState extends State<AsmaDetailModal> {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark
-                              ? const Color(0xFF18A74C)
-                              : const Color(0xFF2A531D),
-                          foregroundColor: isDark
-                              ? const Color(0xFF0F0F12)
-                              : Colors.white,
+                          backgroundColor: const Color(0xFF2A531D),
+                        foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),

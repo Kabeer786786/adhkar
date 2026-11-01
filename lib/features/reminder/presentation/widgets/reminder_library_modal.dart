@@ -52,9 +52,7 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryGreen = isDark
-        ? const Color(0xFF18A74C)
-        : const Color(0xFF2A531D);
+    final primaryGreen =  const Color(0xFF2A531D);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
     final cardBorder = isDark
         ? const Color(0xFF27272A)
@@ -172,11 +170,11 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
               child: TabBar(
                 controller: _tabController,
                 indicator: BoxDecoration(
-                  color: primaryGreen,
+                  color: const Color(0xFF2A531D),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+                labelColor: Colors.white,
                 unselectedLabelColor: subTextColor,
                 labelStyle: GoogleFonts.lexend(
                   fontSize: 13,
@@ -317,10 +315,10 @@ class _ReminderLibraryModalState extends ConsumerState<ReminderLibraryModal>
                                       : Icons.add_circle_outline_rounded,
                                   size: 28,
                                   color: isAdded
-                                      ? primaryGreen
-                                      : (isDark
-                                            ? const Color(0xFF86EFAC)
-                                            : Colors.grey.shade400),
+                                      ? (isDark
+                                            ? const Color(0xFF18A74C)
+                                            : primaryGreen)
+                                      : Colors.grey.shade400,  
                                 ),
                                 onPressed: () {
                                   if (isAdded) {

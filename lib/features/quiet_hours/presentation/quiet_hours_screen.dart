@@ -293,9 +293,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
     final service = ref.watch(quietHoursServiceProvider);
     final isSupported = service.isSupported;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryGreen = isDark
-        ? const Color(0xFF18A74C)
-        : const Color(0xFF2A531D);
+    final primaryGreen =  const Color(0xFF2A531D);
     final bgColor = isDark ? const Color(0xFF0F0F12) : const Color(0xFFF8FAFC);
     final cardBg = isDark ? const Color(0xFF18181B) : Colors.white;
     final cardBorder = isDark
@@ -412,8 +410,8 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               onPressed: () {
                 QuietHoursLibraryModal.show(context);
               },
-              backgroundColor: primaryGreen,
-              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+              backgroundColor: const Color(0xFF2A531D),
+              foregroundColor: Colors.white,
               icon: const Icon(Icons.add_rounded),
               label: Text(
                 'Add Timing',
@@ -482,9 +480,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
               label: const Text('Add Timing'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryGreen,
-                foregroundColor: isDark
-                    ? const Color(0xFF0F0F12)
-                    : Colors.white,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
@@ -843,9 +839,7 @@ class _QuietHoursScreenState extends ConsumerState<QuietHoursScreen>
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: isSelected
-                                      ? (isDark && isTimingActive
-                                            ? const Color(0xFF0F0F12)
-                                            : Colors.white)
+                                      ? Colors.white
                                       : subTextColor,
                                 ),
                               ),

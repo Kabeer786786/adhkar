@@ -10,6 +10,7 @@ class StopPointDialog {
     required int newResumeAyah,
     bool isJuz = false,
     int? juzNumber,
+    String? resumeTargetDescription,
   }) {
     return showDialog<bool>(
       context: context,
@@ -34,12 +35,13 @@ class StopPointDialog {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Replace Stop Point?',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : const Color(0xFF1F2937),
                   ),
                 ),
               ),
@@ -47,8 +49,8 @@ class StopPointDialog {
           ),
           content: Text(
             isJuz
-                ? 'A stop point is already marked at Ayah $previousAyah in Juz $juzNumber ($surahName).\n\nSetting Ayah $newAyah as the new stop point will delete the previous one and start resuming from Ayah $newResumeAyah.\n\nDo you want to continue?'
-                : 'A stop point is already marked at Ayah $previousAyah in $surahName.\n\nSetting Ayah $newAyah as the new stop point will delete the previous one and start resuming from Ayah $newResumeAyah.\n\nDo you want to continue?',
+                ? 'A stop point is already marked at Ayah $previousAyah in Juz $juzNumber ($surahName).\n\nSetting Ayah $newAyah as the new stop point will delete the previous one and start resuming from ${resumeTargetDescription ?? 'Ayah $newResumeAyah'}.\n\nDo you want to continue?'
+                : 'A stop point is already marked at Ayah $previousAyah in $surahName.\n\nSetting Ayah $newAyah as the new stop point will delete the previous one and start resuming from ${resumeTargetDescription ?? 'Ayah $newResumeAyah'}.\n\nDo you want to continue?',
             style: TextStyle(
               fontSize: 14,
               color: isDark ? Colors.white70 : const Color(0xFF4B5563),

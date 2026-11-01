@@ -245,14 +245,14 @@ final appRouter = GoRouter(
       path: '/quran/surah',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-        final numStr = state.uri.queryParameters['num'] ?? '1';
+        final surahParam = state.uri.queryParameters['surah'] ?? state.uri.queryParameters['num'] ?? '1';
         final juzStr = state.uri.queryParameters['juz'];
         final name = state.uri.queryParameters['name'] ?? 'Al-Fatiha';
         final startAyahStr = state.uri.queryParameters['startAyah'];
         final isFromBookmark =
             state.uri.queryParameters['fromBookmark'] == 'true';
         return SurahDetailScreen(
-          surahNumber: int.tryParse(numStr) ?? 1,
+          surahNumber: int.tryParse(surahParam) ?? 1,
           juzNumber: juzStr != null ? int.tryParse(juzStr) : null,
           surahName: name,
           initialAyahNumber:

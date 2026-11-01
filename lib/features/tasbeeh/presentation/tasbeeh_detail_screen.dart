@@ -13,6 +13,7 @@ import 'widgets/add_tasbeeh_modal.dart';
 import 'widgets/marble_beads_counter.dart';
 import 'widgets/marble_style_modal.dart';
 import 'widgets/tasbeeh_description_modal.dart';
+import '../utils/tasbeeh_vibration_helper.dart';
 
 class TasbeehDetailScreen extends ConsumerStatefulWidget {
   final TasbeehItem item;
@@ -53,6 +54,12 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
       _loadCount();
       _loadSwipeConfig();
     });
+  }
+
+  @override
+  void dispose() {
+    TasbeehVibrationHelper.cancel();
+    super.dispose();
   }
 
   void _loadSwipeConfig() {
@@ -149,12 +156,8 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark
-                        ? const Color(0xFF18A74C)
-                        : const Color(0xFF2A531D),
-                    foregroundColor: isDark
-                        ? const Color(0xFF0F0F12)
-                        : Colors.white,
+                    backgroundColor: const Color(0xFF2A531D),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -262,6 +265,9 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
       _count++;
     });
     storage.setDailyTasbeehCount(_todayKey, _item.id, _count);
+    if (_targetGoal > 0 && _count == _targetGoal) {
+      TasbeehVibrationHelper.triggerCompletionAlarmVibration();
+    }
   }
 
   void _decrementCount() {
@@ -307,16 +313,15 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDark
-                  ? const Color(0xFF18A74C)
-                  : const Color(0xFF2A531D),
-              foregroundColor: isDark ? const Color(0xFF0F0F12) : Colors.white,
+              backgroundColor: const Color(0xFF2A531D),
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             onPressed: () {
               Navigator.pop(context);
+              TasbeehVibrationHelper.cancel();
               final storage = ref.read(storageServiceProvider);
               setState(() {
                 _count = 0;
@@ -427,7 +432,7 @@ class _TasbeehDetailScreenState extends ConsumerState<TasbeehDetailScreen> {
     final rawLifetime = storage.getLifetimeTasbeehCount(_item.id);
     final lifetimeCount = math.max(rawLifetime, _count);
     final isDark = context.isDarkMode;
-    final itemColor = (isDark && _item.color.value == 0xFF2A531D)
+    final itemColor = (isDark && _item.color.toARGB32() == 0xFF2A531D)
         ? const Color(0xFF18A74C)
         : _item.color;
 
